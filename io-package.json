@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.6.0",
+    "version": "8.7.0",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.7.0": {
+        "en": "Escape all field inputs correctly when using single quotes\nAdded sandbox function to subscribe to all enum members\nAdded Blockly block to subscribe to all enum members\nAdded sandbox functions to start/restart/stop an instance\nAdded Blockly block to start/restart/stop an instance\nAdded Blockly block to start/stop a script\nAdded Blockly result blocks for script messages\nFixed onLog / onLogUnregister return types\nfixed issue in importing additional node modules for packages which do not provide a default export (e.g. `mathjs`)\nRemoved `withStyles` from GUI",
+        "de": "Entfliehen Sie alle Feldeingänge richtig, wenn Sie einzelne Zitate verwenden\nHinzugefügt Sandbox Funktion, um alle enum Mitglieder abonnieren\nHinzugefügt Blockly Block, um alle enum Mitglieder abonnieren\nHinzufügen von Sandbox-Funktionen, um eine Instanz zu starten / zu starten / zu stoppen\nBlockly Block hinzugefügt, um eine Instanz zu starten/zu starten/zu stoppen\nBlockly Block hinzugefügt, um ein Skript zu starten / zu stoppen\nHinzugefügt Blockly Ergebnis Blöcke für Skript-Nachrichten\nBehoben aufLog / onLogUnregistrieren\nfeste ausgabe beim import von zusätzlichen knotenmodulen für pakete, die keinen standardexport bereitstellen (z.b. `mathjs`)\nEntfernen `withStyles` von GUI",
+        "ru": "Исключить все входы на поле правильно при использовании одиночных котировок\nДобавлена функция песочницы для подписки на всех членов\nДобавлен блок-блок для подписки на всех членов enum\nДобавлены функции песочницы для запуска/перезапуска/остановки экземпляра\nДобавленный блок для запуска/перезапуска/остановки экземпляра\nДобавлен блок-блок для запуска/остановки сценария\nДобавлены блоки результатов для сообщений сценариев\nFixed onLog / onLogUnregister\nфиксированная проблема при импорте дополнительных узловых модулей для упаковок, которые не обеспечивают экспорт по умолчанию (например, «матджс»)\nУдалено `withStyles' из GUI",
+        "pt": "Fuja todas as entradas de campo corretamente ao usar citações únicas\nFunção de sandbox adicionada para se inscrever em todos os membros enum\nAdicionado Blockly bloco para assinar todos os membros enum\nAdicionado funções sandbox para iniciar / reiniciar / parar uma instância\nAdicionado Blockly bloco para iniciar / reiniciar / parar uma instância\nAdicionado bloco Blockly para iniciar / parar um script\nAdicionado blocos de resultado em bloco para mensagens de script\nFixo emLog / onLogUnregister tipos de retorno\nproblema fixo na importação de módulos de nó adicionais para pacotes que não fornecem uma exportação padrão (por exemplo, `mathjs`)\nRemover `comestilos` da GUI",
+        "nl": "Alle veldinvoeren correct ontsnappen bij het gebruik van enkele aanhalingstekens\nToegevoegd sandbox functie om te abonneren op alle enum leden\nBlockly blok toegevoegd om je te abonneren op alle enum leden\nToegevoegde sandbox-functies om een instantie te starten/herstarten/stoppen\nBlockly blok toegevoegd om een instantie te starten/herstarten/stoppen\nBlockly blok toegevoegd om een script te starten/stoppen\nBlockly resultaatblokken toegevoegd voor scriptberichten\nFixed onLog / onLogUnregister return types\nvast probleem bij het importeren van extra nodemodules voor pakketten die geen standaardexport leveren (bv. .mathjs\nVerwijderd van GUI",
+        "fr": "Échapper à toutes les entrées de champ correctement lors de l'utilisation de guillemets uniques\nAjout de la fonction sandbox pour s'abonner à tous les membres de l'enum\nAjout d'un bloc Blockly pour s'abonner à tous les membres d'enum\nAjout de fonctions sandbox pour démarrer/redémarrer/stop une instance\nAjout d'un bloc Blockly pour démarrer/redémarrer/stop une instance\nAjout d'un bloc Blockly pour démarrer/arrêter un script\nAjout de blocs de résultats Blockly pour les messages script\nCorrection surLog / surLogUnregistrer les types de retour\nproblème fixe lors de l'importation de modules noeuds supplémentaires pour les paquets qui ne fournissent pas une exportation par défaut (par exemple `mathjs`)\nSupprimé `withStyles` de l'interface graphique",
+        "it": "Fuggi tutti gli input del campo correttamente quando si utilizzano singole citazioni\nAggiunta funzione sandbox abbonarsi a tutti i membri enum\nAggiunto Blockly per iscriversi a tutti i membri enum\nAggiunta di funzioni sandbox per avviare / riavviare / fermare un'istanza\nAggiunto Blockly per avviare / riavviare / fermare un'istanza\nAggiunto Blockly per avviare / fermare uno script\nAggiunto Blocchi di risultato Blockly per i messaggi di script\nFisso suLog / suLogUnregister tipi di ritorno\nproblema fisso nell'importazione di moduli nodi aggiuntivi per i pacchetti che non forniscono un'esportazione predefinita (ad esempio `mathjs`)\nRimuoveto `withStyles` da GUI",
+        "es": "Escapar todas las entradas de campo correctamente al usar citas individuales\nFunción de caja de arena agregada para suscribirse a todos los miembros del enum\nAñadido bloque bloque bloque para suscribirse a todos los miembros del enum\nFunciones de caja de arena agregadas para iniciar / reiniciar / detener una instancia\nSe agregó bloque bloque bloque para iniciar / reiniciar / detener una instancia\nAñadido bloque bloque bloque para iniciar / detener un script\nBloques de resultado bloqueados para mensajes de script\nArreglado onLog / onLogUnregister tipos de retorno\nemisión fija en la importación de módulos de nodos adicionales para paquetes que no proporcionan una exportación predeterminada (por ejemplo, `mathjs`)\nQuitado `con los estilos' de GUI",
+        "pl": "Usunąć wszystkie wejścia pola poprawnie przy użyciu pojedynczych cytatów\nDodano funkcję piaskownicy do subskrypcji wszystkich członków enum\nDodano Blockly bloku do subskrypcji wszystkich członków enum\nDodano funkcje piaskownicy do uruchomienia / ponownego uruchomienia / zatrzymania instancji\nDodano Blockly bloku, aby uruchomić / ponownie uruchomić / zatrzymać instancję\nDodano Blockly block, aby uruchomić / zatrzymać skrypt\nDodano blokowane bloki wyników dla wiadomości skryptowych\nNaprawiono typy zwrotów onLog / onLogUnregister\nstały problem przy przywozie dodatkowych modułów węzłów dla pakietów, które nie zapewniają domyślnego eksportu (np. \"mathjs\")\nUsunięty 'ze stylami' z GUI",
+        "uk": "Втеча всіх вводів поля правильно при використанні однієї лапки\nДодана функція пісочниці для підписки на всі члени\nДодано блокнот для підписки на всі члени\nДодано функції пісочниці для запуску/restart/stop екземпляр\nДодано блокнот для запуску/restart/stop екземпляр\nДодано блокнот блокувати для запуску / запуску скрипту\nДодано блокноти блоки результатів для повідомлень скриптів\nВиправлено onLog / onLogUnregister типи повернення\nвиправлено проблему в імпорті додаткових модулів вузлів для пакетів, які не забезпечують експорт за замовчуванням (наприклад, `matjs`)\nВидалення `withStyle` від GUI",
+        "zh-cn": "在使用单引号时正确避开所有字段输入\n添加沙盒函数以订阅所有 enum 成员\n添加 Blockly 块以订阅所有 enum 成员\n添加沙盒函数启动/ 重新启动/ 停止实例\n添加块块开始/ 重新开始/ 停止实例\n添加块块开始/停止脚本\n为脚本消息添加块结果块\n固定在Log/ 在LogUnregister 返回类型\n为不提供默认导出(例如`mathjs')的软件包导入额外节点模块时的固定问题\n从图形用户界面中删除了“ 使用样式”"
+      },
       "8.6.0": {
         "en": "(foxriver76) fixed issue with additional node modules which are installed from GitHub (controller v6)\n(klein0r) Added new Blockly block to save http response into temp file\n(klein0r) Escape single quotes in all object Blockly blocks\n(klein0r) Grouped Blockly blocks / changed order of blocks\n(klein0r) Allow multi line comments",
         "de": "(foxriver76) feste Ausgabe mit zusätzlichen Knotenmodulen, die von GitHub (Controller v6) installiert sind\n(klein0r) Neues Blockly-Block hinzugefügt, um die http-Antwort in temp-Datei zu speichern\n(klein0r) Entkommen einzelne Zitate in allen Objekten Blockly Blöcke\n(klein0r) Gruppenblocksteine / geänderte Reihenfolge der Blöcke\n(klein0r) Lassen Sie mehr Zeilen Kommentare",
@@ -117,19 +130,6 @@
         "pl": "Stałe createState (usunięte nadrzędne atrybuty rodzime)\nNaprawiono komponent astro",
         "uk": "Виправлено створенняДержавних (виданих атрибутів)\nВиправлено astro власний компонент",
         "zh-cn": "固定创建状态( 已删除的冗余本地属性)\n固定天体自定义组件"
-      },
-      "8.4.1": {
-        "en": "Fixed httpPost block\nJust raise deprecated warnings once per script start/usage",
-        "de": "Fixed httpPost block\nEinfach deprecated Warnungen einmal pro Skript Start/Nutzung anheben",
-        "ru": "Фиксированный блок HTTPPost\nПросто поднять обесцененные предупреждения один раз за сценарий запуска/использования",
-        "pt": "Bloqueio httpPost fixo\nBasta levantar avisos obsoletos uma vez por script start/usage",
-        "nl": "Vast httpPost-blok\nVerhoog de verouderde waarschuwingen eenmaal per scriptstart/gebruik",
-        "fr": "Bloc fixe httpPost\nIl suffit de soulever des avertissements dépréciés une fois par script de démarrage/utilisation",
-        "it": "Blocco httpPost fisso\nBasta alzare avvisi deprecati una volta per l'inizio dello script / uso",
-        "es": "Bloque httpPost fijo\nSólo levante advertencias deprecatadas una vez por script start/usage",
-        "pl": "Naprawiono blok httpPost\nWystarczy podnieść zdeprecjonowane ostrzeżenia raz na początku / użyciu skryptu",
-        "uk": "Виправлено блокування httpPost\nПросто підняти відхилені попередження один раз на скрипт старту/відміну",
-        "zh-cn": "固定的 httppost 块\n只要每个脚本启动/使用一次发出贬值的警告"
       }
     },
     "platform": "Javascript/Node.js",

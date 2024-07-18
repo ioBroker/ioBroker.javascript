@@ -1,4 +1,10 @@
 The newest change log is in README.md
+## 8.4.3 (2024-06-04)
+
+* (klein0r) Added response time to httpGet and httpPost result
+* (klein0r) Added trigger block to ack new values
+* (bluefox) Allowed selecting different ChatGPT models for AI code generator
+
 ## 8.4.2 (2024-05-28)
 
 * (klein0r) Fixed createState (removed redundant native attributes)

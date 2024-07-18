@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.7.0 (2024-07-18)
 * (klein0r) Escape all field inputs correctly when using single quotes
 * (klein0r) Added sandbox function to subscribe to all enum members
 * (klein0r) Added Blockly block to subscribe to all enum members
@@ -62,12 +62,6 @@ Executes Javascript, Typescript Scripts.
 * (klein0r) Ack flag on state object has priorty (in setState/setStateDelayed)
 * (klein0r) Fixed all blockly declarations (to avoid warnings in logs)
 * (klein0r) Updated Blockly Core to 10.4.3
-
-### 8.4.3 (2024-06-04)
-
-* (klein0r) Added response time to httpGet and httpPost result
-* (klein0r) Added trigger block to ack new values
-* (bluefox) Allowed selecting different ChatGPT models for AI code generator
 
 ## License
 The MIT License (MIT)
