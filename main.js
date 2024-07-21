@@ -232,7 +232,7 @@ function loadTypeScriptDeclarations() {
         }
     }
     for (const pkg of packages) {
-        let pkgTypings = resolveTypings(
+        let pkgTypings = resolveTypings(pkg,
             adapter.getAdapterScopedPackageIdentifier ? adapter.getAdapterScopedPackageIdentifier(pkg) : pkg,
             // node needs ambient typings, so we don't wrap it in declare module
             pkg !== 'node'
