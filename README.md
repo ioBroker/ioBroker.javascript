@@ -26,6 +26,10 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+* (foxriver76) load correct typings for TypeScript scripts with js-controller v6 (needs js-controller v6.0.9)
+
 ### 8.7.0 (2024-07-18)
 * (klein0r) Escape all field inputs correctly when using single quotes
 * (klein0r) Added sandbox function to subscribe to all enum members
