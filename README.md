@@ -26,8 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 8.7.1 (2024-07-22)
 * (foxriver76) load correct typings for TypeScript scripts with js-controller v6 (needs js-controller v6.0.9)
 
 ### 8.7.0 (2024-07-18)
@@ -60,12 +59,6 @@ Executes Javascript, Typescript Scripts.
 
 * (klein0r) Added Blockly dark theme
 * (klein0r) Fixed sendTo custom parameters with special chars
-
-### 8.5.0 (2024-06-07)
-
-* (klein0r) Ack flag on state object has priorty (in setState/setStateDelayed)
-* (klein0r) Fixed all blockly declarations (to avoid warnings in logs)
-* (klein0r) Updated Blockly Core to 10.4.3
 
 ## License
 The MIT License (MIT)

@@ -1,4 +1,10 @@
 The newest change log is in README.md
+## 8.5.0 (2024-06-07)
+
+* (klein0r) Ack flag on state object has priorty (in setState/setStateDelayed)
+* (klein0r) Fixed all blockly declarations (to avoid warnings in logs)
+* (klein0r) Updated Blockly Core to 10.4.3
+
 ## 8.4.3 (2024-06-04)
 
 * (klein0r) Added response time to httpGet and httpPost result

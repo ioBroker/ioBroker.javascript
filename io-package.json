@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.7.0",
+    "version": "8.7.1",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.7.1": {
+        "en": "load correct typings for TypeScript scripts with js-controller v6 (needs js-controller v6.0.9)",
+        "de": "laden korrekte Eingaben für TypeScript-Skripte mit js-controller v6 (needs js-controller v6.0.9)",
+        "ru": "погрузочно-корректные типографии для скриптов TypeScript с js-controller v6 (needs js-controller v6.0.9)",
+        "pt": "carregar digitações corretas para scripts TypeScript com js-controller v6 (needs js-controller v6.0.9)",
+        "nl": "load correct typeringen voor TypeScript scripts met js-controller v6 ( needs js-controller v6.0.9)",
+        "fr": "chargez les typages corrects pour les scripts TypeScript avec js-controller v6 (besoins js-controller v6.0.9)",
+        "it": "digitazioni corrette di carico per script TypeScript con js-controller v6 (needs js-controller v6.0.9)",
+        "es": "cargar correctos tipeos para scripts TipoScript con js-controller v6 (necesidades js-controller v6.0.9)",
+        "pl": "wczytanie poprawnych napisów skryptów TypeScript ze sterownikiem js- v6 (wymaga kontrolera js- v6.0.9)",
+        "uk": "навантаження правильного друку для сценаріїв TypeScript з js-controller v6 (needs js-controller v6.0.9)",
+        "zh-cn": "用 js 控制器 v6 装入 TypeScript 脚本的正确打字( 需要 js 控制器 v 6. 0.9)"
+      },
       "8.7.0": {
         "en": "Escape all field inputs correctly when using single quotes\nAdded sandbox function to subscribe to all enum members\nAdded Blockly block to subscribe to all enum members\nAdded sandbox functions to start/restart/stop an instance\nAdded Blockly block to start/restart/stop an instance\nAdded Blockly block to start/stop a script\nAdded Blockly result blocks for script messages\nFixed onLog / onLogUnregister return types\nfixed issue in importing additional node modules for packages which do not provide a default export (e.g. `mathjs`)\nRemoved `withStyles` from GUI",
         "de": "Entfliehen Sie alle Feldeingänge richtig, wenn Sie einzelne Zitate verwenden\nHinzugefügt Sandbox Funktion, um alle enum Mitglieder abonnieren\nHinzugefügt Blockly Block, um alle enum Mitglieder abonnieren\nHinzufügen von Sandbox-Funktionen, um eine Instanz zu starten / zu starten / zu stoppen\nBlockly Block hinzugefügt, um eine Instanz zu starten/zu starten/zu stoppen\nBlockly Block hinzugefügt, um ein Skript zu starten / zu stoppen\nHinzugefügt Blockly Ergebnis Blöcke für Skript-Nachrichten\nBehoben aufLog / onLogUnregistrieren\nfeste ausgabe beim import von zusätzlichen knotenmodulen für pakete, die keinen standardexport bereitstellen (z.b. `mathjs`)\nEntfernen `withStyles` von GUI",
@@ -117,19 +130,6 @@
         "pl": "Dodano czas odpowiedzi do wyniku httpGet i httpPost\nDodano blokadę wyzwalacza do ack nowych wartości\nDozwolone wybieranie różnych modeli ChatGPT dla generatora kodu AI",
         "uk": "Додано час відповіді на httpGet та HTTPPost\nДоданий тригерний блок для забезпечення нових значень\nДозволяє вибрати різні моделі чатGPT для генератора коду AI",
         "zh-cn": "添加到 httpGet 和 httpPoost 结果的响应时间\n添加触发块到 ock 新值\n允许为 AI 代码生成器选择不同的 ChatGPT 模型"
-      },
-      "8.4.2": {
-        "en": "Fixed createState (removed redundant native attributes)\nFixed astro custom component",
-        "de": "Fixed createState (entfernte redundante native Attribute)\nFeste astro benutzerdefinierte Komponente",
-        "ru": "Fixed createState (удаленные избыточные местные атрибуты)\nFixed astro custom component",
-        "pt": "Fixed createState (atributos nativos redundantes removed)\nComponente personalizado astro fixo",
-        "nl": "Fixed createState (verwijderde redundante native attributen)\nVaste astro aangepaste component",
-        "fr": "Correction de createState (attributs redondants supprimés)\nComposant astro personnalisé fixe",
-        "it": "CreaState fisso (attributo nativo ridondante rimosso)\nComponente personalizzato astro fisso",
-        "es": "Estado de creación fijo (atributos nativos redundantes retirados)\nComponente personalizado astro fijo",
-        "pl": "Stałe createState (usunięte nadrzędne atrybuty rodzime)\nNaprawiono komponent astro",
-        "uk": "Виправлено створенняДержавних (виданих атрибутів)\nВиправлено astro власний компонент",
-        "zh-cn": "固定创建状态( 已删除的冗余本地属性)\n固定天体自定义组件"
       }
     },
     "platform": "Javascript/Node.js",
