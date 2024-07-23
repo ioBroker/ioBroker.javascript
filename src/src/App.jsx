@@ -977,7 +977,7 @@ class App extends GenericApp {
                         onAddNew={this.onAddNew.bind(this)}
                         onEnableDisable={this.onEnableDisable.bind(this)}
                         onExport={this.onExport.bind(this)}
-                        width={this.menuSize}
+                        width={500} // TODO: https://github.com/ioBroker/ioBroker.javascript/issues/1643
                         onImport={() => this.setState({ importFile: true })}
                         onSearch={searchText => this.setState({ searchText })}
                         version={this.props.version}
