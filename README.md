@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.7.2 (2024-07-23)
 * (foxriver76) fixed subpath imports with controller v6 (needs js-controller v6.0.9)
 
 ### 8.7.1 (2024-07-22)
@@ -57,11 +57,6 @@ Executes Javascript, Typescript Scripts.
 * (foxriver76) fixed issue with additional node modules when using js-controller version 6
 * (klein0r) Added Blockly block to check if text includes another text
 * (klein0r) Fixed onFile error when file has been deleted
-
-### 8.5.1 (2024-06-10)
-
-* (klein0r) Added Blockly dark theme
-* (klein0r) Fixed sendTo custom parameters with special chars
 
 ## License
 The MIT License (MIT)

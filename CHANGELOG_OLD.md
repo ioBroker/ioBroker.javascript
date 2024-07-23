@@ -1,4 +1,9 @@
 The newest change log is in README.md
+## 8.5.1 (2024-06-10)
+
+* (klein0r) Added Blockly dark theme
+* (klein0r) Fixed sendTo custom parameters with special chars
+
 ## 8.5.0 (2024-06-07)
 
 * (klein0r) Ack flag on state object has priorty (in setState/setStateDelayed)

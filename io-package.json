@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.7.1",
+    "version": "8.7.2",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.7.2": {
+        "en": "fixed subpath imports with controller v6 (needs js-controller v6.0.9)",
+        "de": "feste subpfadimporte mit controller v6 (needs js-controller v6.0.9)",
+        "ru": "фиксированный субпатовый импорт с контроллером v6 (needs js-controller v6.0.9)",
+        "pt": "importações de subcaminho fixo com controlador v6 (needs js-controller v6.0.9)",
+        "nl": "vaste subpath invoer met controller v6 (behoefte js-controller v6.0.9)",
+        "fr": "importations fixes de sous-chemins avec contrôleur v6 (besoins js-controller v6.0.9)",
+        "it": "importazioni del sottopassaggio fisse con controllore v6 (necess. js-controller v6.0.9)",
+        "es": "importación de subpatos fijos con controlador v6 (necesidades js-controller v6.0.9)",
+        "pl": "import stałych podścieżek ze sterownikiem v6 (wymaga sterownika js- controller v6.0.9)",
+        "uk": "фіксований підпатовий імпорт з контролером v6 (без js-controller v6.0.9)",
+        "zh-cn": "带有控制器 v6( 需要 js- controller v6. 0.9) 的固定子路径导入"
+      },
       "8.7.1": {
         "en": "load correct typings for TypeScript scripts with js-controller v6 (needs js-controller v6.0.9)",
         "de": "laden korrekte Eingaben für TypeScript-Skripte mit js-controller v6 (needs js-controller v6.0.9)",
@@ -117,19 +130,6 @@
         "pl": "Flaga Ack na obiekcie państwa ma priorty (w setState / setStateDelayed)\nNaprawiono wszystkie blokowane deklaracje (aby uniknąć ostrzeżeń w dziennikach)\nAktualizacja Blockly Core do 10.4.3",
         "uk": "Ack прапор на державному об'єкті має пріоритет (в setState/setStateDelayed)\nВиправлено всі заблоковані декларації (для уникнення попередження в журналах)\nОновлено Blockly Core до 10.4.3",
         "zh-cn": "状态对象上的阿克旗具有前置性(在设置状态/设置状态中)\n固定所有块状声明(以避免日志中的警告)\n更新为10.4.3"
-      },
-      "8.4.3": {
-        "en": "Added response time to httpGet and httpPost result\nAdded trigger block to ack new values\nAllowed selecting different ChatGPT models for AI code generator",
-        "de": "Antwortzeit für das Ergebnis httpGet und httpPost\nTriggerblock zu ack neue Werte hinzugefügt\nErlaubt, verschiedene ChatGPT-Modelle für AI-Code-Generator auszuwählen",
-        "ru": "Добавлено время отклика на результат httpGet и httpPost\nДобавить триггерный блок, чтобы получить новые значения\nРазрешен выбор различных моделей ChatGPT для генератора кода ИИ",
-        "pt": "Adicionado tempo de resposta para httpGet e httpPost resultado\nAdicionado bloco de gatilho para ack novos valores\nPermite selecionar diferentes modelos ChatGPT para gerador de código AI",
-        "nl": "Toegevoegde responstijd aan httpGet en httpPost resultaat\nToegevoegd triggerblok aan ack nieuwe waarden\nToegestaan het selecteren van verschillende ChatGPT modellen voor AI code generator",
-        "fr": "Ajout du temps de réponse au résultat httpGet et httpPost\nAjout d'un bloc de déclenchement à de nouvelles valeurs\nPermet de sélectionner différents modèles ChatGPT pour générateur de code AI",
-        "it": "Tempo di risposta aggiunto al risultato httpGet e httpPost\nAggiunto blocco di trigger per ack nuovi valori\nConsente di selezionare diversi modelli ChatGPT per generatore di codice AI",
-        "es": "Tiempo de respuesta añadido al resultado httpGet y httpPost\nAñadido bloque de gatillo para ack nuevos valores\nPermitido seleccionar diferentes modelos de ChatGPT para generador de código AI",
-        "pl": "Dodano czas odpowiedzi do wyniku httpGet i httpPost\nDodano blokadę wyzwalacza do ack nowych wartości\nDozwolone wybieranie różnych modeli ChatGPT dla generatora kodu AI",
-        "uk": "Додано час відповіді на httpGet та HTTPPost\nДоданий тригерний блок для забезпечення нових значень\nДозволяє вибрати різні моделі чатGPT для генератора коду AI",
-        "zh-cn": "添加到 httpGet 和 httpPoost 结果的响应时间\n添加触发块到 ock 新值\n允许为 AI 代码生成器选择不同的 ChatGPT 模型"
       }
     },
     "platform": "Javascript/Node.js",
