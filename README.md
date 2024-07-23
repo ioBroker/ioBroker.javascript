@@ -26,6 +26,9 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (foxriver76) fixed subpath imports with controller v6 (needs js-controller v6.0.9)
+
 ### 8.7.1 (2024-07-22)
 * (foxriver76) load correct typings for TypeScript scripts with js-controller v6 (needs js-controller v6.0.9)
 
