@@ -170,7 +170,7 @@ Blockly.Procedures.flyoutCategoryNew = function (workspace) {
 };
 
 // ---------------------- patch for async functions ------------------------------
-// taken from javascript/procedures.js https://github.com/google/blockly/blob/blockly-v9.3.3/generators/javascript/procedures.js
+// taken from javascript/procedures.js https://github.com/google/blockly/blob/blockly-v10.1.3/generators/javascript/procedures.js
 Blockly.JavaScript.forBlock['procedures_defreturn'] = function (block) {
     // Define a procedure with a return value.
     const funcName = Blockly.JavaScript.nameDB_.getName(
@@ -189,23 +189,23 @@ Blockly.JavaScript.forBlock['procedures_defreturn'] = function (block) {
     if (Blockly.JavaScript.INFINITE_LOOP_TRAP) {
         loopTrap = Blockly.JavaScript.prefixLines(
             Blockly.JavaScript.injectId(Blockly.JavaScript.INFINITE_LOOP_TRAP, block),
-            Blockly.JavaScript.INDENT);
+            Blockly.JavaScript.INDENT,
+        );
     }
     const branch = Blockly.JavaScript.statementToCode(block, 'STACK');
-    let returnValue =
-        Blockly.JavaScript.valueToCode(block, 'RETURN', Blockly.JavaScript.ORDER_NONE) || '';
+    let returnValue = Blockly.JavaScript.valueToCode(block, 'RETURN', Blockly.JavaScript.ORDER_NONE) || '';
     let xfix2 = '';
     if (branch && returnValue) {
-      // After executing the function body, revisit this block for the return.
-      xfix2 = xfix1;
+        // After executing the function body, revisit this block for the return.
+        xfix2 = xfix1;
     }
     if (returnValue) {
-      returnValue = Blockly.JavaScript.INDENT + 'return ' + returnValue + ';\n';
+        returnValue = Blockly.JavaScript.INDENT + 'return ' + returnValue + ';\n';
     }
     const args = [];
     const variables = block.getVars();
     for (let i = 0; i < variables.length; i++) {
-      args[i] = Blockly.JavaScript.nameDB_.getName(variables[i], Blockly.VARIABLE_CATEGORY_NAME);
+        args[i] = Blockly.JavaScript.nameDB_.getName(variables[i], Blockly.VARIABLE_CATEGORY_NAME);
     }
     let code = 'async function ' + funcName + '(' + args.join(', ') + ') {\n' + xfix1 +
         loopTrap + branch + xfix2 + returnValue + '}';
@@ -224,13 +224,11 @@ Blockly.JavaScript.forBlock['procedures_callreturn'] = function (block) {
     const args = [];
     const variables = block.getVars();
     for (let i = 0; i < variables.length; i++) {
-      args[i] = Blockly.JavaScript.valueToCode(block, 'ARG' + i, Blockly.JavaScript.ORDER_NONE) ||
-          'null';
+        args[i] = Blockly.JavaScript.valueToCode(block, 'ARG' + i, Blockly.JavaScript.ORDER_NONE) || 'null';
     }
     const code = 'await ' + funcName + '(' + args.join(', ') + ')';
     return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
-  };
-
+};
 
 // ---------------------- custom function with return ------------------------------
 
