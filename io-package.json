@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.7.2",
+    "version": "8.7.3",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.7.3": {
+        "en": "Fixed script deletion (icon was missing)\nFixed some translations and Blockly definitions",
+        "de": "Fixed Skript Löschung (Icon wurde vermisst)\nEinige Übersetzungen und Blockly-Definitionen behoben",
+        "ru": "Исправленное удаление скрипта (икон отсутствовал)\nИсправлены некоторые переводы и блочные определения",
+        "pt": "Eliminação de script fixo (o ícone estava faltando)\nCorrigido algumas traduções e definições em bloco",
+        "nl": "Vaste script verwijderen (icon ontbreekt)\nVaste sommige vertalingen en Blockly definities",
+        "fr": "Suppression du script fixe (icône manquante)\nCorrection de certaines traductions et définitions Blockly",
+        "it": "Cancellazione dello script fisso (icon mancava)\nRisolto alcune traduzioni e definizioni Blockly",
+        "es": "Eliminación de scripts fijos (el icon desapareció)\nArreglado algunas traducciones y definiciones de Bloqueo",
+        "pl": "Usuwanie skryptu (brak ikony)\nNaprawiono niektóre tłumaczenia i definicje Blockly",
+        "uk": "Виправлено видалення сценаріїв (відсутній колір)\nВиправлено деякі переклади та типові визначення",
+        "zh-cn": "固定脚本删除( icon 丢失)\n修改了一些翻译和块状定义"
+      },
       "8.7.2": {
         "en": "fixed subpath imports with controller v6 (needs js-controller v6.0.9)",
         "de": "feste subpfadimporte mit controller v6 (needs js-controller v6.0.9)",
@@ -117,19 +130,6 @@
         "pl": "Dodano Blockly dark theme\nPoprawiono wysyłanie Do własnych parametrów ze specjalnymi znakami",
         "uk": "Доданий Blockly темна тема\nВиправлена відправка На замовлення параметри з особливими chars",
         "zh-cn": "添加块状黑暗主题\n固定发送 向带有特殊字符的自定义参数"
-      },
-      "8.5.0": {
-        "en": "Ack flag on state object has priorty (in setState/setStateDelayed)\nFixed all blockly declarations (to avoid warnings in logs)\nUpdated Blockly Core to 10.4.3",
-        "de": "Ack-Flag auf State-Objekt hat Priorität (in setState/setStateDelayed)\nAlle sperrigen Erklärungen behoben (um Warnungen in Protokollen zu vermeiden)\nAktualisierter Blockly Core auf 10.4.3",
-        "ru": "Флаг Ack на государственном объекте имеет приоритет (в setState/setStateDelayed)\nИсправлены все блокированные заявления (чтобы избежать предупреждений в журналах)\nОбновление Blockly Core до 10.4.3",
-        "pt": "Ack flag on state object has priorty (em setState/setStateDelayed)\nCorrigido todas as declarações de bloqueio (para evitar avisos em logs)\nNúcleo bloqueado atualizado para 10.4.3",
-        "nl": "Ack flag on state object has priority (in setState/setStateDelayed)\nAlle blokverklaringen zijn vastgesteld (om waarschuwingen in logs te voorkomen)\nBijgewerkt Blockly Core naar 10.4.3",
-        "fr": "Ack flag sur l'objet de l'état a priorité (dans setState/setStateDelayed)\nCorrection de toutes les déclarations de blocage (pour éviter les avertissements dans les journaux)\nMise à jour du noyau bloc à 10.4.3",
-        "it": "La bandiera di Ack su oggetto di stato ha prioritÃ (in setState/setStateDelayed)\nRisolto tutte le dichiarazioni bloccate (per evitare avvisi nei registri)\nAggiornato Blockly Core a 10.4.3",
-        "es": "La bandera de la cubierta en el objeto estatal tiene prioridad (en el estado establecido/setStateDelayed)\nArregla todas las declaraciones bloqueadas (para evitar advertencias en registros)\nActualizado Bloqueo núcleo a 10.4.3",
-        "pl": "Flaga Ack na obiekcie państwa ma priorty (w setState / setStateDelayed)\nNaprawiono wszystkie blokowane deklaracje (aby uniknąć ostrzeżeń w dziennikach)\nAktualizacja Blockly Core do 10.4.3",
-        "uk": "Ack прапор на державному об'єкті має пріоритет (в setState/setStateDelayed)\nВиправлено всі заблоковані декларації (для уникнення попередження в журналах)\nОновлено Blockly Core до 10.4.3",
-        "zh-cn": "状态对象上的阿克旗具有前置性(在设置状态/设置状态中)\n固定所有块状声明(以避免日志中的警告)\n更新为10.4.3"
       }
     },
     "platform": "Javascript/Node.js",

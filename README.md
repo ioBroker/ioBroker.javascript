@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.7.3 (2024-07-25)
 * (@klein0r) Fixed script deletion (icon was missing)
 * (@klein0r) Fixed some translations and Blockly definitions
 
@@ -55,12 +55,6 @@ Executes Javascript, Typescript Scripts.
 * (klein0r) Escape single quotes in all object Blockly blocks
 * (klein0r) Grouped Blockly blocks / changed order of blocks
 * (klein0r) Allow multi line comments
-
-### 8.5.2 (2024-06-11)
-
-* (foxriver76) fixed issue with additional node modules when using js-controller version 6
-* (klein0r) Added Blockly block to check if text includes another text
-* (klein0r) Fixed onFile error when file has been deleted
 
 ## License
 The MIT License (MIT)

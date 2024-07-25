@@ -1,5 +1,5 @@
 /**
- * @mui/material v5.16.4
+ * @mui/material v5.16.5
  *
  * @license MIT
  * This source code is licensed under the MIT license found in the

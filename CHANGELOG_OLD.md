@@ -1,4 +1,10 @@
 The newest change log is in README.md
+## 8.5.2 (2024-06-11)
+
+* (foxriver76) fixed issue with additional node modules when using js-controller version 6
+* (klein0r) Added Blockly block to check if text includes another text
+* (klein0r) Fixed onFile error when file has been deleted
+
 ## 8.5.1 (2024-06-10)
 
 * (klein0r) Added Blockly dark theme
