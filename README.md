@@ -28,6 +28,7 @@ Executes Javascript, Typescript Scripts.
 -->
 ### **WORK IN PROGRESS**
 * (@klein0r) Fixed right aligned script names when using multiple instances
+* (foxriver76) added fallback for all require calls in scripts
 
 ### 8.7.4 (2024-07-27)
 * (foxriver76) added fallback to require the adapters `request` module if no own installed
