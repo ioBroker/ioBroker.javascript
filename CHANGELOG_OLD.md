@@ -1,4 +1,16 @@
 The newest change log is in README.md
+## 8.7.0 (2024-07-18)
+* (klein0r) Escape all field inputs correctly when using single quotes
+* (klein0r) Added sandbox function to subscribe to all enum members
+* (klein0r) Added Blockly block to subscribe to all enum members
+* (klein0r) Added sandbox functions to start/restart/stop an instance
+* (klein0r) Added Blockly block to start/restart/stop an instance
+* (klein0r) Added Blockly block to start/stop a script
+* (klein0r) Added Blockly result blocks for script messages
+* (klein0r) Fixed onLog / onLogUnregister return types
+* (foxriver76) fixed issue in importing additional node modules for packages which do not provide a default export (e.g. `mathjs`)
+* (bluefox) Removed `withStyles` from GUI
+
 ## 8.6.0 (2024-06-14)
 
 * (foxriver76) fixed issue with additional node modules which are installed from GitHub (controller v6)

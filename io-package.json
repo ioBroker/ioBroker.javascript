@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.7.4",
+    "version": "8.7.5",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.7.5": {
+        "en": "Fixed right aligned script names when using multiple instances\nadded fallback for all require calls in scripts",
+        "de": "Behobene recht ausgerichtete Skriptnamen bei Verwendung mehrerer Instanzen\nadd fallback für alle erfordern anrufe in skripten",
+        "ru": "Исправленные правые выровненные имена сценариев при использовании нескольких экземпляров\nдобавочный откат для всех требует звонков в сценариях",
+        "pt": "Corrigido nomes de script alinhados direito ao usar várias instâncias\nadicionado fallback para todos exigem chamadas em scripts",
+        "nl": "Fixed rechts uitgelijnde scriptnamen bij het gebruik van meerdere instanties\ntoegevoegde fallback voor alle vereiste oproepen in scripts",
+        "fr": "Correction des noms de script alignés à droite lors de l'utilisation de plusieurs instances\nrechute ajoutée pour tous les appels requis dans les scripts",
+        "it": "I nomi di script allineati giusti corretti quando si utilizzano più istanze\naggiunto fallback per tutte le chiamate in script",
+        "es": "Nombres de script ajustados correctamente alineados al usar múltiples instancias\nañadida caída para todos requieren llamadas en scripts",
+        "pl": "Naprawiono nazwy skryptów ustawionych w prawo przy użyciu wielu instancji\ndodany odzew dla wszystkich wymagających wywołań w skryptach",
+        "uk": "Виправлено правильні вирівняні імена скриптів при використанні декількох екземплярів\nдодано зворотний зв'язок для всіх потреб дзвінків в скриптах",
+        "zh-cn": "使用多个实例时, 固定的右对齐脚本名称\n为所有人添加后退需要脚本调用"
+      },
       "8.7.4": {
         "en": "added fallback to require the adapters `request` module if no own installed",
         "de": "add fallback, um die adapter `request` modul zu benötigen, wenn keine eigene installiert",
@@ -117,19 +130,6 @@
         "pl": "(foxriver76) stałe wydanie z dodatkowymi modułami węzłów, które są zainstalowane z GitHub (sterownik v6)\n(klein0r) Dodano nowy Blockly block, aby zapisać odpowiedź http do pliku tymczasowego\n(klein0r) Escape pojedyncze cytaty we wszystkich obiektach Blockly bloki\n(klein0r) Blokady grupowe / zmiana kolejności bloków\n(klein0r) Zezwalaj na komentarze wielu linii",
         "uk": "(foxriver76) виправлено проблему з додатковими модулями вузлів, які встановлюються з GitHub (контролер v6)\n(klein0r) Додано новий блок блоку, щоб зберегти HTTP відповідь в часовий файл\n(klein0r) Втеча одиночних лапок у всіх об'єктах Блокноти блоків\n(klein0r) Об'єднані блокноти / змінено порядок блоків\n(klein0r) Дозволити багатомовні коментарі",
         "zh-cn": "(foxriver76) 由 GitHub (控制器 v6) 安装的附加节点模块的固定问题\n(klein0r) 添加新的块块以保存 http 响应到临时文件中\n(klein0r)所有对象块中的逃逸单词\n(klein0r) 分组区块/ 更改区块的顺序\n(鸣笛0r) 允许多行注释"
-      },
-      "8.5.2": {
-        "en": "fixed issue with additional node modules when using js-controller version 6\nAdded Blockly block to check if text includes another text\nFixed onFile error when file has been deleted",
-        "de": "festes problem mit zusätzlichen knotenmodulen bei verwendung von js-controller version 6\nBlockiert hinzugefügt, um zu überprüfen, ob Text einen anderen Text enthält\nFehler behoben, wenn die Datei gelöscht wurde",
-        "ru": "фиксированная проблема с дополнительными модулями узла при использовании js-controller версии 6\nДобавленный блок для проверки, включает ли текст другой текст\nИсправлена ошибка при удалении файла",
-        "pt": "problema fixo com módulos de nó adicionais ao usar js-controller versão 6\nAdicionado bloco Blockly para verificar se o texto inclui outro texto\nCorrigido erro noFile quando o arquivo foi excluído",
-        "nl": "vast probleem met extra knooppuntmodules bij gebruik van js-controller versie 6\nToegevoegd Blokkeren om te controleren of tekst een andere tekst bevat\nOnFile-fout hersteld wanneer bestand is verwijderd",
-        "fr": "problème corrigé avec modules de nœuds supplémentaires lors de l'utilisation de la version 6 de js-controller\nAjout d'un bloc Blockly pour vérifier si le texte inclut un autre texte\nCorrection d'une erreur surFile lorsque le fichier a été supprimé",
-        "it": "problema fisso con moduli nodi aggiuntivi quando si utilizza js-controller versione 6\nAggiunto Blocco blocco per controllare se il testo include un altro testo\nCorretto errore sulFile quando il file è stato cancellato",
-        "es": "edición fija con módulos de nodos adicionales al utilizar js-controller versión 6\nBloqueo añadido para comprobar si el texto incluye otro texto\nError fijo enFile cuando el archivo ha sido borrado",
-        "pl": "stały problem z dodatkowymi modułami węzłów przy użyciu sterownika js- version 6\nDodano Blockly block, aby sprawdzić, czy tekst zawiera inny tekst\nNaprawiono błąd onFile po usunięciu pliku",
-        "uk": "виправлено проблему з додатковими модулями вузлів при використанні js-controller версії 6\nДодано блокнот для перевірки, якщо текст містить інший текст\nВиправлено помилку при видаленні файлу",
-        "zh-cn": "使用 js 控制器 6 版本时带有额外节点模块的固定问题\n添加块块以检查文本是否包含其它文本\n删除文件时的 File 错误"
       }
     },
     "platform": "Javascript/Node.js",

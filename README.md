@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.7.5 (2024-07-27)
 * (@klein0r) Fixed right aligned script names when using multiple instances
 * (foxriver76) added fallback for all require calls in scripts
 
@@ -42,18 +42,6 @@ Executes Javascript, Typescript Scripts.
 
 ### 8.7.1 (2024-07-22)
 * (foxriver76) load correct typings for TypeScript scripts with js-controller v6 (needs js-controller v6.0.9)
-
-### 8.7.0 (2024-07-18)
-* (klein0r) Escape all field inputs correctly when using single quotes
-* (klein0r) Added sandbox function to subscribe to all enum members
-* (klein0r) Added Blockly block to subscribe to all enum members
-* (klein0r) Added sandbox functions to start/restart/stop an instance
-* (klein0r) Added Blockly block to start/restart/stop an instance
-* (klein0r) Added Blockly block to start/stop a script
-* (klein0r) Added Blockly result blocks for script messages
-* (klein0r) Fixed onLog / onLogUnregister return types
-* (foxriver76) fixed issue in importing additional node modules for packages which do not provide a default export (e.g. `mathjs`)
-* (bluefox) Removed `withStyles` from GUI
 
 ## License
 The MIT License (MIT)
