@@ -28,7 +28,8 @@ Executes Javascript, Typescript Scripts.
 -->
 
 ### **WORK IN PROGRESS**
-* (foxriver76) added fallback to require the adapters `request` module if no own installed
+* (@foxriver76) added fallback to require the adapters `request` module if no own installed
+* (@klein0r) Fixed right aligned script names when using multiple instances
 
 ### 8.7.3 (2024-07-25)
 * (@klein0r) Fixed script deletion (icon was missing)

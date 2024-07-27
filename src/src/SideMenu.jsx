@@ -928,8 +928,8 @@ class SideDrawer extends React.Component {
 
         if (!this.state.isAllZeroInstances && item.type !== 'folder') {
             title = [
-                <span key="instance" title={I18n.t('Instance')} style={styles.instances}>[{item.instance}] </span>,
                 <span key="title">{title}</span>,
+                <span key="instance" title={I18n.t('Instance')} style={styles.instances}>[{item.instance}]</span>,
             ];
         }
         const reorder = this.state.reorder && !this.props.debugMode;
