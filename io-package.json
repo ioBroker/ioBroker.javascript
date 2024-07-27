@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.7.3",
+    "version": "8.7.4",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.7.4": {
+        "en": "added fallback to require the adapters `request` module if no own installed",
+        "de": "add fallback, um die adapter `request` modul zu benötigen, wenn keine eigene installiert",
+        "ru": "дополнительный возврат, требующий модуля \"запрос\" адаптеров, если нет собственной установки",
+        "pt": "adicionado fallback para exigir os adaptadores `request` módulo se nenhum próprio instalado",
+        "nl": "toegevoegd fallback om de adapters te vereisen . . . . . . module als geen eigen geïnstalleerd",
+        "fr": "rechute ajoutée pour exiger le module `request` des adaptateurs si aucun propre installé",
+        "it": "aggiunto fallback per richiedere gli adattatori `request` modulo se non installato",
+        "es": "añadido retroceso para exigir el módulo de `requisición' de los adaptadores si no está instalado",
+        "pl": "dodany system awaryjny wymagający modułu 'request' adapterów, jeśli nie jest zainstalowany",
+        "uk": "додано зворотний зв'язок для потреб адаптерів `request` модуль, якщо не встановлено",
+        "zh-cn": "如果没有安装适配器 \" 请求 \" 模块,则需添加回落"
+      },
       "8.7.3": {
         "en": "Fixed script deletion (icon was missing)\nFixed some translations and Blockly definitions",
         "de": "Fixed Skript Löschung (Icon wurde vermisst)\nEinige Übersetzungen und Blockly-Definitionen behoben",
@@ -117,19 +130,6 @@
         "pl": "stały problem z dodatkowymi modułami węzłów przy użyciu sterownika js- version 6\nDodano Blockly block, aby sprawdzić, czy tekst zawiera inny tekst\nNaprawiono błąd onFile po usunięciu pliku",
         "uk": "виправлено проблему з додатковими модулями вузлів при використанні js-controller версії 6\nДодано блокнот для перевірки, якщо текст містить інший текст\nВиправлено помилку при видаленні файлу",
         "zh-cn": "使用 js 控制器 6 版本时带有额外节点模块的固定问题\n添加块块以检查文本是否包含其它文本\n删除文件时的 File 错误"
-      },
-      "8.5.1": {
-        "en": "Added Blockly dark theme\nFixed sendTo custom parameters with special chars",
-        "de": "Hinzugefügt Blockiert dunkles Thema\nFester Versand Zu benutzerdefinierten Parametern mit speziellen Chars",
-        "ru": "Добавлена темная тема\nFixed send К пользовательским параметрам со специальными шарами",
-        "pt": "Adicionado Blockly tema escuro\nEnviar fixo Para parâmetros personalizados com chars especiais",
-        "nl": "Blockly dark thema toegevoegd\nVaste verzending Naar aangepaste parameters met speciale tekens",
-        "fr": "Ajouté thème Blockly sombre\nEnvoi fixe Aux paramètres personnalisés avec des caractères spéciaux",
-        "it": "Aggiunto Blockly dark tema\nInviato fisso A parametri personalizzati con caratteri speciali",
-        "es": "Añadido Bloqueo tema oscuro\nEnvío fijo Para parámetros personalizados con charcos especiales",
-        "pl": "Dodano Blockly dark theme\nPoprawiono wysyłanie Do własnych parametrów ze specjalnymi znakami",
-        "uk": "Доданий Blockly темна тема\nВиправлена відправка На замовлення параметри з особливими chars",
-        "zh-cn": "添加块状黑暗主题\n固定发送 向带有特殊字符的自定义参数"
       }
     },
     "platform": "Javascript/Node.js",

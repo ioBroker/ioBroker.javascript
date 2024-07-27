@@ -26,10 +26,11 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-
 ### **WORK IN PROGRESS**
-* (@foxriver76) added fallback to require the adapters `request` module if no own installed
 * (@klein0r) Fixed right aligned script names when using multiple instances
+
+### 8.7.4 (2024-07-27)
+* (foxriver76) added fallback to require the adapters `request` module if no own installed
 
 ### 8.7.3 (2024-07-25)
 * (@klein0r) Fixed script deletion (icon was missing)
@@ -52,14 +53,6 @@ Executes Javascript, Typescript Scripts.
 * (klein0r) Fixed onLog / onLogUnregister return types
 * (foxriver76) fixed issue in importing additional node modules for packages which do not provide a default export (e.g. `mathjs`)
 * (bluefox) Removed `withStyles` from GUI
-
-### 8.6.0 (2024-06-14)
-
-* (foxriver76) fixed issue with additional node modules which are installed from GitHub (controller v6)
-* (klein0r) Added new Blockly block to save http response into temp file
-* (klein0r) Escape single quotes in all object Blockly blocks
-* (klein0r) Grouped Blockly blocks / changed order of blocks
-* (klein0r) Allow multi line comments
 
 ## License
 The MIT License (MIT)
