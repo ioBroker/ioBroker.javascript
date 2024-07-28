@@ -26,6 +26,9 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (foxriver76) fix error with subpath imports in scripts
+
 ### 8.7.5 (2024-07-27)
 * (@klein0r) Fixed right aligned script names when using multiple instances
 * (foxriver76) added fallback for all require calls in scripts
