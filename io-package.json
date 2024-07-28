@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.7.5",
+    "version": "8.7.6",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.7.6": {
+        "en": "fix error with subpath imports in scripts",
+        "de": "fehler mit subpfad-importen in skripten beheben",
+        "ru": "исправление ошибки с импортом субпатов в сценариях",
+        "pt": "corrigir erro com subpath importações em scripts",
+        "nl": "fout oplossen met subpath import in scripts",
+        "fr": "corriger l'erreur avec les importations de sous-chemin dans les scripts",
+        "it": "correzione di errore con le importazioni subpath in script",
+        "es": "corregir error con las importaciones de subpatos en scripts",
+        "pl": "naprawić błąd przy importowaniu podścieżki w skryptach",
+        "uk": "виправлено помилку при імпорті підпат в скриптах",
+        "zh-cn": "用脚本中的子路径导入来修正错误"
+      },
       "8.7.5": {
         "en": "Fixed right aligned script names when using multiple instances\nadded fallback for all require calls in scripts",
         "de": "Behobene recht ausgerichtete Skriptnamen bei Verwendung mehrerer Instanzen\nadd fallback für alle erfordern anrufe in skripten",
@@ -117,19 +130,6 @@
         "pl": "Usunąć wszystkie wejścia pola poprawnie przy użyciu pojedynczych cytatów\nDodano funkcję piaskownicy do subskrypcji wszystkich członków enum\nDodano Blockly bloku do subskrypcji wszystkich członków enum\nDodano funkcje piaskownicy do uruchomienia / ponownego uruchomienia / zatrzymania instancji\nDodano Blockly bloku, aby uruchomić / ponownie uruchomić / zatrzymać instancję\nDodano Blockly block, aby uruchomić / zatrzymać skrypt\nDodano blokowane bloki wyników dla wiadomości skryptowych\nNaprawiono typy zwrotów onLog / onLogUnregister\nstały problem przy przywozie dodatkowych modułów węzłów dla pakietów, które nie zapewniają domyślnego eksportu (np. \"mathjs\")\nUsunięty 'ze stylami' z GUI",
         "uk": "Втеча всіх вводів поля правильно при використанні однієї лапки\nДодана функція пісочниці для підписки на всі члени\nДодано блокнот для підписки на всі члени\nДодано функції пісочниці для запуску/restart/stop екземпляр\nДодано блокнот для запуску/restart/stop екземпляр\nДодано блокнот блокувати для запуску / запуску скрипту\nДодано блокноти блоки результатів для повідомлень скриптів\nВиправлено onLog / onLogUnregister типи повернення\nвиправлено проблему в імпорті додаткових модулів вузлів для пакетів, які не забезпечують експорт за замовчуванням (наприклад, `matjs`)\nВидалення `withStyle` від GUI",
         "zh-cn": "在使用单引号时正确避开所有字段输入\n添加沙盒函数以订阅所有 enum 成员\n添加 Blockly 块以订阅所有 enum 成员\n添加沙盒函数启动/ 重新启动/ 停止实例\n添加块块开始/ 重新开始/ 停止实例\n添加块块开始/停止脚本\n为脚本消息添加块结果块\n固定在Log/ 在LogUnregister 返回类型\n为不提供默认导出(例如`mathjs')的软件包导入额外节点模块时的固定问题\n从图形用户界面中删除了“ 使用样式”"
-      },
-      "8.6.0": {
-        "en": "(foxriver76) fixed issue with additional node modules which are installed from GitHub (controller v6)\n(klein0r) Added new Blockly block to save http response into temp file\n(klein0r) Escape single quotes in all object Blockly blocks\n(klein0r) Grouped Blockly blocks / changed order of blocks\n(klein0r) Allow multi line comments",
-        "de": "(foxriver76) feste Ausgabe mit zusätzlichen Knotenmodulen, die von GitHub (Controller v6) installiert sind\n(klein0r) Neues Blockly-Block hinzugefügt, um die http-Antwort in temp-Datei zu speichern\n(klein0r) Entkommen einzelne Zitate in allen Objekten Blockly Blöcke\n(klein0r) Gruppenblocksteine / geänderte Reihenfolge der Blöcke\n(klein0r) Lassen Sie mehr Zeilen Kommentare",
-        "ru": "(foxriver76) фиксированный выпуск с дополнительными модулями узлов, которые установлены из GitHub (контроллер v6)\n(klein0r) Добавлен новый блок Blockly, чтобы сохранить ответ http в файле temp\n(klein0r) Одиночные цитаты из Escape во всех блоках\n(klein0r) Блокированные блоки / измененный порядок блоков\n(клеин0р) Размножение комментариев",
-        "pt": "(foxriver76) problema fixo com módulos de nó adicionais que são instalados a partir de GitHub (controller v6)\n(klein0r) Adicionado novo bloco Blockly para salvar resposta http em arquivo temp\n(klein0r) Fuja de citações únicas em todos os blocos de objeto\n(klein0r) Grouped Blockly blocos / ordem alterada de blocos\n(klein0r) Permitir comentários multi linha",
-        "nl": "(foxriver76) vast probleem met extra knooppuntmodules die zijn geïnstalleerd vanuit GitHub (controller v6)\n(klein0r) Nieuw blok toegevoegd om http-antwoord op te slaan in tijdelijk bestand\n(klein0r) Ontsnap enkele citaten in alle objecten Blokkerig blokken\n(klein0r) Gegroepeerd Blokkerig blokken / veranderde volgorde van blokken\n(klein0r) Meerregelige opmerkingen toestaan",
-        "fr": "(foxriver76) problème fixe avec des modules de nœuds supplémentaires qui sont installés à partir de GitHub (contrôleur v6)\n(klein0r) Ajout d'un nouveau bloc Blockly pour enregistrer la réponse http dans le fichier temporaire\n(klein0r) Échapper aux guillemets uniques dans tous les blocs d'objets\n(klein0r) Groupe de blocs bloc / changement d'ordre de blocs\n(klein0r) Permettre des commentaires multilignes",
-        "it": "(foxriver76) problema fisso con moduli nodo aggiuntivi che sono installati da GitHub (controller v6)\n(klein0r) Aggiunto nuovo blocco Blockly per salvare risposta http in file temp\n(klein0r) Scappare singole citazioni in tutti gli oggetti Bloccatamente blocchi\n(klein0r) Blocchi Blockly raggruppati / ordine modificato di blocchi\n(Klein0r) Consentire commenti multilinea",
-        "es": "(foxriver76) edición fija con módulos de nodo adicionales que se instalan desde GitHub (controller v6)\n(klein0r) Añadido nuevo bloque bloque para guardar la respuesta http en el archivo temporal\n(klein0r) Escapar citas individuales en todos los objetos Bloques\n(klein0r) Grupo bloques bloqueados / cambio de orden de bloques\n(klein0r) Permitir comentarios de varias líneas",
-        "pl": "(foxriver76) stałe wydanie z dodatkowymi modułami węzłów, które są zainstalowane z GitHub (sterownik v6)\n(klein0r) Dodano nowy Blockly block, aby zapisać odpowiedź http do pliku tymczasowego\n(klein0r) Escape pojedyncze cytaty we wszystkich obiektach Blockly bloki\n(klein0r) Blokady grupowe / zmiana kolejności bloków\n(klein0r) Zezwalaj na komentarze wielu linii",
-        "uk": "(foxriver76) виправлено проблему з додатковими модулями вузлів, які встановлюються з GitHub (контролер v6)\n(klein0r) Додано новий блок блоку, щоб зберегти HTTP відповідь в часовий файл\n(klein0r) Втеча одиночних лапок у всіх об'єктах Блокноти блоків\n(klein0r) Об'єднані блокноти / змінено порядок блоків\n(klein0r) Дозволити багатомовні коментарі",
-        "zh-cn": "(foxriver76) 由 GitHub (控制器 v6) 安装的附加节点模块的固定问题\n(klein0r) 添加新的块块以保存 http 响应到临时文件中\n(klein0r)所有对象块中的逃逸单词\n(klein0r) 分组区块/ 更改区块的顺序\n(鸣笛0r) 允许多行注释"
       }
     },
     "platform": "Javascript/Node.js",

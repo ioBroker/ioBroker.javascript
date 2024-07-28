@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.7.6 (2024-07-28)
 * (foxriver76) fix error with subpath imports in scripts
 
 ### 8.7.5 (2024-07-27)
@@ -42,9 +42,6 @@ Executes Javascript, Typescript Scripts.
 
 ### 8.7.2 (2024-07-23)
 * (foxriver76) fixed subpath imports with controller v6 (needs js-controller v6.0.9)
-
-### 8.7.1 (2024-07-22)
-* (foxriver76) load correct typings for TypeScript scripts with js-controller v6 (needs js-controller v6.0.9)
 
 ## License
 The MIT License (MIT)
