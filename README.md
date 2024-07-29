@@ -26,6 +26,9 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (@klein0r) Fixed import scripts dialog
+
 ### 8.7.6 (2024-07-28)
 * (foxriver76) fix error with subpath imports in scripts
 

@@ -158,9 +158,10 @@ class DialogImportFile extends React.Component {
             fullWidth
             open={!0}
             aria-labelledby="import-dialog-title"
+            PaperProps={{ style: { minHeight: '90%', maxHeight: '90%' } }}
         >
             <DialogTitle id="import-dialog-title">{I18n.t('Import scripts')}</DialogTitle>
-            <DialogContent className={classes.fullHeight}>
+            <DialogContent>
                 <style>
                     {`
 .dropzoneRejected {
