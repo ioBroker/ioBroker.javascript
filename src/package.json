@@ -11,7 +11,7 @@
         "@iobroker/type-detector": "^3.0.5",
         "@mui/icons-material": "^5.16.5",
         "@devbookhq/splitter": "^1.4.2",
-        "@mui/material": "^5.16.5",
+        "@mui/material": "^5.16.6",
         "@mui/x-date-pickers": "^7.11.0",
         "@sentry/browser": "^8.20.0",
         "craco-module-federation": "^1.1.0",
