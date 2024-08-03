@@ -175,8 +175,6 @@ describe('Request', () => {
         });
     });
 
-
-
     after(() => {
         server.close();
     });
