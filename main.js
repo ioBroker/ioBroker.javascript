@@ -1840,7 +1840,9 @@ async function installLibraries() {
         adapter.config.libraries = '';
     }
 
-    const libraries = adapter.config.libraries.split(/[,;\s]+/);
+    const libraries = adapter.config.libraries.split(/[,;\s]+/).filter(d => d.length > 0);
+
+    adapter.log.debug(`Custom libraries in config: "${adapter.config.libraries}": ${JSON.stringify(libraries)}`);
 
     let installedNodeModules = [];
     const keepModules = [];
@@ -1868,9 +1870,9 @@ async function installLibraries() {
         if (URL.canParse(depName)) {
             moduleName = await requestModuleNameByUrl(depName);
 
-            adapter.log.debug(`Found custom dependency in config: "${moduleName}@${version}" (from ${depName})`);
+            adapter.log.debug(`Found custom library in config: "${moduleName}@${version}" (from ${depName})`);
         } else {
-            adapter.log.debug(`Found custom dependency in config: "${moduleName}@${version}"`);
+            adapter.log.debug(`Found custom library in config: "${moduleName}@${version}"`);
         }
 
         keepModules.push(moduleName);
@@ -1880,7 +1882,7 @@ async function installLibraries() {
             try {
                 const result = await adapter.installNodeModule(depName, { version });
                 if (result.success) {
-                    adapter.log.debug(`Installed custom dependency: "${moduleName}@${version}"`);
+                    adapter.log.debug(`Installed custom library: "${moduleName}@${version}"`);
 
                     const importedModule = await adapter.importNodeModule(moduleName);
                     context.mods[moduleName] = importedModule.default ?? importedModule;
@@ -1892,7 +1894,7 @@ async function installLibraries() {
             }
         } else if (!nodeFS.existsSync(`${__dirname}/node_modules/${depName}/package.json`)) {
             // js-controller < 6.x
-            adapter.log.info(`Installing custom dependency (legacy mode): "${lib}"`);
+            adapter.log.info(`Installing custom library (legacy mode): "${lib}"`);
 
             try {
                 await installNpm(lib);
