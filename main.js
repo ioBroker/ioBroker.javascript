@@ -1836,8 +1836,8 @@ async function installNpm(npmLib) {
 }
 
 async function installLibraries() {
-    if (!adapter.config?.libraries) {
-        return;
+    if (typeof adapter.config?.libraries !== 'string') {
+        adapter.config.libraries = '';
     }
 
     const libraries = adapter.config.libraries.split(/[,;\s]+/);
