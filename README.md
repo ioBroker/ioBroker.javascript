@@ -26,6 +26,9 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (@klein0r) Fixed sendTo block with empty name list
+
 ### 8.7.7 (2024-08-04)
 * (@klein0r) Fixed import scripts dialog
 * (@klein0r) Allow to remove all custom packages (empty list)
