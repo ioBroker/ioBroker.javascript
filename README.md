@@ -27,6 +27,7 @@ Executes Javascript, Typescript Scripts.
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+* (@klein0r) Added option to register notifications via scripts
 * (@klein0r) Fixed sendTo block with empty name list
 
 ### 8.7.7 (2024-08-04)
