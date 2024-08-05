@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.8.0 (2024-08-05)
 * (@klein0r) Added option to register notifications via scripts
 * (@klein0r) Fixed sendTo block with empty name list
 
@@ -43,10 +43,6 @@ Executes Javascript, Typescript Scripts.
 
 ### 8.7.4 (2024-07-27)
 * (foxriver76) added fallback to require the adapters `request` module if no own installed
-
-### 8.7.3 (2024-07-25)
-* (@klein0r) Fixed script deletion (icon was missing)
-* (@klein0r) Fixed some translations and Blockly definitions
 
 ## License
 The MIT License (MIT)

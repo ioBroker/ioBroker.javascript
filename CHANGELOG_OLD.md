@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 8.7.3 (2024-07-25)
+* (@klein0r) Fixed script deletion (icon was missing)
+* (@klein0r) Fixed some translations and Blockly definitions
+
 ## 8.7.2 (2024-07-23)
 * (foxriver76) fixed subpath imports with controller v6 (needs js-controller v6.0.9)
 
