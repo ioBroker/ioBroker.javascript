@@ -1658,7 +1658,7 @@ declare global {
 	 * @param msg Message text
 	 */
 	function registerNotification(msg: string): void;
-	function registerNotification(msg: string, isAlert: true): void;
+	function registerNotification(msg: string, isAlert: boolean): void;
 
 	function setTimeout(callback: (args: void) => void, ms?: number): NodeJS.Timeout;
 	function clearTimeout(timeoutId: NodeJS.Timeout | string | number | undefined): void;
