@@ -26,13 +26,16 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (bluefox) packages were updated
+
 ### 8.8.0 (2024-08-05)
 * (@klein0r) Added option to register notifications via scripts
-* (@klein0r) Fixed sendTo block with empty name list
+* (@klein0r) Fixed sendTo block with an empty name list
 
 ### 8.7.7 (2024-08-04)
 * (@klein0r) Fixed import scripts dialog
-* (@klein0r) Allow to remove all custom packages (empty list)
+* (@klein0r) Allowed removing all custom packages (empty list)
 
 ### 8.7.6 (2024-07-28)
 * (foxriver76) fix error with subpath imports in scripts
