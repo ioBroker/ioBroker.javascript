@@ -7,7 +7,7 @@ The newest change log is in README.md
 * (foxriver76) fixed subpath imports with controller v6 (needs js-controller v6.0.9)
 
 ## 8.7.1 (2024-07-22)
-* (foxriver76) load correct typings for TypeScript scripts with js-controller v6 (needs js-controller v6.0.9)
+* (foxriver76) load the correct typings for TypeScript scripts with js-controller v6 (needs js-controller v6.0.9)
 
 ## 8.7.0 (2024-07-18)
 * (klein0r) Escape all field inputs correctly when using single quotes
@@ -24,7 +24,7 @@ The newest change log is in README.md
 ## 8.6.0 (2024-06-14)
 
 * (foxriver76) fixed issue with additional node modules which are installed from GitHub (controller v6)
-* (klein0r) Added new Blockly block to save http response into temp file
+* (klein0r) Added new Blockly block to save http response into a temp file
 * (klein0r) Escape single quotes in all object Blockly blocks
 * (klein0r) Grouped Blockly blocks / changed order of blocks
 * (klein0r) Allow multi line comments
@@ -32,7 +32,7 @@ The newest change log is in README.md
 ## 8.5.2 (2024-06-11)
 
 * (foxriver76) fixed issue with additional node modules when using js-controller version 6
-* (klein0r) Added Blockly block to check if text includes another text
+* (klein0r) Added Blockly block to check if a text includes another text
 * (klein0r) Fixed onFile error when file has been deleted
 
 ## 8.5.1 (2024-06-10)
@@ -42,7 +42,7 @@ The newest change log is in README.md
 
 ## 8.5.0 (2024-06-07)
 
-* (klein0r) Ack flag on state object has priorty (in setState/setStateDelayed)
+* (klein0r) Ack flag on state object has priority (in setState/setStateDelayed)
 * (klein0r) Fixed all blockly declarations (to avoid warnings in logs)
 * (klein0r) Updated Blockly Core to 10.4.3
 
@@ -81,11 +81,11 @@ The newest change log is in README.md
 
 * (klein0r) Added createTempFile to sandbox
 * (klein0r) Fixed log message on script start
-* (klein0r) Added instance/from to log window (like in admin)
+* (klein0r) Added instance/from to a log window (like in admin)
 
 ## 8.2.0 (2024-05-07)
 
-* (PeterVoronov) Added toArray to result object of $-selector
+* (PeterVoronov) Added toArray to a result object of $-selector
 * (klein0r) Added Blockly block for onLog
 
 ## 8.1.1 (2024-05-03)
@@ -102,7 +102,7 @@ The newest change log is in README.md
 
 ## 8.0.2 (2024-04-08)
 
-* (klein0r) Forced downgrade of socket-client (object change issues)
+* (klein0r) Forced downgrade of a socket-client (object change issues)
 
 ## 8.0.1 (2024-04-08)
 
@@ -111,11 +111,11 @@ The newest change log is in README.md
 
 ## 8.0.0 (2024-04-05)
 
-NodeJS >= 18.x and js-controller >= 5 is required
+NodeJS >= 18.x and js-controller >= 5 are required
 
 * (klein0r) Breaking change: Removed support for binary states (deprecated since v6.2.0)
-* (klein0r) Breaking change: Protected filesystem (iobroker-data/files) to prevent direct file writes
-* (klein0r) Breaking change: request property has been removed of the sandbox (require the module if still needed)
+* (klein0r) Breaking change: Protected filesystem (iobroker-data/files) to prevent a direct file writes
+* (klein0r) Breaking change: request property has been removed from the sandbox (require the module if still needed)
 * (klein0r) Added blockly block for global variables (e.g. script name)
 * (klein0r) Added missing functions to protectFS
 * (klein0r) Fixed httpPost (missing data)
@@ -131,8 +131,8 @@ NodeJS >= 18.x and js-controller >= 5 is required
 
 ## 7.11.0 (2024-03-26)
 
-* (klein0r) Added blockly block for read and write file
-* (klein0r) Allow to select other object types than state in some blocks
+* (klein0r) Added blockly block for a read and write file
+* (klein0r) Allow selecting other object types than state in some blocks
 * (klein0r) Improved translations
 * (klein0r) Removed 'type' from dropdown (is always 'state')
 * (klein0r) Use highlight in search (instead of select)
@@ -142,7 +142,7 @@ NodeJS >= 18.x and js-controller >= 5 is required
 
 * (klein0r) Fixed httpGet/httpPost issue when using without options
 * (klein0r) Updated integration testing
-* (klein0r) Protect jsonl file access
+* (klein0r) Protect JSONl file access
 
 ## 7.10.1 (2024-03-22)
 
@@ -173,26 +173,26 @@ Removed request (deprecated since 4+ years from sandbox defaults)
 ## 7.9.1 (2024-03-15)
 
 * (klein0r) Configurable trigger warning limit (default: 100 per script)
-* (klein0r) Allow to use objects in create state blocks for common
+* (klein0r) Allow using objects in create state blocks for common
 * (klein0r) Added warning if latitude or longitude is not configured correctly
 
 ## 7.9.0 (2024-03-13)
 
 * (klein0r) Added block to create new objects
 * (klein0r) Added HTTP get and post function
-* (klein0r) Droped support of coffeescript (deprecated since version 6.0.0)
+* (klein0r) Dropped support of coffeescript (deprecated since version 6.0.0)
 * (klein0r) Raise warning if more than 100 triggers have been registered (per script)
 * (klein0r) Fixed astro state calculation (and display server time in dialog)
 
 ## 7.8.0 (2024-01-29)
 
-* (klein0r) Added block for multiple or conditions
+* (klein0r) Added block for multiple `or` conditions
 * (klein0r) Raised supported ecmaVersion from es2018 to es2021
-* (klein0r) Fixed getIdByName (returned the same id as array)
+* (klein0r) Fixed getIdByName (returned the same id as an array)
 
 ## 7.7.0 (2024-01-14)
 
-* (klein0r) Added block for multiple and conditions
+* (klein0r) Added block for multiple `and` conditions
 
 ## 7.6.3 (2024-01-11)
 
@@ -212,7 +212,7 @@ Removed request (deprecated since 4+ years from sandbox defaults)
 ## 7.5.1 (2023-12-18)
 
 * (klein0r) Added option for calendar week to Blockly
-* (klein0r) Fixed inpaired round brackets of getMinutes (Blockly)
+* (klein0r) Fixed unpaired round brackets of getMinutes (Blockly)
 
 ## 7.5.0 (2023-12-15)
 
@@ -222,7 +222,7 @@ Removed request (deprecated since 4+ years from sandbox defaults)
 
 ## 7.4.0 (2023-12-08)
 
-* (klein0r) Download script as xml file (export)
+* (klein0r) Download script as XML file (export)
 * (klein0r) Import script as file (upload)
 * (klein0r) Hide global folder if expert mode is disabled
 
@@ -288,7 +288,7 @@ NodeJS 16.x is required
 * (bluefox) Corrected CRON card in rules 
 * (bluefox) Added additional options to show the attributes of object in blockly
 * (bluefox) Corrected `existsStateAsync` function
-* (bluefox) Added `isDaylightSaving` state to indicate day saving time
+* (bluefox) Added `isDaylightSaving` state to indicate day-saving time
 * (AlCalzone) Pinned `@types/node` to v14
 * (bluefox) Added list of astrological events in GUI
 
