@@ -38,6 +38,9 @@ jobs:
       - name: Test
         run: npm test
 
+      - name: Build
+        run: npm run build
+
       - name: Prepare release
         env:
           VERSION_BUMP: ${{ inputs.versionBump }}

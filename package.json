@@ -94,7 +94,6 @@
     "test": "npm run test:declarations && npm run test:javascript",
     "translate": "translate-adapter",
     "//postinstall": "node ./install/installTypings.js",
-    "prepublishOnly": "node node_modules/gulp/bin/gulp.js",
     "build": "node node_modules/gulp/bin/gulp.js",
     "release": "release-script --noPush -y",
     "update-packages": "ncu --upgrade && cd src && ncu --upgrade && cd ../src-admin && ncu --upgrade",
