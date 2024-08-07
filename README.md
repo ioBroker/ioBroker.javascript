@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.8.2 (2024-08-07)
 * (@GermanBluefox) updated dependencies
 
 ### 8.8.0 (2024-08-05)

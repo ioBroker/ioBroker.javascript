@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.8.1",
+    "version": "8.8.2",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.8.2": {
+        "en": "updated dependencies",
+        "de": "aktualisierte abhängigkeiten",
+        "ru": "обновленные зависимости",
+        "pt": "dependências atualizadas",
+        "nl": "bijgewerkte afhankelijkheden",
+        "fr": "dépendances actualisées",
+        "it": "dipendenze aggiornate",
+        "es": "dependencias actualizadas",
+        "pl": "zaktualizowane zależności",
+        "uk": "оновлені залежності",
+        "zh-cn": "更新的依赖关系"
+      },
       "8.8.1": {
         "en": "updated dependencies",
         "de": "aktualisierte abhängigkeiten",
@@ -117,19 +130,6 @@
         "pl": "dodany system awaryjny wymagający modułu 'request' adapterów, jeśli nie jest zainstalowany",
         "uk": "додано зворотний зв'язок для потреб адаптерів `request` модуль, якщо не встановлено",
         "zh-cn": "如果没有安装适配器 \" 请求 \" 模块,则需添加回落"
-      },
-      "8.7.3": {
-        "en": "Fixed script deletion (icon was missing)\nFixed some translations and Blockly definitions",
-        "de": "Fixed Skript Löschung (Icon wurde vermisst)\nEinige Übersetzungen und Blockly-Definitionen behoben",
-        "ru": "Исправленное удаление скрипта (икон отсутствовал)\nИсправлены некоторые переводы и блочные определения",
-        "pt": "Eliminação de script fixo (o ícone estava faltando)\nCorrigido algumas traduções e definições em bloco",
-        "nl": "Vaste script verwijderen (icon ontbreekt)\nVaste sommige vertalingen en Blockly definities",
-        "fr": "Suppression du script fixe (icône manquante)\nCorrection de certaines traductions et définitions Blockly",
-        "it": "Cancellazione dello script fisso (icon mancava)\nRisolto alcune traduzioni e definizioni Blockly",
-        "es": "Eliminación de scripts fijos (el icon desapareció)\nArreglado algunas traducciones y definiciones de Bloqueo",
-        "pl": "Usuwanie skryptu (brak ikony)\nNaprawiono niektóre tłumaczenia i definicje Blockly",
-        "uk": "Виправлено видалення сценаріїв (відсутній колір)\nВиправлено деякі переклади та типові визначення",
-        "zh-cn": "固定脚本删除( icon 丢失)\n修改了一些翻译和块状定义"
       }
     },
     "platform": "Javascript/Node.js",
