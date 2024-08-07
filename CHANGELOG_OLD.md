@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 8.7.4 (2024-07-27)
+* (foxriver76) added fallback to require the adapters `request` module if no own installed
+
 ## 8.7.3 (2024-07-25)
 * (@klein0r) Fixed script deletion (icon was missing)
 * (@klein0r) Fixed some translations and Blockly definitions
