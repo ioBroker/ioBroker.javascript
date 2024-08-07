@@ -26,8 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 8.8.1 (2024-08-07)
 * (@GermanBluefox) updated dependencies
 
 ### 8.8.0 (2024-08-05)
@@ -44,9 +43,6 @@ Executes Javascript, Typescript Scripts.
 ### 8.7.5 (2024-07-27)
 * (@klein0r) Fixed right aligned script names when using multiple instances
 * (foxriver76) added fallback for all require calls in scripts
-
-### 8.7.4 (2024-07-27)
-* (foxriver76) added fallback to require the adapters `request` module if no own installed
 
 ## License
 The MIT License (MIT)

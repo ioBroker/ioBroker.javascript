@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.8.0",
+    "version": "8.8.1",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.8.1": {
+        "en": "updated dependencies",
+        "de": "aktualisierte abhängigkeiten",
+        "ru": "обновленные зависимости",
+        "pt": "dependências atualizadas",
+        "nl": "bijgewerkte afhankelijkheden",
+        "fr": "dépendances actualisées",
+        "it": "dipendenze aggiornate",
+        "es": "dependencias actualizadas",
+        "pl": "zaktualizowane zależności",
+        "uk": "оновлені залежності",
+        "zh-cn": "更新的依赖关系"
+      },
       "8.8.0": {
         "en": "Added option to register notifications via scripts\nFixed sendTo block with empty name list",
         "de": "Option hinzugefügt, um Benachrichtigungen über Skripte zu registrieren\nFester Versand Blockieren mit leerer Namensliste",
@@ -117,19 +130,6 @@
         "pl": "Usuwanie skryptu (brak ikony)\nNaprawiono niektóre tłumaczenia i definicje Blockly",
         "uk": "Виправлено видалення сценаріїв (відсутній колір)\nВиправлено деякі переклади та типові визначення",
         "zh-cn": "固定脚本删除( icon 丢失)\n修改了一些翻译和块状定义"
-      },
-      "8.7.2": {
-        "en": "fixed subpath imports with controller v6 (needs js-controller v6.0.9)",
-        "de": "feste subpfadimporte mit controller v6 (needs js-controller v6.0.9)",
-        "ru": "фиксированный субпатовый импорт с контроллером v6 (needs js-controller v6.0.9)",
-        "pt": "importações de subcaminho fixo com controlador v6 (needs js-controller v6.0.9)",
-        "nl": "vaste subpath invoer met controller v6 (behoefte js-controller v6.0.9)",
-        "fr": "importations fixes de sous-chemins avec contrôleur v6 (besoins js-controller v6.0.9)",
-        "it": "importazioni del sottopassaggio fisse con controllore v6 (necess. js-controller v6.0.9)",
-        "es": "importación de subpatos fijos con controlador v6 (necesidades js-controller v6.0.9)",
-        "pl": "import stałych podścieżek ze sterownikiem v6 (wymaga sterownika js- controller v6.0.9)",
-        "uk": "фіксований підпатовий імпорт з контролером v6 (без js-controller v6.0.9)",
-        "zh-cn": "带有控制器 v6( 需要 js- controller v6. 0.9) 的固定子路径导入"
       }
     },
     "platform": "Javascript/Node.js",
