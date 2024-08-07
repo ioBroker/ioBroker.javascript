@@ -97,10 +97,7 @@
     "//postinstall": "node ./install/installTypings.js",
     "prepublishOnly": "node node_modules/gulp/bin/gulp.js",
     "build": "node node_modules/gulp/bin/gulp.js",
-    "release": "release-script",
-    "release-patch": "release-script patch --yes",
-    "release-minor": "release-script minor --yes",
-    "release-major": "release-script major --yes",
+    "release": "release-script --noPush -y",
     "update-packages": "ncu --upgrade && cd src && ncu --upgrade && cd ../src-admin && ncu --upgrade",
     "npm": "npm i && cd src && npm i -f && cd ../src-admin && npm i -f"
   }

@@ -26,8 +26,9 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+
 ### **WORK IN PROGRESS**
-* (bluefox) packages were updated
+* (@GermanBluefox) updated dependencies
 
 ### 8.8.0 (2024-08-05)
 * (@klein0r) Added option to register notifications via scripts
