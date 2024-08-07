@@ -1653,6 +1653,13 @@ declare global {
 	function sendToHost(host: string, command: string, message: string | object, callback?: iobJS.MessageCallback | iobJS.MessageCallbackInfo): void;
 	function sendToHostAsync(host: string, command: string, message: string | object): Promise<iobJS.MessageCallback | iobJS.MessageCallbackInfo>;
 
+	/**
+	 * Creates a new notification (visible in admin adpter)
+	 * @param msg Message text
+	 */
+	function registerNotification(msg: string): void;
+	function registerNotification(msg: string, isAlert: boolean): void;
+
 	function setTimeout(callback: (args: void) => void, ms?: number): NodeJS.Timeout;
 	function clearTimeout(timeoutId: NodeJS.Timeout | string | number | undefined): void;
 	function setInterval(callback: (args: void) => void, ms?: number): NodeJS.Timeout;

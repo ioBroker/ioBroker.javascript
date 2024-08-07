@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.7.6",
+    "version": "8.8.0",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -16,8 +16,8 @@
       "it": "Motore di script",
       "es": "Motor de script",
       "pl": "Silnik skryptowy",
-      "zh-cn": "脚本引擎",
-      "uk": "Механізм сценаріїв"
+      "uk": "Механізм сценаріїв",
+      "zh-cn": "脚本引擎"
     },
     "desc": {
       "en": "Javascript/Blockly Script Engine for ioBroker",
@@ -40,6 +40,32 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.8.0": {
+        "en": "Added option to register notifications via scripts\nFixed sendTo block with empty name list",
+        "de": "Option hinzugefügt, um Benachrichtigungen über Skripte zu registrieren\nFester Versand Blockieren mit leerer Namensliste",
+        "ru": "Добавлена возможность регистрации уведомлений через скрипты\nFixed send Заблокировать с пустым списком имен",
+        "pt": "Opção adicionada para registrar notificações via scripts\nEnviar fixo Para bloquear com lista de nomes vazia",
+        "nl": "Toegevoegd optie om meldingen te registreren via scripts\nVaste verzending Te blokkeren met lege naamlijst",
+        "fr": "Ajout d'une option pour enregistrer les notifications via des scripts\nEnvoi fixe Pour bloquer avec la liste des noms vides",
+        "it": "Aggiunta opzione per registrare le notifiche tramite script\nInviato fisso Per bloccare con l'elenco dei nomi vuoti",
+        "es": "Opción agregada para registrar notificaciones a través de scripts\nEnvío fijo Para bloquear con lista de nombres vacía",
+        "pl": "Dodano opcję rejestracji powiadomień za pomocą skryptów\nPoprawiono wysyłanie Blokowanie z pustą listą nazw",
+        "uk": "Додано опцію для реєстрації повідомлень через скрипти\nВиправлена відправка Заблокувати список порожніх імен",
+        "zh-cn": "添加通过脚本注册通知的选项\n固定发送 以空名称列表屏蔽"
+      },
+      "8.7.7": {
+        "en": "Fixed import scripts dialog\nAllow to remove all custom packages (empty list)",
+        "de": "Feste Importskripte Dialog\nLassen Sie alle benutzerdefinierte Pakete entfernen (leere Liste)",
+        "ru": "Диалог сценариев импорта\nПозволить удалить все пользовательские пакеты (пустый список)",
+        "pt": "Diálogo de scripts de importação fixos\nPermitir remover todos os pacotes personalizados (lista vazia)",
+        "nl": "Dialoogvenster Vaste importscripts\nAlle aangepaste pakketten verwijderen (lege lijst)",
+        "fr": "Boîte de dialogue d'importation fixe\nPermettre de supprimer tous les paquets personnalisés (liste vide)",
+        "it": "Dialogo di script di importazione fissi\nConsentire di rimuovere tutti i pacchetti personalizzati (elenco vuoto)",
+        "es": "Diálogo de scripts de importación fijos\nPermitir eliminar todos los paquetes personalizados (lista vacía)",
+        "pl": "Okno importu stałych skryptów\nPozwól usunąć wszystkie niestandardowe pakiety (pusta lista)",
+        "uk": "Виправлено імпорт сценаріїв діалог\nДозволити видалити всі спеціальні пакети (зразковий список)",
+        "zh-cn": "固定导入脚本对话框\n允许删除所有自定义软件包( 空列表)"
+      },
       "8.7.6": {
         "en": "fix error with subpath imports in scripts",
         "de": "fehler mit subpfad-importen in skripten beheben",
@@ -104,32 +130,6 @@
         "pl": "import stałych podścieżek ze sterownikiem v6 (wymaga sterownika js- controller v6.0.9)",
         "uk": "фіксований підпатовий імпорт з контролером v6 (без js-controller v6.0.9)",
         "zh-cn": "带有控制器 v6( 需要 js- controller v6. 0.9) 的固定子路径导入"
-      },
-      "8.7.1": {
-        "en": "load correct typings for TypeScript scripts with js-controller v6 (needs js-controller v6.0.9)",
-        "de": "laden korrekte Eingaben für TypeScript-Skripte mit js-controller v6 (needs js-controller v6.0.9)",
-        "ru": "погрузочно-корректные типографии для скриптов TypeScript с js-controller v6 (needs js-controller v6.0.9)",
-        "pt": "carregar digitações corretas para scripts TypeScript com js-controller v6 (needs js-controller v6.0.9)",
-        "nl": "load correct typeringen voor TypeScript scripts met js-controller v6 ( needs js-controller v6.0.9)",
-        "fr": "chargez les typages corrects pour les scripts TypeScript avec js-controller v6 (besoins js-controller v6.0.9)",
-        "it": "digitazioni corrette di carico per script TypeScript con js-controller v6 (needs js-controller v6.0.9)",
-        "es": "cargar correctos tipeos para scripts TipoScript con js-controller v6 (necesidades js-controller v6.0.9)",
-        "pl": "wczytanie poprawnych napisów skryptów TypeScript ze sterownikiem js- v6 (wymaga kontrolera js- v6.0.9)",
-        "uk": "навантаження правильного друку для сценаріїв TypeScript з js-controller v6 (needs js-controller v6.0.9)",
-        "zh-cn": "用 js 控制器 v6 装入 TypeScript 脚本的正确打字( 需要 js 控制器 v 6. 0.9)"
-      },
-      "8.7.0": {
-        "en": "Escape all field inputs correctly when using single quotes\nAdded sandbox function to subscribe to all enum members\nAdded Blockly block to subscribe to all enum members\nAdded sandbox functions to start/restart/stop an instance\nAdded Blockly block to start/restart/stop an instance\nAdded Blockly block to start/stop a script\nAdded Blockly result blocks for script messages\nFixed onLog / onLogUnregister return types\nfixed issue in importing additional node modules for packages which do not provide a default export (e.g. `mathjs`)\nRemoved `withStyles` from GUI",
-        "de": "Entfliehen Sie alle Feldeingänge richtig, wenn Sie einzelne Zitate verwenden\nHinzugefügt Sandbox Funktion, um alle enum Mitglieder abonnieren\nHinzugefügt Blockly Block, um alle enum Mitglieder abonnieren\nHinzufügen von Sandbox-Funktionen, um eine Instanz zu starten / zu starten / zu stoppen\nBlockly Block hinzugefügt, um eine Instanz zu starten/zu starten/zu stoppen\nBlockly Block hinzugefügt, um ein Skript zu starten / zu stoppen\nHinzugefügt Blockly Ergebnis Blöcke für Skript-Nachrichten\nBehoben aufLog / onLogUnregistrieren\nfeste ausgabe beim import von zusätzlichen knotenmodulen für pakete, die keinen standardexport bereitstellen (z.b. `mathjs`)\nEntfernen `withStyles` von GUI",
-        "ru": "Исключить все входы на поле правильно при использовании одиночных котировок\nДобавлена функция песочницы для подписки на всех членов\nДобавлен блок-блок для подписки на всех членов enum\nДобавлены функции песочницы для запуска/перезапуска/остановки экземпляра\nДобавленный блок для запуска/перезапуска/остановки экземпляра\nДобавлен блок-блок для запуска/остановки сценария\nДобавлены блоки результатов для сообщений сценариев\nFixed onLog / onLogUnregister\nфиксированная проблема при импорте дополнительных узловых модулей для упаковок, которые не обеспечивают экспорт по умолчанию (например, «матджс»)\nУдалено `withStyles' из GUI",
-        "pt": "Fuja todas as entradas de campo corretamente ao usar citações únicas\nFunção de sandbox adicionada para se inscrever em todos os membros enum\nAdicionado Blockly bloco para assinar todos os membros enum\nAdicionado funções sandbox para iniciar / reiniciar / parar uma instância\nAdicionado Blockly bloco para iniciar / reiniciar / parar uma instância\nAdicionado bloco Blockly para iniciar / parar um script\nAdicionado blocos de resultado em bloco para mensagens de script\nFixo emLog / onLogUnregister tipos de retorno\nproblema fixo na importação de módulos de nó adicionais para pacotes que não fornecem uma exportação padrão (por exemplo, `mathjs`)\nRemover `comestilos` da GUI",
-        "nl": "Alle veldinvoeren correct ontsnappen bij het gebruik van enkele aanhalingstekens\nToegevoegd sandbox functie om te abonneren op alle enum leden\nBlockly blok toegevoegd om je te abonneren op alle enum leden\nToegevoegde sandbox-functies om een instantie te starten/herstarten/stoppen\nBlockly blok toegevoegd om een instantie te starten/herstarten/stoppen\nBlockly blok toegevoegd om een script te starten/stoppen\nBlockly resultaatblokken toegevoegd voor scriptberichten\nFixed onLog / onLogUnregister return types\nvast probleem bij het importeren van extra nodemodules voor pakketten die geen standaardexport leveren (bv. .mathjs\nVerwijderd van GUI",
-        "fr": "Échapper à toutes les entrées de champ correctement lors de l'utilisation de guillemets uniques\nAjout de la fonction sandbox pour s'abonner à tous les membres de l'enum\nAjout d'un bloc Blockly pour s'abonner à tous les membres d'enum\nAjout de fonctions sandbox pour démarrer/redémarrer/stop une instance\nAjout d'un bloc Blockly pour démarrer/redémarrer/stop une instance\nAjout d'un bloc Blockly pour démarrer/arrêter un script\nAjout de blocs de résultats Blockly pour les messages script\nCorrection surLog / surLogUnregistrer les types de retour\nproblème fixe lors de l'importation de modules noeuds supplémentaires pour les paquets qui ne fournissent pas une exportation par défaut (par exemple `mathjs`)\nSupprimé `withStyles` de l'interface graphique",
-        "it": "Fuggi tutti gli input del campo correttamente quando si utilizzano singole citazioni\nAggiunta funzione sandbox abbonarsi a tutti i membri enum\nAggiunto Blockly per iscriversi a tutti i membri enum\nAggiunta di funzioni sandbox per avviare / riavviare / fermare un'istanza\nAggiunto Blockly per avviare / riavviare / fermare un'istanza\nAggiunto Blockly per avviare / fermare uno script\nAggiunto Blocchi di risultato Blockly per i messaggi di script\nFisso suLog / suLogUnregister tipi di ritorno\nproblema fisso nell'importazione di moduli nodi aggiuntivi per i pacchetti che non forniscono un'esportazione predefinita (ad esempio `mathjs`)\nRimuoveto `withStyles` da GUI",
-        "es": "Escapar todas las entradas de campo correctamente al usar citas individuales\nFunción de caja de arena agregada para suscribirse a todos los miembros del enum\nAñadido bloque bloque bloque para suscribirse a todos los miembros del enum\nFunciones de caja de arena agregadas para iniciar / reiniciar / detener una instancia\nSe agregó bloque bloque bloque para iniciar / reiniciar / detener una instancia\nAñadido bloque bloque bloque para iniciar / detener un script\nBloques de resultado bloqueados para mensajes de script\nArreglado onLog / onLogUnregister tipos de retorno\nemisión fija en la importación de módulos de nodos adicionales para paquetes que no proporcionan una exportación predeterminada (por ejemplo, `mathjs`)\nQuitado `con los estilos' de GUI",
-        "pl": "Usunąć wszystkie wejścia pola poprawnie przy użyciu pojedynczych cytatów\nDodano funkcję piaskownicy do subskrypcji wszystkich członków enum\nDodano Blockly bloku do subskrypcji wszystkich członków enum\nDodano funkcje piaskownicy do uruchomienia / ponownego uruchomienia / zatrzymania instancji\nDodano Blockly bloku, aby uruchomić / ponownie uruchomić / zatrzymać instancję\nDodano Blockly block, aby uruchomić / zatrzymać skrypt\nDodano blokowane bloki wyników dla wiadomości skryptowych\nNaprawiono typy zwrotów onLog / onLogUnregister\nstały problem przy przywozie dodatkowych modułów węzłów dla pakietów, które nie zapewniają domyślnego eksportu (np. \"mathjs\")\nUsunięty 'ze stylami' z GUI",
-        "uk": "Втеча всіх вводів поля правильно при використанні однієї лапки\nДодана функція пісочниці для підписки на всі члени\nДодано блокнот для підписки на всі члени\nДодано функції пісочниці для запуску/restart/stop екземпляр\nДодано блокнот для запуску/restart/stop екземпляр\nДодано блокнот блокувати для запуску / запуску скрипту\nДодано блокноти блоки результатів для повідомлень скриптів\nВиправлено onLog / onLogUnregister типи повернення\nвиправлено проблему в імпорті додаткових модулів вузлів для пакетів, які не забезпечують експорт за замовчуванням (наприклад, `matjs`)\nВидалення `withStyle` від GUI",
-        "zh-cn": "在使用单引号时正确避开所有字段输入\n添加沙盒函数以订阅所有 enum 成员\n添加 Blockly 块以订阅所有 enum 成员\n添加沙盒函数启动/ 重新启动/ 停止实例\n添加块块开始/ 重新开始/ 停止实例\n添加块块开始/停止脚本\n为脚本消息添加块结果块\n固定在Log/ 在LogUnregister 返回类型\n为不提供默认导出(例如`mathjs')的软件包导入额外节点模块时的固定问题\n从图形用户界面中删除了“ 使用样式”"
       }
     },
     "platform": "Javascript/Node.js",
@@ -383,6 +383,103 @@
       }
     ]
   },
+  "notifications": [
+    {
+      "scope": "javascript",
+      "name": {
+        "en": "Script Engine",
+        "de": "Skriptausführung",
+        "ru": "Скрипты",
+        "pt": "Script Engine",
+        "nl": "Script-engine",
+        "fr": "Moteur de script",
+        "it": "Motore di script",
+        "es": "Motor de script",
+        "pl": "Silnik skryptowy",
+        "uk": "Механізм сценаріїв",
+        "zh-cn": "脚本引擎"
+      },
+      "description": {
+        "en": "Notifications generated by the script engine",
+        "de": "Benachrichtigungen, welche von der Skript-Engine generiert werden",
+        "ru": "Уведомления, генерируемые скриптовым двигателем",
+        "pt": "Notificações geradas pelo mecanismo de script",
+        "nl": "Door de script-engine gegenereerde meldingen",
+        "fr": "Notifications générées par le moteur de script",
+        "it": "Notifiche generate dal motore di script",
+        "es": "Notificaciones generadas por el motor script",
+        "pl": "Powiadomienia generowane przez silnik skryptu",
+        "uk": "Повідомлення, що генеруються двигуном скрипта",
+        "zh-cn": "脚本引擎生成的通知"
+      },
+      "categories": [
+        {
+          "category": "scriptMessage",
+          "name": {
+            "en": "Message from script",
+            "de": "Nachricht von Skript",
+            "ru": "Сообщение от скрипта",
+            "pt": "Mensagem do script",
+            "nl": "Bericht van script",
+            "fr": "Message du script",
+            "it": "Messaggio dallo script",
+            "es": "Mensaje del script",
+            "pl": "Wiadomość ze skryptu",
+            "uk": "Повідомлення з сценарію",
+            "zh-cn": "来自脚本的信件"
+          },
+          "severity": "notify",
+          "description": {
+            "en": "Custom message from scripts",
+            "de": "Benutzerdefinierte Nachricht von Skript",
+            "ru": "Пользовательское сообщение из скриптов",
+            "pt": "Mensagem personalizada de scripts",
+            "nl": "Aangepast bericht van scripts",
+            "fr": "Message personnalisé à partir de scripts",
+            "it": "Messaggi personalizzati da script",
+            "es": "Mensaje personalizado de scripts",
+            "pl": "Niestandardowa wiadomość ze skryptów",
+            "uk": "Спеціальне повідомлення від сценаріїв",
+            "zh-cn": "自定义脚本中的消息"
+          },
+          "regex": [],
+          "limit": 100
+        },
+        {
+          "category": "scriptAlert",
+          "name": {
+            "en": "Alert from script",
+            "de": "Alarm von Skript",
+            "ru": "Объявление по сценарию",
+            "pt": "Alerta do script",
+            "nl": "Waarschuwing van script",
+            "fr": "Alerte du script",
+            "it": "Avviso da script",
+            "es": "Alerta del script",
+            "pl": "Alarm ze skryptu",
+            "uk": "Вставте з скрипта",
+            "zh-cn": "从脚本发出警告"
+          },
+          "severity": "alert",
+          "description": {
+            "en": "Custom alert from scripts",
+            "de": "Benutzerdefinierte Warnung von Skript",
+            "ru": "Настраиваемое оповещение от скриптов",
+            "pt": "Alerta personalizado de scripts",
+            "nl": "Aangepaste waarschuwing van scripts",
+            "fr": "Alerte personnalisée des scripts",
+            "it": "Avviso personalizzato da script",
+            "es": "Alerta personalizada de scripts",
+            "pl": "Własny alarm ze skryptów",
+            "uk": "Користувальницькі сповіщення від сценаріїв",
+            "zh-cn": "自定义脚本提醒"
+          },
+          "regex": [],
+          "limit": 100
+        }
+      ]
+    }
+  ],
   "native": {
     "latitude": "",
     "longitude": "",

@@ -30,6 +30,14 @@ Executes Javascript, Typescript Scripts.
 ### **WORK IN PROGRESS**
 * (@GermanBluefox) updated dependencies
 
+### 8.8.0 (2024-08-05)
+* (@klein0r) Added option to register notifications via scripts
+* (@klein0r) Fixed sendTo block with an empty name list
+
+### 8.7.7 (2024-08-04)
+* (@klein0r) Fixed import scripts dialog
+* (@klein0r) Allowed removing all custom packages (empty list)
+
 ### 8.7.6 (2024-07-28)
 * (foxriver76) fix error with subpath imports in scripts
 
@@ -39,13 +47,6 @@ Executes Javascript, Typescript Scripts.
 
 ### 8.7.4 (2024-07-27)
 * (foxriver76) added fallback to require the adapters `request` module if no own installed
-
-### 8.7.3 (2024-07-25)
-* (@klein0r) Fixed script deletion (icon was missing)
-* (@klein0r) Fixed some translations and Blockly definitions
-
-### 8.7.2 (2024-07-23)
-* (foxriver76) fixed subpath imports with controller v6 (needs js-controller v6.0.9)
 
 ## License
 The MIT License (MIT)
