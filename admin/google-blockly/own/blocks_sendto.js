@@ -140,7 +140,7 @@ Blockly.Blocks['sendto_custom'] = {
     mutationToDom: function () {
         const container = document.createElement('mutation');
 
-        container.setAttribute('items', this.attributes_.join(','));
+        container.setAttribute('items', this.attributes_.map(a => encodeURIComponent(a)).join(','));
 
         return container;
     },
@@ -153,10 +153,8 @@ Blockly.Blocks['sendto_custom'] = {
         this.attributes_ = [];
 
         const names = xmlElement.getAttribute('items');
-        if (names) {
-            for (const name of names.split(',')) {
-                this.attributes_.push(name);
-            }
+        for (const name of names.split(',')) {
+            this.attributes_.push(decodeURIComponent(name));
         }
 
         this.itemCount_ = this.attributes_.length;
@@ -251,7 +249,7 @@ Blockly.Blocks['sendto_custom'] = {
             if (!input) {
                 input = this.appendValueInput('ARG' + i).setAlign(Blockly.ALIGN_RIGHT);
                 input.appendField(this.attributes_[i]);
-            } else {
+            } else if (input.fieldRow.length >= 1) {
                 input.fieldRow[0].setValue(this.attributes_[i]);
             }
 
