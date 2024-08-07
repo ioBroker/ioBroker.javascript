@@ -104,6 +104,7 @@ jobs:
           UPDATE_LABELS: "automated pr 🔧"
           MERGE_METHOD: "squash"
           MERGE_COMMIT_MESSAGE: "pull-request-title-and-description"
+          MERGE_RETRY_SLEEP: 10000
 
       - name: Checkout code
         if: steps.automerge.outputs.mergeResult == 'merged'
@@ -143,10 +144,11 @@ jobs:
         if: steps.automerge.outputs.mergeResult == 'merged'
         run: npm install
 
-      - name: Create a clean build
+      - name: Build
         if: steps.automerge.outputs.mergeResult == 'merged'
         run: npm run build
 
+        # The prepublish script also creates a build
       - name: Publish package to npm
         if: steps.automerge.outputs.mergeResult == 'merged'
         run: |
