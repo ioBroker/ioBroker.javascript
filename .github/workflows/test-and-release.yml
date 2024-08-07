@@ -144,10 +144,7 @@ jobs:
         if: steps.automerge.outputs.mergeResult == 'merged'
         run: npm install
 
-      - name: Create a clean build
-        if: steps.automerge.outputs.mergeResult == 'merged'
-        run: npm run build
-
+        # The prepublish script also creates a build
       - name: Publish package to npm
         if: steps.automerge.outputs.mergeResult == 'merged'
         run: |
