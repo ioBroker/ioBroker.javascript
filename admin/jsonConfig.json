@@ -12,6 +12,7 @@
           "type": "chips",
           "label": "Additional npm modules",
           "delimiter": " ",
+          "xs": 12,
           "sm": 12
         },
         "libraryTypings": {
@@ -19,12 +20,14 @@
           "type": "chips",
           "label": "Activate syntax help for these npm modules",
           "delimiter": " ",
+          "xs": 12,
           "sm": 12
         },
         "mirrorPath": {
           "newLine": true,
           "type": "text",
           "label": "Mirror scripts to file path",
+          "xs": 12,
           "sm": 8
         },
         "mirrorInstance": {
@@ -32,18 +35,21 @@
           "type": "instance",
           "adapter": "javascript",
           "label": "Instance, that do mirroring",
+          "xs": 12,
           "sm": 4
         },
         "enableSetObject": {
           "newLine": true,
           "type": "checkbox",
           "label": "Enable command \"setObject\"",
+          "xs": 12,
           "sm": 12,
           "md": 6
         },
         "enableSendToHost": {
           "type": "checkbox",
           "label": "Enable command \"sendToHost\"",
+          "xs": 12,
           "sm": 12,
           "md": 6
         },
@@ -51,12 +57,14 @@
           "newLine": true,
           "type": "checkbox",
           "label": "Enable command \"exec\"",
+          "xs": 12,
           "sm": 12,
           "md": 6
         },
         "subscribe": {
           "type": "checkbox",
           "label": "Do not subscribe all states on start",
+          "xs": 12,
           "sm": 12,
           "md": 6
         },
@@ -67,6 +75,7 @@
           "help": "default 1000",
           "min": 20,
           "max": 100000,
+          "xs": 12,
           "sm": 12,
           "md": 6
         },
@@ -76,6 +85,7 @@
           "help": "default 100",
           "min": 20,
           "max": 100000,
+          "xs": 12,
           "sm": 12,
           "md": 6
         },
@@ -83,12 +93,14 @@
           "newLine": true,
           "type": "checkbox",
           "label": "Allow self-signed certificates for URL requests",
+          "xs": 12,
           "sm": 12
         },
         "gptKey": {
           "newLine": true,
           "type": "text",
           "label": "ChatGPT API key",
+          "xs": 12,
           "sm": 12,
           "help": "platform.openai.com",
           "helpLink": "https://platform.openai.com/api-keys"
@@ -103,6 +115,7 @@
         "_astroConfig": {
           "type": "custom",
           "i18n": true,
+          "xs": 12,
           "sm": 12,
           "url": "custom/customComponents.js",
           "name": "ConfigCustomJavascriptSet/Components/Astro"
@@ -111,6 +124,7 @@
           "newLine": true,
           "type": "checkbox",
           "label": "Create states for all astro times",
+          "xs": 12,
           "sm": 12
         }
       }
