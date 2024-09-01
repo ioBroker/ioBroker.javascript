@@ -44,7 +44,7 @@
     "@iobroker/adapter-core": "^3.1.6",
     "@types/node": "^22.1.0",
     "@types/request": "^2.48.12",
-    "axios": "^1.7.3",
+    "axios": "^1.7.7",
     "jsonata": "^2.0.5",
     "jszip": "^3.10.1",
     "node-inspect": "^2.0.0",
