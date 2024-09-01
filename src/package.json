@@ -43,7 +43,7 @@
         "react-icons": "^5.2.1",
         "react-inlinesvg": "^4.1.3",
         "react-json-view": "^1.21.3",
-        "react-monaco-editor": "^0.56.0",
+        "react-monaco-editor": "^0.56.1",
         "react-scripts": "^5.0.1",
         "react-splitter-layout": "^4.0.0",
         "react-text-mask": "^5.5.0",
