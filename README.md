@@ -26,8 +26,11 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (bluefox) Fixed object selector in rules
+
 ### 8.8.2 (2024-08-07)
-* (@GermanBluefox) updated dependencies
+* (bluefox) updated dependencies
 
 ### 8.8.0 (2024-08-05)
 * (@klein0r) Added option to register notifications via scripts
