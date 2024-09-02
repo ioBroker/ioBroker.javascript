@@ -31,10 +31,12 @@ const CustomInput = ({ autoFocus, fullWidth, disabled, multiline, rows, autoComp
             !customValue && setInputText(e.target.value);
             onChange(e.target.value);
         }}
-        InputProps={{
-            endAdornment: icon ?
-                <InputAdornment position="end"><CustomIcon className={cls.icon} src={icon} /></InputAdornment>
-                : null
+        slotProps={{
+            input: {
+                endAdornment: icon ?
+                    <InputAdornment position="end"><CustomIcon className={cls.icon} src={icon}/></InputAdornment>
+                    : null,
+            },
         }}
         margin="normal"
         size={size}

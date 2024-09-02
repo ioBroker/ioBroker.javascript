@@ -19,7 +19,7 @@ const CurrentItem = memo(props => {
     const { blocks, socket, onUpdate, setOnUpdate, onDebugMessage, enableSimulation } = useContext(ContextWrapperCreate);
 
     useEffect(() => {
-        console.log('New message !!' + JSON.stringify(onDebugMessage));
+        console.log(`New message !! ${JSON.stringify(onDebugMessage)}`);
     }, [onDebugMessage]);
 
 

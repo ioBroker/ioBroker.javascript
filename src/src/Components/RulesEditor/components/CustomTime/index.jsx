@@ -17,11 +17,13 @@ const CustomTime = ({ value, style, onChange, className }) => {
         className={Utils.clsx(cls.root, className)}
         fullWidth
         style={style}
-        InputLabelProps={{
-            shrink: true,
-        }}
-        inputProps={{
-            step: 300, // 5 min
+        slotProps={{
+            htmlInput: {
+                step: 300, // 5 min
+            },
+            inputLabel: {
+                shrink: true,
+            },
         }}
     />;
 }

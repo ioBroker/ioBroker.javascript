@@ -85,7 +85,7 @@ class DialogNew extends React.Component {
                         label={I18n.t('Name')}
                         value={this.state.name}
                         helperText={this.state.error}
-                        onKeyPress={ev => {
+                        onKeyUp={ev => {
                             if (ev.key === 'Enter') {
                                 // Do code here
                                 ev.preventDefault();
@@ -121,7 +121,7 @@ class DialogNew extends React.Component {
                                 if (!names.length) {
                                     names.push(parent.name);
                                 }
-                                return (<MenuItem key={parent.id} value={parent.id}>{names.join(' / ')}</MenuItem>);
+                                return <MenuItem key={parent.id} value={parent.id}>{names.join(' / ')}</MenuItem>;
                             })}
                         </Select>
                     </FormControl>
@@ -134,19 +134,18 @@ class DialogNew extends React.Component {
                         disabled
                         margin="normal"
                     />
-                    {
-                        this.isShowInstance && (
-                            <FormControl variant="standard">
-                                <InputLabel htmlFor="instance">{I18n.t('Instance')}</InputLabel>
-                                <Select
-                                    variant="standard"
-                                    value={this.state.instance}
-                                    onChange={e => this.setState({instance: parseInt(e.target.value, 10)})}
-                                    inputProps={{ name: 'instance', id: 'instance' }}>
-                                    {this.props.instances.map(instance => (<MenuItem key={`instance${instance}`} value={instance}>{instance || '0'}</MenuItem>))}
-                                </Select>
-                            </FormControl>)
-                    }
+                    {this.isShowInstance && <FormControl variant="standard">
+                        <InputLabel htmlFor="instance">{I18n.t('Instance')}</InputLabel>
+                        <Select
+                            variant="standard"
+                            value={this.state.instance}
+                            onChange={e => this.setState({ instance: parseInt(e.target.value, 10) })}
+                            inputProps={{ name: 'instance', id: 'instance' }}
+                        >
+                            {this.props.instances.map(instance =>
+                                <MenuItem key={`instance${instance}`} value={instance}>{instance || '0'}</MenuItem>)}
+                        </Select>
+                    </FormControl>}
                 </form>
             </DialogContent>
             <DialogActions>

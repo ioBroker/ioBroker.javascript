@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {Box, IconButton} from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 
 import {
     MdContentCopy as IconCopy,
@@ -86,20 +86,20 @@ function getTimeString(d) {
     let text;
     let i = d.getHours();
     if (i < 10) {
-        i = '0' + i.toString();
+        i = `0${i.toString()}`;
     }
-    text = i + ':';
+    text = `${i}:`;
 
     i = d.getMinutes();
     if (i < 10) {
-        i = '0' + i.toString();
+        i = `0${i.toString()}`;
     }
     text += i + ':';
     i = d.getSeconds();
     if (i < 10) {
         i = `0${i.toString()}`;
     }
-    text += i + '.';
+    text += `${i}.`;
     i = d.getMilliseconds();
     if (i < 10) {
         i = `00${i.toString()}`;
@@ -164,19 +164,22 @@ class Console extends React.Component {
                     style={styles.iconButtons}
                     onClick={() => this.setState({ goBottom: !this.state.goBottom })}
                     color={this.state.goBottom ? 'secondary' : ''}
-                    size="medium">
+                    size="medium"
+                >
                     <IconBottom />
                 </IconButton>
                 {lines && lines.length ? <IconButton
                     style={styles.iconButtons}
                     onClick={() => this.props.onClearAllLogs()}
-                    size="medium">
+                    size="medium"
+                >
                     <IconDelete />
                 </IconButton> : null}
                 {lines && lines.length ? <IconButton
                     style={styles.iconButtons}
                     onClick={() => this.onCopy()}
-                    size="medium">
+                    size="medium"
+                >
                     <IconCopy />
                 </IconButton> : null}
             </div>

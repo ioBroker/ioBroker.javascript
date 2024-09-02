@@ -20,7 +20,11 @@ import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import DialogHelp from './DialogHelp';
 import DialogCondition from './DialogCondition';
 
-const AdditionallyContentBlockItems = ({ size, itemsSwitchesRender, blockValue, boolean, typeBlock, userRules, setUserRules, animation, setTourStep, tourStep, isTourOpen }) => {
+const AdditionallyContentBlockItems = ({
+    size, itemsSwitchesRender, blockValue, boolean, typeBlock,
+    userRules, setUserRules, animation, setTourStep, tourStep, isTourOpen,
+    theme, themeType, themeName,
+}) => {
     const [checkItem, setCheckItem] = useState(false);
     const [canDropCheck, setCanDropCheck] = useState(false);
     const [checkId, setCheckId] = useState(false);
@@ -65,8 +69,8 @@ const AdditionallyContentBlockItems = ({ size, itemsSwitchesRender, blockValue, 
         style={{ backgroundColor }}
         className={`${Utils.clsx(cls.contentBlockItem,size && cls.addClassHeight)} ${boolean ? animation ? cls.contentHeightOn : null : cls.contentHeightOff}`}
     >
-        <div className={cls.wrapperMargin}>{itemsSwitchesRender[blockValue]?.map(el => (
-            <DragWrapper
+        <div className={cls.wrapperMargin}>
+            {itemsSwitchesRender[blockValue]?.map(el => <DragWrapper
                 typeBlocks={typeBlock}
                 key={el._id}
                 {...el}
@@ -84,8 +88,11 @@ const AdditionallyContentBlockItems = ({ size, itemsSwitchesRender, blockValue, 
                     blockValue={blockValue}
                     userRules={userRules}
                     setUserRules={setUserRules}
+                    theme={theme}
+                    themeType={themeType}
+                    themeName={themeName}
                 />
-            </DragWrapper>))}
+            </DragWrapper>)}
             <div
                 style={isActive && checkItem && !checkId ? { height: document.getElementById('height') ? document.getElementById('height').clientHeight : 200 } : null}
                 className={`${cls.emptyBlockStyle} ${isActive && checkItem && !checkId ? cls.emptyBlock : cls.emptyBlockNone}`}
@@ -100,7 +107,11 @@ AdditionallyContentBlockItems.defaultProps = {
     animation: false
 };
 
-const ContentBlockItems = ({ size, typeBlock, name, nameAdditionally, additionally, border, userRules, setUserRules, iconName, adapter, socket, setTourStep, tourStep, isTourOpen }) => {
+const ContentBlockItems = ({
+    size, typeBlock, name, nameAdditionally, additionally,
+    border, userRules, setUserRules, iconName, adapter,
+    socket, setTourStep, tourStep, isTourOpen, theme, themeType, themeName,
+}) => {
     const [additionallyClickItems, setAdditionallyClickItems, checkLocal] = useStateLocal(typeBlock === 'actions' ? false : [], `additionallyClickItems_${typeBlock}`);
     const [showHelp, setShowHelp] = useState(false);
     const [showConditionDialog, setShowConditionDialog] = useState(false);
@@ -164,6 +175,9 @@ const ContentBlockItems = ({ size, typeBlock, name, nameAdditionally, additional
             typeBlock={typeBlock}
             setUserRules={setUserRules}
             userRules={userRules}
+            theme={theme}
+            themeName={themeName}
+            themeType={themeType}
             size={size}
             itemsSwitchesRender={typeBlock === 'actions' ? userRules['actions'] : typeBlock === 'conditions' ? userRules['conditions'] : userRules}
         />
@@ -177,7 +191,7 @@ const ContentBlockItems = ({ size, typeBlock, name, nameAdditionally, additional
                             return null;
                         }
                         let newAdditionally = JSON.parse(JSON.stringify(additionallyClickItems));
-                        if (userRules['conditions'][index + 1].length) {
+                        if (userRules.conditions[index + 1].length) {
                             newAdditionally[index].open = !newAdditionally[index].open
                             setAdditionallyClickItems(newAdditionally);
                             return null;
@@ -200,11 +214,14 @@ const ContentBlockItems = ({ size, typeBlock, name, nameAdditionally, additional
                     blockValue={typeBlock === 'actions' ? 'else' : typeBlock === 'conditions' ? index + 1 : typeBlock}
                     typeBlock={typeBlock}
                     setUserRules={setUserRules}
-                    itemsSwitchesRender={typeBlock === 'actions' ? userRules['actions'] : typeBlock === 'conditions' ? userRules['conditions'] : userRules}
+                    itemsSwitchesRender={typeBlock === 'actions' ? userRules.actions : (typeBlock === 'conditions' ? userRules.conditions : userRules)}
                     userRules={userRules}
                     boolean={booleanAdditionally()}
                     animation={Boolean(animation === index)}
                     size={size}
+                    theme={theme}
+                    themeName={themeName}
+                    themeType={themeType}
                 />
             </Fragment>
         })}
@@ -212,7 +229,7 @@ const ContentBlockItems = ({ size, typeBlock, name, nameAdditionally, additional
             onClick={() => {
                 setAdditionallyClickItems([...additionallyClickItems, {
                     _id: Date.now(),
-                    open: true
+                    open: true,
                 }]);
                 setUserRules({ ...userRules, conditions: [...userRules.conditions, []] });
                 setAnimation(typeBlock === 'actions' ? true : userRules.conditions.length - 1);

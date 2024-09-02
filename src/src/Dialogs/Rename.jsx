@@ -86,7 +86,7 @@ class DialogRename extends React.Component {
                         autoFocus
                         label={I18n.t('Name')}
                         value={this.state.name}
-                        onKeyPress={(ev) => {
+                        onKeyUp={(ev) => {
                             if (ev.key === 'Enter') {
                                 // Do code here
                                 ev.preventDefault();
@@ -113,7 +113,7 @@ class DialogRename extends React.Component {
                                     variant="standard"
                                     value={this.state.instance}
                                     onChange={e => this.setState({instance: parseInt(e.target.value, 10)})}
-                                    inputProps={{name: 'instance', id: 'instance'}}
+                                    inputProps={{ name: 'instance', id: 'instance' }}
                                 >
                                     {this.props.instances.map(instance => <MenuItem key={instance} value={instance}>{instance || '0'}</MenuItem>)}
                                 </Select>

@@ -1327,6 +1327,7 @@ class Editor extends React.Component {
                     key="flowEditor"
                     themeType={this.state.themeType}
                     themeName={this.props.themeName}
+                    theme={this.props.theme}
                     searchText={this.state.searchText}
                     resizing={this.props.resizing}
                     code={this.scripts[this.state.selected].source || ''}
