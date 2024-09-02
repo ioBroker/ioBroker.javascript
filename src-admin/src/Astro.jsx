@@ -29,9 +29,8 @@ import { I18n, Theme } from '@iobroker/adapter-react-v5';
 import { ConfigGeneric } from '@iobroker/json-config';
 
 import Map from './Components/Map';
-import './index.css';
+import './astro.css';
 
-// eslint-disable-next-line import/prefer-default-export
 export const localeMap = {
     en: enLocale,
     fr: frLocale,
@@ -84,7 +83,9 @@ function formatTime(date) {
 class Astro extends ConfigGeneric {
     constructor(props) {
         super(props);
-        this.state.theme = Theme(this.props.themeName);
+        Object.assign(this.state, {
+            theme: Theme(this.props.themeName || 'light'),
+        });
     }
 
     async componentDidMount() {
@@ -181,10 +182,10 @@ class Astro extends ConfigGeneric {
 
         const isMobile = window.innerWidth < 800;
 
-        return <div style={{ width: '100%', display: isMobile ? undefined : 'flex', gap: 10 }}>
-            <div style={{ width: isMobile ? '100%' : 'calc(50% - 5px)', display: isMobile ? 'block' : 'inline-block' }}>
-                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[I18n.getLanguage()]}>
-                    <ThemeProvider theme={this.state.theme}>
+        return <ThemeProvider theme={this.state.theme}>
+            <div style={{ width: '100%', display: isMobile ? undefined : 'flex', gap: 10 }}>
+                <div style={{ width: isMobile ? '100%' : 'calc(50% - 5px)', display: isMobile ? 'block' : 'inline-block' }}>
+                    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[I18n.getLanguage()]}>
                         <FormControlLabel
                             style={{ width: 'calc(100% - 10px)' }}
                             control={<Checkbox
@@ -422,19 +423,19 @@ class Astro extends ConfigGeneric {
                                 {this.state.nextSunset !== this.state.nextSunsetServer ? ` ${I18n.t('Local time')}: ${this.state.nextSunset}` : ''}
                             </span>
                         </div> : null}
-                    </ThemeProvider>
-                </LocalizationProvider>
+                    </LocalizationProvider>
+                </div>
+                <div
+                    style={{
+                        width: isMobile ? '100%' : 'calc(50% - 5px)',
+                        display: isMobile ? 'block' : 'inline-block',
+                        minHeight: 350,
+                    }}
+                >
+                    {this.renderMap()}
+                </div>
             </div>
-            <div
-                style={{
-                    width: isMobile ? '100%' : 'calc(50% - 5px)',
-                    display: isMobile ? 'block' : 'inline-block',
-                    minHeight: 350,
-                }}
-            >
-                {this.renderMap()}
-            </div>
-        </div>;
+        </ThemeProvider>;
     }
 }
 

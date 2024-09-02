@@ -10,7 +10,7 @@ import {
     ListItemIcon,
     List,
     ListItem,
-    Grid,
+    Grid2,
     ListItemText,
     Input,
     InputAdornment,
@@ -115,13 +115,13 @@ class DialogAdapterDebug extends React.Component {
         if (js.length < 2) {
             return null;
         }
-        return <Grid item>
+        return <Grid2>
             <div style={styles.title}>{I18n.t('Host')}</div>
             <List component="nav">
                 {js.map(item => <ListItem
                     button
                     selected={this.state.jsInstance === item.id}
-                    onClick={this.setState({ jsInstance: item.id, jsInstanceHost: item.host })}
+                    onClick={() => this.setState({ jsInstance: item.id, jsInstanceHost: item.host })}
                 >
                     <ListItemIcon>
                         <img src={item.icon} alt={item.id} style={styles.icon} />
@@ -129,17 +129,17 @@ class DialogAdapterDebug extends React.Component {
                     <ListItemText primary={item.id} />
                 </ListItem>)}
             </List>
-        </Grid>;
+        </Grid2>;
     }
 
     renderInstances() {
         if (!this.state.jsInstance) {
-            return <Grid item/>;
+            return <Grid2 />;
         }
         const instances = this.state.instances.filter(item =>
             item.id !== this.state.jsInstance && item.host === this.state.jsInstanceHost && (!this.state.filter || item.id.includes(this.state.filter.toLowerCase()) ));
 
-        return <Grid item>
+        return <Grid2>
             <div style={styles.title}>{I18n.t('Instances')}</div>
             <List component="nav">
                 {instances.map(item => <ListItem
@@ -154,7 +154,7 @@ class DialogAdapterDebug extends React.Component {
                     <ListItemText primary={item.id} />
                 </ListItem>)}
             </List>
-        </Grid>;
+        </Grid2>;
     }
 
     render() {
@@ -162,13 +162,13 @@ class DialogAdapterDebug extends React.Component {
             maxWidth="md"
             fullWidth={false}
             open={!0}
-            onClose={(event, reason) => false}
+            onClose={() => false}
             aria-labelledby="confirmation-dialog-title"
         >
             <DialogTitle id="confirmation-dialog-title">{this.props.title || I18n.t('Debug instance')}</DialogTitle>
             <DialogContent>
-                <Grid container direction="column">
-                    <Grid item>
+                <Grid2 container direction="column">
+                    <Grid2>
                         <Input
                             style={styles.filterWithButton}
                             value={this.state.filter}
@@ -187,14 +187,14 @@ class DialogAdapterDebug extends React.Component {
                                 </IconButton> : ''}
                             </InputAdornment>}
                         />
-                    </Grid>
-                    <Grid item>
-                        <Grid container>
+                    </Grid2>
+                    <Grid2>
+                        <Grid2 container>
                             {this.renderJavascriptList()}
                             {this.renderInstances()}
-                        </Grid>
-                    </Grid>
-                </Grid>
+                        </Grid2>
+                    </Grid2>
+                </Grid2>
 
             </DialogContent>
             <DialogActions>

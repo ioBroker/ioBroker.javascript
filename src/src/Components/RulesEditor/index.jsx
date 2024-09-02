@@ -15,7 +15,7 @@ import './helpers/stylesVariables.scss';
 import DialogExport from '../../Dialogs/Export';
 import DialogImport from '../../Dialogs/Import';
 
-const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourOpen, command, scriptId, changed, running }) => {
+const RulesEditor = ({ code, onChange, themeName, themeType, theme, setTourStep, tourStep, isTourOpen, command, scriptId, changed, running }) => {
     // eslint-disable-next-line no-unused-vars
     const { blocks, socket, setOnUpdate, setOnDebugMessage, setEnableSimulation } = useContext(ContextWrapperCreate);
     const [allBlocks, setAllBlocks] = useState([]);
@@ -132,7 +132,7 @@ const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourO
     }
 
     return <div key="rulesEditor" className={cls.wrapperRules} ref={ref}>
-        {<CustomDragLayer allBlocks={allBlocks} socket={socket} />}
+        <CustomDragLayer allBlocks={allBlocks} socket={socket} />
         {importExport === "export" ?
             <DialogExport
                 key="dialogExport"
@@ -169,6 +169,9 @@ const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourO
                 typeBlock="triggers"
                 iconName="FlashOn"
                 size={addClass[835]}
+                themeType={themeType}
+                themeName={themeName}
+                theme={theme}
             />
             <ContentBlockItems
                 setUserRules={onChangeBlocks}
@@ -183,6 +186,9 @@ const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourO
                 additionally
                 border
                 size={addClass[835]}
+                themeType={themeType}
+                themeName={themeName}
+                theme={theme}
             />
             <ContentBlockItems
                 setUserRules={onChangeBlocks}
@@ -196,6 +202,9 @@ const RulesEditor = ({ code, onChange, themeName, setTourStep, tourStep, isTourO
                 nameAdditionally={I18n.t('else')}
                 additionally
                 size={addClass[835]}
+                themeType={themeType}
+                themeName={themeName}
+                theme={theme}
             />
         </div>}
     </div>;
@@ -210,6 +219,7 @@ RulesEditor.propTypes = {
     command: PropTypes.string,
     themeType: PropTypes.string,
     themeName: PropTypes.string,
+    theme: PropTypes.object,
     searchText: PropTypes.string,
     resizing: PropTypes.bool,
 

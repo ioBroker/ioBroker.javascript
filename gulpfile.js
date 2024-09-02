@@ -51,7 +51,7 @@ gulp.task('admin-2-compile', async () => buildAdmin());
 gulp.task('admin-3-copy', () => Promise.all([
     gulp.src(['src-admin/build/static/css/*.css', '!src-admin/build/static/css/src_bootstrap_*.css']).pipe(gulp.dest('admin/custom/static/css')),
     gulp.src(['src-admin/build/static/js/*.js']).pipe(gulp.dest('admin/custom/static/js')),
-    gulp.src(['src-admin/build/static/js/*.map', '!src-admin/build/static/js/vendors*.map', '!src-admin/build/static/js/node_modules*.map']).pipe(gulp.dest('admin/custom/static/js')),
+    gulp.src(['src-admin/build/static/js/*.map']).pipe(gulp.dest('admin/custom/static/js')),
     gulp.src(['src-admin/build/customComponents.js']).pipe(gulp.dest('admin/custom')),
     gulp.src(['src-admin/build/customComponents.js.map']).pipe(gulp.dest('admin/custom')),
     gulp.src(['src-admin/src/i18n/*.json']).pipe(gulp.dest('admin/custom/i18n')),

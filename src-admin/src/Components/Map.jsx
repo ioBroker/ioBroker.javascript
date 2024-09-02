@@ -122,7 +122,7 @@ class Map extends Component {
                 animate
                 easeLinearity={0.35}
             >
-                <TileLayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png" />
+                <TileLayer url="https://{s}.tile.osm.org/{z}/{x}/{y}.png" />
                 <MyMapComponent addMap={map => this.onMap(map)} />
             </MapContainer> : null}
         </div>;
