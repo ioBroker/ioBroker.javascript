@@ -10,7 +10,7 @@
         "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
         "@craco/craco": "^7.1.0",
         "@iobroker/adapter-react-v5": "^7.0.1",
-        "@iobroker/json-config": "^7.0.25",
+        "@iobroker/json-config": "^7.1.0",
         "@mui/icons-material": "^6.0.1",
         "@mui/material": "^6.0.1",
         "@mui/x-date-pickers": "^7.15.0",
