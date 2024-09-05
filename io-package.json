@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.8.2",
+    "version": "8.8.3",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.8.3": {
+        "en": "Fixed object selector in rules",
+        "de": "Behobene Objektauswahl in Regeln",
+        "ru": "Фиксированный селектор объекта в правилах",
+        "pt": "Seletor de objetos fixos em regras",
+        "nl": "Objectselectie vast in regels",
+        "fr": "Sélecteur d'objet fixe dans les règles",
+        "it": "Selettore di oggetti fissi nelle regole",
+        "es": "Selector de objeto fijo en las reglas",
+        "pl": "Naprawiono wybór obiektu w zasadach",
+        "uk": "Фіксований вибір об'єкта в правилах",
+        "zh-cn": "规则中的固定对象选择器"
+      },
       "8.8.2": {
         "en": "updated dependencies",
         "de": "aktualisierte abhängigkeiten",
@@ -117,19 +130,6 @@
         "pl": "Naprawiono nazwy skryptów ustawionych w prawo przy użyciu wielu instancji\ndodany odzew dla wszystkich wymagających wywołań w skryptach",
         "uk": "Виправлено правильні вирівняні імена скриптів при використанні декількох екземплярів\nдодано зворотний зв'язок для всіх потреб дзвінків в скриптах",
         "zh-cn": "使用多个实例时, 固定的右对齐脚本名称\n为所有人添加后退需要脚本调用"
-      },
-      "8.7.4": {
-        "en": "added fallback to require the adapters `request` module if no own installed",
-        "de": "add fallback, um die adapter `request` modul zu benötigen, wenn keine eigene installiert",
-        "ru": "дополнительный возврат, требующий модуля \"запрос\" адаптеров, если нет собственной установки",
-        "pt": "adicionado fallback para exigir os adaptadores `request` módulo se nenhum próprio instalado",
-        "nl": "toegevoegd fallback om de adapters te vereisen . . . . . . module als geen eigen geïnstalleerd",
-        "fr": "rechute ajoutée pour exiger le module `request` des adaptateurs si aucun propre installé",
-        "it": "aggiunto fallback per richiedere gli adattatori `request` modulo se non installato",
-        "es": "añadido retroceso para exigir el módulo de `requisición' de los adaptadores si no está instalado",
-        "pl": "dodany system awaryjny wymagający modułu 'request' adapterów, jeśli nie jest zainstalowany",
-        "uk": "додано зворотний зв'язок для потреб адаптерів `request` модуль, якщо не встановлено",
-        "zh-cn": "如果没有安装适配器 \" 请求 \" 模块,则需添加回落"
       }
     },
     "platform": "Javascript/Node.js",
