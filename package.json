@@ -96,7 +96,7 @@
     "translate": "translate-adapter",
     "//postinstall": "node ./install/installTypings.js",
     "build": "node node_modules/gulp/bin/gulp.js",
-    "release": "release-script --noPush -y",
+    "release": "release-script --noPush -y --all",
     "update-packages": "ncu --upgrade && cd src && ncu --upgrade && cd ../src-admin && ncu --upgrade",
     "npm": "npm i && cd src && npm i -f && cd ../src-admin && npm i -f"
   }
