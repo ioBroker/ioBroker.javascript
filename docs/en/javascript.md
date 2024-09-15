@@ -1672,10 +1672,10 @@ startScript('scriptName', true); // start script if not started
 stopScript('scriptName', callback);
 ```
 
-If stopScript is called without arguments, it will stop itself:
+If stopScript is called with an empty string, it will stop itself:
 
 ```js
-stopScript();
+stopScript('');
 ```
 
 ### stopScriptAsync
