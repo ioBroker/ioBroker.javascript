@@ -15,7 +15,20 @@ import './helpers/stylesVariables.scss';
 import DialogExport from '../../Dialogs/Export';
 import DialogImport from '../../Dialogs/Import';
 
-const RulesEditor = ({ code, onChange, themeName, themeType, theme, setTourStep, tourStep, isTourOpen, command, scriptId, changed, running }) => {
+const RulesEditor = ({
+    code,
+    onChange,
+    themeName,
+    themeType,
+    theme,
+    setTourStep,
+    tourStep,
+    isTourOpen,
+    command,
+    scriptId,
+    changed,
+    running,
+}) => {
     // eslint-disable-next-line no-unused-vars
     const { blocks, socket, setOnUpdate, setOnDebugMessage, setEnableSimulation } = useContext(ContextWrapperCreate);
     const [allBlocks, setAllBlocks] = useState([]);
@@ -52,7 +65,7 @@ const RulesEditor = ({ code, onChange, themeName, themeType, theme, setTourStep,
                     let msg = JSON.parse(state.val);
                     // if not from previous session
                     if (msg.ruleId === scriptId && Date.now() - msg.ts < 1000) {
-                        setOnDebugMessage({blockId: msg.blockId, data: msg.data, ts: msg.ts});
+                        setOnDebugMessage({ blockId: msg.blockId, data: msg.data, ts: msg.ts });
                     }
                 } catch (e) {
                     console.error('Cannot parse: ' + state.val);
@@ -60,20 +73,23 @@ const RulesEditor = ({ code, onChange, themeName, themeType, theme, setTourStep,
             }
         };
 
-        socket.getObject(scriptId)
-            .then(obj => {
-                _jsInstance = obj?.common?.engine;
-                //setJsInstance(_jsInstance);
-                socket.subscribeObject(scriptId, handler);
-                _jsInstance && socket.subscribeState(`${_jsInstance}.alive`, handler);
-                _jsInstance && socket.subscribeState(_jsInstance.replace(/^system\.adapter\./, '') + '.debug.rules', handlerStatus);
-            });
+        socket.getObject(scriptId).then(obj => {
+            _jsInstance = obj?.common?.engine;
+            //setJsInstance(_jsInstance);
+            socket.subscribeObject(scriptId, handler);
+            _jsInstance && socket.subscribeState(`${_jsInstance}.alive`, handler);
+            _jsInstance &&
+                socket.subscribeState(_jsInstance.replace(/^system\.adapter\./, '') + '.debug.rules', handlerStatus);
+        });
 
         return function cleanup() {
             _jsInstance && socket.unsubscribeObject(`${_jsInstance}.alive`, handler);
             socket.unsubscribeState(scriptId, handler);
-            _jsAlive && _jsInstance && socket.sendTo(_jsInstance.replace(/^system\.adapter\./, ''), 'rulesOff', scriptId);
-            _jsInstance && socket.unsubscribeState(_jsInstance.replace(/^system\.adapter\./, '') + '.debug.rules', handlerStatus);
+            _jsAlive &&
+                _jsInstance &&
+                socket.sendTo(_jsInstance.replace(/^system\.adapter\./, ''), 'rulesOff', scriptId);
+            _jsInstance &&
+                socket.unsubscribeState(_jsInstance.replace(/^system\.adapter\./, '') + '.debug.rules', handlerStatus);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -105,10 +121,13 @@ const RulesEditor = ({ code, onChange, themeName, themeType, theme, setTourStep,
         document.getElementsByTagName('HTML')[0].className = themeName || 'blue';
     }, [themeName]);
 
-    const onChangeBlocks = useCallback(json => {
-        setUserRules(json);
-        onChange(Compile.json2code(json, blocks));
-    }, [blocks, onChange]);
+    const onChangeBlocks = useCallback(
+        json => {
+            setUserRules(json);
+            onChange(Compile.json2code(json, blocks));
+        },
+        [blocks, onChange],
+    );
 
     const ref = useRef({ clientWidth: 0 });
     const [addClass, setAddClass] = useState({ 835: false, 1035: false });
@@ -125,90 +144,105 @@ const RulesEditor = ({ code, onChange, themeName, themeType, theme, setTourStep,
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ref.current.clientWidth])
+    }, [ref.current.clientWidth]);
 
     if (!blocks) {
         return null;
     }
 
-    return <div key="rulesEditor" className={cls.wrapperRules} ref={ref}>
-        <CustomDragLayer allBlocks={allBlocks} socket={socket} />
-        {importExport === "export" ?
-            <DialogExport
-                key="dialogExport"
-                onClose={() => setModal(false)}
-                open={modal}
-                text={JSON.stringify(userRules, null, 2)} /> :
-            <DialogImport
-                open={modal}
-                key="dialogImport"
-                onClose={text => {
-                    setModal(false);
-                    if (text) {
-                        onChangeBlocks(JSON.parse(text));
-                    }
-                }} />}
-        {<div className={Utils.clsx(cls.rootWrapper, addClass[835] && cls.addClass)}>
-            <Menu
-                setAllBlocks={setAllBlocks}
+    return (
+        <div
+            key="rulesEditor"
+            className={cls.wrapperRules}
+            ref={ref}
+        >
+            <CustomDragLayer
                 allBlocks={allBlocks}
-                userRules={userRules}
-                onChangeBlocks={onChangeBlocks}
-                setTourStep={setTourStep}
-                tourStep={tourStep}
-                addClass={addClass}
-                isTourOpen={isTourOpen}
+                socket={socket}
             />
-            <ContentBlockItems
-                setUserRules={onChangeBlocks}
-                userRules={userRules}
-                isTourOpen={isTourOpen}
-                setTourStep={setTourStep}
-                tourStep={tourStep}
-                name={`${I18n.t('when')}...`}
-                typeBlock="triggers"
-                iconName="FlashOn"
-                size={addClass[835]}
-                themeType={themeType}
-                themeName={themeName}
-                theme={theme}
-            />
-            <ContentBlockItems
-                setUserRules={onChangeBlocks}
-                isTourOpen={isTourOpen}
-                setTourStep={setTourStep}
-                tourStep={tourStep}
-                userRules={userRules}
-                name={`...${I18n.t('and')}...`}
-                typeBlock="conditions"
-                iconName="Help"
-                nameAdditionally={I18n.t('or')}
-                additionally
-                border
-                size={addClass[835]}
-                themeType={themeType}
-                themeName={themeName}
-                theme={theme}
-            />
-            <ContentBlockItems
-                setUserRules={onChangeBlocks}
-                isTourOpen={isTourOpen}
-                setTourStep={setTourStep}
-                tourStep={tourStep}
-                userRules={userRules}
-                name={`...${I18n.t('then')}`}
-                typeBlock="actions"
-                iconName="PlayForWork"
-                nameAdditionally={I18n.t('else')}
-                additionally
-                size={addClass[835]}
-                themeType={themeType}
-                themeName={themeName}
-                theme={theme}
-            />
-        </div>}
-    </div>;
-}
+            {importExport === 'export' ? (
+                <DialogExport
+                    key="dialogExport"
+                    onClose={() => setModal(false)}
+                    open={modal}
+                    text={JSON.stringify(userRules, null, 2)}
+                />
+            ) : (
+                <DialogImport
+                    open={modal}
+                    key="dialogImport"
+                    onClose={text => {
+                        setModal(false);
+                        if (text) {
+                            onChangeBlocks(JSON.parse(text));
+                        }
+                    }}
+                />
+            )}
+            {
+                <div className={Utils.clsx(cls.rootWrapper, addClass[835] && cls.addClass)}>
+                    <Menu
+                        setAllBlocks={setAllBlocks}
+                        allBlocks={allBlocks}
+                        userRules={userRules}
+                        onChangeBlocks={onChangeBlocks}
+                        setTourStep={setTourStep}
+                        tourStep={tourStep}
+                        addClass={addClass}
+                        isTourOpen={isTourOpen}
+                    />
+                    <ContentBlockItems
+                        setUserRules={onChangeBlocks}
+                        userRules={userRules}
+                        isTourOpen={isTourOpen}
+                        setTourStep={setTourStep}
+                        tourStep={tourStep}
+                        name={`${I18n.t('when')}...`}
+                        typeBlock="triggers"
+                        iconName="FlashOn"
+                        size={addClass[835]}
+                        themeType={themeType}
+                        themeName={themeName}
+                        theme={theme}
+                    />
+                    <ContentBlockItems
+                        setUserRules={onChangeBlocks}
+                        isTourOpen={isTourOpen}
+                        setTourStep={setTourStep}
+                        tourStep={tourStep}
+                        userRules={userRules}
+                        name={`...${I18n.t('and')}...`}
+                        typeBlock="conditions"
+                        iconName="Help"
+                        nameAdditionally={I18n.t('or')}
+                        additionally
+                        border
+                        size={addClass[835]}
+                        themeType={themeType}
+                        themeName={themeName}
+                        theme={theme}
+                    />
+                    <ContentBlockItems
+                        setUserRules={onChangeBlocks}
+                        isTourOpen={isTourOpen}
+                        setTourStep={setTourStep}
+                        tourStep={tourStep}
+                        userRules={userRules}
+                        name={`...${I18n.t('then')}`}
+                        typeBlock="actions"
+                        iconName="PlayForWork"
+                        nameAdditionally={I18n.t('else')}
+                        additionally
+                        size={addClass[835]}
+                        themeType={themeType}
+                        themeName={themeName}
+                        theme={theme}
+                    />
+                </div>
+            }
+        </div>
+    );
+};
 
 RulesEditor.propTypes = {
     onChange: PropTypes.func,
@@ -222,7 +256,6 @@ RulesEditor.propTypes = {
     theme: PropTypes.object,
     searchText: PropTypes.string,
     resizing: PropTypes.bool,
-
 };
 
 export default RulesEditor;

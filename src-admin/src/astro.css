@@ -1,6 +1,6 @@
 /* hide link on maps */
 .leaflet-control-attribution.leaflet-control {
-    display: none
+    display: none;
 }
 .astroToolbarTime {
     width: 120px;

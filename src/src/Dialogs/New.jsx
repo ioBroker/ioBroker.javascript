@@ -14,10 +14,7 @@ import {
     MenuItem,
 } from '@mui/material';
 
-import {
-    Check as IconOk,
-    Cancel as IconCancel,
-} from '@mui/icons-material';
+import { Check as IconOk, Cancel as IconCancel } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
@@ -30,12 +27,16 @@ class DialogNew extends React.Component {
             parent: props.parent,
             error: '',
         };
-        this.isShowInstance = !props.folder && props.instances && (props.instance || props.instances[0] || props.instances.length > 1);
+        this.isShowInstance =
+            !props.folder && props.instances && (props.instance || props.instances[0] || props.instances.length > 1);
     }
 
     getId(name) {
         name = name || this.state.name || '';
-        name = name.replace(/[\\/\][.*,;'"`<>?\s]/g, '_').trim().replace(/\.$/, '_');
+        name = name
+            .replace(/[\\/\][.*,;'"`<>?\s]/g, '_')
+            .trim()
+            .replace(/\.$/, '_');
         return (this.state ? this.state.parent : this.props.parent) + '.' + name;
     }
 
@@ -66,93 +67,131 @@ class DialogNew extends React.Component {
     };
 
     render() {
-        return <Dialog
-            onClose={(event, reason) => false}
-            maxWidth="md"
-            fullWidth
-            open={!0}
-            aria-labelledby="confirmation-dialog-title"
-        >
-            <DialogTitle id="confirmation-dialog-title">{this.props.title || I18n.t('Create new')}</DialogTitle>
-            <DialogContent>
-                <form noValidate autoComplete="off">
-                    <TextField
-                        variant="standard"
-                        style={{ width: '100%' }}
-                        id="standard-name"
-                        autoFocus
-                        error={!!this.state.error}
-                        label={I18n.t('Name')}
-                        value={this.state.name}
-                        helperText={this.state.error}
-                        onKeyUp={ev => {
-                            if (ev.key === 'Enter') {
-                                // Do code here
-                                ev.preventDefault();
-                                setTimeout(() => this.handleOk(), 200);
-                            }
-                        }}
-                        onChange={e => this.handleChange(e.target.value)}
-                        margin="normal"
-                    />
-                    <FormControl variant="standard" style={{ width: '100%' }}>
-                        <InputLabel htmlFor="parent">{I18n.t('Folder')}</InputLabel>
-                        <Select
+        return (
+            <Dialog
+                onClose={(event, reason) => false}
+                maxWidth="md"
+                fullWidth
+                open={!0}
+                aria-labelledby="confirmation-dialog-title"
+            >
+                <DialogTitle id="confirmation-dialog-title">{this.props.title || I18n.t('Create new')}</DialogTitle>
+                <DialogContent>
+                    <form
+                        noValidate
+                        autoComplete="off"
+                    >
+                        <TextField
                             variant="standard"
                             style={{ width: '100%' }}
-                            value={this.state.parent}
-                            onChange={e => this.setState({parent: e.target.value})}
-                            inputProps={{ name: 'parent', id: 'parent' }}
-                        >
-                            {this.props.parents.map(parent => {
-                                const parts = parent.id.split('.');
-                                parts.splice(0, 2); // remove script.js
-                                const names = [];
-                                let id = 'script.js';
-                                parts.forEach((n, i) => {
-                                    id += `.${n}`;
-                                    const el = this.props.parents.find(item => item.id === id);
-                                    if (el) {
-                                        names.push(el.name);
-                                    } else {
-                                        names.push(n);
-                                    }
-                                });
-                                if (!names.length) {
-                                    names.push(parent.name);
+                            id="standard-name"
+                            autoFocus
+                            error={!!this.state.error}
+                            label={I18n.t('Name')}
+                            value={this.state.name}
+                            helperText={this.state.error}
+                            onKeyUp={ev => {
+                                if (ev.key === 'Enter') {
+                                    // Do code here
+                                    ev.preventDefault();
+                                    setTimeout(() => this.handleOk(), 200);
                                 }
-                                return <MenuItem key={parent.id} value={parent.id}>{names.join(' / ')}</MenuItem>;
-                            })}
-                        </Select>
-                    </FormControl>
-                    <TextField
-                        variant="standard"
-                        id="standard-name-id"
-                        style={{ width: '100%' }}
-                        label={I18n.t('ID')}
-                        value={this.getId()}
-                        disabled
-                        margin="normal"
-                    />
-                    {this.isShowInstance && <FormControl variant="standard">
-                        <InputLabel htmlFor="instance">{I18n.t('Instance')}</InputLabel>
-                        <Select
+                            }}
+                            onChange={e => this.handleChange(e.target.value)}
+                            margin="normal"
+                        />
+                        <FormControl
                             variant="standard"
-                            value={this.state.instance}
-                            onChange={e => this.setState({ instance: parseInt(e.target.value, 10) })}
-                            inputProps={{ name: 'instance', id: 'instance' }}
+                            style={{ width: '100%' }}
                         >
-                            {this.props.instances.map(instance =>
-                                <MenuItem key={`instance${instance}`} value={instance}>{instance || '0'}</MenuItem>)}
-                        </Select>
-                    </FormControl>}
-                </form>
-            </DialogContent>
-            <DialogActions>
-                <Button variant="contained" onClick={this.handleOk} disabled={!!this.state.error} color="primary" startIcon={<IconOk/>}>{I18n.t('Ok')}</Button>
-                <Button color="grey" variant="contained" onClick={this.handleCancel} startIcon={<IconCancel/>}>{I18n.t('Cancel')}</Button>
-            </DialogActions>
-        </Dialog>;
+                            <InputLabel htmlFor="parent">{I18n.t('Folder')}</InputLabel>
+                            <Select
+                                variant="standard"
+                                style={{ width: '100%' }}
+                                value={this.state.parent}
+                                onChange={e => this.setState({ parent: e.target.value })}
+                                inputProps={{ name: 'parent', id: 'parent' }}
+                            >
+                                {this.props.parents.map(parent => {
+                                    const parts = parent.id.split('.');
+                                    parts.splice(0, 2); // remove script.js
+                                    const names = [];
+                                    let id = 'script.js';
+                                    parts.forEach((n, i) => {
+                                        id += `.${n}`;
+                                        const el = this.props.parents.find(item => item.id === id);
+                                        if (el) {
+                                            names.push(el.name);
+                                        } else {
+                                            names.push(n);
+                                        }
+                                    });
+                                    if (!names.length) {
+                                        names.push(parent.name);
+                                    }
+                                    return (
+                                        <MenuItem
+                                            key={parent.id}
+                                            value={parent.id}
+                                        >
+                                            {names.join(' / ')}
+                                        </MenuItem>
+                                    );
+                                })}
+                            </Select>
+                        </FormControl>
+                        <TextField
+                            variant="standard"
+                            id="standard-name-id"
+                            style={{ width: '100%' }}
+                            label={I18n.t('ID')}
+                            value={this.getId()}
+                            disabled
+                            margin="normal"
+                        />
+                        {this.isShowInstance && (
+                            <FormControl variant="standard">
+                                <InputLabel htmlFor="instance">{I18n.t('Instance')}</InputLabel>
+                                <Select
+                                    variant="standard"
+                                    value={this.state.instance}
+                                    onChange={e => this.setState({ instance: parseInt(e.target.value, 10) })}
+                                    inputProps={{ name: 'instance', id: 'instance' }}
+                                >
+                                    {this.props.instances.map(instance => (
+                                        <MenuItem
+                                            key={`instance${instance}`}
+                                            value={instance}
+                                        >
+                                            {instance || '0'}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        )}
+                    </form>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        onClick={this.handleOk}
+                        disabled={!!this.state.error}
+                        color="primary"
+                        startIcon={<IconOk />}
+                    >
+                        {I18n.t('Ok')}
+                    </Button>
+                    <Button
+                        color="grey"
+                        variant="contained"
+                        onClick={this.handleCancel}
+                        startIcon={<IconCancel />}
+                    >
+                        {I18n.t('Cancel')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
     }
 }
 

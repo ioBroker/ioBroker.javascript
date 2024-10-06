@@ -32,20 +32,20 @@ const styles = {
     }),
     info: theme => ({
         background: theme.palette.mode === 'dark' ? 'darkgrey' : 'lightgrey',
-        color: theme.palette.mode === 'dark' ?  'black' : 'black',
+        color: theme.palette.mode === 'dark' ? 'black' : 'black',
     }),
     error: theme => ({
         background: '#FF0000',
-        color: theme.palette.mode === 'dark' ?  'black' : 'white',
+        color: theme.palette.mode === 'dark' ? 'black' : 'white',
     }),
     warn: theme => ({
         background: '#FF8000',
-        color: theme.palette.mode === 'dark' ?  'black' : 'white',
+        color: theme.palette.mode === 'dark' ? 'black' : 'white',
     }),
     debug: theme => ({
         background: 'gray',
         opacity: 0.8,
-        color: theme.palette.mode === 'dark' ?  'black' : 'white',
+        color: theme.palette.mode === 'dark' ? 'black' : 'white',
     }),
     silly: theme => ({
         background: 'gray',
@@ -63,7 +63,8 @@ const styles = {
         //marginLeft: 2,
         width: TOOLBOX_WIDTH,
         height: '100%',
-        boxShadow: '2px 0px 4px -1px rgba(0, 0, 0, 0.2), 4px 0px 5px 0px rgba(0, 0, 0, 0.14), 1px 0px 10px 0px rgba(0, 0, 0, 0.12)',
+        boxShadow:
+            '2px 0px 4px -1px rgba(0, 0, 0, 0.2), 4px 0px 5px 0px rgba(0, 0, 0, 0.14), 1px 0px 10px 0px rgba(0, 0, 0, 0.12)',
         display: 'inline-block',
         verticalAlign: 'top',
         overflow: 'hidden',
@@ -120,28 +121,48 @@ class Console extends React.Component {
         this.messagesEnd = React.createRef();
     }
     generateLine(message) {
-        return <Box
-            component="tr"
-            key={`tr_${message.ts}_${message.text.substr(-10)}`}
-            sx={styles[message.severity]}
-        >
-            <td style={styles.trTime}>{getTimeString(new Date(message.ts))}</td>
-            <td style={styles.trSeverity}>{message.severity}</td>
-            <td>{message.text}</td>
-        </Box>;
+        return (
+            <Box
+                component="tr"
+                key={`tr_${message.ts}_${message.text.substr(-10)}`}
+                sx={styles[message.severity]}
+            >
+                <td style={styles.trTime}>{getTimeString(new Date(message.ts))}</td>
+                <td style={styles.trSeverity}>{message.severity}</td>
+                <td>{message.text}</td>
+            </Box>
+        );
     }
     renderLogList(lines) {
         if (lines && lines.length) {
-            return <Box sx={styles.logBoxInner} key="logList">
-                <table key="logTable" style={styles.table}>
-                    <tbody>
-                        {lines.map(line => this.generateLine(line))}
-                    </tbody>
-                </table>
-                <div key="logScrollPoint" ref={this.messagesEnd} style={{ float: 'left', clear: 'both' }}/>
-            </Box>;
+            return (
+                <Box
+                    sx={styles.logBoxInner}
+                    key="logList"
+                >
+                    <table
+                        key="logTable"
+                        style={styles.table}
+                    >
+                        <tbody>{lines.map(line => this.generateLine(line))}</tbody>
+                    </table>
+                    <div
+                        key="logScrollPoint"
+                        ref={this.messagesEnd}
+                        style={{ float: 'left', clear: 'both' }}
+                    />
+                </Box>
+            );
         }
-        return <Box key="logList" sx={styles.logBoxInner} style={{ paddingLeft: 10 }}>{I18n.t('Log outputs')}</Box>;
+        return (
+            <Box
+                key="logList"
+                sx={styles.logBoxInner}
+                style={{ paddingLeft: 10 }}
+            >
+                {I18n.t('Log outputs')}
+            </Box>
+        );
     }
 
     onCopy() {
@@ -149,7 +170,7 @@ class Console extends React.Component {
     }
 
     scrollToBottom() {
-        this.messagesEnd && this.messagesEnd.current && this.messagesEnd.current.scrollIntoView({behavior: 'smooth'});
+        this.messagesEnd && this.messagesEnd.current && this.messagesEnd.current.scrollIntoView({ behavior: 'smooth' });
     }
 
     componentDidUpdate() {
@@ -158,33 +179,42 @@ class Console extends React.Component {
 
     render() {
         const lines = this.props.console;
-        return <div style={styles.logBox}>
-            <div style={styles.toolbox} key="toolbox">
-                <IconButton
-                    style={styles.iconButtons}
-                    onClick={() => this.setState({ goBottom: !this.state.goBottom })}
-                    color={this.state.goBottom ? 'secondary' : ''}
-                    size="medium"
+        return (
+            <div style={styles.logBox}>
+                <div
+                    style={styles.toolbox}
+                    key="toolbox"
                 >
-                    <IconBottom />
-                </IconButton>
-                {lines && lines.length ? <IconButton
-                    style={styles.iconButtons}
-                    onClick={() => this.props.onClearAllLogs()}
-                    size="medium"
-                >
-                    <IconDelete />
-                </IconButton> : null}
-                {lines && lines.length ? <IconButton
-                    style={styles.iconButtons}
-                    onClick={() => this.onCopy()}
-                    size="medium"
-                >
-                    <IconCopy />
-                </IconButton> : null}
+                    <IconButton
+                        style={styles.iconButtons}
+                        onClick={() => this.setState({ goBottom: !this.state.goBottom })}
+                        color={this.state.goBottom ? 'secondary' : ''}
+                        size="medium"
+                    >
+                        <IconBottom />
+                    </IconButton>
+                    {lines && lines.length ? (
+                        <IconButton
+                            style={styles.iconButtons}
+                            onClick={() => this.props.onClearAllLogs()}
+                            size="medium"
+                        >
+                            <IconDelete />
+                        </IconButton>
+                    ) : null}
+                    {lines && lines.length ? (
+                        <IconButton
+                            style={styles.iconButtons}
+                            onClick={() => this.onCopy()}
+                            size="medium"
+                        >
+                            <IconCopy />
+                        </IconButton>
+                    ) : null}
+                </div>
+                {this.renderLogList(lines)}
             </div>
-            {this.renderLogList(lines)}
-        </div>;
+        );
     }
 }
 

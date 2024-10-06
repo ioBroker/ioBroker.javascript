@@ -44,7 +44,7 @@ import {
     MdBugReport as IconDebugMode,
     MdPlayArrow as IconPlay,
     MdPause as IconPause,
-    MdAutoAwesome as IconAstro,
+    MdBrightness4 as IconAstro,
 } from 'react-icons/md';
 
 import {

@@ -2,12 +2,12 @@ import * as React from 'react';
 
 export function useStateLocal(events, nameEvents) {
     const [state, setState] = React.useState(
-        localStorage.getItem(nameEvents) ? JSON.parse(localStorage.getItem(nameEvents)) : events
+        window.localStorage.getItem(nameEvents) ? JSON.parse(window.localStorage.getItem(nameEvents)) : events,
     );
 
-    const eventsToInstall = (newHeadCells) => {
-        localStorage.setItem(nameEvents, JSON.stringify(newHeadCells));
+    const eventsToInstall = newHeadCells => {
+        window.localStorage.setItem(nameEvents, JSON.stringify(newHeadCells));
         setState(newHeadCells);
     };
-    return [state, eventsToInstall, localStorage.getItem(nameEvents) ? true : false];
+    return [state, eventsToInstall, !!window.localStorage.getItem(nameEvents)];
 }

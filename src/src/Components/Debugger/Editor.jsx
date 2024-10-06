@@ -7,7 +7,7 @@ const styles = {
         height: '100%',
         width: '100%',
         overflow: 'hidden',
-        position: 'relative'
+        position: 'relative',
     },
 };
 
@@ -16,7 +16,7 @@ class Editor extends React.Component {
         super(props);
 
         this.state = {
-            lines: (this.props.script || '').split(/\r\n|\n/)
+            lines: (this.props.script || '').split(/\r\n|\n/),
         };
     }
 
@@ -27,23 +27,27 @@ class Editor extends React.Component {
     }
 
     render() {
-        return <div style={styles.editorDiv} key="scriptEditorDiv2">
-            <ScriptEditorComponent
-                key="scriptEditor2"
-                name={this.props.scriptName}
-                adapterName={this.props.adapterName}
-                readOnly
-                code={this.props.script || ''}
-                isDark={this.props.themeType === 'dark'}
-                socket={this.props.socket}
-                runningInstances={this.props.runningInstances}
-                language={'javascript'}
-
-                breakpoints={this.props.breakpoints}
-                location={this.props.paused ? this.props.location : null}
-                onToggleBreakpoint={i => this.props.onToggleBreakpoint(i)}
-            />
-        </div>;
+        return (
+            <div
+                style={styles.editorDiv}
+                key="scriptEditorDiv2"
+            >
+                <ScriptEditorComponent
+                    key="scriptEditor2"
+                    name={this.props.scriptName}
+                    adapterName={this.props.adapterName}
+                    readOnly
+                    code={this.props.script || ''}
+                    isDark={this.props.themeType === 'dark'}
+                    socket={this.props.socket}
+                    runningInstances={this.props.runningInstances}
+                    language={'javascript'}
+                    breakpoints={this.props.breakpoints}
+                    location={this.props.paused ? this.props.location : null}
+                    onToggleBreakpoint={i => this.props.onToggleBreakpoint(i)}
+                />
+            </div>
+        );
     }
 }
 

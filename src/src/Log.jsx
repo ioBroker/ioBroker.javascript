@@ -1,10 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {
-    Box,
-    IconButton,
-} from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 
 import {
     MdDeleteForever as IconDelete,
@@ -16,8 +13,10 @@ import {
 import { I18n, Utils } from '@iobroker/adapter-react-v5';
 
 // replace later with MdHorizontalSplit and MdVerticalSplit
-const IconVerticalSplit   = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgAQMAAADYVuV7AAAABlBMVEUAAAAzMzPI8eYgAAAAAXRSTlMAQObYZgAAACFJREFUeAFjAIJRwP////8PYIKWHCigNQdKj/pn1D+jAABTG16wVQqVpQAAAABJRU5ErkJggg==';
-const IconHorizontalSplit = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgAQMAAADYVuV7AAAABlBMVEUAAAAzMzPI8eYgAAAAAXRSTlMAQObYZgAAABtJREFUeAFjAIJRwP8fCj7QkENn/4z6Z5QzCgBjbWaoyx1PqQAAAABJRU5ErkJggg==';
+const IconVerticalSplit =
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgAQMAAADYVuV7AAAABlBMVEUAAAAzMzPI8eYgAAAAAXRSTlMAQObYZgAAACFJREFUeAFjAIJRwP////8PYIKWHCigNQdKj/pn1D+jAABTG16wVQqVpQAAAABJRU5ErkJggg==';
+const IconHorizontalSplit =
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgAQMAAADYVuV7AAAABlBMVEUAAAAzMzPI8eYgAAAAAXRSTlMAQObYZgAAABtJREFUeAFjAIJRwP8fCj7QkENn/4z6Z5QzCgBjbWaoyx1PqQAAAABJRU5ErkJggg==';
 
 function getTimeString(d) {
     let text;
@@ -67,20 +66,20 @@ const styles = {
     }),
     info: theme => ({
         background: theme.palette.mode === 'dark' ? 'darkgrey' : 'lightgrey',
-        color: theme.palette.mode === 'dark' ?  'black' : 'black',
+        color: theme.palette.mode === 'dark' ? 'black' : 'black',
     }),
     error: theme => ({
         background: '#FF0000',
-        color: theme.palette.mode === 'dark' ?  'black' : 'white',
+        color: theme.palette.mode === 'dark' ? 'black' : 'white',
     }),
     warn: theme => ({
         background: '#FF8000',
-        color: theme.palette.mode === 'dark' ?  'black' : 'white',
+        color: theme.palette.mode === 'dark' ? 'black' : 'white',
     }),
     debug: theme => ({
         background: 'gray',
         opacity: 0.8,
-        color: theme.palette.mode === 'dark' ?  'black' : 'white',
+        color: theme.palette.mode === 'dark' ? 'black' : 'white',
     }),
     silly: theme => ({
         background: 'gray',
@@ -94,7 +93,8 @@ const styles = {
     toolbox: {
         width: TOOLBOX_WIDTH,
         height: '100%',
-        boxShadow: '2px 0px 4px -1px rgba(0, 0, 0, 0.2), 4px 0px 5px 0px rgba(0, 0, 0, 0.14), 1px 0px 10px 0px rgba(0, 0, 0, 0.12)',
+        boxShadow:
+            '2px 0px 4px -1px rgba(0, 0, 0, 0.2), 4px 0px 5px 0px rgba(0, 0, 0, 0.14), 1px 0px 10px 0px rgba(0, 0, 0, 0.12)',
         display: 'inline-block',
         verticalAlign: 'top',
         overflow: 'hidden',
@@ -153,7 +153,10 @@ class Log extends React.Component {
         let message = row.message || '';
 
         if (typeof message !== 'object') {
-            const regExp = new RegExp(`${row.from.replace('.', '\\.').replace(')', '\\)').replace('(', '\\(')} \\(\\d+\\) `, 'g');
+            const regExp = new RegExp(
+                `${row.from.replace('.', '\\.').replace(')', '\\)').replace('(', '\\(')} \\(\\d+\\) `,
+                'g',
+            );
             const matches = message.match(regExp);
 
             if (matches) {
@@ -163,16 +166,18 @@ class Log extends React.Component {
             }
         }
 
-        return <Box
-            component="tr"
-            key={`tr_${row.ts}_${row.message.substr(-10)}`}
-            sx={styles[row.severity]}
-        >
-            <td style={styles.trFrom}>{row.from}</td>
-            <td style={styles.trTime}>{getTimeString(new Date(row.ts))}</td>
-            <td style={styles.trSeverity}>{row.severity}</td>
-            <td>{message}</td>
-        </Box>;
+        return (
+            <Box
+                component="tr"
+                key={`tr_${row.ts}_${row.message.substr(-10)}`}
+                sx={styles[row.severity]}
+            >
+                <td style={styles.trFrom}>{row.from}</td>
+                <td style={styles.trTime}>{getTimeString(new Date(row.ts))}</td>
+                <td style={styles.trSeverity}>{row.severity}</td>
+                <td>{message}</td>
+            </Box>
+        );
     }
 
     scrollToBottom() {
@@ -274,58 +279,97 @@ class Log extends React.Component {
 
     renderLogList(lines) {
         if (this.state.selected && lines && lines.length) {
-            return <Box sx={styles.logBoxInner} key="logList">
-                <table key="logTable" style={styles.table}><tbody>{lines}</tbody></table>
-                <div key="logScrollPoint" ref={this.messagesEnd} style={{ float: 'left', clear: 'both' }}/>
-            </Box>;
+            return (
+                <Box
+                    sx={styles.logBoxInner}
+                    key="logList"
+                >
+                    <table
+                        key="logTable"
+                        style={styles.table}
+                    >
+                        <tbody>{lines}</tbody>
+                    </table>
+                    <div
+                        key="logScrollPoint"
+                        ref={this.messagesEnd}
+                        style={{ float: 'left', clear: 'both' }}
+                    />
+                </Box>
+            );
         }
 
-        return <Box key="logList" sx={styles.logBoxInner} style={{ paddingLeft: 10 }}>{I18n.t('Log outputs')}</Box>;
+        return (
+            <Box
+                key="logList"
+                sx={styles.logBoxInner}
+                style={{ paddingLeft: 10 }}
+            >
+                {I18n.t('Log outputs')}
+            </Box>
+        );
     }
 
     render() {
         const lines = this.state.selected && this.state.lines[this.state.selected];
-        return <div style={styles.logBox}>
-            <div style={styles.toolbox} key="toolbox">
-                <IconButton
-                    style={styles.iconButtons}
-                    onClick={() => this.setState({ goBottom: !this.state.goBottom })}
-                    color={this.state.goBottom ? 'secondary' : ''}
-                    size="medium"
+        return (
+            <div style={styles.logBox}>
+                <div
+                    style={styles.toolbox}
+                    key="toolbox"
                 >
-                    <IconBottom />
-                </IconButton>
-                {lines && lines.length ? <IconButton
-                    style={styles.iconButtons}
-                    onClick={() => this.clearLog()}
-                    size="medium">
-                    <IconDelete />
-                </IconButton> : null}
-                {lines && lines.length ? <IconButton
-                    style={styles.iconButtons}
-                    onClick={() => this.onCopy()}
-                    size="medium">
-                    <IconCopy />
-                </IconButton> : null}
-                {this.props.onLayoutChange ? <IconButton
-                    style={styles.iconButtons}
-                    onClick={() => this.props.onLayoutChange()}
-                    title={I18n.t('Change layout')}
-                    size="medium"
-                    sx={styles.layoutIcon}
-                >
-                    <img alt="split" src={this.props.verticalLayout ? IconVerticalSplit : IconHorizontalSplit} />
-                </IconButton> : null}
-                <IconButton
-                    style={styles.iconButtons}
-                    onClick={() => this.props.onHideLog()}
-                    title={I18n.t('Hide logs')}
-                    size="medium">
-                    <IconHide />
-                </IconButton>
+                    <IconButton
+                        style={styles.iconButtons}
+                        onClick={() => this.setState({ goBottom: !this.state.goBottom })}
+                        color={this.state.goBottom ? 'secondary' : ''}
+                        size="medium"
+                    >
+                        <IconBottom />
+                    </IconButton>
+                    {lines && lines.length ? (
+                        <IconButton
+                            style={styles.iconButtons}
+                            onClick={() => this.clearLog()}
+                            size="medium"
+                        >
+                            <IconDelete />
+                        </IconButton>
+                    ) : null}
+                    {lines && lines.length ? (
+                        <IconButton
+                            style={styles.iconButtons}
+                            onClick={() => this.onCopy()}
+                            size="medium"
+                        >
+                            <IconCopy />
+                        </IconButton>
+                    ) : null}
+                    {this.props.onLayoutChange ? (
+                        <IconButton
+                            style={styles.iconButtons}
+                            onClick={() => this.props.onLayoutChange()}
+                            title={I18n.t('Change layout')}
+                            size="medium"
+                            sx={styles.layoutIcon}
+                        >
+                            <img
+                                alt="split"
+                                src={this.props.verticalLayout ? IconVerticalSplit : IconHorizontalSplit}
+                            />
+                        </IconButton>
+                    ) : null}
+                    <IconButton
+                        style={styles.iconButtons}
+                        onClick={() => this.props.onHideLog()}
+                        title={I18n.t('Hide logs')}
+                        size="medium"
+                    >
+                        <IconHide />
+                    </IconButton>
+                </div>
+                {this.renderLogList(lines)}
             </div>
-            {this.renderLogList(lines)}
-        </div>;
+        );
     }
 }
 

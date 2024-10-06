@@ -1,39 +1,82 @@
-import { useState, useEffect } from 'react';
-import * as Icons from '@mui/icons-material/';
+import React, { useState, useEffect } from 'react';
+import {
+    Shuffle,
+    Apps,
+    Functions,
+    Language,
+    AddBox,
+    Pause,
+    Subject,
+    PlayForWork,
+    Brightness3,
+    HelpOutline,
+    Storage,
+    AccessTime,
+    PlayArrow,
+    FlashOn,
+    Help,
+} from '@mui/icons-material';
 
 const ICON_CACHE = {};
 
-const MaterialDynamicIcon = ({ iconName, style, adapter, socket, onClick, className }) => {
-    let [url, setUrl] = useState('');
+const objIcon = {
+    Shuffle,
+    Apps,
+    Functions,
+    Language,
+    AddBox,
+    Pause,
+    Subject,
+    PlayForWork,
+    Brightness3,
+    HelpOutline,
+    Storage,
+    AccessTime,
+    PlayArrow,
+    FlashOn,
+};
+
+function MaterialDynamicIcon({
+    iconName,
+    className,
+    adapter,
+    socket,
+    onClick,
+    style,
+}) {
+    const [url, setUrl] = useState('');
 
     useEffect(() => {
         if (adapter && socket) {
-            ICON_CACHE[adapter] = ICON_CACHE[adapter] || socket.getObject(`system.adapter.${adapter}`);
-            ICON_CACHE[adapter].then(obj =>
-                obj?.common?.icon && setUrl(`../../adapter/${adapter}/${obj.common.icon}`));
+            if (!(ICON_CACHE[adapter] instanceof Promise)) {
+                ICON_CACHE[adapter] = socket.getObject(`system.adapter.${adapter}`);
+            }
+            void ICON_CACHE[adapter].then(
+                obj => obj?.common?.icon && setUrl(`../../adapter/${adapter}/${obj.common.icon}`),
+            );
         }
     }, [adapter, socket]);
 
     if (adapter) {
-        return <img
-            onClick={e => onClick && onClick(e)}
-            src={url || ''}
-            style={style}
-            className={className}
-            alt=""
-        />;
+        return (
+            <img
+                onClick={e => onClick && onClick(e)}
+                src={url || ''}
+                className={className}
+                style={style}
+                alt=""
+            />
+        );
     }
+    const Element = objIcon[iconName] || Help;
 
-    const Element = Icons[iconName || 'Help'];
-    return <Element
-        style={style}
-        onClick={e => onClick && onClick(e)}
-    />;
+    return (
+        <Element
+            className={className}
+            style={style}
+            onClick={e => onClick && onClick(e)}
+        />
+    );
 }
-
-MaterialDynamicIcon.defaultProps = {
-    style: null,
-    iconName: 'Help'
-};
 
 export default MaterialDynamicIcon;

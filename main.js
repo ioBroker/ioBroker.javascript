@@ -6,7 +6,7 @@
  * Copyright (c) 2014-2024 bluefox <dogafox@gmail.com>,
  *
  * Copyright (c) 2014      hobbyquaker
-*/
+ */
 
 /* jshint -W097 */
 /* jshint -W083 */
@@ -15,55 +15,49 @@
 /* jshint shadow: true */
 'use strict';
 
-const vm            = require('node:vm');
-const nodeFS        = require('node:fs');
-const nodePath      = require('node:path');
-const tsc           = require('virtual-tsc');
-const Mirror        = require('./lib/mirror');
-const fork          = require('child_process').fork;
+const vm = require('node:vm');
+const nodeFS = require('node:fs');
+const nodePath = require('node:path');
+const tsc = require('virtual-tsc');
+const Mirror = require('./lib/mirror');
+const fork = require('child_process').fork;
 
 const mods = {
-    fs:               {},
-    dgram:            require('node:dgram'),
-    crypto:           require('node:crypto'),
-    dns:              require('node:dns'),
-    events:           require('node:events'),
-    http:             require('node:http'),
-    https:            require('node:https'),
-    http2:            require('node:http2'),
-    net:              require('node:net'),
-    os:               require('node:os'),
-    path:             require('node:path'),
-    util:             require('node:util'),
-    child_process:    require('node:child_process'),
-    stream:           require('node:stream'),
-    zlib:             require('node:zlib'),
-    suncalc:          require('suncalc2'),
-    axios:            require('axios'),
-    wake_on_lan:      require('wake_on_lan'),
-    nodeSchedule:     require('node-schedule')
+    fs: {},
+    dgram: require('node:dgram'),
+    crypto: require('node:crypto'),
+    dns: require('node:dns'),
+    events: require('node:events'),
+    http: require('node:http'),
+    https: require('node:https'),
+    http2: require('node:http2'),
+    net: require('node:net'),
+    os: require('node:os'),
+    path: require('node:path'),
+    util: require('node:util'),
+    child_process: require('node:child_process'),
+    stream: require('node:stream'),
+    zlib: require('node:zlib'),
+    suncalc: require('suncalc2'),
+    axios: require('axios'),
+    wake_on_lan: require('wake_on_lan'),
+    nodeSchedule: require('node-schedule'),
 };
 
 /**
  * List of forbidden Locations for a mirror directory
  * relative to the default data directory
  * ATTENTION: the same list is also located in index_m.html!!
+ *
  * @type {*[]}
  */
-const forbiddenMirrorLocations = [
-    'backup-objects',
-    'files',
-    'backitup',
-    '../backups',
-    '../node_modules',
-    '../log',
-];
+const forbiddenMirrorLocations = ['backup-objects', 'files', 'backitup', '../backups', '../node_modules', '../log'];
 
-const utils     = require('@iobroker/adapter-core');
-const words     = require('./lib/words');
-const sandBox   = require('./lib/sandbox');
+const utils = require('@iobroker/adapter-core');
+const words = require('./lib/words');
+const sandBox = require('./lib/sandbox');
 const { requestModuleNameByUrl } = require('./lib/nodeModulesManagement.js');
-const eventObj  = require('./lib/eventObj');
+const eventObj = require('./lib/eventObj');
 const Scheduler = require('./lib/scheduler');
 const { targetTsLib, tsCompilerOptions, jsDeclarationCompilerOptions } = require('./lib/typescriptSettings');
 const { hashSource, isObject } = require('./lib/tools');
@@ -73,13 +67,13 @@ const {
     resolveTypings,
     scriptIdToTSFilename,
     transformScriptBeforeCompilation,
-    transformGlobalDeclarations
+    transformGlobalDeclarations,
 } = require('./lib/typescriptTools');
 
 const packageJson = require('./package.json');
 const SCRIPT_CODE_MARKER = 'script.js.';
 
-const stopCounters =  {};
+const stopCounters = {};
 let setStateCountCheckInterval = null;
 
 let webstormDebug;
@@ -135,10 +129,10 @@ function provideDeclarationsForGlobalScript(scriptID, declarations) {
     tsAmbient[globalDeclarationPath] = globalDeclarations;
     // make sure the next script compilation has access to the updated declarations
     tsServer.provideAmbientDeclarations({
-        [globalDeclarationPath]: globalDeclarations
+        [globalDeclarationPath]: globalDeclarations,
     });
     jsDeclarationServer.provideAmbientDeclarations({
-        [globalDeclarationPath]: globalDeclarations
+        [globalDeclarationPath]: globalDeclarations,
     });
 }
 
@@ -149,47 +143,48 @@ function dstOffsetAtDate(dateInput) {
     //   except if it can be exactly divided by 100, then it isn't (2100, 2200, etc)
     //    except if it can be exactly divided by 400, then it is (2000, 2400)"
     // (https://www.mathsisfun.com/leap-years.html).
-    const isLeapYear = ((fullYear & 3) | (fullYear/100 & 3)) === 0 ? 1 : 0;
+    const isLeapYear = ((fullYear & 3) | ((fullYear / 100) & 3)) === 0 ? 1 : 0;
     // (fullYear & 3) = (fullYear % 4), but faster
     //Alternative:var isLeapYear=(new Date(currentYear,1,29,12)).getDate()===29?1:0
     const fullMonth = dateInput.getMonth() | 0;
     return (
         // 1. We know what the time since the Epoch really is
-        (+dateInput) // same as the dateInput.getTime() method
+        +dateInput - // same as the dateInput.getTime() method
         // 2. We know what the time since the Epoch at the start of the year is
-        - (+new Date(fullYear, 0)) // day defaults to 1 if not explicitly zeroed
+        +new Date(fullYear, 0) - // day defaults to 1 if not explicitly zeroed
         // 3. Now, subtract what we would expect the time to be if daylight savings
         //      did not exist. This yields the time-offset due to daylight savings.
-        - ((
-            ((
-                // Calculate the day of the year in the Gregorian calendar
-                // The code below works based upon the facts of signed right shifts
-                //    • (x) >> n: shifts n and fills in the n highest bits with 0s
-                //    • (-x) >> n: shifts n and fills in the n highest bits with 1s
-                // (This assumes that x is a positive integer)
-                -1 + // first day in the year is day 1
-                (31 & ((-fullMonth) >> 4)) + // January // (-11)>>4 = -1
-                ((28 + isLeapYear) & ((1 - fullMonth) >> 4)) + // February
-                (31 & ((2 - fullMonth) >> 4)) + // March
-                (30 & ((3 - fullMonth) >> 4)) + // April
-                (31 & ((4 - fullMonth) >> 4)) + // May
-                (30 & ((5 - fullMonth) >> 4)) + // June
-                (31 & ((6 - fullMonth) >> 4)) + // July
-                (31 & ((7 - fullMonth) >> 4)) + // August
-                (30 & ((8 - fullMonth) >> 4)) + // September
-                (31 & ((9 - fullMonth) >> 4)) + // October
-                (30 & ((10 - fullMonth) >> 4)) + // November
-                // There are no months past December: the year rolls into the next.
-                // Thus, fullMonth is 0-based, so it will never be 12 in Javascript
+        (((// Calculate the day of the year in the Gregorian calendar
+        // The code below works based upon the facts of signed right shifts
+        //    • (x) >> n: shifts n and fills in the n highest bits with 0s
+        //    • (-x) >> n: shifts n and fills in the n highest bits with 1s
+        // (This assumes that x is a positive integer)
+        (-1 + // first day in the year is day 1
+            (31 & (-fullMonth >> 4)) + // January // (-11)>>4 = -1
+            ((28 + isLeapYear) & ((1 - fullMonth) >> 4)) + // February
+            (31 & ((2 - fullMonth) >> 4)) + // March
+            (30 & ((3 - fullMonth) >> 4)) + // April
+            (31 & ((4 - fullMonth) >> 4)) + // May
+            (30 & ((5 - fullMonth) >> 4)) + // June
+            (31 & ((6 - fullMonth) >> 4)) + // July
+            (31 & ((7 - fullMonth) >> 4)) + // August
+            (30 & ((8 - fullMonth) >> 4)) + // September
+            (31 & ((9 - fullMonth) >> 4)) + // October
+            (30 & ((10 - fullMonth) >> 4)) + // November
+            // There are no months past December: the year rolls into the next.
+            // Thus, fullMonth is 0-based, so it will never be 12 in Javascript
 
-                (dateInput.getDate() | 0) // get day of the month
-
-            ) & 0xffff) * 24 * 60 // 24 hours in a day, 60 minutes in an hour
-            + (dateInput.getHours() & 0xff) * 60 // 60 minutes in an hour
-            + (dateInput.getMinutes() & 0xff)
-        )|0) * 60 * 1000 // 60 seconds in a minute * 1000 milliseconds in a second
-        - (dateInput.getSeconds() & 0xff) * 1000 // 1000 milliseconds in a second
-        - dateInput.getMilliseconds()
+            (dateInput.getDate() | 0)) & // get day of the month
+            0xffff) *
+            24 *
+            60 + // 24 hours in a day, 60 minutes in an hour
+            (dateInput.getHours() & 0xff) * 60 + // 60 minutes in an hour
+            (dateInput.getMinutes() & 0xff)) |
+            0) *
+            60 *
+            1000 - // 60 seconds in a minute * 1000 milliseconds in a second
+        (dateInput.getSeconds() & 0xff) * 1000 - // 1000 milliseconds in a second
+        dateInput.getMilliseconds()
     );
 }
 
@@ -201,16 +196,19 @@ function loadTypeScriptDeclarations() {
     ];
     // Also include user-selected libraries (but only those that are also installed)
     if (
-        adapter.config
-        && typeof adapter.config.libraries === 'string'
-        && typeof adapter.config.libraryTypings === 'string'
+        adapter.config &&
+        typeof adapter.config.libraries === 'string' &&
+        typeof adapter.config.libraryTypings === 'string'
     ) {
         const installedLibs = adapter.config.libraries
             .split(/[,;\s]+/)
-            .map((s) => s.trim().split('@')[0])
-            .filter((s) => !!s);
+            .map(s => s.trim().split('@')[0])
+            .filter(s => !!s);
 
-        const wantsTypings = adapter.config.libraryTypings.split(/[,;\s]+/).map(s => s.trim()).filter(s => !!s);
+        const wantsTypings = adapter.config.libraryTypings
+            .split(/[,;\s]+/)
+            .map(s => s.trim())
+            .filter(s => !!s);
         // Add all installed libraries the user has requested typings for to the list of packages
         for (const lib of installedLibs) {
             if (wantsTypings.includes(lib) && !packages.includes(lib)) {
@@ -232,10 +230,11 @@ function loadTypeScriptDeclarations() {
         }
     }
     for (const pkg of packages) {
-        let pkgTypings = resolveTypings(pkg,
+        let pkgTypings = resolveTypings(
+            pkg,
             adapter.getAdapterScopedPackageIdentifier ? adapter.getAdapterScopedPackageIdentifier(pkg) : pkg,
             // node needs ambient typings, so we don't wrap it in declare module
-            pkg !== 'node'
+            pkg !== 'node',
         );
         if (!pkgTypings) {
             // Create the empty dummy declarations so users don't get the "not found" error
@@ -255,42 +254,42 @@ function loadTypeScriptDeclarations() {
 
 const context = {
     mods,
-    objects:             {},
-    states:              {},
-    interimStateValues:  {},
-    stateIds:            [],
-    errorLogFunction:    null,
-    subscriptions:       [],
-    subscriptionsFile:   [],
+    objects: {},
+    states: {},
+    interimStateValues: {},
+    stateIds: [],
+    errorLogFunction: null,
+    subscriptions: [],
+    subscriptionsFile: [],
     subscriptionsObject: [],
-    subscribedPatterns:  {},
+    subscribedPatterns: {},
     subscribedPatternsFile: {},
-    adapterSubs:         {},
-    cacheObjectEnums:    {},
-    isEnums:             false, // If some subscription wants enum
-    channels:            null,
-    devices:             null,
-    logWithLineInfo:     null,
-    scheduler:           null,
-    timers:              {},
-    enums:               [],
-    timerId:             0,
-    names:               {},
-    scripts:             {},
-    messageBusHandlers:  {},
-    logSubscriptions:    {},
-    tempDirectories:     {},
+    adapterSubs: {},
+    cacheObjectEnums: {},
+    isEnums: false, // If some subscription wants enum
+    channels: null,
+    devices: null,
+    logWithLineInfo: null,
+    scheduler: null,
+    timers: {},
+    enums: [],
+    timerId: 0,
+    names: {},
+    scripts: {},
+    messageBusHandlers: {},
+    logSubscriptions: {},
+    tempDirectories: {},
     folderCreationVerifiedObjects: {},
     updateLogSubscriptions,
     convertBackStringifiedValues,
     updateObjectContext,
     prepareStateObject,
     debugMode,
-    timeSettings:        {
-        format12:        false,
-        leadingZeros:    true
+    timeSettings: {
+        format12: false,
+        leadingZeros: true,
     },
-    rulesOpened:         null, //opened rules
+    rulesOpened: null, //opened rules
     getAbsoluteDefaultDataDir: utils.getAbsoluteDefaultDataDir,
 };
 
@@ -302,16 +301,24 @@ function checkIsGlobal(obj) {
 }
 
 function convertBackStringifiedValues(id, state) {
-    if (state && typeof state.val === 'string' &&
-        context.objects[id] && context.objects[id].common &&
-        (context.objects[id].common.type === 'array' || context.objects[id].common.type === 'object')) {
+    if (
+        state &&
+        typeof state.val === 'string' &&
+        context.objects[id] &&
+        context.objects[id].common &&
+        (context.objects[id].common.type === 'array' || context.objects[id].common.type === 'object')
+    ) {
         try {
             state.val = JSON.parse(state.val);
         } catch (err) {
             if (id.startsWith('javascript.') || id.startsWith('0_userdata.0')) {
-                adapter.log.info(`Could not parse value for id ${id} into ${context.objects[id].common.type}: ${err.message}`);
+                adapter.log.info(
+                    `Could not parse value for id ${id} into ${context.objects[id].common.type}: ${err.message}`,
+                );
             } else {
-                adapter.log.debug(`Could not parse value for id ${id} into ${context.objects[id].common.type}: ${err.message}`);
+                adapter.log.debug(
+                    `Could not parse value for id ${id} into ${context.objects[id].common.type}: ${err.message}`,
+                );
             }
         }
     }
@@ -332,7 +339,7 @@ function prepareStateObject(id, state, isAck) {
             }
         } else {
             // otherwise assume that the given state is the value to be set
-            state = {val: state, ack: isAck};
+            state = { val: state, ack: isAck };
         }
     }
 
@@ -434,7 +441,6 @@ function startAdapter(options) {
                 return;
             }
 
-
             if (id.startsWith('enum.')) {
                 // clear cache
                 context.cacheObjectEnums = {};
@@ -465,7 +471,8 @@ function startAdapter(options) {
             // update stored time format for variables.dayTime
             if (id === adapter.namespace + '.variables.dayTime' && obj && obj.native) {
                 context.timeSettings.format12 = obj.native.format12 || false;
-                context.timeSettings.leadingZeros = obj.native.leadingZeros === undefined ? true : obj.native.leadingZeros;
+                context.timeSettings.leadingZeros =
+                    obj.native.leadingZeros === undefined ? true : obj.native.leadingZeros;
             }
 
             // send changes to disk mirror
@@ -547,35 +554,48 @@ function startAdapter(options) {
                         adapter.log.info(`Global Script ${id} updated. Restart instance.`);
                         adapter.restart();
                     }
-                } else { // No global script
+                } else {
+                    // No global script
                     if (obj.common && obj.common.engine === 'system.adapter.' + adapter.namespace) {
                         // create states for scripts
                         createActiveObject(id, obj.common.enabled, () => createProblemObject(id));
                     }
 
-                    if ((formerObj.common.enabled && !obj.common.enabled) ||
-                        (formerObj.common.engine === 'system.adapter.' + adapter.namespace && obj.common.engine !== 'system.adapter.' + adapter.namespace)) {
-
+                    if (
+                        (formerObj.common.enabled && !obj.common.enabled) ||
+                        (formerObj.common.engine === 'system.adapter.' + adapter.namespace &&
+                            obj.common.engine !== 'system.adapter.' + adapter.namespace)
+                    ) {
                         // Script disabled
-                        if (formerObj.common.enabled && formerObj.common.engine === 'system.adapter.' + adapter.namespace) {
+                        if (
+                            formerObj.common.enabled &&
+                            formerObj.common.engine === 'system.adapter.' + adapter.namespace
+                        ) {
                             // Remove it from executing
                             stop(id);
                         }
-                    } else if ((!formerObj.common.enabled && obj.common.enabled) ||
-                        (formerObj.common.engine !== 'system.adapter.' + adapter.namespace && obj.common.engine === 'system.adapter.' + adapter.namespace)) {
+                    } else if (
+                        (!formerObj.common.enabled && obj.common.enabled) ||
+                        (formerObj.common.engine !== 'system.adapter.' + adapter.namespace &&
+                            obj.common.engine === 'system.adapter.' + adapter.namespace)
+                    ) {
                         // Script enabled
 
                         if (obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace) {
                             // Start script
                             load(id);
                         }
-                    } else { //if (obj.common.source !== formerObj.common.source) {
+                    } else {
+                        //if (obj.common.source !== formerObj.common.source) {
                         // Source changed => restart it
                         stopCounters[id] = stopCounters[id] ? stopCounters[id] + 1 : 1;
-                        stop(id, (res, _id) =>
-                            // only start again after stop when "last" object change to prevent problems on
-                            // multiple changes in fast frequency
-                            !--stopCounters[id] && load(_id));
+                        stop(
+                            id,
+                            (res, _id) =>
+                                // only start again after stop when "last" object change to prevent problems on
+                                // multiple changes in fast frequency
+                                !--stopCounters[id] && load(_id),
+                        );
                     }
                 }
             }
@@ -607,22 +627,32 @@ function startAdapter(options) {
             if (state) {
                 if (oldState) {
                     // enable or disable script
-                    if (!state.ack && id.startsWith(activeStr) && context.objects[id] && context.objects[id].native && context.objects[id].native.script) {
-                        adapter.extendForeignObject(context.objects[id].native.script, { common: { enabled: state.val } });
+                    if (
+                        !state.ack &&
+                        id.startsWith(activeStr) &&
+                        context.objects[id] &&
+                        context.objects[id].native &&
+                        context.objects[id].native.script
+                    ) {
+                        adapter.extendForeignObject(context.objects[id].native.script, {
+                            common: { enabled: state.val },
+                        });
                     }
 
                     // monitor if adapter is alive and send all subscriptions once more, after adapter goes online
-                    if (/*oldState && */oldState.val === false && state.val && id.endsWith('.alive')) {
+                    if (/*oldState && */ oldState.val === false && state.val && id.endsWith('.alive')) {
                         if (context.adapterSubs[id]) {
                             const parts = id.split('.');
                             const a = `${parts[2]}.${parts[3]}`;
                             for (let t = 0; t < context.adapterSubs[id].length; t++) {
-                                adapter.log.info(`Detected coming adapter "${a}". Send subscribe: ${context.adapterSubs[id][t]}`);
+                                adapter.log.info(
+                                    `Detected coming adapter "${a}". Send subscribe: ${context.adapterSubs[id][t]}`,
+                                );
                                 adapter.sendTo(a, 'subscribe', context.adapterSubs[id][t]);
                             }
                         }
                     }
-                } else if (/*!oldState && */!context.stateIds.includes(id)) {
+                } else if (/*!oldState && */ !context.stateIds.includes(id)) {
                     context.stateIds.push(id);
                     context.stateIds.sort();
                 }
@@ -635,7 +665,12 @@ function startAdapter(options) {
                     context.stateIds.splice(pos, 1);
                 }
             }
-            const _eventObj = eventObj.createEventObject(context, id, context.convertBackStringifiedValues(id, state), context.convertBackStringifiedValues(id, oldState));
+            const _eventObj = eventObj.createEventObject(
+                context,
+                id,
+                context.convertBackStringifiedValues(id, state),
+                context.convertBackStringifiedValues(id, oldState),
+            );
 
             // if this state matches any subscriptions
             for (let i = 0, l = context.subscriptions.length; i < l; i++) {
@@ -665,12 +700,11 @@ function startAdapter(options) {
         },
 
         unload: callback => {
-            debugStop()
-                .then(() => {
-                    stopTimeSchedules();
-                    setStateCountCheckInterval && clearInterval(setStateCountCheckInterval);
-                    stopAllScripts(callback);
-                });
+            debugStop().then(() => {
+                stopTimeSchedules();
+                setStateCountCheckInterval && clearInterval(setStateCountCheckInterval);
+                stopAllScripts(callback);
+            });
         },
 
         ready: () => {
@@ -686,14 +720,30 @@ function startAdapter(options) {
                             scope.addEventProcessor((event, _hint) => {
                                 if (event.exception && event.exception.values && event.exception.values[0]) {
                                     const eventData = event.exception.values[0];
-                                    if (eventData.stacktrace && eventData.stacktrace.frames && Array.isArray(eventData.stacktrace.frames) && eventData.stacktrace.frames.length) {
+                                    if (
+                                        eventData.stacktrace &&
+                                        eventData.stacktrace.frames &&
+                                        Array.isArray(eventData.stacktrace.frames) &&
+                                        eventData.stacktrace.frames.length
+                                    ) {
                                         // Exclude event if script Marker is included
-                                        if (eventData.stacktrace.frames.find(frame => frame.filename && frame.filename.includes(SCRIPT_CODE_MARKER))) {
+                                        if (
+                                            eventData.stacktrace.frames.find(
+                                                frame => frame.filename && frame.filename.includes(SCRIPT_CODE_MARKER),
+                                            )
+                                        ) {
                                             return null;
                                         }
                                         //Exclude event if own directory is included but not inside own node_modules
                                         const ownNodeModulesDir = nodePath.join(__dirname, 'node_modules');
-                                        if (!eventData.stacktrace.frames.find(frame => frame.filename && frame.filename.includes(__dirname) && !frame.filename.includes(ownNodeModulesDir))) {
+                                        if (
+                                            !eventData.stacktrace.frames.find(
+                                                frame =>
+                                                    frame.filename &&
+                                                    frame.filename.includes(__dirname) &&
+                                                    !frame.filename.includes(ownNodeModulesDir),
+                                            )
+                                        ) {
                                             return null;
                                         }
                                         // We have exception data and do not sorted it out, so report it
@@ -723,34 +773,51 @@ function startAdapter(options) {
                     // process messageTo commands
                     case 'toScript':
                     case 'jsMessageBus':
-                        if (obj.message && (
-                            obj.message.instance === null ||
-                            obj.message.instance === undefined ||
-                            ('javascript.' + obj.message.instance === adapter.namespace) ||
-                            (obj.message.instance === adapter.namespace)
-                        )) {
+                        if (
+                            obj.message &&
+                            (obj.message.instance === null ||
+                                obj.message.instance === undefined ||
+                                'javascript.' + obj.message.instance === adapter.namespace ||
+                                obj.message.instance === adapter.namespace)
+                        ) {
                             Object.keys(context.messageBusHandlers).forEach(name => {
                                 // script name could be script.js.xxx or only xxx
-                                if ((!obj.message.script || obj.message.script === name) && context.messageBusHandlers[name][obj.message.message]) {
+                                if (
+                                    (!obj.message.script || obj.message.script === name) &&
+                                    context.messageBusHandlers[name][obj.message.message]
+                                ) {
                                     context.messageBusHandlers[name][obj.message.message].forEach(handler => {
                                         const sandbox = handler.sandbox;
 
-                                        sandbox.verbose && sandbox.log(`onMessage: ${JSON.stringify(obj.message)}`, 'info');
+                                        sandbox.verbose &&
+                                            sandbox.log(`onMessage: ${JSON.stringify(obj.message)}`, 'info');
 
                                         try {
                                             if (obj.callback) {
                                                 handler.cb.call(sandbox, obj.message.data, result => {
-                                                    sandbox.verbose && sandbox.log(`onMessage result: ${JSON.stringify(result)}`, 'info');
+                                                    sandbox.verbose &&
+                                                        sandbox.log(
+                                                            `onMessage result: ${JSON.stringify(result)}`,
+                                                            'info',
+                                                        );
 
                                                     adapter.sendTo(obj.from, obj.command, result, obj.callback);
                                                 });
                                             } else {
                                                 handler.cb.call(sandbox, obj.message.data, result => {
-                                                    sandbox.verbose && sandbox.log(`onMessage result: ${JSON.stringify(result)}`, 'info');
+                                                    sandbox.verbose &&
+                                                        sandbox.log(
+                                                            `onMessage result: ${JSON.stringify(result)}`,
+                                                            'info',
+                                                        );
                                                 });
                                             }
                                         } catch (e) {
-                                            adapter.setState('scriptProblem.' + name.substring(SCRIPT_CODE_MARKER.length), true, true);
+                                            adapter.setState(
+                                                'scriptProblem.' + name.substring(SCRIPT_CODE_MARKER.length),
+                                                true,
+                                                true,
+                                            );
                                             context.logError('Error in callback', e);
                                         }
                                     });
@@ -759,14 +826,16 @@ function startAdapter(options) {
                         }
                         break;
 
-                    case 'loadTypings': { // Load typings for the editor
+                    case 'loadTypings': {
+                        // Load typings for the editor
                         const typings = {};
 
                         // try to load TypeScript lib files from disk
                         try {
                             const typescriptLibs = resolveTypescriptLibs(targetTsLib);
                             Object.assign(typings, typescriptLibs);
-                        } catch (e) { /* ok, no lib then */
+                        } catch (e) {
+                            /* ok, no lib then */
                         }
 
                         // provide the already-loaded ioBroker typings and global script declarations
@@ -778,18 +847,38 @@ function startAdapter(options) {
                         }
 
                         if (obj.callback) {
-                            adapter.sendTo(obj.from, obj.command, {typings}, obj.callback);
+                            adapter.sendTo(obj.from, obj.command, { typings }, obj.callback);
                         }
                         break;
                     }
 
                     case 'calcAstroAll': {
                         if (obj.message) {
-                            const sunriseOffset = parseInt(obj.message.sunriseOffset  === undefined ? adapter.config.sunriseOffset : obj.message.sunriseOffset, 10) || 0;
-                            const sunsetOffset  = parseInt(obj.message.sunsetOffset   === undefined ? adapter.config.sunsetOffset  : obj.message.sunsetOffset, 10)  || 0;
-                            const longitude     = parseFloat(obj.message.longitude === undefined ? adapter.config.longitude    : obj.message.longitude) || 0;
-                            const latitude      = parseFloat(obj.message.latitude  === undefined ? adapter.config.latitude     : obj.message.latitude)  || 0;
-                            const today         = getAstroStartOfDay();
+                            const sunriseOffset =
+                                parseInt(
+                                    obj.message.sunriseOffset === undefined
+                                        ? adapter.config.sunriseOffset
+                                        : obj.message.sunriseOffset,
+                                    10,
+                                ) || 0;
+                            const sunsetOffset =
+                                parseInt(
+                                    obj.message.sunsetOffset === undefined
+                                        ? adapter.config.sunsetOffset
+                                        : obj.message.sunsetOffset,
+                                    10,
+                                ) || 0;
+                            const longitude =
+                                parseFloat(
+                                    obj.message.longitude === undefined
+                                        ? adapter.config.longitude
+                                        : obj.message.longitude,
+                                ) || 0;
+                            const latitude =
+                                parseFloat(
+                                    obj.message.latitude === undefined ? adapter.config.latitude : obj.message.latitude,
+                                ) || 0;
+                            const today = getAstroStartOfDay();
                             let astroEvents = {};
                             try {
                                 astroEvents = mods.suncalc.getTimes(today, latitude, longitude);
@@ -802,23 +891,23 @@ function startAdapter(options) {
                                         today,
                                         obj.message.sunriseEvent || adapter.config.sunriseEvent,
                                         obj.message.sunriseLimitStart || adapter.config.sunriseLimitStart,
-                                        obj.message.sunriseLimitEnd   || adapter.config.sunriseLimitEnd,
+                                        obj.message.sunriseLimitEnd || adapter.config.sunriseLimitEnd,
                                         sunriseOffset,
                                         false,
                                         latitude,
                                         longitude,
-                                        true
+                                        true,
                                     );
                                     astroEvents.nextSunset = getAstroEvent(
                                         today,
-                                        obj.message.sunsetEvent  || adapter.config.sunsetEvent,
-                                        obj.message.sunsetLimitStart  || adapter.config.sunsetLimitStart,
-                                        obj.message.sunsetLimitEnd    || adapter.config.sunsetLimitEnd,
+                                        obj.message.sunsetEvent || adapter.config.sunsetEvent,
+                                        obj.message.sunsetLimitStart || adapter.config.sunsetLimitStart,
+                                        obj.message.sunsetLimitEnd || adapter.config.sunsetLimitEnd,
                                         sunsetOffset,
                                         true,
                                         latitude,
                                         longitude,
-                                        true
+                                        true,
                                     );
                                 } catch (e) {
                                     adapter.log.error(`Cannot calculate astro data: ${e}`);
@@ -844,14 +933,29 @@ function startAdapter(options) {
 
                     case 'calcAstro': {
                         if (obj.message) {
-                            const longitude     = parseFloat(obj.message.longitude === undefined ? adapter.config.longitude : obj.message.longitude) || 0;
-                            const latitude      = parseFloat(obj.message.latitude  === undefined ? adapter.config.latitude  : obj.message.latitude)  || 0;
-                            const today         = getAstroStartOfDay();
+                            const longitude =
+                                parseFloat(
+                                    obj.message.longitude === undefined
+                                        ? adapter.config.longitude
+                                        : obj.message.longitude,
+                                ) || 0;
+                            const latitude =
+                                parseFloat(
+                                    obj.message.latitude === undefined ? adapter.config.latitude : obj.message.latitude,
+                                ) || 0;
+                            const today = getAstroStartOfDay();
 
                             const sunriseEvent = obj.message?.sunriseEvent || adapter.config.sunriseEvent;
-                            const sunriseLimitStart = obj.message?.sunriseLimitStart || adapter.config.sunriseLimitStart;
+                            const sunriseLimitStart =
+                                obj.message?.sunriseLimitStart || adapter.config.sunriseLimitStart;
                             const sunriseLimitEnd = obj.message?.sunriseLimitEnd || adapter.config.sunriseLimitEnd;
-                            const sunriseOffset = parseInt(obj.message.sunriseOffset === undefined ? adapter.config.sunriseOffset : obj.message.sunriseOffset, 10) || 0;
+                            const sunriseOffset =
+                                parseInt(
+                                    obj.message.sunriseOffset === undefined
+                                        ? adapter.config.sunriseOffset
+                                        : obj.message.sunriseOffset,
+                                    10,
+                                ) || 0;
                             const nextSunrise = getAstroEvent(
                                 today,
                                 sunriseEvent,
@@ -861,13 +965,19 @@ function startAdapter(options) {
                                 false,
                                 latitude,
                                 longitude,
-                                true
+                                true,
                             );
 
                             const sunsetEvent = obj.message?.sunsetEvent || adapter.config.sunsetEvent;
                             const sunsetLimitStart = obj.message?.sunsetLimitStart || adapter.config.sunsetLimitStart;
                             const sunsetLimitEnd = obj.message?.sunsetLimitEnd || adapter.config.sunsetLimitEnd;
-                            const sunsetOffset = parseInt(obj.message.sunsetOffset === undefined ? adapter.config.sunsetOffset : obj.message.sunsetOffset, 10) || 0;
+                            const sunsetOffset =
+                                parseInt(
+                                    obj.message.sunsetOffset === undefined
+                                        ? adapter.config.sunsetOffset
+                                        : obj.message.sunsetOffset,
+                                    10,
+                                ) || 0;
                             const nextSunset = getAstroEvent(
                                 today,
                                 sunsetEvent,
@@ -877,27 +987,39 @@ function startAdapter(options) {
                                 true,
                                 latitude,
                                 longitude,
-                                true
+                                true,
                             );
 
                             const validDateSunrise = nextSunrise !== null && !isNaN(nextSunrise.getTime());
                             const validDateSunset = nextSunset !== null && !isNaN(nextSunset.getTime());
 
-                            adapter.log.debug(`calcAstro sunrise: ${sunriseEvent} -> start ${sunriseLimitStart}, end: ${sunriseLimitEnd}, offset: ${sunriseOffset} - ${validDateSunrise ? nextSunrise.toISOString() : 'n/a'}`);
-                            adapter.log.debug(`calcAstro sunset:  ${sunsetEvent} -> start ${sunsetLimitStart}, end: ${sunsetLimitEnd}, offset: ${sunsetOffset} - ${validDateSunset ? nextSunset.toISOString() : 'n/a'}`);
+                            adapter.log.debug(
+                                `calcAstro sunrise: ${sunriseEvent} -> start ${sunriseLimitStart}, end: ${sunriseLimitEnd}, offset: ${sunriseOffset} - ${validDateSunrise ? nextSunrise.toISOString() : 'n/a'}`,
+                            );
+                            adapter.log.debug(
+                                `calcAstro sunset:  ${sunsetEvent} -> start ${sunsetLimitStart}, end: ${sunsetLimitEnd}, offset: ${sunsetOffset} - ${validDateSunset ? nextSunset.toISOString() : 'n/a'}`,
+                            );
 
-                            obj.callback && adapter.sendTo(obj.from, obj.command, {
-                                nextSunrise: {
-                                    isValidDate: validDateSunrise,
-                                    serverTime: validDateSunrise ? formatHoursMinutesSeconds(nextSunrise) : 'n/a',
-                                    date: nextSunrise.toISOString(),
-                                },
-                                nextSunset: {
-                                    isValidDate: validDateSunset,
-                                    serverTime: validDateSunset ? formatHoursMinutesSeconds(nextSunset) : 'n/a',
-                                    date: nextSunset.toISOString(),
-                                }
-                            }, obj.callback);
+                            obj.callback &&
+                                adapter.sendTo(
+                                    obj.from,
+                                    obj.command,
+                                    {
+                                        nextSunrise: {
+                                            isValidDate: validDateSunrise,
+                                            serverTime: validDateSunrise
+                                                ? formatHoursMinutesSeconds(nextSunrise)
+                                                : 'n/a',
+                                            date: nextSunrise.toISOString(),
+                                        },
+                                        nextSunset: {
+                                            isValidDate: validDateSunset,
+                                            serverTime: validDateSunset ? formatHoursMinutesSeconds(nextSunset) : 'n/a',
+                                            date: nextSunset.toISOString(),
+                                        },
+                                    },
+                                    obj.callback,
+                                );
                         }
                         break;
                     }
@@ -908,8 +1030,7 @@ function startAdapter(options) {
                     }
 
                     case 'debugStop': {
-                        !debugMode && debugStop()
-                            .then(() => console.log('stopped'));
+                        !debugMode && debugStop().then(() => console.log('stopped'));
                         break;
                     }
 
@@ -927,10 +1048,16 @@ function startAdapter(options) {
                     }
 
                     case 'getIoBrokerDataDir': {
-                        obj.callback && adapter.sendTo(obj.from, obj.command, {
-                            dataDir: utils.getAbsoluteDefaultDataDir(),
-                            sep: nodePath.sep
-                        }, obj.callback);
+                        obj.callback &&
+                            adapter.sendTo(
+                                obj.from,
+                                obj.command,
+                                {
+                                    dataDir: utils.getAbsoluteDefaultDataDir(),
+                                    sep: nodePath.sep,
+                                },
+                                obj.callback,
+                            );
                         break;
                     }
                 }
@@ -962,7 +1089,9 @@ function startAdapter(options) {
                 if (!err.stack.match(/iobroker\.javascript[/\\](?!.*node_modules).*/g)) {
                     // This is an error without any info on origin (mostly async errors like connection errors)
                     // also consider it as being from a script
-                    adapter.log.error('An error happened which is most likely from one of your scripts, but the originating script could not be detected.');
+                    adapter.log.error(
+                        'An error happened which is most likely from one of your scripts, but the originating script could not be detected.',
+                    );
                     adapter.log.error('Error: ' + err.message);
                     adapter.log.error(err.stack);
 
@@ -970,7 +1099,7 @@ function startAdapter(options) {
                     return true;
                 }
             }
-        }
+        },
     });
 
     adapter = new utils.Adapter(options);
@@ -979,12 +1108,17 @@ function startAdapter(options) {
     adapter.on('log', msg =>
         Object.keys(context.logSubscriptions).forEach(name =>
             context.logSubscriptions[name].forEach(handler => {
-                if (typeof handler.cb === 'function' && (handler.severity === '*' || handler.severity === msg.severity)) {
+                if (
+                    typeof handler.cb === 'function' &&
+                    (handler.severity === '*' || handler.severity === msg.severity)
+                ) {
                     handler.sandbox.logHandler = handler.severity || '*';
                     handler.cb.call(handler.sandbox, msg);
                     handler.sandbox.logHandler = null;
                 }
-            })));
+            }),
+        ),
+    );
 
     context.adapter = adapter;
 
@@ -1067,8 +1201,7 @@ function updateObjectContext(id, obj) {
 }
 
 function main() {
-    !debugMode && patchFont()
-        .then(patched => patched && adapter.log.debug('Font patched'));
+    !debugMode && patchFont().then(patched => patched && adapter.log.debug('Font patched'));
 
     adapter.log.debug(`config.subscribe (Do not subscribe all states on start): ${adapter.config.subscribe}`);
 
@@ -1093,7 +1226,7 @@ function main() {
     // try to read TS declarations
     try {
         tsAmbient = {
-            'javascript.d.ts': nodeFS.readFileSync(mods.path.join(__dirname, 'lib/javascript.d.ts'), 'utf8')
+            'javascript.d.ts': nodeFS.readFileSync(mods.path.join(__dirname, 'lib/javascript.d.ts'), 'utf8'),
         };
         tsServer.provideAmbientDeclarations(tsAmbient);
         jsDeclarationServer.provideAmbientDeclarations(tsAmbient);
@@ -1118,7 +1251,7 @@ function main() {
 
         context.errorLogFunction && context.errorLogFunction[level](msg);
 
-        const stack = (new Error().stack).split('\n');
+        const stack = new Error().stack.split('\n');
 
         for (let i = 3; i < stack.length; i++) {
             if (!stack[i]) {
@@ -1136,12 +1269,17 @@ function main() {
     context.logWithLineInfo.info = context.logWithLineInfo.bind(1, 'info');
 
     installLibraries().then(() => {
-
         // Load the TS declarations for Node.js and all 3rd party modules
         loadTypeScriptDeclarations();
 
         getData(() => {
-            context.scheduler = new Scheduler(adapter.log, Date, mods.suncalc, adapter.config.latitude, adapter.config.longitude);
+            context.scheduler = new Scheduler(
+                adapter.log,
+                Date,
+                mods.suncalc,
+                adapter.config.latitude,
+                adapter.config.longitude,
+            );
             dayTimeSchedules(adapter, context);
             sunTimeSchedules(adapter, context);
             timeSchedule(adapter, context);
@@ -1170,13 +1308,18 @@ function main() {
                                         // In order to compile global TypeScript, we need to do some transformations
                                         // 1. For top-level-await, some statements must be wrapped in an immediately-invoked async function
                                         // 2. If any global script uses `import`, the declarations are no longer visible if they are not exported with `declare global`
-                                        const transformedSource = transformScriptBeforeCompilation(obj.common.source, true);
+                                        const transformedSource = transformScriptBeforeCompilation(
+                                            obj.common.source,
+                                            true,
+                                        );
                                         // The source code must be transformed in order to support top level await
                                         // Global scripts must not be treated as a module, otherwise their methods
                                         // cannot be found by the normal scripts
                                         // We need to hash both global declarations that are known until now
                                         // AND the script source, because changing either can change the compilation output
-                                        const sourceHash = hashSource(tsSourceHashBase + globalDeclarations + transformedSource);
+                                        const sourceHash = hashSource(
+                                            tsSourceHashBase + globalDeclarations + transformedSource,
+                                        );
 
                                         /** @type {string | undefined} */
                                         let compiled;
@@ -1186,14 +1329,16 @@ function main() {
                                         // use the hash to check whether we can rely on the compiled source code or
                                         // if we need to compile it again
                                         if (
-                                            typeof obj.common.compiled === 'string'
-                                            && typeof obj.common.sourceHash === 'string'
-                                            && sourceHash === obj.common.sourceHash
+                                            typeof obj.common.compiled === 'string' &&
+                                            typeof obj.common.sourceHash === 'string' &&
+                                            sourceHash === obj.common.sourceHash
                                         ) {
                                             // We can reuse the stored source
                                             compiled = obj.common.compiled;
                                             declarations = obj.common.declarations;
-                                            adapter.log.info(`${obj._id}: source code did not change, using cached compilation result...`);
+                                            adapter.log.info(
+                                                `${obj._id}: source code did not change, using cached compilation result...`,
+                                            );
                                         } else {
                                             // We don't have a hashed source code or the original source changed, compile it
                                             const filename = scriptIdToTSFilename(obj._id);
@@ -1205,17 +1350,23 @@ function main() {
                                                 continue;
                                             }
 
-                                            const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource + '\n').join('\n');
+                                            const errors = tsCompiled.diagnostics
+                                                .map(diag => diag.annotatedSource + '\n')
+                                                .join('\n');
 
                                             if (tsCompiled.success) {
                                                 if (errors.length > 0) {
-                                                    adapter.log.warn(`${obj._id}: TypeScript compilation completed with errors:\n${errors}`);
+                                                    adapter.log.warn(
+                                                        `${obj._id}: TypeScript compilation completed with errors:\n${errors}`,
+                                                    );
                                                 } else {
                                                     adapter.log.info(`${obj._id}: TypeScript compilation successful`);
                                                 }
                                                 compiled = tsCompiled.result;
                                                 // Global scripts that have been transformed to support `import` need to have their declarations transformed aswell
-                                                declarations = transformGlobalDeclarations(tsCompiled.declarations || '');
+                                                declarations = transformGlobalDeclarations(
+                                                    tsCompiled.declarations || '',
+                                                );
 
                                                 const newCommon = {
                                                     sourceHash,
@@ -1226,10 +1377,12 @@ function main() {
                                                 // Store the compiled source and the original source hash, so we don't need to do the work again next time
                                                 ignoreObjectChange.add(obj._id); // ignore the next change and don't restart scripts
                                                 adapter.extendForeignObject(obj._id, {
-                                                    common: newCommon
+                                                    common: newCommon,
                                                 });
                                             } else {
-                                                adapter.log.error(`${obj._id}: TypeScript compilation failed:\n${errors}`);
+                                                adapter.log.error(
+                                                    `${obj._id}: TypeScript compilation failed:\n${errors}`,
+                                                );
                                                 continue;
                                             }
                                         }
@@ -1238,7 +1391,8 @@ function main() {
                                         if (declarations != null) {
                                             provideDeclarationsForGlobalScript(obj._id, declarations);
                                         }
-                                    } else { // javascript
+                                    } else {
+                                        // javascript
                                         const sourceCode = obj.common.source;
                                         globalScript += sourceCode + '\n';
 
@@ -1249,7 +1403,9 @@ function main() {
                                         try {
                                             tsCompiled = jsDeclarationServer.compile(filename, sourceCode);
                                         } catch (e) {
-                                            adapter.log.warn(`${obj._id}: Error while generating type declarations, skipping:\n${e}`);
+                                            adapter.log.warn(
+                                                `${obj._id}: Error while generating type declarations, skipping:\n${e}`,
+                                            );
                                             continue;
                                         }
                                         // if declarations were generated, remember them
@@ -1257,7 +1413,6 @@ function main() {
                                             provideDeclarationsForGlobalScript(obj._id, tsCompiled.declarations);
                                         }
                                     }
-
                                 }
                             }
                         }
@@ -1285,8 +1440,12 @@ function main() {
                         for (let dir of forbiddenMirrorLocations) {
                             dir = nodePath.join(ioBDataDir, dir) + nodePath.sep;
                             if (dir.includes(adapter.config.mirrorPath) || adapter.config.mirrorPath.startsWith(dir)) {
-                                adapter.log.error(`The Mirror directory is not allowed to be a central ioBroker directory!`);
-                                adapter.log.error(`Directory ${adapter.config.mirrorPath} is not allowed to mirror files!`);
+                                adapter.log.error(
+                                    `The Mirror directory is not allowed to be a central ioBroker directory!`,
+                                );
+                                adapter.log.error(
+                                    `Directory ${adapter.config.mirrorPath} is not allowed to mirror files!`,
+                                );
                                 mirrorForbidden = true;
                                 break;
                             }
@@ -1295,7 +1454,7 @@ function main() {
                             mirror = new Mirror({
                                 adapter,
                                 log: adapter.log,
-                                diskRoot: adapter.config.mirrorPath
+                                diskRoot: adapter.config.mirrorPath,
                             });
                         }
                     }
@@ -1309,20 +1468,25 @@ function main() {
                         context.scripts[id].setStatePerMinuteCounter = 0;
                         if (currentSetStatePerMinuteCounter > adapter.config.maxSetStatePerMinute) {
                             context.scripts[id].setStatePerMinuteProblemCounter++;
-                            adapter.log.debug(`Script ${id} has reached the maximum of ${adapter.config.maxSetStatePerMinute} setState calls per minute in ${context.scripts[id].setStatePerMinuteProblemCounter} consecutive minutes`);
+                            adapter.log.debug(
+                                `Script ${id} has reached the maximum of ${adapter.config.maxSetStatePerMinute} setState calls per minute in ${context.scripts[id].setStatePerMinuteProblemCounter} consecutive minutes`,
+                            );
                             // Allow "too high counters" for 1 minute for script starts or such and only
                             // stop the script when lasts longer
                             if (context.scripts[id].setStatePerMinuteProblemCounter > 1) {
-                                adapter.log.error(`Script ${id} is calling setState more than ${adapter.config.maxSetStatePerMinute} times per minute! Stopping Script now! Please check your script!`);
+                                adapter.log.error(
+                                    `Script ${id} is calling setState more than ${adapter.config.maxSetStatePerMinute} times per minute! Stopping Script now! Please check your script!`,
+                                );
                                 stop(id);
                             }
                         } else if (context.scripts[id].setStatePerMinuteProblemCounter > 0) {
                             context.scripts[id].setStatePerMinuteProblemCounter--;
-                            adapter.log.debug(`Script ${id} has NOT reached the maximum of ${adapter.config.maxSetStatePerMinute} setState calls per minute. Decrease problem counter to ${context.scripts[id].setStatePerMinuteProblemCounter}`);
+                            adapter.log.debug(
+                                `Script ${id} has NOT reached the maximum of ${adapter.config.maxSetStatePerMinute} setState calls per minute. Decrease problem counter to ${context.scripts[id].setStatePerMinuteProblemCounter}`,
+                            );
                         }
                     });
                 }, 60000);
-
             });
         });
     });
@@ -1333,25 +1497,28 @@ function stopAllScripts(cb) {
     setTimeout(() => cb(), 0);
 }
 
-let globalScript       = '';
+let globalScript = '';
 /** Generated declarations for global TypeScripts */
 let globalDeclarations = '';
 // Remember which definitions the global scripts
 // have access to, because it depends on the compile order
 let knownGlobalDeclarationsByScript = {};
-let globalScriptLines  = 0;
+let globalScriptLines = 0;
 // let activeRegEx     = null;
-let activeStr          = ''; // enabled state prefix
-let dayScheduleTimer   = null; // schedule for astrological day
-let sunScheduleTimer   = null; // schedule for sun moment times
-let timeScheduleTimer  = null; // schedule for astrological day
+let activeStr = ''; // enabled state prefix
+let dayScheduleTimer = null; // schedule for astrological day
+let sunScheduleTimer = null; // schedule for sun moment times
+let timeScheduleTimer = null; // schedule for astrological day
 
 function getNextTimeEvent(time, useNextDay) {
     const now = getAstroStartOfDay();
     let [timeHours, timeMinutes] = time.split(':');
     timeHours = parseInt(timeHours, 10);
     timeMinutes = parseInt(timeMinutes, 10);
-    if (useNextDay && (now.getHours() > timeHours || (now.getHours() === timeHours && now.getMinutes() > timeMinutes))) {
+    if (
+        useNextDay &&
+        (now.getHours() > timeHours || (now.getHours() === timeHours && now.getMinutes() > timeMinutes))
+    ) {
         now.setDate(now.getDate() + 1);
     }
 
@@ -1408,7 +1575,7 @@ function timeSchedule(adapter, context) {
         hours = hours.toString().padStart(2, '0');
     }
 
-    adapter.setState('variables.dayTime', {val: `${hours}:${minutes.toString().padStart(2, '0')}`, ack: true});
+    adapter.setState('variables.dayTime', { val: `${hours}:${minutes.toString().padStart(2, '0')}`, ack: true });
 
     now.setMinutes(now.getMinutes() + 1);
     now.setSeconds(0);
@@ -1419,19 +1586,42 @@ function timeSchedule(adapter, context) {
 
 function dayTimeSchedules(adapter, context) {
     // get astrological event
-    if (adapter.config.latitude === undefined || adapter.config.longitude === undefined ||
-        adapter.config.latitude === ''        || adapter.config.longitude === '' ||
-        adapter.config.latitude === null      || adapter.config.longitude === null) {
+    if (
+        adapter.config.latitude === undefined ||
+        adapter.config.longitude === undefined ||
+        adapter.config.latitude === '' ||
+        adapter.config.longitude === '' ||
+        adapter.config.latitude === null ||
+        adapter.config.longitude === null
+    ) {
         adapter.log.error('Longitude or latitude does not set. Cannot use astro.');
         return;
     }
 
     // Calculate next event today
     const todayDate = getAstroStartOfDay();
-    const nowDate   = new Date();
+    const nowDate = new Date();
 
-    const todaySunrise = getAstroEvent(todayDate, adapter.config.sunriseEvent, adapter.config.sunriseLimitStart, adapter.config.sunriseLimitEnd, adapter.config.sunriseOffset, false, adapter.config.latitude, adapter.config.longitude);
-    const todaySunset  = getAstroEvent(todayDate, adapter.config.sunsetEvent,  adapter.config.sunsetLimitStart,  adapter.config.sunsetLimitEnd,  adapter.config.sunsetOffset,  true,  adapter.config.latitude, adapter.config.longitude);
+    const todaySunrise = getAstroEvent(
+        todayDate,
+        adapter.config.sunriseEvent,
+        adapter.config.sunriseLimitStart,
+        adapter.config.sunriseLimitEnd,
+        adapter.config.sunriseOffset,
+        false,
+        adapter.config.latitude,
+        adapter.config.longitude,
+    );
+    const todaySunset = getAstroEvent(
+        todayDate,
+        adapter.config.sunsetEvent,
+        adapter.config.sunsetLimitStart,
+        adapter.config.sunsetLimitEnd,
+        adapter.config.sunsetOffset,
+        true,
+        adapter.config.latitude,
+        adapter.config.longitude,
+    );
 
     // Sunrise
     let sunriseTimeout = todaySunrise.getTime() - nowDate.getTime();
@@ -1453,12 +1643,12 @@ function dayTimeSchedules(adapter, context) {
             isDay = false;
         } else {
             // check if in between
-            isDay = nowDate.getTime() > (todaySunrise.getTime() - 60000) && nowDate <= todaySunset;
+            isDay = nowDate.getTime() > todaySunrise.getTime() - 60000 && nowDate <= todaySunset;
         }
 
         const val = state ? !!state.val : false;
         if (val !== isDay || state === null) {
-            adapter.setState('variables.isDayTime', {val: isDay, ack: true});
+            adapter.setState('variables.isDayTime', { val: isDay, ack: true });
         }
     });
 
@@ -1467,7 +1657,7 @@ function dayTimeSchedules(adapter, context) {
         const val = state ? !!state.val : false;
 
         if (val !== isDayLightSaving || state === null) {
-            adapter.setState('variables.isDaylightSaving', {val: isDayLightSaving, ack: true});
+            adapter.setState('variables.isDaylightSaving', { val: isDayLightSaving, ack: true });
         }
     });
 
@@ -1488,7 +1678,7 @@ function getAstroStartOfDay() {
     d.setMinutes(0);
     d.setSeconds(0);
     d.setMilliseconds(0);
-    d.setTime(d.getTime() - (d.getTimezoneOffset() * 60 * 1000));
+    d.setTime(d.getTime() - d.getTimezoneOffset() * 60 * 1000);
     d.setUTCHours(0);
 
     return d;
@@ -1529,12 +1719,18 @@ async function sunTimeSchedules(adapter, context) {
 
                     if (times[t] !== null && !isNaN(times[t].getTime())) {
                         const timeFormatted = formatHoursMinutesSeconds(times[t]);
-                        await adapter.setStateAsync(objId, { val: timeFormatted, c: times[t].toISOString(), ack: true });
+                        await adapter.setStateAsync(objId, {
+                            val: timeFormatted,
+                            c: times[t].toISOString(),
+                            ack: true,
+                        });
                     } else {
                         await adapter.setStateAsync(objId, { val: null, c: 'n/a', ack: true, q: 0x01 });
                     }
                 } catch (err) {
-                    adapter.log.error(`[sunTimeSchedules] Unable to set state for astro time "${t}" (${times[t].getTime()}): ${err}`);
+                    adapter.log.error(
+                        `[sunTimeSchedules] Unable to set state for astro time "${t}" (${times[t].getTime()}): ${err}`,
+                    );
                 }
             }
 
@@ -1593,10 +1789,7 @@ const tsServer = new tsc.Server(tsCompilerOptions, tsLog);
 
 // compiler instance for global JS declarations
 /** @type {tsc.Server} */
-const jsDeclarationServer = new tsc.Server(
-    jsDeclarationCompilerOptions,
-    isCI ? false : undefined
-);
+const jsDeclarationServer = new tsc.Server(jsDeclarationCompilerOptions, isCI ? false : undefined);
 
 function addGetProperty(object) {
     try {
@@ -1604,7 +1797,7 @@ function addGetProperty(object) {
             value: function (id) {
                 return this[id] || this[adapter.namespace + '.' + id];
             },
-            enumerable: false
+            enumerable: false,
         });
     } catch (e) {
         console.error('Cannot install get property');
@@ -1619,17 +1812,21 @@ function fixLineNo(line) {
         return line;
     }
     if (/:([\d]+):/.test(line)) {
-        line = line.replace(/:([\d]+):/, ($0, $1) =>
-            ':' + ($1 > globalScriptLines + 1 ? $1 - globalScriptLines - 1 : $1) + ':'); // one line for 'async function ()'
+        line = line.replace(
+            /:([\d]+):/,
+            ($0, $1) => ':' + ($1 > globalScriptLines + 1 ? $1 - globalScriptLines - 1 : $1) + ':',
+        ); // one line for 'async function ()'
     } else {
-        line = line.replace(/:([\d]+)$/, ($0, $1) =>
-            ':' + ($1 > globalScriptLines + 1 ? $1 - globalScriptLines - 1 : $1));       // one line for 'async function ()'
+        line = line.replace(
+            /:([\d]+)$/,
+            ($0, $1) => ':' + ($1 > globalScriptLines + 1 ? $1 - globalScriptLines - 1 : $1),
+        ); // one line for 'async function ()'
     }
     return line;
 }
 
 context.logError = function (msg, e, offs) {
-    const stack = e.stack ? e.stack.toString().split('\n') : (e ? e.toString() : '');
+    const stack = e.stack ? e.stack.toString().split('\n') : e ? e.toString() : '';
     if (!msg.includes('\n')) {
         msg = msg.replace(/[: ]*$/, ': ');
     }
@@ -1660,12 +1857,12 @@ function createActiveObject(id, enabled, cb) {
                 type: 'boolean',
                 write: true,
                 read: true,
-                role: 'switch.active'
+                role: 'switch.active',
             },
             native: {
-                script: id
+                script: id,
             },
-            type: 'state'
+            type: 'state',
         };
         adapter.setForeignObject(idActive, context.objects[idActive], err => {
             if (!err) {
@@ -1710,12 +1907,12 @@ function createProblemObject(id, cb) {
                 expert: true,
                 write: false,
                 read: true,
-                role: 'indicator.error'
+                role: 'indicator.error',
             },
             native: {
-                script: id
+                script: id,
             },
-            type: 'state'
+            type: 'state',
         };
         adapter.setForeignObject(idProblem, context.objects[idProblem], err => {
             if (!err) {
@@ -1743,7 +1940,8 @@ function addToNames(obj) {
         if (name && typeof name === 'object') {
             name = name[words.getLanguage()] || name.en;
         }
-        if (!name || typeof name !== 'string') { // TODO, take name in current language
+        if (!name || typeof name !== 'string') {
+            // TODO, take name in current language
             return;
         }
 
@@ -1809,11 +2007,9 @@ async function installNpm(npmLib) {
             cwd: path,
         });
 
-        child.stdout && child.stdout.on('data', buf =>
-            adapter.log.info(buf.toString('utf8')));
+        child.stdout && child.stdout.on('data', buf => adapter.log.info(buf.toString('utf8')));
 
-        child.stderr && child.stderr.on('data', buf =>
-            adapter.log.error(buf.toString('utf8')));
+        child.stderr && child.stderr.on('data', buf => adapter.log.error(buf.toString('utf8')));
 
         child.on('err', err => {
             adapter.log.error(`Cannot install ${npmLib}: ${err}`);
@@ -1927,7 +2123,8 @@ function createVM(source, name, wrapAsync) {
     }
 
     if (!debugMode) {
-        const logSubscriptionsText = "\n;\nlog(`registered ${__engine.__subscriptions} subscription${__engine.__subscriptions === 1 ? '' : 's'}," +
+        const logSubscriptionsText =
+            "\n;\nlog(`registered ${__engine.__subscriptions} subscription${__engine.__subscriptions === 1 ? '' : 's'}," +
             " ${__engine.__schedules} schedule${__engine.__schedules === 1 ? '' : 's'}," +
             " ${__engine.__subscriptionsMessage} message${__engine.__subscriptionsMessage === 1 ? '' : 's'}," +
             " ${__engine.__subscriptionsLog} log${__engine.__subscriptionsLog === 1 ? '' : 's'}" +
@@ -1949,7 +2146,7 @@ function createVM(source, name, wrapAsync) {
     try {
         const options = {
             filename: name,
-            displayErrors: true
+            displayErrors: true,
             // lineOffset: globalScriptLines
         };
         return {
@@ -1968,23 +2165,31 @@ function execute(script, name, engineType, verbose, debug) {
     script.wizards = [];
     script.name = name;
     script.engineType = engineType;
-    script._id = Math.floor(Math.random() * 0xFFFFFFFF);
+    script._id = Math.floor(Math.random() * 0xffffffff);
     script.subscribes = {};
     script.subscribesFile = {};
     script.setStatePerMinuteCounter = 0;
     script.setStatePerMinuteProblemCounter = 0;
-    adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, { val: false, ack: true, expire: 1000 });
+    adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
+        val: false,
+        ack: true,
+        expire: 1000,
+    });
 
     const sandbox = sandBox(script, name, verbose, debug, context);
 
     try {
         script.script.runInNewContext(sandbox, {
             filename: name,
-            displayErrors: true
+            displayErrors: true,
             // lineOffset: globalScriptLines
         });
     } catch (e) {
-        adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, { val: true, ack: true, c: 'execute' });
+        adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
+            val: true,
+            ack: true,
+            c: 'execute',
+        });
         context.logError(name, e);
     }
 }
@@ -2006,7 +2211,11 @@ function unsubscribe(id) {
     }
     const parts = id.split('.');
     const _adapter = `system.adapter.${parts[0]}.${parts[1]}`;
-    if (context.objects[_adapter] && context.objects[_adapter].common && context.objects[_adapter].common.subscribable) {
+    if (
+        context.objects[_adapter] &&
+        context.objects[_adapter].common &&
+        context.objects[_adapter].common.subscribable
+    ) {
         const a = parts[0] + '.' + parts[1];
         const alive = `system.adapter.${a}.alive`;
         if (context.adapterSubs[alive]) {
@@ -2093,7 +2302,10 @@ function stop(name, callback) {
                 const sub = context.subscriptions.splice(i, 1)[0];
                 sub && unsubscribe(sub.pattern.id);
             } else {
-                if (!context.isEnums && context.subscriptions[i].pattern.enumName || context.subscriptions[i].pattern.enumId) {
+                if (
+                    (!context.isEnums && context.subscriptions[i].pattern.enumName) ||
+                    context.subscriptions[i].pattern.enumId
+                ) {
                     context.isEnums = true;
                 }
             }
@@ -2172,7 +2384,6 @@ function stop(name, callback) {
             } catch (e) {
                 adapter.log.error('error in onStop callback: ' + e);
             }
-
         } else {
             delete context.scripts[name];
             typeof callback === 'function' && callback(true, name);
@@ -2185,14 +2396,15 @@ function stop(name, callback) {
 function prepareScript(obj, callback) {
     if (obj && obj.common && obj.common.enabled && debugState.scriptName === obj._id) {
         const id = obj._id;
-        return debugStop()
-            .then(() => {
-                adapter.log.info(`Debugging of ${id} was stopped, because started in normal mode`);
-                prepareScript(obj, callback);
-            });
+        return debugStop().then(() => {
+            adapter.log.info(`Debugging of ${id} was stopped, because started in normal mode`);
+            prepareScript(obj, callback);
+        });
     }
 
-    if (obj && obj.common &&
+    if (
+        obj &&
+        obj.common &&
         (obj.common.enabled || debugMode === obj._id) &&
         obj.common.engine === `system.adapter.${adapter.namespace}` &&
         obj.common.source
@@ -2212,7 +2424,11 @@ function prepareScript(obj, callback) {
         adapter.setState(idActive, true, true);
         obj.common.engineType = obj.common.engineType || '';
 
-        if ((obj.common.engineType.toLowerCase().startsWith('javascript') || obj.common.engineType === 'Blockly' || obj.common.engineType === 'Rules')) {
+        if (
+            obj.common.engineType.toLowerCase().startsWith('javascript') ||
+            obj.common.engineType === 'Blockly' ||
+            obj.common.engineType === 'Rules'
+        ) {
             // Javascript
             adapter.log.info(`Start JavaScript ${name} (${obj.common.engineType})`);
 
@@ -2244,9 +2460,9 @@ function prepareScript(obj, callback) {
             // use the hash to check whether we can rely on the compiled source code or
             // if we need to compile it again
             if (
-                typeof obj.common.compiled === 'string'
-                && typeof obj.common.sourceHash === 'string'
-                && sourceHash === obj.common.sourceHash
+                typeof obj.common.compiled === 'string' &&
+                typeof obj.common.sourceHash === 'string' &&
+                sourceHash === obj.common.sourceHash
             ) {
                 // We can reuse the stored source
                 compiled = obj.common.compiled;
@@ -2279,7 +2495,7 @@ function prepareScript(obj, callback) {
                         common: {
                             sourceHash,
                             compiled,
-                        }
+                        },
                     });
                 } else {
                     adapter.log.error(`${name}: TypeScript compilation failed:\n${errors}`);
@@ -2318,9 +2534,8 @@ function load(nameOrObject, callback) {
     if (typeof nameOrObject === 'object') {
         // create states for scripts
         createActiveObject(nameOrObject._id, nameOrObject && nameOrObject.common && nameOrObject.common.enabled, () =>
-            createProblemObject(nameOrObject._id, () =>
-                prepareScript(nameOrObject, callback)));
-
+            createProblemObject(nameOrObject._id, () => prepareScript(nameOrObject, callback)),
+        );
     } else {
         adapter.getForeignObject(nameOrObject, (err, obj) => {
             if (!obj || err) {
@@ -2396,7 +2611,8 @@ async function getData(callback) {
                 adapter.log.debug(`Got empty object for index ${i} (${res.rows[i].id})`);
                 continue;
             }
-            if (context.objects[res.rows[i].doc._id] === undefined) { // If was already there ignore
+            if (context.objects[res.rows[i].doc._id] === undefined) {
+                // If was already there ignore
                 context.objects[res.rows[i].doc._id] = res.rows[i].doc;
             }
             context.objects[res.rows[i].doc._id].type === 'enum' && context.enums.push(res.rows[i].doc._id);
@@ -2431,13 +2647,17 @@ async function getData(callback) {
         if (isNaN(adapter.config.latitude)) {
             adapter.log.warn(`Configured latitude is not a number - check (instance/system) configuration`);
         } else if (adapter.config.latitude < -90 || adapter.config.latitude > 90) {
-            adapter.log.warn(`Configured latitude "${adapter.config.latitude}" is invalid - check (instance/system) configuration`);
+            adapter.log.warn(
+                `Configured latitude "${adapter.config.latitude}" is invalid - check (instance/system) configuration`,
+            );
         }
 
         if (isNaN(adapter.config.longitude)) {
             adapter.log.warn(`Configured longitude is not a number - check (instance/system) configuration`);
         } else if (adapter.config.longitude < -180 || adapter.config.longitude > 180) {
-            adapter.log.warn(`Configured longitude "${adapter.config.longitude}" is invalid - check (instance/system) configuration`);
+            adapter.log.warn(
+                `Configured longitude "${adapter.config.longitude}" is invalid - check (instance/system) configuration`,
+            );
         }
 
         adapter.config.sunriseEvent = adapter.config.sunriseEvent || 'nightEnd';
@@ -2466,7 +2686,7 @@ const debugState = {
 
 function debugStop() {
     if (debugState.child) {
-        debugSendToInspector({cmd: 'end'});
+        debugSendToInspector({ cmd: 'end' });
         debugState.endTimeout = setTimeout(() => {
             debugState.endTimeout = null;
             debugState.child && debugState.child.kill('SIGTERM');
@@ -2475,20 +2695,19 @@ function debugStop() {
         debugState.promiseOnEnd = Promise.resolve();
     }
 
-    return debugState.promiseOnEnd
-        .then(() => {
-            debugState.child = null;
-            debugState.running = false;
-            debugState.scriptName = '';
-            debugState.endTimeout && clearTimeout(debugState.endTimeout);
-            debugState.endTimeout = null;
-        });
+    return debugState.promiseOnEnd.then(() => {
+        debugState.child = null;
+        debugState.running = false;
+        debugState.scriptName = '';
+        debugState.endTimeout && clearTimeout(debugState.endTimeout);
+        debugState.endTimeout = null;
+    });
 }
 
 function debugDisableScript(id) {
     const obj = context.objects[id];
     if (obj && obj.common && obj.common.enabled) {
-        return adapter.extendForeignObjectAsync(obj._id, {common: {enabled: false}});
+        return adapter.extendForeignObjectAsync(obj._id, { common: { enabled: false } });
     } else {
         return Promise.resolve();
     }
@@ -2500,12 +2719,17 @@ function debugSendToInspector(message) {
             adapter.log.info(`send to debugger: ${message}`);
             debugState.child.send(message);
         } catch (e) {
-            debugStop()
-                .then(() => adapter.log.info(`Debugging of "${debugState.scriptName}" was stopped, because started in normal mode`));
+            debugStop().then(() =>
+                adapter.log.info(`Debugging of "${debugState.scriptName}" was stopped, because started in normal mode`),
+            );
         }
     } else {
         adapter.log.error(`Cannot send command to terminated inspector`);
-        return adapter.setState('debug.from', JSON.stringify({cmd: 'error', error: `Cannot send command to terminated inspector`, id: 1}), true);
+        return adapter.setState(
+            'debug.from',
+            JSON.stringify({ cmd: 'error', error: `Cannot send command to terminated inspector`, id: 1 }),
+            true,
+        );
     }
 }
 
@@ -2547,64 +2771,78 @@ function debugStart(data) {
                 debugState.child.stdout.on('data', childPrint);
                 debugState.child.stderr.on('data', childPrint);*/
 
-                debugState.child && debugState.child.on('message', message => {
-                    if (typeof message === 'string') {
-                        try {
-                            message = JSON.parse(message);
-                        } catch (e) {
-                            return adapter.log.error(`Cannot parse message from inspector: ${message}`);
-                        }
-                    }
-
-                    message.cmd !== 'ready' && adapter.setState('debug.from', JSON.stringify(message), true);
-
-                    switch (message.cmd) {
-                        case 'ready': {
-                            debugSendToInspector({cmd: 'start', scriptName: debugState.scriptName, adapterInstance: debugState.adapterInstance, instance: adapter.instance});
-                            break;
+                debugState.child &&
+                    debugState.child.on('message', message => {
+                        if (typeof message === 'string') {
+                            try {
+                                message = JSON.parse(message);
+                            } catch (e) {
+                                return adapter.log.error(`Cannot parse message from inspector: ${message}`);
+                            }
                         }
 
-                        case 'watched': {
-                            //console.log(`WATCHED: ${JSON.stringify(message)}`);
-                            break;
-                        }
+                        message.cmd !== 'ready' && adapter.setState('debug.from', JSON.stringify(message), true);
 
-                        case 'paused': {
-                            debugState.paused = true;
-                            console.log(`host: PAUSED`);
-                            break;
-                        }
+                        switch (message.cmd) {
+                            case 'ready': {
+                                debugSendToInspector({
+                                    cmd: 'start',
+                                    scriptName: debugState.scriptName,
+                                    adapterInstance: debugState.adapterInstance,
+                                    instance: adapter.instance,
+                                });
+                                break;
+                            }
 
-                        case 'resumed' : {
-                            debugState.paused = false;
-                            //console.log(`STARTED`);
-                            break;
-                        }
+                            case 'watched': {
+                                //console.log(`WATCHED: ${JSON.stringify(message)}`);
+                                break;
+                            }
 
-                        case 'log' : {
-                            console.log(`[${message.severity}] ${message.text}`);
-                            break;
-                        }
+                            case 'paused': {
+                                debugState.paused = true;
+                                console.log(`host: PAUSED`);
+                                break;
+                            }
 
-                        case 'readyToDebug': {
-                            console.log(`host: readyToDebug (set breakpoints): [${message.scriptId}] ${message.script}`);
-                            break;
-                        }
-                    }
-                });
-                debugState.child && debugState.child.on('error', error => {
-                    adapter.log.error(`Cannot start inspector: ${error}`);
-                    adapter.setState('debug.from', JSON.stringify({cmd: 'error', error}), true);
-                });
+                            case 'resumed': {
+                                debugState.paused = false;
+                                //console.log(`STARTED`);
+                                break;
+                            }
 
-                debugState.child && debugState.child.on('exit', code => {
-                    if (code) {
-                        adapter.setState('debug.from', JSON.stringify({cmd: 'error', error: `invalid response code: ${code}`}), true);
-                    }
-                    adapter.setState('debug.from', JSON.stringify({cmd: 'debugStopped', code}), true);
-                    debugState.child = null;
-                    resolve(code);
-                });
+                            case 'log': {
+                                console.log(`[${message.severity}] ${message.text}`);
+                                break;
+                            }
+
+                            case 'readyToDebug': {
+                                console.log(
+                                    `host: readyToDebug (set breakpoints): [${message.scriptId}] ${message.script}`,
+                                );
+                                break;
+                            }
+                        }
+                    });
+                debugState.child &&
+                    debugState.child.on('error', error => {
+                        adapter.log.error(`Cannot start inspector: ${error}`);
+                        adapter.setState('debug.from', JSON.stringify({ cmd: 'error', error }), true);
+                    });
+
+                debugState.child &&
+                    debugState.child.on('exit', code => {
+                        if (code) {
+                            adapter.setState(
+                                'debug.from',
+                                JSON.stringify({ cmd: 'error', error: `invalid response code: ${code}` }),
+                                true,
+                            );
+                        }
+                        adapter.setState('debug.from', JSON.stringify({ cmd: 'debugStopped', code }), true);
+                        debugState.child = null;
+                        resolve(code);
+                    });
             });
         });
 }
@@ -2624,16 +2862,26 @@ async function patchFont() {
 
     if (!stat || stat.size !== 73452 || !dbFile || dbFile.byteLength !== 73452) {
         try {
-            const buffer = Buffer.from(JSON.parse(nodeFS.readFileSync(`${__dirname}/admin/vsFont/codicon.json`)), 'base64');
+            const buffer = Buffer.from(
+                JSON.parse(nodeFS.readFileSync(`${__dirname}/admin/vsFont/codicon.json`)),
+                'base64',
+            );
 
             const zip = await require('jszip').loadAsync(buffer);
             const data = await zip.file('codicon.ttf').async('arraybuffer');
             if (data.byteLength !== 73452) {
                 throw new Error('invalid font file!');
             }
-            nodeFS.writeFileSync(`${__dirname}/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf`, Buffer.from(data));
+            nodeFS.writeFileSync(
+                `${__dirname}/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf`,
+                Buffer.from(data),
+            );
             // upload this file
-            await adapter.writeFileAsync('javascript.admin', 'vs/base/browser/ui/codicons/codicon/codicon.ttf', Buffer.from(data));
+            await adapter.writeFileAsync(
+                'javascript.admin',
+                'vs/base/browser/ui/codicons/codicon/codicon.ttf',
+                Buffer.from(data),
+            );
             return true;
         } catch (error) {
             adapter.log.error(`Cannot patch font: ${error}`);

@@ -20,7 +20,7 @@ const allObjects = async socket => {
         .concat(Object.values(folders))
         .concat(Object.values(enums))
         // eslint-disable-next-line
-        .reduce((obj, item) => (obj[item._id] = item, obj), {});
+        .reduce((obj, item) => ((obj[item._id] = item), obj), {});
 
     return allObjectsCache;
 };
@@ -39,7 +39,7 @@ const detectDevices = async socket => {
     const detector = new ChannelDetector();
 
     const usedIds = [];
-    const ignoreIndicators = ['UNREACH_STICKY'];    // Ignore indicators by name
+    const ignoreIndicators = ['UNREACH_STICKY']; // Ignore indicators by name
     const excludedTypes = ['info'];
     const enums = [];
     const rooms = [];
@@ -118,8 +118,14 @@ const detectDevices = async socket => {
                             role: state.defaultRole,
                             type: devicesObject[state.id].common.type,
                             unit: devicesObject[state.id].common.unit,
-                            read: devicesObject[state.id].common.read === undefined ? true : devicesObject[state.id].common.read,
-                            write: devicesObject[state.id].common.write === undefined ? true : devicesObject[state.id].common.write,
+                            read:
+                                devicesObject[state.id].common.read === undefined
+                                    ? true
+                                    : devicesObject[state.id].common.read,
+                            write:
+                                devicesObject[state.id].common.write === undefined
+                                    ? true
+                                    : devicesObject[state.id].common.write,
                         })),
                 };
 
@@ -129,10 +135,16 @@ const detectDevices = async socket => {
                 if (devicesObject[stateId].type === 'channel' || devicesObject[stateId].type === 'state') {
                     parts.pop();
                     channelId = parts.join('.');
-                    if (devicesObject[channelId] && (devicesObject[channelId].type === 'channel' || devicesObject[stateId].type === 'folder')) {
+                    if (
+                        devicesObject[channelId] &&
+                        (devicesObject[channelId].type === 'channel' || devicesObject[stateId].type === 'folder')
+                    ) {
                         parts.pop();
                         deviceId = parts.join('.');
-                        if (!devicesObject[deviceId] || (devicesObject[deviceId].type !== 'device' && devicesObject[stateId].type !== 'folder')) {
+                        if (
+                            !devicesObject[deviceId] ||
+                            (devicesObject[deviceId].type !== 'device' && devicesObject[stateId].type !== 'folder')
+                        ) {
                             deviceId = null;
                         }
                     } else {
@@ -180,7 +192,10 @@ const detectDevices = async socket => {
 
             // read channel
             const parentObject = devicesObject[idArray.join('.')];
-            if (parentObject && (parentObject.type === 'channel' || parentObject.type === 'device' || parentObject.type === 'folder')) {
+            if (
+                parentObject &&
+                (parentObject.type === 'channel' || parentObject.type === 'device' || parentObject.type === 'folder')
+            ) {
                 deviceObj.common.name = getText(parentObject.common?.name || deviceObj.common.name, lang);
                 idArray.pop();
                 // read device

@@ -13,11 +13,7 @@ import {
     Confirm as DialogConfirm,
 } from '@iobroker/adapter-react-v5';
 
-import {
-    MdMenu as IconMenuClosed,
-    MdArrowBack as IconMenuOpened,
-    MdVisibility as IconShowLog,
-} from 'react-icons/md';
+import { MdMenu as IconMenuClosed, MdArrowBack as IconMenuOpened, MdVisibility as IconShowLog } from 'react-icons/md';
 
 import SideMenu from './SideMenu';
 import Log from './Log';
@@ -26,7 +22,7 @@ import DialogError from './Dialogs/Error';
 import DialogImportFile from './Dialogs/ImportFile';
 import BlocklyEditor from './Components/BlocklyEditor';
 import { ContextWrapper } from './Components/RulesEditor/components/ContextWrapper';
-import {Box} from '@mui/material';
+import { Box } from '@mui/material';
 
 const styles = {
     root: {
@@ -302,9 +298,14 @@ class App extends GenericApp {
                 return this.readAllScripts();
             })
             .then(scripts => {
-                if (window.localStorage.getItem('App.expertMode') !== 'true' && window.localStorage.getItem('App.expertMode') !== 'false') {
+                if (
+                    window.localStorage.getItem('App.expertMode') !== 'true' &&
+                    window.localStorage.getItem('App.expertMode') !== 'false'
+                ) {
                     // detect if some global scripts exists
-                    if (Object.keys(scripts).find(id => id.startsWith('script.js.global.') && scripts.type === 'script')) {
+                    if (
+                        Object.keys(scripts).find(id => id.startsWith('script.js.global.') && scripts.type === 'script')
+                    ) {
                         newState.expertMode = true;
                     }
                 }
@@ -325,45 +326,42 @@ class App extends GenericApp {
     }
 
     subscribeOnInstances() {
-        return this.socket.getAdapterInstances(this.adapterName)
-            .then(instancesArray => {
-                const instances = instancesArray.map(obj => parseInt(obj._id.split('.').pop())).sort();
-                const runningInstances = {};
-                instances.forEach(id => runningInstances[`system.adapter.${this.adapterName}.${id}`] = false);
+        return this.socket.getAdapterInstances(this.adapterName).then(instancesArray => {
+            const instances = instancesArray.map(obj => parseInt(obj._id.split('.').pop())).sort();
+            const runningInstances = {};
+            instances.forEach(id => (runningInstances[`system.adapter.${this.adapterName}.${id}`] = false));
 
-                const promises = [];
+            const promises = [];
 
-                // subscribe on instances
-                instances.forEach(instance => {
-                    const instanceId = `system.adapter.${this.adapterName}.${instance}`;
-                    const id = `${instanceId}.alive`;
-                    promises.push(this.socket.getState(id)
-                        .then(state => {
-                            runningInstances[instanceId] = state ? state.val : false;
-                            this.socket.subscribeState(id, this.onInstanceAliveChange);
-                        }));
-                });
+            // subscribe on instances
+            instances.forEach(instance => {
+                const instanceId = `system.adapter.${this.adapterName}.${instance}`;
+                const id = `${instanceId}.alive`;
+                promises.push(
+                    this.socket.getState(id).then(state => {
+                        runningInstances[instanceId] = state ? state.val : false;
+                        this.socket.subscribeState(id, this.onInstanceAliveChange);
+                    }),
+                );
+            });
 
-                return Promise.all(promises)
-                    .then(() => ({ instances, runningInstances }));
-            })
+            return Promise.all(promises).then(() => ({ instances, runningInstances }));
+        });
     }
 
     readAllScripts() {
-        return this.socket.getObjectView('script.js.', 'script.js.\u9999', 'channel')
-            .then(folders =>
-                this.socket.getObjectView('script.js.', 'script.js.\u9999', 'script')
-                    .then(scripts => {
-                        Object.keys(scripts).forEach(id => folders[id] = scripts[id]);
-                        return folders;
-                    }));
+        return this.socket.getObjectView('script.js.', 'script.js.\u9999', 'channel').then(folders =>
+            this.socket.getObjectView('script.js.', 'script.js.\u9999', 'script').then(scripts => {
+                Object.keys(scripts).forEach(id => (folders[id] = scripts[id]));
+                return folders;
+            }),
+        );
     }
 
     readAdaptersWithBlockly() {
-        return this.socket.getObjectView('system.adapter.', 'system.adapter.\u9999', 'adapter')
-            .then(adapters =>
-                new Promise(resolve =>
-                    BlocklyEditor.loadCustomBlockly(adapters, () => resolve())));
+        return this.socket
+            .getObjectView('system.adapter.', 'system.adapter.\u9999', 'adapter')
+            .then(adapters => new Promise(resolve => BlocklyEditor.loadCustomBlockly(adapters, () => resolve())));
     }
 
     onInstanceAliveChange = (id, state) => {
@@ -447,9 +445,7 @@ class App extends GenericApp {
             promise = this.renameGroup(oldId, newId, newName);
         }
 
-        promise
-            .then(() => this.setState({ updating: false }))
-            .catch(err => err !== 'canceled' && this.showError(err));
+        promise.then(() => this.setState({ updating: false })).catch(err => err !== 'canceled' && this.showError(err));
     }
 
     renameGroup(id, newId, newName, _list) {
@@ -460,14 +456,16 @@ class App extends GenericApp {
             // find all elements
             _list = Object.keys(this.scripts).filter(_id => _id.startsWith(`${id}.`));
 
-            return this.socket.getObject(id)
+            return this.socket
+                .getObject(id)
                 .then(obj => {
                     obj = obj || { common: {} };
                     obj.common.name = newName || obj.common.name || id.split('.').pop();
                     obj._id = newId;
 
-                    this.socket.delObject(id)
-                        .catch(() => { })
+                    this.socket
+                        .delObject(id)
+                        .catch(() => {})
                         .then(() => this.socket.setObject(newId, obj))
                         .then(() => this.renameGroup(id, newId, newName, _list))
                         .catch(e => console.log(e));
@@ -484,25 +482,24 @@ class App extends GenericApp {
                         native: {},
                     };
                     // may be it is virtual folder
-                    return this.socket.setObject(newId, obj)
-                        .then(() => this.renameGroup(id, newId, newName, _list));
+                    return this.socket.setObject(newId, obj).then(() => this.renameGroup(id, newId, newName, _list));
                 });
         } else if (_list.length) {
             let nId = _list.pop();
 
-            return this.socket.getObject(nId)
-                .then(obj =>
-                    this.socket.delObject(nId)
-                        .catch(() => { })
-                        .then(() => {
-                            nId = newId + nId.substring(id.length);
-                            obj._id = nId;
-                            obj.common = obj.common || {};
-                            obj.common.expert = true;
-                            return this.socket.setObject(nId, obj);
-                        })
-                        .then(() => this.renameGroup(id, newId, newName, _list))
-                );
+            return this.socket.getObject(nId).then(obj =>
+                this.socket
+                    .delObject(nId)
+                    .catch(() => {})
+                    .then(() => {
+                        nId = newId + nId.substring(id.length);
+                        obj._id = nId;
+                        obj.common = obj.common || {};
+                        obj.common.expert = true;
+                        return this.socket.setObject(nId, obj);
+                    })
+                    .then(() => this.renameGroup(id, newId, newName, _list)),
+            );
         } else {
             return Promise.resolve();
         }
@@ -511,15 +508,18 @@ class App extends GenericApp {
     onUpdateScript(id, common) {
         if (this.scripts[id] && this.scripts[id].type === 'script') {
             this.updateScript(id, id, common)
-                .then(() => { })
+                .then(() => {})
                 .catch(err => err !== 'canceled' && this.showError(err));
         }
     }
 
     onSelect(selected) {
         if (this.scripts[selected] && this.scripts[selected].common && this.scripts[selected].type === 'script') {
-            this.setState({ selected, menuSelectId: selected }, () =>
-                setTimeout(() => this.setState({ menuSelectId: '' })), 300);
+            this.setState(
+                { selected, menuSelectId: selected },
+                () => setTimeout(() => this.setState({ menuSelectId: '' })),
+                300,
+            );
         }
     }
 
@@ -539,10 +539,10 @@ class App extends GenericApp {
     }
 
     onDelete(id) {
-        this.socket.delObject(id)
-            .then(() => { })
-            .catch(err =>
-                this.showError(err));
+        this.socket
+            .delObject(id)
+            .then(() => {})
+            .catch(err => this.showError(err));
     }
 
     onEdit(id) {
@@ -559,16 +559,25 @@ class App extends GenericApp {
         }
 
         if (isFolder) {
-            this.socket.setObject(id, {
-                common: {
-                    name,
-                    expert: true,
-                },
-                type: 'channel',
-            })
+            this.socket
+                .setObject(id, {
+                    common: {
+                        name,
+                        expert: true,
+                    },
+                    type: 'channel',
+                })
                 .then(() =>
-                    setTimeout(() => this.setState({ menuSelectId: id }, () =>
-                        setTimeout(() => this.setState({ menuSelectId: '' })), 300), 1000))
+                    setTimeout(
+                        () =>
+                            this.setState(
+                                { menuSelectId: id },
+                                () => setTimeout(() => this.setState({ menuSelectId: '' })),
+                                300,
+                            ),
+                        1000,
+                    ),
+                )
                 .catch(err => this.showError(err));
         } else {
             if (type === 'Blockly' && !source) {
@@ -576,86 +585,85 @@ class App extends GenericApp {
                 source = `\n//${btoa(encodeURIComponent('<xml xmlns="https://developers.google.com/blockly/xml"></xml>'))}`;
             }
 
-            this.socket.setObject(id, {
-                common: {
-                    name,
-                    expert: true,
-                    engineType: type,
-                    engine: `system.adapter.javascript.${instance || 0}`,
-                    source: source || '',
-                    debug: false,
-                    verbose: false,
-                },
-                type: 'script',
-            })
+            this.socket
+                .setObject(id, {
+                    common: {
+                        name,
+                        expert: true,
+                        engineType: type,
+                        engine: `system.adapter.javascript.${instance || 0}`,
+                        source: source || '',
+                        debug: false,
+                        verbose: false,
+                    },
+                    type: 'script',
+                })
                 .then(() => setTimeout(() => this.onSelect(id), 1000))
                 .catch(err => this.showError(err));
         }
     }
 
     updateScript(oldId, newId, newCommon) {
-        return this.socket.getObject(oldId)
-            .then(_obj => {
-                const obj = { common: {} };
+        return this.socket.getObject(oldId).then(_obj => {
+            const obj = { common: {} };
 
-                if (newCommon.engine !== undefined) obj.common.engine = newCommon.engine;
-                if (newCommon.enabled !== undefined) obj.common.enabled = newCommon.enabled;
-                if (newCommon.source !== undefined) obj.common.source = newCommon.source;
-                if (newCommon.debug !== undefined) obj.common.debug = newCommon.debug;
-                if (newCommon.verbose !== undefined) obj.common.verbose = newCommon.verbose;
+            if (newCommon.engine !== undefined) obj.common.engine = newCommon.engine;
+            if (newCommon.enabled !== undefined) obj.common.enabled = newCommon.enabled;
+            if (newCommon.source !== undefined) obj.common.source = newCommon.source;
+            if (newCommon.debug !== undefined) obj.common.debug = newCommon.debug;
+            if (newCommon.verbose !== undefined) obj.common.verbose = newCommon.verbose;
 
-                obj.from = 'system.adapter.admin.0'; // we must distinguish between GUI(admin.0) and disk(javascript.0)
+            obj.from = 'system.adapter.admin.0'; // we must distinguish between GUI(admin.0) and disk(javascript.0)
 
-                if (oldId === newId && _obj && _obj.common && newCommon.name === _obj.common.name) {
-                    if (!newCommon.engineType || newCommon.engineType !== _obj.common.engineType) {
-                        if (newCommon.engineType !== undefined) {
-                            obj.common.engineType = newCommon.engineType || 'Javascript/js';
-                        }
+            if (oldId === newId && _obj && _obj.common && newCommon.name === _obj.common.name) {
+                if (!newCommon.engineType || newCommon.engineType !== _obj.common.engineType) {
+                    if (newCommon.engineType !== undefined) {
+                        obj.common.engineType = newCommon.engineType || 'Javascript/js';
                     }
-                    obj.type = 'script';
-                    return this.socket.extendObject(oldId, obj);
-                } else {
-                    // let prefix;
-
-                    // let parts = _obj.common.engineType.split('/');
-
-                    // prefix = 'script.' + (parts[1] || parts[0]) + '.';
-
-                    if (_obj && _obj.common) {
-                        _obj.common.engineType = newCommon.engineType || _obj.common.engineType || 'Javascript/js';
-                        return this.socket.delObject(oldId)
-                            .then(() => {
-                                if (obj.common.engine !== undefined) _obj.common.engine = obj.common.engine;
-                                if (obj.common.enabled !== undefined) _obj.common.enabled = obj.common.enabled;
-                                if (obj.common.source !== undefined) _obj.common.source = obj.common.source;
-                                if (obj.common.name !== undefined) _obj.common.name = obj.common.name;
-                                if (obj.common.debug !== undefined) _obj.common.debug = obj.common.debug;
-                                if (obj.common.verbose !== undefined) _obj.common.verbose = obj.common.verbose;
-
-                                delete _obj._rev;
-
-                                // Name must always exist
-                                _obj.common.name = newCommon.name;
-                                _obj.common.expert = true;
-                                _obj.type = 'script';
-
-                                _obj._id = newId; // prefix + newCommon.name.replace(/[\s"']/g, '_');
-
-                                this.socket.setObject(newId, _obj);
-                            });
-                    } else {
-                        _obj = obj;
-                    }
-
-                    // Name must always exist
-                    _obj.common.name = newCommon.name;
-                    _obj.common.expert = true;
-                    _obj.type = 'script';
-                    _obj._id = newId; // prefix + newCommon.name.replace(/[\s"']/g, '_');
-
-                    return this.socket.setObject(newId, _obj);
                 }
-            });
+                obj.type = 'script';
+                return this.socket.extendObject(oldId, obj);
+            } else {
+                // let prefix;
+
+                // let parts = _obj.common.engineType.split('/');
+
+                // prefix = 'script.' + (parts[1] || parts[0]) + '.';
+
+                if (_obj && _obj.common) {
+                    _obj.common.engineType = newCommon.engineType || _obj.common.engineType || 'Javascript/js';
+                    return this.socket.delObject(oldId).then(() => {
+                        if (obj.common.engine !== undefined) _obj.common.engine = obj.common.engine;
+                        if (obj.common.enabled !== undefined) _obj.common.enabled = obj.common.enabled;
+                        if (obj.common.source !== undefined) _obj.common.source = obj.common.source;
+                        if (obj.common.name !== undefined) _obj.common.name = obj.common.name;
+                        if (obj.common.debug !== undefined) _obj.common.debug = obj.common.debug;
+                        if (obj.common.verbose !== undefined) _obj.common.verbose = obj.common.verbose;
+
+                        delete _obj._rev;
+
+                        // Name must always exist
+                        _obj.common.name = newCommon.name;
+                        _obj.common.expert = true;
+                        _obj.type = 'script';
+
+                        _obj._id = newId; // prefix + newCommon.name.replace(/[\s"']/g, '_');
+
+                        this.socket.setObject(newId, _obj);
+                    });
+                } else {
+                    _obj = obj;
+                }
+
+                // Name must always exist
+                _obj.common.name = newCommon.name;
+                _obj.common.expert = true;
+                _obj.type = 'script';
+                _obj._id = newId; // prefix + newCommon.name.replace(/[\s"']/g, '_');
+
+                return this.socket.setObject(newId, _obj);
+            }
+        });
     }
 
     onEnableDisable(id, enabled) {
@@ -663,8 +671,7 @@ class App extends GenericApp {
             const common = this.scripts[id].common;
             common.enabled = enabled;
             common.expert = true;
-            this.updateScript(id, id, common)
-                .catch(err => err !== 'canceled' && this.showError(err));
+            this.updateScript(id, id, common).catch(err => err !== 'canceled' && this.showError(err));
         }
     }
 
@@ -675,14 +682,13 @@ class App extends GenericApp {
 
         if (_list.length) {
             const id = _list.shift();
-            this.socket.getState(`${id}.alive`)
-                .then(state => {
-                    if (state && state.val) {
-                        cb(id);
-                    } else {
-                        setTimeout(() => this.getLiveHost(cb, _list));
-                    }
-                });
+            this.socket.getState(`${id}.alive`).then(state => {
+                if (state && state.val) {
+                    cb(id);
+                } else {
+                    setTimeout(() => this.getLiveHost(cb, _list));
+                }
+            });
         } else {
             cb();
         }
@@ -707,40 +713,46 @@ class App extends GenericApp {
             }
             date += `-${m}-`;
 
-            this.socket.getRawSocket().emit('sendToHost', host, 'readObjectsAsZip', {
-                adapter: 'javascript',
-                id: 'script.js',
-                link: `${date}scripts.zip`, // request link to file and not the data itself
-                fileStorageNamespace: `admin.${this.instance}`, // new controller 5.x understands this and saves ZIP in the file store
-            }, data => {
-                if (typeof data === 'string') {
-                    // it is a link to the created file
-                    const a = document.createElement('a');
-                    if (data.startsWith('admin.')) {
-                        // new controller
-                        // actual position is http://IP:8081/adapter/javascript/index.html
-                        // we need http://IP:8081/files/admin.0/zip/2023-06-20-scripts.zip
-                        a.href = `../../files/${data}`;
-                    } else {
-                        // the data is "system.host.HOST.zip.2020-01-26-scripts.zip"
-                        const parts = data.split('.zip.');
-                        a.href = `./zip/${parts[0]}/${parts[1]}`;
-                    }
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                } else {
-                    data.error && this.showError(data.error);
-                    if (data.data) {
+            this.socket.getRawSocket().emit(
+                'sendToHost',
+                host,
+                'readObjectsAsZip',
+                {
+                    adapter: 'javascript',
+                    id: 'script.js',
+                    link: `${date}scripts.zip`, // request link to file and not the data itself
+                    fileStorageNamespace: `admin.${this.instance}`, // new controller 5.x understands this and saves ZIP in the file store
+                },
+                data => {
+                    if (typeof data === 'string') {
+                        // it is a link to the created file
                         const a = document.createElement('a');
-                        a.href = `data: application/zip;base64,${data.data}`;
-                        a.download = `${date}scripts.zip`;
+                        if (data.startsWith('admin.')) {
+                            // new controller
+                            // actual position is http://IP:8081/adapter/javascript/index.html
+                            // we need http://IP:8081/files/admin.0/zip/2023-06-20-scripts.zip
+                            a.href = `../../files/${data}`;
+                        } else {
+                            // the data is "system.host.HOST.zip.2020-01-26-scripts.zip"
+                            const parts = data.split('.zip.');
+                            a.href = `./zip/${parts[0]}/${parts[1]}`;
+                        }
                         document.body.appendChild(a);
                         a.click();
                         a.remove();
+                    } else {
+                        data.error && this.showError(data.error);
+                        if (data.data) {
+                            const a = document.createElement('a');
+                            a.href = `data: application/zip;base64,${data.data}`;
+                            a.download = `${date}scripts.zip`;
+                            document.body.appendChild(a);
+                            a.click();
+                            a.remove();
+                        }
                     }
-                }
-            });
+                },
+            );
         });
     }
 
@@ -764,19 +776,25 @@ class App extends GenericApp {
                     this.showError(I18n.t('No active host found'));
                     return;
                 }
-                this.socket.getRawSocket().emit('sendToHost', host, 'writeObjectsAsZip', {
-                    data: data,
-                    adapter: 'javascript',
-                    id: 'script.js'
-                }, data => {
-                    if (data === 'permissionError') {
-                        this.showError(I18n.t(data));
-                    } else if (!data || data.error) {
-                        this.showError(data ? I18n.t(data.error) : I18n.t('Unknown error'));
-                    } else {
-                        this.showMessage(I18n.t('Done'));
-                    }
-                });
+                this.socket.getRawSocket().emit(
+                    'sendToHost',
+                    host,
+                    'writeObjectsAsZip',
+                    {
+                        data: data,
+                        adapter: 'javascript',
+                        id: 'script.js',
+                    },
+                    data => {
+                        if (data === 'permissionError') {
+                            this.showError(I18n.t(data));
+                        } else if (!data || data.error) {
+                            this.showError(data ? I18n.t(data.error) : I18n.t('Unknown error'));
+                        } else {
+                            this.showMessage(I18n.t('Done'));
+                        }
+                    },
+                );
             });
         }
     }
@@ -787,129 +805,163 @@ class App extends GenericApp {
     }
 
     renderEditor() {
-        const isAnyRulesExists = Object.keys(this.scripts).reduce((sum, id) =>
-            sum + (this.scripts[id].common.engineType === 'Rules' ? 1 : 0), 0);
+        const isAnyRulesExists = Object.keys(this.scripts).reduce(
+            (sum, id) => sum + (this.scripts[id].common.engineType === 'Rules' ? 1 : 0),
+            0,
+        );
 
-        return <Editor
-            key="editor"
-            debugMode={this.state.debugMode}
-            onDebugModeChange={value => {
-                if (!value) {
-                    this.setState({debugMode: false, debugInstance: null});
-                } else {
-                    this.setState({debugMode: true});
+        return (
+            <Editor
+                key="editor"
+                debugMode={this.state.debugMode}
+                onDebugModeChange={value => {
+                    if (!value) {
+                        this.setState({ debugMode: false, debugInstance: null });
+                    } else {
+                        this.setState({ debugMode: true });
+                    }
+                }}
+                visible={!this.state.resizing}
+                socket={this.socket}
+                adapterName={this.adapterName}
+                onLocate={menuSelectId => this.setState({ menuSelectId })}
+                runningInstances={this.state.runningInstances}
+                menuOpened={this.state.menuOpened}
+                searchText={this.state.searchText}
+                themeType={this.state.themeType}
+                themeName={this.state.themeName}
+                theme={this.state.theme}
+                expertMode={this.state.expertMode}
+                onChange={(id, common) => this.onUpdateScript(id, common)}
+                isAnyRulesExists={isAnyRulesExists}
+                debugInstance={this.state.debugInstance}
+                onSelectedChange={(id, editing) => {
+                    const newState = {};
+                    let changed = false;
+                    if (id !== this.state.selected) {
+                        changed = true;
+                        newState.selected = id;
+                    }
+                    if (JSON.stringify(editing) !== JSON.stringify(this.state.editing)) {
+                        changed = true;
+                        newState.editing = JSON.parse(JSON.stringify(editing));
+                    }
+                    changed && this.setState(newState);
+                }}
+                onRestart={id => this.socket.extendObject(id, { common: { enabled: true } })}
+                selected={
+                    this.state.selected &&
+                    this.scripts[this.state.selected] &&
+                    this.scripts[this.state.selected].type === 'script'
+                        ? this.state.selected
+                        : ''
                 }
-            }}
-            visible={!this.state.resizing}
-            socket={this.socket}
-            adapterName={this.adapterName}
-            onLocate={menuSelectId => this.setState({ menuSelectId })}
-            runningInstances={this.state.runningInstances}
-            menuOpened={this.state.menuOpened}
-            searchText={this.state.searchText}
-            themeType={this.state.themeType}
-            themeName={this.state.themeName}
-            theme={this.state.theme}
-            expertMode={this.state.expertMode}
-            onChange={(id, common) => this.onUpdateScript(id, common)}
-            isAnyRulesExists={isAnyRulesExists}
-            debugInstance={this.state.debugInstance}
-            onSelectedChange={(id, editing) => {
-                const newState = {};
-                let changed = false;
-                if (id !== this.state.selected) {
-                    changed = true;
-                    newState.selected = id;
-                }
-                if (JSON.stringify(editing) !== JSON.stringify(this.state.editing)) {
-                    changed = true;
-                    newState.editing = JSON.parse(JSON.stringify(editing));
-                }
-                changed && this.setState(newState);
-            }}
-            onRestart={id => this.socket.extendObject(id, { common: { enabled: true } })}
-            selected={this.state.selected && this.scripts[this.state.selected] && this.scripts[this.state.selected].type === 'script' ? this.state.selected : ''}
-            objects={this.scripts}
-            instances={this.state.instances}
-        />;
+                objects={this.scripts}
+                instances={this.state.instances}
+            />
+        );
     }
 
     showLogButton() {
-        return <Box
-            key="showLog"
-            title={I18n.t('Show logs')}
-            sx={styles.showLogButton}
-            onClick={() => {
-                window.localStorage.setItem('App.hideLog', 'false');
-                this.setState({ hideLog: false, resizing: true });
-                setTimeout(() => this.setState({ resizing: false }), 300);
-            }}
-        >
-            <IconShowLog />
-        </Box>;
+        return (
+            <Box
+                key="showLog"
+                title={I18n.t('Show logs')}
+                sx={styles.showLogButton}
+                onClick={() => {
+                    window.localStorage.setItem('App.hideLog', 'false');
+                    this.setState({ hideLog: false, resizing: true });
+                    setTimeout(() => this.setState({ resizing: false }), 300);
+                }}
+            >
+                <IconShowLog />
+            </Box>
+        );
     }
 
     renderErrorDialog() {
-        return this.state.errorText ?
+        return this.state.errorText ? (
             <DialogError
                 key="dialogError"
                 onClose={() => this.setState({ errorText: '' })}
                 text={this.state.errorText}
-            /> :
-            null;
+            />
+        ) : null;
     }
 
     renderMain() {
         let content;
         if (this.state.debugMode || this.state.hideLog) {
-            content = <>
-                {!this.state.debugMode && this.state.hideLog ? this.showLogButton() : undefined}
-                {this.renderEditor()}
-            </>;
+            content = (
+                <>
+                    {!this.state.debugMode && this.state.hideLog ? this.showLogButton() : undefined}
+                    {this.renderEditor()}
+                </>
+            );
         } else {
-            content = <ReactSplit
-                direction={this.state.logHorzLayout ? SplitDirection.Horizontal : SplitDirection.Vertical}
-                initialSizes={this.state.logSizes}
-                minWidths={[500, 100]}
-                minHeights={[150, 50]}
-                onResizeStarted={() => this.setState({ resizing: true })}
-                onResizing
-                onResizeFinished={(_gutterIdx, logSizes) => {
-                    this.setState({ logSizes, resizing: false });
-                    window.localStorage.setItem('JS.logSizes', JSON.stringify(logSizes));
-                }}
-                gutterClassName={this.state.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
-            >
-                {this.renderEditor()}
-                <Log
-                    key="log"
-                    verticalLayout={!this.state.logHorzLayout}
-                    onLayoutChange={() => this.toggleLogLayout()}
-                    editing={this.state.editing}
-                    socket={this.socket}
-                    selected={this.state.selected}
-                    onHideLog={() => {
-                        window.localStorage.setItem('App.hideLog', 'true');
-                        this.setState({ hideLog: true, resizing: true });
-                        setTimeout(() => this.setState({ resizing: false }), 300);
+            content = (
+                <ReactSplit
+                    direction={this.state.logHorzLayout ? SplitDirection.Horizontal : SplitDirection.Vertical}
+                    initialSizes={this.state.logSizes}
+                    minWidths={[500, 100]}
+                    minHeights={[150, 50]}
+                    onResizeStarted={() => this.setState({ resizing: true })}
+                    onResizing
+                    onResizeFinished={(_gutterIdx, logSizes) => {
+                        this.setState({ logSizes, resizing: false });
+                        window.localStorage.setItem('JS.logSizes', JSON.stringify(logSizes));
                     }}
-                />
-            </ReactSplit>;
+                    gutterClassName={this.state.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
+                >
+                    {this.renderEditor()}
+                    <Log
+                        key="log"
+                        verticalLayout={!this.state.logHorzLayout}
+                        onLayoutChange={() => this.toggleLogLayout()}
+                        editing={this.state.editing}
+                        socket={this.socket}
+                        selected={this.state.selected}
+                        onHideLog={() => {
+                            window.localStorage.setItem('App.hideLog', 'true');
+                            this.setState({ hideLog: true, resizing: true });
+                            setTimeout(() => this.setState({ resizing: false }), 300);
+                        }}
+                    />
+                </ReactSplit>
+            );
         }
 
         return [
-            this.state.message ? <DialogMessage key="dialogMessage" onClose={() => this.setState({ message: '' })} text={this.state.message} /> : null,
+            this.state.message ? (
+                <DialogMessage
+                    key="dialogMessage"
+                    onClose={() => this.setState({ message: '' })}
+                    text={this.state.message}
+                />
+            ) : null,
             this.renderErrorDialog(),
-            this.state.importFile ? <DialogImportFile key="dialogImportFile" onClose={data => this.onImport(data)} /> : null,
-            this.state.confirm ? <DialogConfirm
-                key="dialogConfirm"
-                onClose={result => {
-                    this.state.confirm && this.setState({ confirm: '' });
-                    this.confirmCallback && this.confirmCallback(result);
-                    this.confirmCallback = null;
-                }}
-                text={this.state.confirm} /> : null,
-            <Box sx={styles.content} className="iobVerticalSplitter" key="main">
+            this.state.importFile ? (
+                <DialogImportFile
+                    key="dialogImportFile"
+                    onClose={data => this.onImport(data)}
+                />
+            ) : null,
+            this.state.confirm ? (
+                <DialogConfirm
+                    key="dialogConfirm"
+                    onClose={result => {
+                        this.state.confirm && this.setState({ confirm: '' });
+                        this.confirmCallback && this.confirmCallback(result);
+                        this.confirmCallback = null;
+                    }}
+                    text={this.state.confirm}
+                />
+            ) : null,
+            <Box
+                sx={styles.content}
+                className="iobVerticalSplitter"
+                key="main"
+            >
                 <Box
                     key="closeMenu"
                     sx={styles.menuOpenCloseButton}
@@ -929,75 +981,81 @@ class App extends GenericApp {
     render() {
         if (!this.state.ready) {
             // return (<CircularProgress style={styles.progress} size={50} />);
-            return <StyledEngineProvider injectFirst>
-                <ThemeProvider theme={this.state.theme}>
-                    <Loader themeType={this.state.themeType} />
-                </ThemeProvider>
-            </StyledEngineProvider>;
+            return (
+                <StyledEngineProvider injectFirst>
+                    <ThemeProvider theme={this.state.theme}>
+                        <Loader themeType={this.state.themeType} />
+                    </ThemeProvider>
+                </StyledEngineProvider>
+            );
         }
 
         let context;
         if (this.state.menuOpened) {
-            context = <ReactSplit
-                direction={SplitDirection.Horizontal}
-                initialSizes={this.state.splitSizes}
-                minWidths={[270, 400]}
-                onResizeFinished={(_gutterIdx, splitSizes) => {
-                    this.setState({ splitSizes });
-                    window.localStorage.setItem('JS.splitSizes', JSON.stringify(splitSizes));
-                }}
-                gutterClassName={this.state.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
-            >
-                <div style={styles.mainDiv} key="menu">
-                    <SideMenu
-                        debugMode={this.state.debugMode}
-                        onDebugInstance={data =>
-                            this.setState({ debugInstance: data, debugMode: !!data })}
-                        key="sidemenu"
-                        scripts={this.scripts}
-                        scriptsHash={this.state.scriptsHash}
-                        instances={this.state.instances}
-                        update={this.state.updateScripts}
-                        onRename={this.onRename.bind(this)}
-                        onSelect={this.onSelect.bind(this)}
-                        socket={this.socket}
-                        selectId={this.state.menuSelectId}
-                        onEdit={this.onEdit.bind(this)}
-                        expertMode={this.state.expertMode}
-                        themeType={this.state.themeType}
-                        themeName={this.state.themeName}
-                        onThemeChange={themeName => {
-                            Utils.setThemeName(themeName);
-                            const themeType = Utils.getThemeType(themeName);
-                            this.setState({ themeName, themeType }, () => this.props.onThemeChange(themeName));
-                        }}
-                        runningInstances={this.state.runningInstances}
-                        onExpertModeChange={this.onExpertModeChange.bind(this)}
-                        onDelete={this.onDelete.bind(this)}
-                        onAddNew={this.onAddNew.bind(this)}
-                        onEnableDisable={this.onEnableDisable.bind(this)}
-                        onExport={this.onExport.bind(this)}
-                        width={500} // TODO: https://github.com/ioBroker/ioBroker.javascript/issues/1643
-                        onImport={() => this.setState({ importFile: true })}
-                        onSearch={searchText => this.setState({ searchText })}
-                        version={this.props.version}
-                    />
-                </div>
-                {this.renderMain()}
-            </ReactSplit>;
+            context = (
+                <ReactSplit
+                    direction={SplitDirection.Horizontal}
+                    initialSizes={this.state.splitSizes}
+                    minWidths={[270, 400]}
+                    onResizeFinished={(_gutterIdx, splitSizes) => {
+                        this.setState({ splitSizes });
+                        window.localStorage.setItem('JS.splitSizes', JSON.stringify(splitSizes));
+                    }}
+                    gutterClassName={this.state.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
+                >
+                    <div
+                        style={styles.mainDiv}
+                        key="menu"
+                    >
+                        <SideMenu
+                            debugMode={this.state.debugMode}
+                            onDebugInstance={data => this.setState({ debugInstance: data, debugMode: !!data })}
+                            key="sidemenu"
+                            scripts={this.scripts}
+                            scriptsHash={this.state.scriptsHash}
+                            instances={this.state.instances}
+                            update={this.state.updateScripts}
+                            onRename={this.onRename.bind(this)}
+                            onSelect={this.onSelect.bind(this)}
+                            socket={this.socket}
+                            selectId={this.state.menuSelectId}
+                            onEdit={this.onEdit.bind(this)}
+                            expertMode={this.state.expertMode}
+                            themeType={this.state.themeType}
+                            themeName={this.state.themeName}
+                            onThemeChange={themeName => {
+                                Utils.setThemeName(themeName);
+                                const themeType = Utils.getThemeType(themeName);
+                                this.setState({ themeName, themeType }, () => this.props.onThemeChange(themeName));
+                            }}
+                            runningInstances={this.state.runningInstances}
+                            onExpertModeChange={this.onExpertModeChange.bind(this)}
+                            onDelete={this.onDelete.bind(this)}
+                            onAddNew={this.onAddNew.bind(this)}
+                            onEnableDisable={this.onEnableDisable.bind(this)}
+                            onExport={this.onExport.bind(this)}
+                            width={500} // TODO: https://github.com/ioBroker/ioBroker.javascript/issues/1643
+                            onImport={() => this.setState({ importFile: true })}
+                            onSearch={searchText => this.setState({ searchText })}
+                            version={this.props.version}
+                        />
+                    </div>
+                    {this.renderMain()}
+                </ReactSplit>
+            );
         } else {
             context = this.renderMain();
         }
 
-        return <StyledEngineProvider injectFirst>
-            <ThemeProvider theme={this.state.theme}>
-                <div style={styles.root}>
-                    <ContextWrapper socket={this.socket}>
-                        {context}
-                    </ContextWrapper>
-                </div>
-            </ThemeProvider>
-        </StyledEngineProvider>;
+        return (
+            <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={this.state.theme}>
+                    <div style={styles.root}>
+                        <ContextWrapper socket={this.socket}>{context}</ContextWrapper>
+                    </div>
+                </ThemeProvider>
+            </StyledEngineProvider>
+        );
     }
 }
 

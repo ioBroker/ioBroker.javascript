@@ -1,20 +1,8 @@
-import _ from "lodash";
+import _ from 'lodash';
 
-const funcSet = _.throttle(
-    (setCards, userRules) => setCards(userRules)
-    , 0);
+const funcSet = _.throttle((setCards, userRules) => setCards(userRules), 0);
 
-const moveCard = (
-    id,
-    atIndex,
-    cards,
-    setCards,
-    userRules,
-    acceptedBy,
-    additionally,
-    hoverClientY,
-    hoverMiddleY) => {
-
+const moveCard = (id, atIndex, cards, setCards, userRules, acceptedBy, additionally, hoverClientY, hoverMiddleY) => {
     const { card, index } = findCard(id, cards);
     if (index < atIndex && hoverClientY < hoverMiddleY) {
         return;
@@ -44,7 +32,7 @@ const moveCard = (
     }
 };
 const findCard = (id, cards) => {
-    const card = cards.find((c) => c._id === id);
+    const card = cards.find(c => c._id === id);
     return {
         card,
         index: cards.indexOf(card),

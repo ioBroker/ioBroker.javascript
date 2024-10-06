@@ -5,9 +5,14 @@ import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { ThemeProvider } from '@mui/material/styles';
 
 import {
-    FormControl, FormHelperText,
-    MenuItem, Select, TextField,
-    Checkbox, FormControlLabel, InputLabel,
+    FormControl,
+    FormHelperText,
+    MenuItem,
+    Select,
+    TextField,
+    Checkbox,
+    FormControlLabel,
+    InputLabel,
 } from '@mui/material';
 
 import {
@@ -69,7 +74,9 @@ function text2Date(text) {
 }
 
 function date2Text(date) {
-    return date ? `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}` : '';
+    return date
+        ? `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
+        : '';
 }
 
 function formatTime(date) {
@@ -111,12 +118,14 @@ class Astro extends ConfigGeneric {
     }
 
     renderMap() {
-        return <Map
-            longitude={this.state.longitude}
-            latitude={this.state.latitude}
-            readOnly={!!this.state.useSystemGPS}
-            onChange={(latitude, longitude) => this.setState({ latitude, longitude })}
-        />;
+        return (
+            <Map
+                longitude={this.state.longitude}
+                latitude={this.state.latitude}
+                readOnly={!!this.state.useSystemGPS}
+                onChange={(latitude, longitude) => this.setState({ latitude, longitude })}
+            />
+        );
     }
 
     onChange(attr, value) {
@@ -128,7 +137,7 @@ class Astro extends ConfigGeneric {
         }
         this.setState(newState, () => {
             const data = {};
-            ATTRIBUTES.forEach(_attr => data[_attr] = this.state[_attr]);
+            ATTRIBUTES.forEach(_attr => (data[_attr] = this.state[_attr]));
             data.sunriseLimitStart = date2Text(data.sunriseLimitStart);
             data.sunriseLimitEnd = date2Text(data.sunriseLimitEnd);
             data.sunsetLimitStart = date2Text(data.sunsetLimitStart);
@@ -138,7 +147,7 @@ class Astro extends ConfigGeneric {
 
             this.calculateRiseSet(data);
             const allData = JSON.parse(JSON.stringify(this.props.data));
-            ATTRIBUTES.forEach(_attr => allData[_attr] = data[_attr]);
+            ATTRIBUTES.forEach(_attr => (allData[_attr] = data[_attr]));
             attr !== undefined && this.props.onChange(allData);
         });
     }
@@ -149,7 +158,11 @@ class Astro extends ConfigGeneric {
             this.calcTimeout && clearTimeout(this.calcTimeout);
             this.calcTimeout = setTimeout(async () => {
                 this.calcTimeout = null;
-                const times = await this.props.socket.sendTo(`${this.props.adapterName}.${this.props.instance}`, 'calcAstro', data);
+                const times = await this.props.socket.sendTo(
+                    `${this.props.adapterName}.${this.props.instance}`,
+                    'calcAstro',
+                    data,
+                );
                 if (!times || times.error) {
                     console.error(`Cannot calculate astro times: ${JSON.stringify(times.error)}`);
                     return;
@@ -182,260 +195,282 @@ class Astro extends ConfigGeneric {
 
         const isMobile = window.innerWidth < 800;
 
-        return <ThemeProvider theme={this.state.theme}>
-            <div style={{ width: '100%', display: isMobile ? undefined : 'flex', gap: 10 }}>
-                <div style={{ width: isMobile ? '100%' : 'calc(50% - 5px)', display: isMobile ? 'block' : 'inline-block' }}>
-                    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeMap[I18n.getLanguage()]}>
-                        <FormControlLabel
-                            style={{ width: 'calc(100% - 10px)' }}
-                            control={<Checkbox
-                                checked={!!useSystemGPS}
-                                onChange={e => {
-                                    if (!e.target.checked) {
-                                        this.onChange({
-                                            useSystemGPS: false,
-                                            latitude: latitude || this.props.systemConfig.latitude,
-                                            longitude: longitude || this.props.systemConfig.longitude,
-                                        });
-                                    } else {
-                                        this.onChange({
-                                            useSystemGPS: true,
-                                            latitude: this.props.systemConfig.latitude,
-                                            longitude: this.props.systemConfig.longitude,
-                                        });
-                                    }
+        return (
+            <ThemeProvider theme={this.state.theme}>
+                <div style={{ width: '100%', display: isMobile ? undefined : 'flex', gap: 10 }}>
+                    <div
+                        style={{
+                            width: isMobile ? '100%' : 'calc(50% - 5px)',
+                            display: isMobile ? 'block' : 'inline-block',
+                        }}
+                    >
+                        <LocalizationProvider
+                            dateAdapter={AdapterDateFns}
+                            adapterLocale={localeMap[I18n.getLanguage()]}
+                        >
+                            <FormControlLabel
+                                style={{ width: 'calc(100% - 10px)' }}
+                                control={
+                                    <Checkbox
+                                        checked={!!useSystemGPS}
+                                        onChange={e => {
+                                            if (!e.target.checked) {
+                                                this.onChange({
+                                                    useSystemGPS: false,
+                                                    latitude: latitude || this.props.systemConfig.latitude,
+                                                    longitude: longitude || this.props.systemConfig.longitude,
+                                                });
+                                            } else {
+                                                this.onChange({
+                                                    useSystemGPS: true,
+                                                    latitude: this.props.systemConfig.latitude,
+                                                    longitude: this.props.systemConfig.longitude,
+                                                });
+                                            }
+                                        }}
+                                    />
+                                }
+                                label={I18n.t('Use system settings')}
+                            />
+                            {useSystemGPS ? null : (
+                                <TextField
+                                    variant="standard"
+                                    type="text"
+                                    style={{ width: 150, marginRight: 10 }}
+                                    label={I18n.t('Latitude °')}
+                                    value={(latitude || '').toString()}
+                                    onChange={e => this.onChange('latitude', e.target.value)}
+                                />
+                            )}
+                            {useSystemGPS ? null : (
+                                <TextField
+                                    variant="standard"
+                                    style={{ width: 150 }}
+                                    type="text"
+                                    label={I18n.t('Longitude °')}
+                                    value={(longitude || '').toString()}
+                                    onChange={e => this.onChange('longitude', e.target.value)}
+                                />
+                            )}
+                            {useSystemGPS ? null : <div style={{ width: 'calc(100% - 10px)' }}>{I18n.t('Help')}</div>}
+                            <h2
+                                style={{
+                                    width: 'calc(100% - 10px)',
+                                    marginTop: 20,
+                                    backgroundColor: this.props.themeType === 'dark' ? '#333' : '#ccc',
+                                    color: this.props.themeType === 'dark' ? '#FFF' : '#000',
+                                    padding: '2px 8px',
+                                    borderRadius: 3,
                                 }}
-                            />}
-                            label={I18n.t('Use system settings')}
-                        />
-                        {useSystemGPS ? null : <TextField
-                            variant="standard"
-                            type="text"
-                            style={{ width: 150, marginRight: 10 }}
-                            label={I18n.t('Latitude °')}
-                            value={(latitude || '').toString()}
-                            onChange={e => this.onChange('latitude', e.target.value)}
-                        />}
-                        {useSystemGPS ? null : <TextField
-                            variant="standard"
-                            style={{ width: 150 }}
-                            type="text"
-                            label={I18n.t('Longitude °')}
-                            value={(longitude || '').toString()}
-                            onChange={e => this.onChange('longitude', e.target.value)}
-                        />}
-                        {useSystemGPS ? null : <div style={{ width: 'calc(100% - 10px)' }}>{I18n.t('Help')}</div>}
-                        <h2
-                            style={{
-                                width: 'calc(100% - 10px)',
-                                marginTop: 20,
-                                backgroundColor: this.props.themeType === 'dark' ? '#333' : '#ccc',
-                                color: this.props.themeType === 'dark' ? '#FFF' : '#000',
-                                padding: '2px 8px',
-                                borderRadius: 3,
-                            }}
-                        >
-                            {I18n.t('Day time settings')}
-                        </h2>
-                        <div
-                            style={{
-                                width: 'calc(100% - 10px)',
-                                display: 'flex',
-                                gap: 8,
-                                flexWrap: 'wrap',
-                                backgroundColor: this.props.themeType === 'dark' ? '#333' : '#ccc',
-                                paddingTop: 8,
-                                paddingLeft: 8,
-                                paddingRight: 8,
-                                paddingBottom: 0,
-                                borderRadius: '5px 5px 0 0',
-                            }}
-                        >
-                            <FormControl
-                                variant="standard"
-                                style={{ width: 250 }}
                             >
-                                <InputLabel shrink>{I18n.t('Time event')}</InputLabel>
-                                <Select
+                                {I18n.t('Day time settings')}
+                            </h2>
+                            <div
+                                style={{
+                                    width: 'calc(100% - 10px)',
+                                    display: 'flex',
+                                    gap: 8,
+                                    flexWrap: 'wrap',
+                                    backgroundColor: this.props.themeType === 'dark' ? '#333' : '#ccc',
+                                    paddingTop: 8,
+                                    paddingLeft: 8,
+                                    paddingRight: 8,
+                                    paddingBottom: 0,
+                                    borderRadius: '5px 5px 0 0',
+                                }}
+                            >
+                                <FormControl
                                     variant="standard"
-                                    value={sunriseEvent || '_'}
-                                    onChange={e =>
-                                        this.onChange('sunriseEvent', e.target.value === '_' ? '' : e.target.value)}
+                                    style={{ width: 250 }}
                                 >
-                                    <MenuItem value="_">{I18n.t('none')}</MenuItem>
-                                    <MenuItem value="nightEnd">{I18n.t('sch_astro_nightEnd')}</MenuItem>
-                                    <MenuItem value="nauticalDawn">{I18n.t('sch_astro_nauticalDawn')}</MenuItem>
-                                    <MenuItem value="dawn">{I18n.t('sch_astro_dawn')}</MenuItem>
-                                    <MenuItem value="sunrise">{I18n.t('sch_astro_sunrise')}</MenuItem>
-                                    <MenuItem value="sunriseEnd">{I18n.t('sch_astro_sunriseEnd')}</MenuItem>
-                                    <MenuItem value="goldenHourEnd">{I18n.t('sch_astro_goldenHourEnd')}</MenuItem>
-                                </Select>
-                                <FormHelperText>{I18n.t('Used as start of the daytime')}</FormHelperText>
-                            </FormControl>
-                            <TextField
-                                style={{ width: 80 }}
-                                variant="standard"
-                                disabled={!this.state.sunriseEvent}
-                                label={I18n.t('Offset')}
-                                value={sunriseOffset || 0}
-                                helperText={I18n.t('in minutes')}
-                                onChange={e => this.onChange('sunriseOffset', e.target.value)}
-                            />
-                            <FormControl
-                                variant="standard"
-                                style={{ width: 150 }}
-                            >
-                                <InputLabel shrink>{I18n.t('But not earlier')}</InputLabel>
-                                <TimePicker
-                                    className={`astroToolbarTime ${this.props.themeType}`}
-                                    disabled={!this.state.sunriseEvent}
-                                    ampm={!!this.state.ampm}
-                                    views={['hours', 'minutes']}
-                                    value={sunriseLimitStart || new Date(2000, 0, 1, 0, 0)}
-                                    onChange={value =>
-                                        this.onChange('sunriseLimitStart', new Date(value))}
-                                />
-                            </FormControl>
-                            <FormControl
-                                variant="standard"
-                                style={{ width: 150 }}
-                            >
-                                <InputLabel shrink>{I18n.t('And not later')}</InputLabel>
-                                <TimePicker
-                                    className={`astroToolbarTime ${this.props.themeType}`}
-                                    disabled={!this.state.sunriseEvent}
-                                    ampm={!!this.state.ampm}
-                                    views={['hours', 'minutes']}
-                                    value={sunriseLimitEnd || new Date(2000, 0, 1, 0, 0)}
-                                    onChange={value =>
-                                        this.onChange('sunriseLimitEnd', new Date(value))}
-                                />
-                            </FormControl>
-                        </div>
-                        {this.props.alive ? <div
-                            style={{
-                                backgroundColor: this.props.themeType === 'dark' ? '#333' : '#ccc',
-                                width: 'calc(100% - 10px)',
-                                paddingTop: 20,
-                                paddingLeft: 8,
-                                paddingRight: 8,
-                                paddingBottom: 8,
-                                borderRadius: '0 0 5px 5px',
-                            }}
-                        >
-                            <span style={{ marginRight: 8 }}>{I18n.t('Next sunrise')}</span>
-                            <span>
-                                {this.state.nextSunriseServer}
-                                {this.state.nextSunrise !== this.state.nextSunriseServer ? ` ${I18n.t('Local time')}: ${this.state.nextSunrise}` : ''}
-                            </span>
-                        </div> : null}
-                        <div
-                            style={{
-                                width: 'calc(100% - 10px)',
-                                display: 'flex',
-                                gap: 8,
-                                marginTop: 30,
-                                flexWrap: 'wrap',
-                                backgroundColor: this.props.themeType === 'dark' ? '#333' : '#ccc',
-                                paddingTop: 8,
-                                paddingLeft: 8,
-                                paddingRight: 8,
-                                paddingBottom: 0,
-                                borderRadius: '5px 5px 0 0',
-                            }}
-                        >
-                            <FormControl
-                                variant="standard"
-                                style={{ width: 250 }}
-                            >
-                                <InputLabel shrink>{I18n.t('Time event')}</InputLabel>
-                                <Select
+                                    <InputLabel shrink>{I18n.t('Time event')}</InputLabel>
+                                    <Select
+                                        variant="standard"
+                                        value={sunriseEvent || '_'}
+                                        onChange={e =>
+                                            this.onChange('sunriseEvent', e.target.value === '_' ? '' : e.target.value)
+                                        }
+                                    >
+                                        <MenuItem value="_">{I18n.t('none')}</MenuItem>
+                                        <MenuItem value="nightEnd">{I18n.t('sch_astro_nightEnd')}</MenuItem>
+                                        <MenuItem value="nauticalDawn">{I18n.t('sch_astro_nauticalDawn')}</MenuItem>
+                                        <MenuItem value="dawn">{I18n.t('sch_astro_dawn')}</MenuItem>
+                                        <MenuItem value="sunrise">{I18n.t('sch_astro_sunrise')}</MenuItem>
+                                        <MenuItem value="sunriseEnd">{I18n.t('sch_astro_sunriseEnd')}</MenuItem>
+                                        <MenuItem value="goldenHourEnd">{I18n.t('sch_astro_goldenHourEnd')}</MenuItem>
+                                    </Select>
+                                    <FormHelperText>{I18n.t('Used as start of the daytime')}</FormHelperText>
+                                </FormControl>
+                                <TextField
+                                    style={{ width: 80 }}
                                     variant="standard"
-                                    value={sunsetEvent || '_'}
-                                    onChange={e =>
-                                        this.onChange('sunsetEvent', e.target.value === '_' ? '' : e.target.value)}
+                                    disabled={!this.state.sunriseEvent}
+                                    label={I18n.t('Offset')}
+                                    value={sunriseOffset || 0}
+                                    helperText={I18n.t('in minutes')}
+                                    onChange={e => this.onChange('sunriseOffset', e.target.value)}
+                                />
+                                <FormControl
+                                    variant="standard"
+                                    style={{ width: 150 }}
                                 >
-                                    <MenuItem value="_">{I18n.t('none')}</MenuItem>
-                                    <MenuItem value="goldenHour">{I18n.t('sch_astro_goldenHour')}</MenuItem>
-                                    <MenuItem value="sunsetStart">{I18n.t('sch_astro_sunsetStart')}</MenuItem>
-                                    <MenuItem value="sunset">{I18n.t('sch_astro_sunset')}</MenuItem>
-                                    <MenuItem value="dusk">{I18n.t('sch_astro_dusk')}</MenuItem>
-                                    <MenuItem value="nauticalDusk">{I18n.t('sch_astro_nauticalDusk')}</MenuItem>
-                                    <MenuItem value="night">{I18n.t('sch_astro_night')}</MenuItem>
-                                </Select>
-                                <FormHelperText>{I18n.t('Used as end of the daytime')}</FormHelperText>
-                            </FormControl>
-                            <TextField
-                                style={{ width: 80 }}
-                                variant="standard"
-                                disabled={!this.state.sunsetEvent}
-                                label={I18n.t('Offset')}
-                                value={sunsetOffset || 0}
-                                helperText={I18n.t('in minutes')}
-                                onChange={e => this.onChange('sunsetOffset', e.target.value)}
-                            />
-                            <FormControl
-                                variant="standard"
-                                style={{ width: 150 }}
+                                    <InputLabel shrink>{I18n.t('But not earlier')}</InputLabel>
+                                    <TimePicker
+                                        className={`astroToolbarTime ${this.props.themeType}`}
+                                        disabled={!this.state.sunriseEvent}
+                                        ampm={!!this.state.ampm}
+                                        views={['hours', 'minutes']}
+                                        value={sunriseLimitStart || new Date(2000, 0, 1, 0, 0)}
+                                        onChange={value => this.onChange('sunriseLimitStart', new Date(value))}
+                                    />
+                                </FormControl>
+                                <FormControl
+                                    variant="standard"
+                                    style={{ width: 150 }}
+                                >
+                                    <InputLabel shrink>{I18n.t('And not later')}</InputLabel>
+                                    <TimePicker
+                                        className={`astroToolbarTime ${this.props.themeType}`}
+                                        disabled={!this.state.sunriseEvent}
+                                        ampm={!!this.state.ampm}
+                                        views={['hours', 'minutes']}
+                                        value={sunriseLimitEnd || new Date(2000, 0, 1, 0, 0)}
+                                        onChange={value => this.onChange('sunriseLimitEnd', new Date(value))}
+                                    />
+                                </FormControl>
+                            </div>
+                            {this.props.alive ? (
+                                <div
+                                    style={{
+                                        backgroundColor: this.props.themeType === 'dark' ? '#333' : '#ccc',
+                                        width: 'calc(100% - 10px)',
+                                        paddingTop: 20,
+                                        paddingLeft: 8,
+                                        paddingRight: 8,
+                                        paddingBottom: 8,
+                                        borderRadius: '0 0 5px 5px',
+                                    }}
+                                >
+                                    <span style={{ marginRight: 8 }}>{I18n.t('Next sunrise')}</span>
+                                    <span>
+                                        {this.state.nextSunriseServer}
+                                        {this.state.nextSunrise !== this.state.nextSunriseServer
+                                            ? ` ${I18n.t('Local time')}: ${this.state.nextSunrise}`
+                                            : ''}
+                                    </span>
+                                </div>
+                            ) : null}
+                            <div
+                                style={{
+                                    width: 'calc(100% - 10px)',
+                                    display: 'flex',
+                                    gap: 8,
+                                    marginTop: 30,
+                                    flexWrap: 'wrap',
+                                    backgroundColor: this.props.themeType === 'dark' ? '#333' : '#ccc',
+                                    paddingTop: 8,
+                                    paddingLeft: 8,
+                                    paddingRight: 8,
+                                    paddingBottom: 0,
+                                    borderRadius: '5px 5px 0 0',
+                                }}
                             >
-                                <InputLabel shrink>{I18n.t('But not earlier')}</InputLabel>
-                                <TimePicker
-                                    className={`astroToolbarTime ${this.props.themeType}`}
+                                <FormControl
+                                    variant="standard"
+                                    style={{ width: 250 }}
+                                >
+                                    <InputLabel shrink>{I18n.t('Time event')}</InputLabel>
+                                    <Select
+                                        variant="standard"
+                                        value={sunsetEvent || '_'}
+                                        onChange={e =>
+                                            this.onChange('sunsetEvent', e.target.value === '_' ? '' : e.target.value)
+                                        }
+                                    >
+                                        <MenuItem value="_">{I18n.t('none')}</MenuItem>
+                                        <MenuItem value="goldenHour">{I18n.t('sch_astro_goldenHour')}</MenuItem>
+                                        <MenuItem value="sunsetStart">{I18n.t('sch_astro_sunsetStart')}</MenuItem>
+                                        <MenuItem value="sunset">{I18n.t('sch_astro_sunset')}</MenuItem>
+                                        <MenuItem value="dusk">{I18n.t('sch_astro_dusk')}</MenuItem>
+                                        <MenuItem value="nauticalDusk">{I18n.t('sch_astro_nauticalDusk')}</MenuItem>
+                                        <MenuItem value="night">{I18n.t('sch_astro_night')}</MenuItem>
+                                    </Select>
+                                    <FormHelperText>{I18n.t('Used as end of the daytime')}</FormHelperText>
+                                </FormControl>
+                                <TextField
+                                    style={{ width: 80 }}
+                                    variant="standard"
                                     disabled={!this.state.sunsetEvent}
-                                    ampm={!!this.state.ampm}
-                                    views={['hours', 'minutes']}
-                                    value={sunsetLimitStart || new Date(2000, 0, 1, 0, 0)}
-                                    onChange={value =>
-                                        this.onChange('sunsetLimitStart', new Date(value))}
+                                    label={I18n.t('Offset')}
+                                    value={sunsetOffset || 0}
+                                    helperText={I18n.t('in minutes')}
+                                    onChange={e => this.onChange('sunsetOffset', e.target.value)}
                                 />
-                            </FormControl>
-                            <FormControl
-                                variant="standard"
-                                style={{ width: 150 }}
-                            >
-                                <InputLabel shrink>{I18n.t('And not later')}</InputLabel>
-                                <TimePicker
-                                    className={`astroToolbarTime ${this.props.themeType}`}
-                                    disabled={!this.state.sunsetEvent}
-                                    ampm={!!this.state.ampm}
-                                    views={['hours', 'minutes']}
-                                    value={sunsetLimitEnd || new Date(2000, 0, 1, 0, 0)}
-                                    onChange={value =>
-                                        this.onChange('sunsetLimitEnd', new Date(value))}
-                                />
-                            </FormControl>
-                        </div>
-                        {this.props.alive ? <div
-                            style={{
-                                backgroundColor: this.props.themeType === 'dark' ? '#333' : '#ccc',
-                                width: 'calc(100% - 10px)',
-                                paddingTop: 20,
-                                paddingLeft: 8,
-                                paddingRight: 8,
-                                paddingBottom: 8,
-                                borderRadius: '0 0 5px 5px',
-                                marginBottom: isMobile ? 20 : 0,
-                            }}
-                        >
-                            <span style={{ marginRight: 8 }}>{I18n.t('Next sunset')}</span>
-                            <span>
-                                {this.state.nextSunsetServer}
-                                {this.state.nextSunset !== this.state.nextSunsetServer ? ` ${I18n.t('Local time')}: ${this.state.nextSunset}` : ''}
-                            </span>
-                        </div> : null}
-                    </LocalizationProvider>
+                                <FormControl
+                                    variant="standard"
+                                    style={{ width: 150 }}
+                                >
+                                    <InputLabel shrink>{I18n.t('But not earlier')}</InputLabel>
+                                    <TimePicker
+                                        className={`astroToolbarTime ${this.props.themeType}`}
+                                        disabled={!this.state.sunsetEvent}
+                                        ampm={!!this.state.ampm}
+                                        views={['hours', 'minutes']}
+                                        value={sunsetLimitStart || new Date(2000, 0, 1, 0, 0)}
+                                        onChange={value => this.onChange('sunsetLimitStart', new Date(value))}
+                                    />
+                                </FormControl>
+                                <FormControl
+                                    variant="standard"
+                                    style={{ width: 150 }}
+                                >
+                                    <InputLabel shrink>{I18n.t('And not later')}</InputLabel>
+                                    <TimePicker
+                                        className={`astroToolbarTime ${this.props.themeType}`}
+                                        disabled={!this.state.sunsetEvent}
+                                        ampm={!!this.state.ampm}
+                                        views={['hours', 'minutes']}
+                                        value={sunsetLimitEnd || new Date(2000, 0, 1, 0, 0)}
+                                        onChange={value => this.onChange('sunsetLimitEnd', new Date(value))}
+                                    />
+                                </FormControl>
+                            </div>
+                            {this.props.alive ? (
+                                <div
+                                    style={{
+                                        backgroundColor: this.props.themeType === 'dark' ? '#333' : '#ccc',
+                                        width: 'calc(100% - 10px)',
+                                        paddingTop: 20,
+                                        paddingLeft: 8,
+                                        paddingRight: 8,
+                                        paddingBottom: 8,
+                                        borderRadius: '0 0 5px 5px',
+                                        marginBottom: isMobile ? 20 : 0,
+                                    }}
+                                >
+                                    <span style={{ marginRight: 8 }}>{I18n.t('Next sunset')}</span>
+                                    <span>
+                                        {this.state.nextSunsetServer}
+                                        {this.state.nextSunset !== this.state.nextSunsetServer
+                                            ? ` ${I18n.t('Local time')}: ${this.state.nextSunset}`
+                                            : ''}
+                                    </span>
+                                </div>
+                            ) : null}
+                        </LocalizationProvider>
+                    </div>
+                    <div
+                        style={{
+                            width: isMobile ? '100%' : 'calc(50% - 5px)',
+                            display: isMobile ? 'block' : 'inline-block',
+                            minHeight: 350,
+                        }}
+                    >
+                        {this.renderMap()}
+                    </div>
                 </div>
-                <div
-                    style={{
-                        width: isMobile ? '100%' : 'calc(50% - 5px)',
-                        display: isMobile ? 'block' : 'inline-block',
-                        minHeight: 350,
-                    }}
-                >
-                    {this.renderMap()}
-                </div>
-            </div>
-        </ThemeProvider>;
+            </ThemeProvider>
+        );
     }
 }
 

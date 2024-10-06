@@ -1,140 +1,165 @@
 <html>
-<head>
-    <style>
-        .logo-background {
-            background: white;
-        }
-        .logo-div {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            -ms-transform: translateX(-50%) translateY(-50%);
-            -webkit-transform: translate(-50%,-50%);
-            transform: translate(-50%,-50%);
-            overflow: hidden;
-            border-radius: 50%;
-            z-index: 2;
-        }
-        .logo-border {
-            /*border-color: #164477;*/
-            border-top-color: #3399CC;
-            border-left-color: #164477;
-            border-bottom-color: #164477;
-            border-right-color: #164477;
-            border-radius: 50%;
-            border-style: solid;
-            box-sizing: border-box;
-            width: 100%;
-            height: 100%;
-            position: absolute;
-        }
-        .logo-top {
-            position: absolute;
-            width: 4.5%;
-            height: 16%;
-            top: 0;
-            z-index: 2;
-        }
-        .logo-i {
-            position: absolute;
-            width: 14.5%;
-            height: 60%;
-            top: 20%;
-            left: 42%;
-            background: #3399CC;
-        }
-        .logo-i-top {
-            position: absolute;
-            width: 14.5%;
-            height: 4%;
-            left: 42%;
-            background: #3399CC;
-            border-radius: 100%;
-        }
-        .logo-back {
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            overflow: hidden;
-        }
-        @keyframes logo-grow {
-            0% {
-                width: 230px;
-                height: 230px;
-                transform: translate(-50%,-50%) scale(1);
-                opacity: 1
+    <head>
+        <style>
+            .logo-background {
+                background: white;
             }
-            99% {
-                width: 230px;
-                height: 230px;
-                transform: translate(-50%,-50%) scale(10);
-                opacity: 0;
+            .logo-div {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                -ms-transform: translateX(-50%) translateY(-50%);
+                -webkit-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+                overflow: hidden;
+                border-radius: 50%;
+                z-index: 2;
             }
-            100% {
-                width: 0;
-                height: 0;
-                opacity: 0;
-            }
-        }
-        @keyframes logo-spin { 100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); } }
-        @keyframes logo-color-inside {
-            0% {
-                background: #FEFEFE;
-            }
-            100% {
-                background: #3399CC;
-            }
-        }
-        @keyframes logo-color-outside {
-            0% {
-                border-color: #FEFEFE;
-            }
-            100% {
-                border-top-color: #3399CC;
+            .logo-border {
+                /*border-color: #164477;*/
+                border-top-color: #3399cc;
                 border-left-color: #164477;
                 border-bottom-color: #164477;
                 border-right-color: #164477;
+                border-radius: 50%;
+                border-style: solid;
+                box-sizing: border-box;
+                width: 100%;
+                height: 100%;
+                position: absolute;
             }
-        }
+            .logo-top {
+                position: absolute;
+                width: 4.5%;
+                height: 16%;
+                top: 0;
+                z-index: 2;
+            }
+            .logo-i {
+                position: absolute;
+                width: 14.5%;
+                height: 60%;
+                top: 20%;
+                left: 42%;
+                background: #3399cc;
+            }
+            .logo-i-top {
+                position: absolute;
+                width: 14.5%;
+                height: 4%;
+                left: 42%;
+                background: #3399cc;
+                border-radius: 100%;
+            }
+            .logo-back {
+                width: 100%;
+                height: 100%;
+                z-index: 0;
+                overflow: hidden;
+            }
+            @keyframes logo-grow {
+                0% {
+                    width: 230px;
+                    height: 230px;
+                    transform: translate(-50%, -50%) scale(1);
+                    opacity: 1;
+                }
+                99% {
+                    width: 230px;
+                    height: 230px;
+                    transform: translate(-50%, -50%) scale(10);
+                    opacity: 0;
+                }
+                100% {
+                    width: 0;
+                    height: 0;
+                    opacity: 0;
+                }
+            }
+            @keyframes logo-spin {
+                100% {
+                    -webkit-transform: rotate(360deg);
+                    transform: rotate(360deg);
+                }
+            }
+            @keyframes logo-color-inside {
+                0% {
+                    background: #fefefe;
+                }
+                100% {
+                    background: #3399cc;
+                }
+            }
+            @keyframes logo-color-outside {
+                0% {
+                    border-color: #fefefe;
+                }
+                100% {
+                    border-top-color: #3399cc;
+                    border-left-color: #164477;
+                    border-bottom-color: #164477;
+                    border-right-color: #164477;
+                }
+            }
 
-        .logo-animate-wait {
-            animation: logo-color-outside 1.5s, logo-spin 1.5s linear infinite;
-        }
-        .logo-animate-grow {
-            display: inline-block;
-            text-align: center;
-            z-index: 1;
-            top: 50%;
-            left: 50%;
-            -ms-transform: translateX(-50%) translateY(-50%);
-            -webkit-transform: translate(-50%,-50%);
-            transform: translate(-50%,-50%);
-            background: #DDD;
-            width: 245px;
-            height: 245px;
-            border-radius: 50%;
-            position: absolute;
-            animation: logo-grow 1s 1 ease forwards;
-        }
-        .logo-animate-color-inside {
-            animation: logo-color-inside 2.5s;
-        }
-        .logo-animate-color-outside {
-            animation: logo-color-outside 1.5s;
-        }
-    </style>
-</head>
-<body style="width: 100%; height: 100%; overflow: hidden;">
-<div class="logo-back logo-background">
-    <div class="logo-div" style="width: 234px; height: 234px">
-        <div class="logo-top logo-background" style="left: 37%"></div>
-        <div class="logo-top logo-background" style="left: 57%"></div>
-        <div class="logo-border logo-background logo-animate-wait" style="border-width: 31px"></div>
-        <div class="logo-i logo-animate-color-inside"></div>
-        <div class="logo-i-top logo-animate-color-inside" style="top: 17.5%"></div>
-        <div class="logo-i-top logo-animate-color-inside" style="bottom: 17.5%"></div>
-    </div>
-    <div class="logo-animate-grow"></div>
-</div>
-</body>
+            .logo-animate-wait {
+                animation:
+                    logo-color-outside 1.5s,
+                    logo-spin 1.5s linear infinite;
+            }
+            .logo-animate-grow {
+                display: inline-block;
+                text-align: center;
+                z-index: 1;
+                top: 50%;
+                left: 50%;
+                -ms-transform: translateX(-50%) translateY(-50%);
+                -webkit-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+                background: #ddd;
+                width: 245px;
+                height: 245px;
+                border-radius: 50%;
+                position: absolute;
+                animation: logo-grow 1s 1 ease forwards;
+            }
+            .logo-animate-color-inside {
+                animation: logo-color-inside 2.5s;
+            }
+            .logo-animate-color-outside {
+                animation: logo-color-outside 1.5s;
+            }
+        </style>
+    </head>
+    <body style="width: 100%; height: 100%; overflow: hidden">
+        <div class="logo-back logo-background">
+            <div
+                class="logo-div"
+                style="width: 234px; height: 234px"
+            >
+                <div
+                    class="logo-top logo-background"
+                    style="left: 37%"
+                ></div>
+                <div
+                    class="logo-top logo-background"
+                    style="left: 57%"
+                ></div>
+                <div
+                    class="logo-border logo-background logo-animate-wait"
+                    style="border-width: 31px"
+                ></div>
+                <div class="logo-i logo-animate-color-inside"></div>
+                <div
+                    class="logo-i-top logo-animate-color-inside"
+                    style="top: 17.5%"
+                ></div>
+                <div
+                    class="logo-i-top logo-animate-color-inside"
+                    style="bottom: 17.5%"
+                ></div>
+            </div>
+            <div class="logo-animate-grow"></div>
+        </div>
+    </body>
 </html>

@@ -6,15 +6,15 @@ export function deepCopy(name, userRules, additionalParameter) {
                 ...userRules,
                 [name]: {
                     ...userRules[name],
-                    [additionalParameter]: [...userRules[name][additionalParameter]]
-                }
+                    [additionalParameter]: [...userRules[name][additionalParameter]],
+                },
             };
             return newItemsSwitches;
 
         default:
             newItemsSwitches = {
                 ...userRules,
-                [name]: [...userRules[name]]
+                [name]: [...userRules[name]],
             };
             return newItemsSwitches;
     }

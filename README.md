@@ -1,4 +1,5 @@
 ![Logo](admin/javascript.png)
+
 # Javascript Script Engine
 
 ![Number of Installations](http://iobroker.live/badges/javascript-installed.svg)
@@ -14,41 +15,49 @@ Executes Javascript, Typescript Scripts.
 
 ## Documentation
 
-- 🇺🇸 [Function documentation](docs/en/javascript.md)
-- 🇺🇸 [Upgrade guide](docs/en/upgrade-guide.md)
-- 🇩🇪 [Benutzung](docs/de/usage.md)
-- Blockly
-  - 🇺🇸 Here you can find the description of [blockly](docs/en/blockly.md). 
-  - 🇩🇪 Hier kann man die Beschreibung von [Blockly](docs/de/blockly.md) finden. 
-  - 🇷🇺 Описание по [blockly](docs/ru/blockly.md) можно найти [здесь](docs/ru/blockly.md).
+-   🇺🇸 [Function documentation](docs/en/javascript.md)
+-   🇺🇸 [Upgrade guide](docs/en/upgrade-guide.md)
+-   🇩🇪 [Benutzung](docs/de/usage.md)
+-   Blockly
+    -   🇺🇸 Here you can find the description of [blockly](docs/en/blockly.md).
+    -   🇩🇪 Hier kann man die Beschreibung von [Blockly](docs/de/blockly.md) finden.
+    -   🇷🇺 Описание по [blockly](docs/ru/blockly.md) можно найти [здесь](docs/ru/blockly.md).
 
 ## Changelog
+
 <!--
 	### **WORK IN PROGRESS**
 -->
+
 ### 8.8.3 (2024-09-05)
-* (bluefox) Fixed object selector in rules
+
+-   (bluefox) Fixed object selector in rules
 
 ### 8.8.2 (2024-08-07)
-* (bluefox) updated dependencies
+
+-   (bluefox) updated dependencies
 
 ### 8.8.0 (2024-08-05)
-* (@klein0r) Added option to register notifications via scripts
-* (@klein0r) Fixed sendTo block with an empty name list
+
+-   (@klein0r) Added option to register notifications via scripts
+-   (@klein0r) Fixed sendTo block with an empty name list
 
 ### 8.7.7 (2024-08-04)
-* (@klein0r) Fixed import scripts dialog
-* (@klein0r) Allowed removing all custom packages (empty list)
+
+-   (@klein0r) Fixed import scripts dialog
+-   (@klein0r) Allowed removing all custom packages (empty list)
 
 ### 8.7.6 (2024-07-28)
-* (foxriver76) fix error with subpath imports in scripts
+
+-   (foxriver76) fix error with subpath imports in scripts
 
 ## License
+
 The MIT License (MIT)
 
 Copyright (c) 2014-2024 bluefox <dogafox@gmail.com>,
 
-Copyright (c) 2014      hobbyquaker
+Copyright (c) 2014 hobbyquaker
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
