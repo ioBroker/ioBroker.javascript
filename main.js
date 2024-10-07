@@ -122,7 +122,7 @@ function provideDeclarationsForGlobalScript(scriptID, declarations) {
         knownGlobalDeclarationsByScript[scriptID] = globalDeclarations;
     }
     // and concatenate the global declarations for the next scripts
-    globalDeclarations += declarations + '\n';
+    globalDeclarations += `${declarations}\n`;
     // remember all previously generated global declarations,
     // so global scripts can reference each other
     const globalDeclarationPath = 'global.d.ts';
@@ -154,12 +154,12 @@ function dstOffsetAtDate(dateInput) {
         +new Date(fullYear, 0) - // day defaults to 1 if not explicitly zeroed
         // 3. Now, subtract what we would expect the time to be if daylight savings
         //      did not exist. This yields the time-offset due to daylight savings.
-        (((// Calculate the day of the year in the Gregorian calendar
+        ((// Calculate the day of the year in the Gregorian calendar
         // The code below works based upon the facts of signed right shifts
         //    • (x) >> n: shifts n and fills in the n highest bits with 0s
         //    • (-x) >> n: shifts n and fills in the n highest bits with 1s
         // (This assumes that x is a positive integer)
-        (-1 + // first day in the year is day 1
+        ((-1 + // first day in the year is day 1
             (31 & (-fullMonth >> 4)) + // January // (-11)>>4 = -1
             ((28 + isLeapYear) & ((1 - fullMonth) >> 4)) + // February
             (31 & ((2 - fullMonth) >> 4)) + // March
@@ -325,26 +325,9 @@ function convertBackStringifiedValues(id, state) {
     return state;
 }
 
-function prepareStateObject(id, state, isAck) {
-    if (state === null) {
-        state = { val: null };
-    }
-
-    if (isAck === true || isAck === false || isAck === 'true' || isAck === 'false') {
-        if (isObject(state) && state.val !== undefined) {
-            // we assume that we were given a state object if
-            // state is an object that contains a `val` property
-            if (!Object.prototype.hasOwnProperty.call(state, 'ack')) {
-                state.ack = isAck;
-            }
-        } else {
-            // otherwise assume that the given state is the value to be set
-            state = { val: state, ack: isAck };
-        }
-    }
-
+function prepareStateObject(id: string, state: ioBroker.SettableState): ioBroker.State {
     if (adapter.config.subscribe) {
-        return state;
+        return state as ioBroker.State;
     }
     // set other values to have a full state object
     // mirrors logic from statesInRedis
@@ -527,7 +510,7 @@ function startAdapter(options) {
                     adapter.delState(idActive);
 
                     // delete scriptProblem.blabla variable
-                    const idProblem = 'scriptProblem.' + id.substring(SCRIPT_CODE_MARKER.length);
+                    const idProblem = `scriptProblem.${id.substring(SCRIPT_CODE_MARKER.length)}`;
                     adapter.delObject(idProblem);
                     adapter.delState(idProblem);
                 }
@@ -556,32 +539,32 @@ function startAdapter(options) {
                     }
                 } else {
                     // No global script
-                    if (obj.common && obj.common.engine === 'system.adapter.' + adapter.namespace) {
+                    if (obj.common && obj.common.engine === `system.adapter.${adapter.namespace}`) {
                         // create states for scripts
                         createActiveObject(id, obj.common.enabled, () => createProblemObject(id));
                     }
 
                     if (
                         (formerObj.common.enabled && !obj.common.enabled) ||
-                        (formerObj.common.engine === 'system.adapter.' + adapter.namespace &&
-                            obj.common.engine !== 'system.adapter.' + adapter.namespace)
+                        (formerObj.common.engine === `system.adapter.${adapter.namespace}` &&
+                            obj.common.engine !== `system.adapter.${adapter.namespace}`)
                     ) {
                         // Script disabled
                         if (
                             formerObj.common.enabled &&
-                            formerObj.common.engine === 'system.adapter.' + adapter.namespace
+                            formerObj.common.engine === `system.adapter.${adapter.namespace}`
                         ) {
                             // Remove it from executing
                             stop(id);
                         }
                     } else if (
                         (!formerObj.common.enabled && obj.common.enabled) ||
-                        (formerObj.common.engine !== 'system.adapter.' + adapter.namespace &&
-                            obj.common.engine === 'system.adapter.' + adapter.namespace)
+                        (formerObj.common.engine !== `system.adapter.${adapter.namespace}` &&
+                            obj.common.engine === `system.adapter.${adapter.namespace}`)
                     ) {
                         // Script enabled
 
-                        if (obj.common.enabled && obj.common.engine === 'system.adapter.' + adapter.namespace) {
+                        if (obj.common.enabled && obj.common.engine === `system.adapter.${adapter.namespace}`) {
                             // Start script
                             load(id);
                         }
@@ -658,7 +641,9 @@ function startAdapter(options) {
                 }
                 context.states[id] = state;
             } else {
-                if (oldState) delete context.states[id];
+                if (oldState) {
+                    delete context.states[id];
+                }
                 state = {};
                 const pos = context.stateIds.indexOf(id);
                 if (pos !== -1) {
@@ -702,7 +687,9 @@ function startAdapter(options) {
         unload: callback => {
             debugStop().then(() => {
                 stopTimeSchedules();
-                setStateCountCheckInterval && clearInterval(setStateCountCheckInterval);
+                if (setStateCountCheckInterval) {
+                    clearInterval(setStateCountCheckInterval);
+                }
                 stopAllScripts(callback);
             });
         },
@@ -777,7 +764,7 @@ function startAdapter(options) {
                             obj.message &&
                             (obj.message.instance === null ||
                                 obj.message.instance === undefined ||
-                                'javascript.' + obj.message.instance === adapter.namespace ||
+                                `javascript.${obj.message.instance}` === adapter.namespace ||
                                 obj.message.instance === adapter.namespace)
                         ) {
                             Object.keys(context.messageBusHandlers).forEach(name => {
@@ -814,7 +801,7 @@ function startAdapter(options) {
                                             }
                                         } catch (e) {
                                             adapter.setState(
-                                                'scriptProblem.' + name.substring(SCRIPT_CODE_MARKER.length),
+                                                `scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`,
                                                 true,
                                                 true,
                                             );
@@ -1036,13 +1023,13 @@ function startAdapter(options) {
 
                     case 'rulesOn': {
                         context.rulesOpened = obj.message;
-                        console.log('Enable messaging for ' + context.rulesOpened);
+                        console.log(`Enable messaging for ${context.rulesOpened}`);
                         break;
                     }
 
                     case 'rulesOff': {
-                        // may be if (context.rulesOpened === obj.message)
-                        console.log('Disable messaging for ' + context.rulesOpened);
+                        // maybe if (context.rulesOpened === obj.message)
+                        console.log(`Disable messaging for ${context.rulesOpened}`);
                         context.rulesOpened = null;
                         break;
                     }
@@ -1067,6 +1054,7 @@ function startAdapter(options) {
         /**
          * If the JS-Controller catches an unhandled error, this will be called
          * so we have a chance to handle it ourself.
+         *
          * @param {Error} err
          */
         error: err => {
@@ -1092,7 +1080,7 @@ function startAdapter(options) {
                     adapter.log.error(
                         'An error happened which is most likely from one of your scripts, but the originating script could not be detected.',
                     );
-                    adapter.log.error('Error: ' + err.message);
+                    adapter.log.error(`Error: ${err.message}`);
                     adapter.log.error(err.stack);
 
                     // signal to the JS-Controller that we handled the error ourselves
@@ -1105,7 +1093,7 @@ function startAdapter(options) {
     adapter = new utils.Adapter(options);
 
     // handler for logs
-    adapter.on('log', msg =>
+    adapter.on('log', (msg: any) =>
         Object.keys(context.logSubscriptions).forEach(name =>
             context.logSubscriptions[name].forEach(handler => {
                 if (
@@ -1372,7 +1360,9 @@ function main() {
                                                     sourceHash,
                                                     compiled,
                                                 };
-                                                if (declarations) newCommon.declarations = declarations;
+                                                if (declarations) {
+                                                    newCommon.declarations = declarations;
+                                                }
 
                                                 // Store the compiled source and the original source hash, so we don't need to do the work again next time
                                                 ignoreObjectChange.add(obj._id); // ignore the next change and don't restart scripts
@@ -1463,7 +1453,9 @@ function main() {
                 // CHeck setState counter per minute and stop script if too high
                 setStateCountCheckInterval = setInterval(() => {
                     Object.keys(context.scripts).forEach(id => {
-                        if (!context.scripts[id]) return;
+                        if (!context.scripts[id]) {
+                            return;
+                        }
                         const currentSetStatePerMinuteCounter = context.scripts[id].setStatePerMinuteCounter;
                         context.scripts[id].setStatePerMinuteCounter = 0;
                         if (currentSetStatePerMinuteCounter > adapter.config.maxSetStatePerMinute) {
@@ -1814,12 +1806,12 @@ function fixLineNo(line) {
     if (/:([\d]+):/.test(line)) {
         line = line.replace(
             /:([\d]+):/,
-            ($0, $1) => ':' + ($1 > globalScriptLines + 1 ? $1 - globalScriptLines - 1 : $1) + ':',
+            ($0, $1) => `:${$1 > globalScriptLines + 1 ? $1 - globalScriptLines - 1 : $1}:`,
         ); // one line for 'async function ()'
     } else {
         line = line.replace(
             /:([\d]+)$/,
-            ($0, $1) => ':' + ($1 > globalScriptLines + 1 ? $1 - globalScriptLines - 1 : $1),
+            ($0, $1) => `:${$1 > globalScriptLines + 1 ? $1 - globalScriptLines - 1 : $1}`,
         ); // one line for 'async function ()'
     }
     return line;
@@ -2232,7 +2224,7 @@ function unsubscribe(id) {
 // Analyse if logs are still required or not
 function updateLogSubscriptions() {
     let found = false;
-    // go through all scripts and check if some one script still require logs
+    // go through all scripts and check if some script still requires logs
     Object.keys(context.logSubscriptions).forEach(scriptName => {
         if (!context.logSubscriptions?.[scriptName] || !context.logSubscriptions[scriptName].length) {
             delete context.logSubscriptions[scriptName];
@@ -2255,7 +2247,7 @@ function updateLogSubscriptions() {
 function stop(name, callback) {
     adapter.log.info(`Stopping script ${name}`);
 
-    adapter.setState('scriptEnabled.' + name.substring(SCRIPT_CODE_MARKER.length), false, true);
+    adapter.setState(`scriptEnabled.${name.substring(SCRIPT_CODE_MARKER.length)}`, false, true);
 
     if (context.messageBusHandlers[name]) {
         delete context.messageBusHandlers[name];
@@ -2382,7 +2374,7 @@ function stop(name, callback) {
                     }
                 });
             } catch (e) {
-                adapter.log.error('error in onStop callback: ' + e);
+                adapter.log.error(`error in onStop callback: ${e}`);
             }
         } else {
             delete context.scripts[name];
@@ -2437,7 +2429,7 @@ function prepareScript(obj, callback) {
                 const fn = name.replace(/^script.js./, '').replace(/\./g, '/');
                 sourceFn = mods.path.join(webstormDebug, `${fn}.js`);
             }
-            context.scripts[name] = createVM(globalScript + '\n' + obj.common.source, sourceFn, true);
+            context.scripts[name] = createVM(`${globalScript}\n${obj.common.source}`, sourceFn, true);
             if (!context.scripts[name]) {
                 delete context.scripts[name];
                 typeof callback === 'function' && callback(false, name);
@@ -2479,7 +2471,7 @@ function prepareScript(obj, callback) {
                     return;
                 }
 
-                const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource + '\n').join('\n');
+                const errors = tsCompiled.diagnostics.map(diag => `${diag.annotatedSource}\n`).join('\n');
 
                 if (tsCompiled.success) {
                     if (errors.length > 0) {
@@ -2503,14 +2495,18 @@ function prepareScript(obj, callback) {
                     return;
                 }
             }
-            context.scripts[name] = createVM(globalScript + '\n' + compiled, name, false);
+            context.scripts[name] = createVM(`${globalScript}\n${compiled}`, name, false);
             if (!context.scripts[name]) {
                 delete context.scripts[name];
-                typeof callback === 'function' && callback(false, name);
+                if (typeof callback === 'function') {
+                    callback(false, name);
+                }
                 return;
             }
             execute(context.scripts[name], name, obj.common.engineType, obj.common.verbose, obj.common.debug);
-            typeof callback === 'function' && callback(true, name);
+            if (typeof callback === 'function') {
+                callback(true, name);
+            }
         }
     } else {
         let _name;
@@ -2520,13 +2516,17 @@ function prepareScript(obj, callback) {
 
             if (!scriptIdName.length || scriptIdName.endsWith('.')) {
                 adapter.log.error(`Script name ${_name} is invalid!`);
-                typeof callback === 'function' && callback(false, _name);
+                if (typeof callback === 'function') {
+                    callback(false, _name);
+                }
                 return;
             }
             adapter.setState(`scriptEnabled.${scriptIdName}`, false, true);
         }
         !obj && adapter.log.error('Invalid script');
-        typeof callback === 'function' && callback(false, _name);
+        if (typeof callback === 'function') {
+            callback(false, _name);
+        }
     }
 }
 
@@ -2625,11 +2625,12 @@ async function getData(callback) {
         const systemConfig = context.objects['system.config'];
 
         // set language for debug messages
-        if (systemConfig && systemConfig.common && systemConfig.common.language) {
+        if (systemConfig?.common?.language) {
             words.setLanguage(systemConfig.common.language);
         } else if (adapter.language) {
             words.setLanguage(adapter.language);
         }
+        context.language = words.getLanguage();
 
         // try to use system coordinates
         if (adapter.config.useSystemGPS) {
@@ -2764,7 +2765,7 @@ function debugStart(data) {
                     args.push('--breakOnStart');
                 }
 
-                debugState.child = fork(`${__dirname}/lib/inspect.js`, args, options);
+                debugState.child = fork(`${__dirname}/lib/inspect.ts`, args, options);
 
                 /*debugState.child.stdout.setEncoding('utf8');
                 debugState.child.stderr.setEncoding('utf8');

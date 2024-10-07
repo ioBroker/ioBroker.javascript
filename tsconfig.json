@@ -1,7 +1,7 @@
 {
     "compileOnSave": true,
     "compilerOptions": {
-        // do not compile anything, this file is just to configure type checking
+        // do not compile anything; this file is just to configure type checking
         "noEmit": true,
 
         // check JS files
@@ -23,7 +23,8 @@
         // "noUnusedLocals": true,
         // "noUnusedParameters": true,
 
-        "target": "es2022"
+        "target": "es2022",
+        "types": ["node", "@iobroker/types"],
     },
     "include": ["lib/**/*.js", "lib/**/*.d.ts", "main.js"]
 }
