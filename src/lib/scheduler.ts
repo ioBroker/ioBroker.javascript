@@ -510,76 +510,79 @@ export default class Scheduler {
         return date && date.y === context.y && date.M === context.M && date.d === context.d;
     }
 
-    add(schedule: SchedulerRule, scriptName: string, cb: (id: string) => void): string | null {
+    add(schedule: SchedulerRule | string, scriptName: string, cb: (id: string) => void): string | null {
+        let oSchedule: SchedulerRule;
         if (typeof schedule === 'string') {
             try {
-                schedule = JSON.parse(schedule);
+                oSchedule = JSON.parse(schedule);
             } catch (e) {
                 this.log.error(`Cannot parse schedule: ${schedule}`);
                 return null;
             }
+        } else {
+            oSchedule = schedule;
         }
 
         const id = this._getId();
-        if (typeof schedule !== 'object' || !schedule.period) {
-            this.log.error(`Invalid schedule structure: ${JSON.stringify(schedule)}`);
+        if (typeof oSchedule !== 'object' || !oSchedule.period) {
+            this.log.error(`Invalid schedule structure: ${JSON.stringify(oSchedule)}`);
             return null;
         }
         const context = this.getContext();
-        const sch: SchedulerRuleParsed = JSON.parse(JSON.stringify(schedule));
+        const sch: SchedulerRuleParsed = JSON.parse(JSON.stringify(oSchedule));
         sch.scriptName = scriptName;
-        sch.original = JSON.stringify(schedule);
+        sch.original = JSON.stringify(oSchedule);
         sch.id = id;
         sch.cb = cb;
 
-        if (schedule.time?.start) {
-            const astroNameStart = this._getAstroName(schedule.time.start);
+        if (oSchedule.time?.start) {
+            const astroNameStart = this._getAstroName(oSchedule.time.start);
             if (astroNameStart && sch.time) {
                 sch.time.start = astroNameStart;
-            } else if (schedule.time.start.includes(':')) {
-                const parts = schedule.time.start.split(':');
+            } else if (oSchedule.time.start.includes(':')) {
+                const parts = oSchedule.time.start.split(':');
                 if (sch.time) {
                     sch.time.start = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
                 }
             } else {
-                this.log.error(`unknown astro event "${schedule.time.start}"`);
+                this.log.error(`unknown astro event "${oSchedule.time.start}"`);
                 return null;
             }
         }
 
-        if (schedule.time?.end) {
-            const astroNameEnd = this._getAstroName(schedule.time.end);
+        if (oSchedule.time?.end) {
+            const astroNameEnd = this._getAstroName(oSchedule.time.end);
             if (astroNameEnd && sch.time) {
                 sch.time.end = astroNameEnd;
-            } else if (schedule.time.end.includes(':')) {
-                const parts = schedule.time.end.split(':');
+            } else if (oSchedule.time.end.includes(':')) {
+                const parts = oSchedule.time.end.split(':');
                 if (sch.time) {
                     sch.time.end = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
                 }
             } else {
-                this.log.error(`unknown astro event "${schedule.time.end}"`);
+                this.log.error(`unknown astro event "${oSchedule.time.end}"`);
                 return null;
             }
         }
 
         if (sch.time) {
-            if (schedule.time.mode === 'minutes') {
+            if (oSchedule.time.mode === 'minutes') {
                 sch.time.mode = 60;
-            } else if (schedule.time.mode === 'hours') {
+            } else if (oSchedule.time.mode === 'hours') {
                 sch.time.mode = 3600;
             }
         }
 
-        if (schedule.period.once) {
-            sch.period.once = this.string2date(schedule.period.once);
+        if (oSchedule.period.once) {
+            sch.period.once = this.string2date(oSchedule.period.once);
         }
 
-        if (schedule.valid && sch.valid) {
-            if (schedule.valid.from) {
-                sch.valid.from = this.string2date(schedule.valid.from);
+        if (oSchedule.valid && sch.valid) {
+            if (oSchedule.valid.from) {
+                sch.valid.from = this.string2date(oSchedule.valid.from);
             }
-            if (schedule.valid.to) {
-                sch.valid.to = this.string2date(schedule.valid.to);
+            if (oSchedule.valid.to) {
+                sch.valid.to = this.string2date(oSchedule.valid.to);
             }
 
             if (this.isPast(context, sch.valid.to)) {
@@ -587,20 +590,20 @@ export default class Scheduler {
                 return null;
             }
 
-            if (typeof schedule.period.days === 'number' && schedule.period.days > 1 && sch.valid.from) {
+            if (typeof oSchedule.period.days === 'number' && oSchedule.period.days > 1 && sch.valid.from) {
                 // fromDate must be unix time
                 sch.valid.fromDate = new this.Date(sch.valid.from.y, sch.valid.from.M, sch.valid.from.d).getTime();
-            } else if (typeof schedule.period.weeks === 'number' && schedule.period.weeks > 1) {
+            } else if (typeof oSchedule.period.weeks === 'number' && oSchedule.period.weeks > 1) {
                 const fromDate: Date = sch.valid.from
                     ? new this.Date(sch.valid.from.y, sch.valid.from.M, sch.valid.from.d)
                     : new this.Date();
                 //sch.valid.fromDate.setDate(-sch.valid.fromDate.getDate() - sch.valid.fromDate.getDay());
                 // fromDate must be unix time
                 sch.valid.fromDate = fromDate.getTime();
-            } else if (sch.valid.from && typeof schedule.period.months === 'number' && schedule.period.months > 1) {
+            } else if (sch.valid.from && typeof oSchedule.period.months === 'number' && oSchedule.period.months > 1) {
                 // fromDate must be object
                 sch.valid.fromDate = new this.Date(sch.valid.from.y, sch.valid.from.M, sch.valid.from.d);
-            } else if (sch.valid.from && typeof schedule.period.years === 'number' && schedule.period.years > 1) {
+            } else if (sch.valid.from && typeof oSchedule.period.years === 'number' && oSchedule.period.years > 1) {
                 // fromDate must be object
                 sch.valid.fromDate = new this.Date(sch.valid.from.y, sch.valid.from.M, sch.valid.from.d);
             }
@@ -619,9 +622,9 @@ export default class Scheduler {
             return null;
         }
 
-        if (schedule.period.dows) {
+        if (oSchedule.period.dows) {
             try {
-                sch.period.dows = JSON.parse(schedule.period.dows);
+                sch.period.dows = JSON.parse(oSchedule.period.dows);
             } catch (e) {
                 this.log.error(`Cannot parse day of weeks: ${sch.period.dows}`);
                 return null;
@@ -632,10 +635,10 @@ export default class Scheduler {
             }
         }
 
-        if (schedule.period.months && typeof schedule.period.months !== 'number') {
+        if (oSchedule.period.months && typeof oSchedule.period.months !== 'number') {
             // can be number or array-string
             try {
-                sch.period.months = JSON.parse(schedule.period.months) as number[];
+                sch.period.months = JSON.parse(oSchedule.period.months) as number[];
             } catch (e) {
                 this.log.error(`Cannot parse day of months: ${sch.period.months}`);
                 return null;
@@ -643,16 +646,16 @@ export default class Scheduler {
             sch.period.months = sch.period.months.map(m => m - 1);
         }
 
-        if (schedule.period.dates) {
+        if (oSchedule.period.dates) {
             try {
-                sch.period.dates = JSON.parse(schedule.period.dates) as number[];
+                sch.period.dates = JSON.parse(oSchedule.period.dates) as number[];
             } catch (e) {
                 this.log.error(`Cannot parse day of dates: ${sch.period.dates}`);
                 return null;
             }
         }
-        if (schedule.period.yearMonth) {
-            sch.period.yearMonth = schedule.period.yearMonth - 1;
+        if (oSchedule.period.yearMonth) {
+            sch.period.yearMonth = oSchedule.period.yearMonth - 1;
         }
         this.list[id] = sch;
         this.recalculate();

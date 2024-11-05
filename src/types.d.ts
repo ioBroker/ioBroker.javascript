@@ -1,6 +1,10 @@
 import Scheduler, { SchedulerRule } from './lib/scheduler';
 import { ExecOptions } from 'node:child_process';
-import { ResponseType } from 'axios';
+import { AxiosHeaderValue, ResponseType } from 'axios';
+import type { Job } from 'node-schedule';
+import { EventObj } from './lib/eventObj';
+import type { PatternEventCompareFunction } from './lib/patternCompareFunctions';
+import { AstroEvent } from './lib/consts';
 
 export interface AdapterConfig {
     latitude: string;
@@ -39,6 +43,12 @@ export type JavascriptTimer = {
 };
 
 export type ScriptType = 'TypeScript/ts' | 'Blockly' | 'Rules' | 'JavaScript/js';
+
+export type TimeRule = {
+    time: string | { hour: number; minute: number };
+};
+
+export type IobSchedule = Job & { _ioBroker: { type: 'cron'; pattern: string | Date; scriptName: string; id: string } };
 
 export type PushoverOptions = {
     message: string; // mandatory - your text message
@@ -81,15 +91,16 @@ export type PushoverOptions = {
     timestamp?: number; // optional  - a Unix timestamp of your message's date and time to display to the user, rather than the time your message is received by our API
     html?: string; // optional  - 1 to enable parsing of HTML formatting for bold, italic, underlined and font color
     monospace?: 1; // optional  - 1 to display the message in monospace font
-    //    either html or monospace is allowed
+    //    either HTML or monospace is allowed
     file?: string | { name: string; data: Buffer }; // optional - attachment
 };
+
 export interface JsScript {
     onStopTimeout: number;
     onStopCb: () => void;
     intervals: NodeJS.Timeout[];
     timeouts: NodeJS.Timeout[];
-    schedules: string[];
+    schedules: IobSchedule[];
     wizards: string[];
     name: string;
     engineType: ScriptType;
@@ -99,6 +110,16 @@ export interface JsScript {
     setStatePerMinuteCounter: number;
     setStatePerMinuteProblemCounter: number;
 }
+
+export type LogMessage = any;
+
+export type AstroRule = {
+    astro: AstroEvent;
+    shift: number;
+    limitStart: string;
+    limitEnd: string;
+    event: string;
+};
 
 export type SandboxType = {
     mods: Record<string, any>;
@@ -121,7 +142,7 @@ export type SandboxType = {
         __schedules: number;
     };
     $: (selector: string) => any;
-    log: (msg: string, severity?: string) => void;
+    log: (msg: string, severity?: ioBroker.LogLevel) => void;
     onLog: (severity: ioBroker.LogLevel, callback: (info: any) => void) => number;
     onLogUnregister: (idOrCallbackOrSeverity: string | ((msg: string) => void)) => void;
     exec: (
@@ -178,7 +199,7 @@ export type SandboxType = {
                   result: {
                       statusCode: number | null;
                       data: any;
-                      headers: Record<string, string>;
+                      headers: Record<string, AxiosHeaderValue | undefined>;
                       responseTime: number;
                   },
               ) => void),
@@ -187,49 +208,87 @@ export type SandboxType = {
             result: {
                 statusCode: number | null;
                 data: any;
-                headers: Record<string, string>;
+                headers: Record<string, AxiosHeaderValue | undefined>;
                 responseTime: number;
             },
         ) => void,
     ) => void;
     createTempFile: (fileName: string, data: Buffer | string) => string | undefined;
-    subscribe: (pattern: string, callbackOrId: string | ((data: any) => void), value?: any) => void;
-    getSubscriptions: () => any[];
-    getFileSubscriptions: () => any[];
-    adapterSubscribe: (id: string) => void;
-    adapterUnsubscribe: (id: string) => void;
-    unsubscribe: (idOrObject: string | Record<string, any>) => void;
-    on: (
-        pattern: SchedulerRule | string | (SchedulerRule | string)[],
-        callbackOrId: string | ((id: string) => void),
+    subscribe: (
+        pattern:
+            | TimeRule
+            | AstroRule
+            | Pattern
+            | SchedulerRule
+            | string
+            | (TimeRule | AstroRule | Pattern | SchedulerRule | string)[],
+        callbackOrChangeTypeOrId: string | ChangeType | ((event?: EventObj) => void),
         value?: any,
-    ) => void;
-    onEnumMembers: (id: string, callback: (err: Error | null, result: any) => void) => void;
+    ) =>
+        | SubscriptionResult
+        | IobSchedule
+        | string
+        | null
+        | undefined
+        | (SubscriptionResult | IobSchedule | string | null | undefined)[];
+    getSubscriptions: () => Record<string, { name: string; pattern: Pattern }[]>;
+    getFileSubscriptions: () => Record<string, { name: string; id: string; fileNamePattern: string }[]>;
+    adapterSubscribe: (id: string) => void;
+    adapterUnsubscribe: (
+        idOrObject: string | SubscriptionResult | (string | SubscriptionResult)[],
+    ) => boolean | boolean[];
+    unsubscribe: (idOrObject: string | SubscriptionResult | (string | SubscriptionResult)[]) => boolean | boolean[];
+    on: (
+        pattern:
+            | TimeRule
+            | AstroRule
+            | Pattern
+            | SchedulerRule
+            | string
+            | (TimeRule | AstroRule | Pattern | SchedulerRule | string)[],
+        callbackOrChangeTypeOrId: string | ChangeType | ((event?: EventObj) => void),
+        value?: any,
+    ) =>
+        | SubscriptionResult
+        | IobSchedule
+        | string
+        | null
+        | undefined
+        | (SubscriptionResult | IobSchedule | string | null | undefined)[];
+    onEnumMembers: (enumId: string, callback: (event?: EventObj) => void) => void;
     onFile: (
         id: string,
         fileNamePattern: string | string[],
-        withFile: boolean,
-        callback: (err: Error | null, result: any) => void,
-    ) => void;
-    offFile: (idOrObject: string | Record<string, any>, fileNamePattern: string) => void;
+        withFileOrCallback:
+            | boolean
+            | ((id: string, fileName: string, size: number, file?: string | Buffer, mimeType?: string) => void),
+        callback?: (id: string, fileName: string, size: number, file?: string | Buffer, mimeType?: string) => void,
+    ) => undefined | FileSubscriptionResult | (undefined | FileSubscriptionResult)[];
+    offFile: (
+        idOrObject: FileSubscriptionResult | string | (FileSubscriptionResult | string)[],
+        fileNamePattern?: string | string[],
+    ) => boolean | boolean[];
     once: (pattern: string, callback: (data: any) => void) => void;
-    schedule: (pattern: SchedulerRule | string | (SchedulerRule | string)[], callback: (id: string) => void) => void;
-    scheduleById: (id: string, ack: boolean, callback: (data: any) => void) => void;
-    getAstroDate: (pattern: string, date: Date, offsetMinutes: number) => Date;
-    isAstroDay: () => boolean;
+    schedule: (
+        pattern: SchedulerRule | AstroRule | Date | string,
+        callback: () => void,
+    ) => IobSchedule | string | null | undefined;
+    scheduleById: (id: string, ack: boolean | (() => void) | undefined, callback?: () => void) => void;
+    getAstroDate: (pattern: AstroEvent, date?: Date | number, offsetMinutes?: number) => Date | undefined;
+    isAstroDay: () => boolean | undefined;
     clearSchedule: (schedule: any) => void;
     getSchedules: (allScripts: boolean) => any[];
     setState: (
         id: string,
         state: ioBroker.SettableState | ioBroker.StateValue,
-        isAck: boolean,
-        callback: (err: Error | null) => void,
+        isAck?: boolean,
+        callback?: (err: Error | null) => void,
     ) => void;
     setStateChanged: (
         id: string,
         state: ioBroker.SettableState | ioBroker.StateValue,
-        isAck: boolean,
-        callback: (err: Error | null) => void,
+        isAck?: boolean,
+        callback?: (err: Error | null) => void,
     ) => void;
     setStateDelayed: (
         id: string,
@@ -351,13 +410,15 @@ export type SandboxType = {
     logHandler?: ioBroker.LogLevel | '*';
 };
 
+export type ChangeType = 'eq' | 'ne' | 'gt' | 'ge' | 'lt' | 'le' | 'any' | '*';
+
 export type Pattern = {
     logic?: 'and' | 'or';
     id?: RegExp | string | string[];
     name?: RegExp | string | string[];
     ack?: boolean | string;
     oldAck?: boolean | string;
-    change?: 'eq' | 'ne' | 'gt' | 'ge' | 'lt' | 'le' | 'any' | '*';
+    change?: ChangeType;
 
     q?: '*' | number;
     oldQ?: '*' | number;
@@ -410,6 +471,24 @@ export type Selector = {
     idRegExp?: RegExp;
 };
 
+export type SubscriptionResult = {
+    name: string;
+    pattern: Pattern;
+    options?: Record<string, any>;
+    patternCompareFunctions?: PatternEventCompareFunction[] & { logic?: 'and' | 'or' };
+    callback: (obj: EventObj) => void;
+};
+
+export type FileSubscriptionResult = {
+    id: string;
+    name: string;
+    fileNamePattern: string;
+    idRegEx: RegExp | undefined;
+    fileRegEx: RegExp | undefined;
+    withFile: boolean;
+    callback: (id: string, fileName: string, size: number, withFile: boolean) => void;
+};
+
 export interface JavascriptContext {
     adapter: ioBroker.Adapter;
     mods: Record<string, any>;
@@ -418,8 +497,8 @@ export interface JavascriptContext {
     interimStateValues: Record<string, ioBroker.State>;
     stateIds: string[];
     errorLogFunction: (text: string, ...args: any[]) => void;
-    subscriptions: { name: string; pattern: string; options: Record<string, any> }[];
-    subscriptionsFile: { name: string; pattern: string; options: Record<string, any> }[];
+    subscriptions: SubscriptionResult[];
+    subscriptionsFile: FileSubscriptionResult[];
     subscriptionsObject: { name: string; pattern: string; options: Record<string, any> }[];
     subscribedPatterns: Record<string, number>;
     subscribedPatternsFile: Record<string, number>;
@@ -437,7 +516,7 @@ export interface JavascriptContext {
     messageBusHandlers: Record<string, Record<string, { sandbox: SandboxType; cb: (data: any, result: any) => void }>>;
     logSubscriptions: {
         sandbox: SandboxType;
-        cb: (info: any) => void;
+        cb: (info: LogMessage) => void;
         id: string;
         severity: ioBroker.LogLevel | '*';
     }[];

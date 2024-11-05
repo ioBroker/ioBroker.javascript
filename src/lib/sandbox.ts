@@ -1,17 +1,30 @@
 import { isObject, isArray, promisify, getHttpRequestConfig } from './tools';
 import { commonTools } from '@iobroker/adapter-core';
-import {AdapterConfig, JavascriptContext, JsScript, Pattern, PushoverOptions, SandboxType, Selector} from '../types';
+import { type ChildProcess } from 'node:child_process';
+import {
+    AdapterConfig,
+    AstroRule, ChangeType, FileSubscriptionResult, IobSchedule,
+    JavascriptContext,
+    JsScript, LogMessage,
+    Pattern,
+    PushoverOptions,
+    SandboxType,
+    Selector, SubscriptionResult, TimeRule
+} from '../types';
 import * as constsMod from './consts';
 import * as wordsMod from './words';
 import * as eventObjMod from './eventObj';
 import { patternCompareFunctions as patternCompareFunctionsMod } from './patternCompareFunctions';
 import { type PatternEventCompareFunction } from './patternCompareFunctions';
 import * as jsonataMod from 'jsonata';
+import { type Job } from 'node-schedule';
 import { iobJS } from "./javascript";
 import {ExecOptions} from "node:child_process";
 import { type SendMailOptions } from 'nodemailer';
-import { AxiosHeaders, AxiosHeaderValue, AxiosResponse, ResponseType } from "axios";
-import {SchedulerRule} from "./scheduler";
+import { AxiosHeaders, AxiosHeaderValue, AxiosResponse, ResponseType } from 'axios';
+import { SchedulerRule } from './scheduler';
+import {EventObj} from "./eventObj";
+import {AstroEvent} from "./consts";
 const pattern2RegEx = commonTools.pattern2RegEx;
 
 export default function sandBox(
@@ -559,15 +572,15 @@ export default function sandBox(
                 return mods[md];
             }
 
-            let error;
+            let error: Error | undefined;
 
             try {
                 mods[md] = require(
                     adapter.getAdapterScopedPackageIdentifier ? adapter.getAdapterScopedPackageIdentifier(md) : md,
                 );
                 return mods[md];
-            } catch (e) {
-                error = e;
+            } catch (e: any) {
+                error = e as Error;
             }
 
             try {
@@ -577,7 +590,7 @@ export default function sandBox(
                 mods[md] = require(md);
 
                 return mods[md];
-            } catch (e) {
+            } catch (e: any) {
                 context.logError(name, error || e, 6);
                 adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, {
                     val: true,
@@ -596,11 +609,7 @@ export default function sandBox(
             __subscriptionsLog: 0,
             __schedules: 0,
         },
-        /**
-         * @param {string} selector
-         * @returns {iobJS.QueryResult}
-         */
-        $: function (selector: string) {
+        $: function (selector: string): iobJS.QueryResult {
             // following is supported
             // 'type[commonAttr=something]', 'id[commonAttr=something]', id(enumName="something")', id{nativeName="something"}
             // Type can be state, channel or device
@@ -615,7 +624,6 @@ export default function sandBox(
 
             // Todo CACHE!!!
 
-            /** @type {iobJS.QueryResult} */
             const result: iobJS.QueryResult = {};
 
             let name: string = '';
@@ -1062,15 +1070,15 @@ export default function sandBox(
                     await sandbox.setStateChangedAsync(this[i], state, isAck);
                 }
             };
-            result.setStateDelayed = function (state, isAck, delay, clearRunning, callback) {
+            result.setStateDelayed = function (state: ioBroker.SettableState | ioBroker.StateValue, isAck: boolean | number | undefined, delay: number | boolean, clearRunning: boolean | (() => void), callback?: () => void) {
                 if (typeof isAck !== 'boolean') {
-                    callback = clearRunning;
-                    clearRunning = delay;
-                    delay = isAck;
+                    callback = clearRunning as () => void;
+                    clearRunning = delay as boolean;
+                    delay = isAck as number;
                     isAck = undefined;
                 }
                 if (typeof delay !== 'number') {
-                    callback = clearRunning;
+                    callback = clearRunning as () => void;
                     clearRunning = delay;
                     delay = 0;
                 }
@@ -1080,7 +1088,7 @@ export default function sandBox(
                 }
                 let count = this.length;
                 for (let i = 0; i < this.length; i++) {
-                    sandbox.setStateDelayed(this[i], state, isAck, delay, clearRunning, () => {
+                    sandbox.setStateDelayed(this[i], state, isAck as boolean, delay, clearRunning, () => {
                         if (!--count && typeof callback === 'function') {
                             callback();
                         }
@@ -1088,7 +1096,7 @@ export default function sandBox(
                 }
                 return this;
             };
-            result.on = function (callbackOrId, value) {
+            result.on = function (callbackOrId: string | ((data: any) => void), value?: any) {
                 for (let i = 0; i < this.length; i++) {
                     sandbox.subscribe(this[i], callbackOrId, value);
                 }
@@ -1096,7 +1104,7 @@ export default function sandBox(
             };
             return result;
         },
-        log: function (msg, severity) {
+        log: function (msg: string, severity?: ioBroker.LogLevel): void {
             severity = severity || 'info';
 
             // disable log in log handler (prevent endless loops)
@@ -1119,7 +1127,7 @@ export default function sandBox(
                 adapter.log[severity](`${name}: ${msg}`);
             }
         },
-        onLog: function (severity: ioBroker.LogLevel, callback: (info: any) => void): number {
+        onLog: function (severity: ioBroker.LogLevel, callback: (info: LogMessage) => void): number {
             if (!['info', 'error', 'debug', 'silly', 'warn', '*'].includes(severity)) {
                 sandbox.log(`Unknown severity "${severity}"`, 'warn');
                 return 0;
@@ -1151,7 +1159,7 @@ export default function sandBox(
 
             return handler.id;
         },
-        onLogUnregister: function (idOrCallbackOrSeverity) {
+        onLogUnregister: function (idOrCallbackOrSeverity: string | ioBroker.LogLevel | ((info: LogMessage) => void)): boolean {
             let found = false;
 
             if (context.logSubscriptions?.[sandbox.scriptName]) {
@@ -1201,7 +1209,7 @@ export default function sandBox(
             cmd: string,
             options?: ExecOptions | ((error: Error | null | string, stdout?: string, stderr?: string) => void),
             callback?: (error: Error | null | string, stdout?: string, stderr?: string) => void,
-    ) {
+    ): undefined | ChildProcess {
             if (typeof options === 'function') {
                 callback = options as (error: Error | null | string, stdout?: string, stderr?: string) => void;
                 options = {};
@@ -1307,7 +1315,7 @@ export default function sandBox(
                         }
                     }
                 })
-                .catch(error => {
+                .catch((error: any) => {
                     const responseTime = Date.now() - startTime;
 
                     sandbox.log(`httpGet(url=${url}, error=${error.message})`, 'error');
@@ -1359,7 +1367,7 @@ export default function sandBox(
                 result: {
                     statusCode: number | null;
                     data: any;
-                    headers: Record<string, string>;
+                    headers: Record<string, AxiosHeaderValue | undefined>;
                     responseTime: number;
                 },
             ) => void),
@@ -1368,7 +1376,7 @@ export default function sandBox(
                 result: {
                     statusCode: number | null;
                     data: any;
-                    headers: Record<string, string>;
+                    headers: Record<string, AxiosHeaderValue | undefined>;
                     responseTime: number;
                 },
             ) => void,
@@ -1379,7 +1387,14 @@ export default function sandBox(
             }
 
             const config = {
-                ...getHttpRequestConfig(url, options),
+                ...getHttpRequestConfig(url, options as {
+                    timeout?: number;
+                    responseType?: ResponseType;
+                    headers?: Record<string, string>;
+                    basicAuth?: { user: string; password: string } | null;
+                    bearerAuth?: string;
+                    validateCertificate?: boolean;
+                }),
                 method: 'post',
                 data,
             };
@@ -1390,7 +1405,7 @@ export default function sandBox(
 
             mods.axios
                 .default(config)
-                .then(response => {
+                .then((response: AxiosResponse) => {
                     const responseTime = Date.now() - startTime;
 
                     sandbox.verbose && sandbox.log(`httpPost(url=${url}, responseTime=${responseTime}ms)`, 'info');
@@ -1482,62 +1497,71 @@ export default function sandBox(
 
             return filePath;
         },
-        subscribe: function (pattern: SchedulerRule | string | (SchedulerRule | string)[], callbackOrId: (id: string) => void, value) {
+        subscribe: function (
+            pattern: TimeRule | AstroRule | Pattern | SchedulerRule | string | (TimeRule | AstroRule | Pattern | SchedulerRule | string)[],
+            callbackOrChangeTypeOrId: string | ChangeType | ((event?: EventObj) => void),
+            value?: any,
+        ): SubscriptionResult | IobSchedule | string | null | undefined | (SubscriptionResult | IobSchedule | string | null | undefined)[] {
+            // If a schedule object is given
             if (
                 (typeof pattern === 'string' && pattern[0] === '{') ||
                 (typeof pattern === 'object' && (pattern as SchedulerRule).period)
             ) {
-                return sandbox.schedule(pattern as SchedulerRule, callbackOrId);
+                return sandbox.schedule(pattern as SchedulerRule, callbackOrChangeTypeOrId as () => void);
             }
+            // If an array of schedules is given
             if (pattern && Array.isArray(pattern)) {
-                const result = [];
+                const result: (IobSchedule | string | null | undefined)[] = [];
                 for (const p of pattern) {
-                    result.push(sandbox.subscribe(p as SchedulerRule | string, callbackOrId, value));
+                    result.push(sandbox.subscribe(p as SchedulerRule | string, callbackOrChangeTypeOrId, value) as IobSchedule | string | null | undefined);
                 }
                 return result;
             }
 
             // detect subscribe('id', 'any', (obj) => {})
+            let oPattern: Pattern;
             if (
                 (typeof pattern === 'string' || pattern instanceof RegExp) &&
-                typeof callbackOrId === 'string' &&
+                typeof callbackOrChangeTypeOrId === 'string' &&
                 typeof value === 'function'
             ) {
-                pattern = { id: pattern, change: callbackOrId };
-                callbackOrId = value;
+                oPattern = { id: pattern, change: callbackOrChangeTypeOrId as ChangeType };
+                callbackOrChangeTypeOrId = value;
                 value = undefined;
+            } else {
+                oPattern = pattern as Pattern;
             }
 
-            if (pattern?.id && Array.isArray(pattern.id)) {
-                const result = [];
-                for (let t = 0; t < pattern.id.length; t++) {
-                    const pa = JSON.parse(JSON.stringify(pattern));
-                    pa.id = pattern.id[t];
-                    result.push(sandbox.subscribe(pa, callbackOrId, value));
+            if (oPattern?.id && Array.isArray(oPattern.id)) {
+                const result: (IobSchedule | string | null | undefined)[] = [];
+                for (let t = 0; t < oPattern.id.length; t++) {
+                    const pa: Pattern = JSON.parse(JSON.stringify(oPattern));
+                    pa.id = oPattern.id[t];
+                    result.push(sandbox.subscribe(pa, callbackOrChangeTypeOrId, value) as IobSchedule | string | null | undefined);
                 }
                 return result;
             }
 
             // try to detect astro or cron (by spaces)
             if (isObject(pattern) || (typeof pattern === 'string' && pattern.match(/[,/\d*]+\s[,/\d*]+\s[,/\d*]+/))) {
-                if (pattern.astro) {
-                    return sandbox.schedule(pattern, callbackOrId);
-                } else if (pattern.time) {
-                    return sandbox.schedule(pattern.time, callbackOrId);
+                if ((pattern as AstroRule).astro) {
+                    return sandbox.schedule(pattern as AstroRule, callbackOrChangeTypeOrId as () => void);
+                } else if ((pattern as TimeRule).time) {
+                    return sandbox.schedule((pattern as TimeRule).time as string, callbackOrChangeTypeOrId as () => void);
                 }
             }
 
-            let callback;
+            let callback: undefined | ((obj: EventObj) => void);
 
             // source is set by regexp if defined as /regexp/
-            if (!isObject(pattern) || pattern instanceof RegExp || pattern.source) {
-                pattern = { id: pattern, change: 'ne' };
+            if (!isObject(pattern) || pattern instanceof RegExp || (pattern as RegExp).source) {
+                oPattern = { id: pattern as string | RegExp, change: 'ne' };
             }
 
-            if (pattern.id !== undefined && !pattern.id) {
+            if (oPattern.id !== undefined && !oPattern.id) {
                 sandbox.log(`Error by subscription (trigger): empty ID defined. All states matched.`, 'error');
                 return;
-            } else if (typeof pattern.id === 'boolean' || typeof pattern.id === 'number') {
+            } else if (typeof oPattern.id === 'boolean' || typeof oPattern.id === 'number') {
                 sandbox.log(`Error by subscription (trigger): Wrong ID of type boolean or number.`, 'error');
                 return;
             }
@@ -1551,32 +1575,32 @@ export default function sandBox(
                 );
             }
 
-            if (pattern.q === undefined) {
-                pattern.q = 0;
+            if (oPattern.q === undefined) {
+                oPattern.q = 0;
             }
 
             // add adapter namespace if nothing given
-            if (pattern.id && typeof pattern.id === 'string' && !pattern.id.includes('.')) {
-                pattern.id = `${adapter.namespace}.${pattern.id}`;
+            if (oPattern.id && typeof oPattern.id === 'string' && !oPattern.id.includes('.')) {
+                oPattern.id = `${adapter.namespace}.${oPattern.id}`;
             }
 
-            if (typeof callbackOrId === 'function') {
-                callback = callbackOrId;
+            if (typeof callbackOrChangeTypeOrId === 'function') {
+                callback = callbackOrChangeTypeOrId;
             } else {
                 if (typeof value === 'undefined') {
-                    callback = function (obj) {
-                        sandbox.setState(callbackOrId, obj.newState.val);
+                    callback = function (obj: EventObj) {
+                        sandbox.setState(callbackOrChangeTypeOrId as string, obj.newState.val);
                     };
                 } else {
                     callback = function (/* obj */) {
-                        sandbox.setState(callbackOrId, value);
+                        sandbox.setState(callbackOrChangeTypeOrId as string, value);
                     };
                 }
             }
 
-            const subs = {
-                pattern,
-                callback: obj => {
+            const subs: SubscriptionResult = {
+                pattern: oPattern,
+                callback: (obj: EventObj) => {
                     if (typeof callback === 'function') {
                         try {
                             callback.call(sandbox, obj);
@@ -1589,8 +1613,8 @@ export default function sandBox(
             };
 
             // try to extract adapter
-            if (pattern.id && typeof pattern.id === 'string') {
-                const parts = pattern.id.split('.');
+            if (oPattern.id && typeof oPattern.id === 'string') {
+                const parts = oPattern.id.split('.');
                 const a = `${parts[0]}.${parts[1]}`;
                 const _adapter = `system.adapter.${a}`;
 
@@ -1598,31 +1622,31 @@ export default function sandBox(
                     const alive = `system.adapter.${a}.alive`;
                     context.adapterSubs[alive] = context.adapterSubs[alive] || [];
 
-                    const subExists = context.adapterSubs[alive].filter(sub => sub === pattern.id).length > 0;
+                    const subExists = context.adapterSubs[alive].filter(sub => sub === oPattern.id).length > 0;
 
                     if (!subExists) {
-                        context.adapterSubs[alive].push(pattern.id);
-                        adapter.sendTo(a, 'subscribe', pattern.id);
+                        context.adapterSubs[alive].push(oPattern.id);
+                        adapter.sendTo(a, 'subscribe', oPattern.id);
                     }
                 }
             }
             sandbox.verbose && sandbox.log(`subscribe: ${JSON.stringify(subs)}`, 'info');
 
-            subscribePattern(script, pattern.id);
+            subscribePattern(script, oPattern.id as string);
 
-            subs.patternCompareFunctions = getPatternCompareFunctions(pattern);
+            subs.patternCompareFunctions = getPatternCompareFunctions(oPattern);
             context.subscriptions.push(subs);
 
-            if (pattern.enumName || pattern.enumId) {
+            if (oPattern.enumName || oPattern.enumId) {
                 context.isEnums = true;
             }
             return subs;
         },
-        getSubscriptions: function () {
-            const result = {};
+        getSubscriptions: function (): Record<string, { name: string; pattern: Pattern }[]> {
+            const result: Record<string, { name: string; pattern: Pattern }[]> = {};
             for (let s = 0; s < context.subscriptions.length; s++) {
-                result[context.subscriptions[s].pattern.id] = result[context.subscriptions[s].pattern.id] || [];
-                result[context.subscriptions[s].pattern.id].push({
+                result[context.subscriptions[s].pattern.id as string] = result[context.subscriptions[s].pattern.id as string] || [];
+                result[context.subscriptions[s].pattern.id as string].push({
                     name: context.subscriptions[s].name,
                     pattern: context.subscriptions[s].pattern,
                 });
@@ -1630,8 +1654,8 @@ export default function sandBox(
             sandbox.verbose && sandbox.log(`getSubscriptions() => ${JSON.stringify(result)}`, 'info');
             return result;
         },
-        getFileSubscriptions: function () {
-            const result = {};
+        getFileSubscriptions: function (): Record<string, { name: string; id: string; fileNamePattern: string }[]> {
+            const result: Record<string, { name: string; id: string; fileNamePattern: string }[]> = {};
             for (let s = 0; s < context.subscriptionsFile.length; s++) {
                 const key = `${context.subscriptionsFile[s].id}$%$${context.subscriptionsFile[s].fileNamePattern}`;
                 result[key] = result[key] || [];
@@ -1644,14 +1668,14 @@ export default function sandBox(
             sandbox.verbose && sandbox.log(`getFileSubscriptions() => ${JSON.stringify(result)}`, 'info');
             return result;
         },
-        adapterSubscribe: function (id) {
+        adapterSubscribe: function (id: string): void {
             if (typeof id !== 'string') {
                 sandbox.log(`adapterSubscribe: invalid type of id ${typeof id}`, 'error');
                 return;
             }
             const parts = id.split('.');
             const _adapter = `system.adapter.${parts[0]}.${parts[1]}`;
-            if (objects[_adapter] && objects[_adapter].common && objects[_adapter].common.subscribable) {
+            if (objects[_adapter]?.common?.subscribable) {
                 const a = `${parts[0]}.${parts[1]}`;
                 const alive = `system.adapter.${a}.alive`;
                 context.adapterSubs[alive] = context.adapterSubs[alive] || [];
@@ -1660,49 +1684,62 @@ export default function sandBox(
                 adapter.sendTo(a, 'subscribe', id);
             }
         },
-        adapterUnsubscribe: function (id) {
+        adapterUnsubscribe: function (idOrObject: string | SubscriptionResult | (string | SubscriptionResult)[]): boolean | boolean[] {
+            // BF: it could be an error
             return sandbox.unsubscribe(id);
         },
-        unsubscribe: function (idOrObject) {
+        unsubscribe: function (idOrObject: string | SubscriptionResult | (string | SubscriptionResult)[]): boolean | boolean[] {
             if (idOrObject && Array.isArray(idOrObject)) {
-                const result = [];
+                const result: boolean[] = [];
                 for (let t = 0; t < idOrObject.length; t++) {
-                    result.push(sandbox.unsubscribe(idOrObject[t]));
+                    result.push(sandbox.unsubscribe(idOrObject[t]) as boolean);
                 }
                 return result;
             }
+
             sandbox.verbose && sandbox.log(`adapterUnsubscribe(id=${JSON.stringify(idOrObject)})`, 'info');
+
             if (isObject(idOrObject)) {
                 for (let i = context.subscriptions.length - 1; i >= 0; i--) {
                     if (context.subscriptions[i] === idOrObject) {
-                        unsubscribePattern(script, context.subscriptions[i].pattern.id);
+                        unsubscribePattern(script, context.subscriptions[i].pattern.id as string);
                         context.subscriptions.splice(i, 1);
                         sandbox.__engine.__subscriptions--;
                         return true;
                     }
                 }
-            } else {
-                let deleted = 0;
-                for (let i = context.subscriptions.length - 1; i >= 0; i--) {
-                    if (context.subscriptions[i].name === name && context.subscriptions[i].pattern.id === idOrObject) {
-                        deleted++;
-                        unsubscribePattern(script, context.subscriptions[i].pattern.id);
-                        context.subscriptions.splice(i, 1);
-                        sandbox.__engine.__subscriptions--;
-                    }
-                }
-                return !!deleted;
+                return false;
             }
+            let deleted = 0;
+            for (let i = context.subscriptions.length - 1; i >= 0; i--) {
+                if (context.subscriptions[i].name === name && context.subscriptions[i].pattern.id === idOrObject) {
+                    deleted++;
+                    unsubscribePattern(script, context.subscriptions[i].pattern.id as string);
+                    context.subscriptions.splice(i, 1);
+                    sandbox.__engine.__subscriptions--;
+                }
+            }
+            return !!deleted;
         },
-        on: function (pattern, callbackOrId, value) {
-            return sandbox.subscribe(pattern, callbackOrId, value);
+        on: function (
+            pattern:
+                | TimeRule
+                | AstroRule
+                | Pattern
+                | SchedulerRule
+                | string
+                | (TimeRule | AstroRule | Pattern | SchedulerRule | string)[],
+            callbackOrChangeTypeOrId: string | ChangeType | ((event?: EventObj) => void),
+            value?: any,
+        ): SubscriptionResult | IobSchedule | string | null | undefined | (SubscriptionResult | IobSchedule | string | null | undefined)[] {
+            return sandbox.subscribe(pattern, callbackOrChangeTypeOrId, value);
         },
-        onEnumMembers: function (id, callback) {
-            if (enums.includes(id)) {
-                const subscriptions = {};
+        onEnumMembers: function (enumId: string, callback: (event?: EventObj) => void): void {
+            if (enums.includes(enumId)) {
+                const subscriptions: Record<string, string | SubscriptionResult> = {};
 
                 const init = () => {
-                    const obj = objects[id];
+                    const obj = objects[enumId];
                     const common = obj?.common ?? {};
                     const members = common?.members ?? [];
 
@@ -1719,7 +1756,7 @@ export default function sandBox(
                         if (!Object.keys(subscriptions).includes(objId)) {
                             if (objects?.[objId]?.type === 'state') {
                                 // Just subscribe to states
-                                subscriptions[objId] = sandbox.subscribe(objId, callback); // TODO: more features
+                                subscriptions[objId] = sandbox.subscribe(objId, callback) as string | SubscriptionResult; // TODO: more features
                             }
                         }
                     }
@@ -1733,18 +1770,20 @@ export default function sandBox(
 
                 init();
 
-                sandbox.subscribeObject(id, obj => {
-                    obj && init();
-                });
+                sandbox.subscribeObject(enumId, obj => obj && init());
             } else {
                 sandbox.log(`onEnumMembers: enum with id "${id}" doesn't exists`, 'error');
-                return;
             }
         },
-        onFile: function (id: string, fileNamePattern: string | string[], withFile, callback) {
-            if (typeof withFile === 'function') {
-                callback = withFile;
-                withFile = false;
+        onFile: function (
+            id: string,
+            fileNamePattern: string | string[],
+            withFileOrCallback: boolean | ((id: string, fileName: string, size: number, file?: string | Buffer, mimeType?: string) => void),
+            callback?: (id: string, fileName: string, size: number, file?: string | Buffer, mimeType?: string) => void,
+        ): undefined | FileSubscriptionResult | (undefined | FileSubscriptionResult)[] {
+            if (typeof withFileOrCallback === 'function') {
+                callback = withFileOrCallback as (id: string, fileName: string, size: number, file?: string | Buffer, mimeType?: string) => void;
+                withFileOrCallback = false;
             }
 
             if (!adapter.subscribeForeignFiles) {
@@ -1767,7 +1806,7 @@ export default function sandBox(
             }
 
             if (Array.isArray(fileNamePattern)) {
-                return fileNamePattern.map(filePattern => sandbox.onFile(id, filePattern, withFile, callback));
+                return fileNamePattern.map(filePattern => sandbox.onFile(id, filePattern, withFileOrCallback, callback) as undefined | FileSubscriptionResult);
             }
 
             sandbox.__engine.__subscriptionsFile += 1;
@@ -1785,8 +1824,8 @@ export default function sandBox(
                 );
             }
 
-            let idRegEx;
-            let fileRegEx;
+            let idRegEx: RegExp | undefined;
+            let fileRegEx: RegExp | undefined;
             if (id.includes('*')) {
                 idRegEx = new RegExp(pattern2RegEx(id));
             }
@@ -1794,13 +1833,13 @@ export default function sandBox(
                 fileRegEx = new RegExp(pattern2RegEx(fileNamePattern));
             }
 
-            const subs = {
+            const subs: FileSubscriptionResult = {
                 id,
                 fileNamePattern,
-                withFile,
+                withFile: withFileOrCallback as boolean,
                 idRegEx,
                 fileRegEx,
-                callback: (id, fileName, size, withFile) => {
+                callback: (id: string, fileName: string, size: number, withFile: boolean): void => {
                     try {
                         sandbox.verbose &&
                             sandbox.log(`onFile changed(id=${id}, fileName=${fileName}, size=${size})`, 'info');
@@ -1830,13 +1869,13 @@ export default function sandBox(
             subscribeFile(script, id, fileNamePattern);
             return subs;
         },
-        offFile: function (idOrObject, fileNamePattern) {
+        offFile: function (idOrObject: FileSubscriptionResult | string | (FileSubscriptionResult | string)[], fileNamePattern?: string | string[]): boolean | boolean[] {
             if (!adapter.unsubscribeForeignFiles) {
                 sandbox.log(
                     'offFile: your js-controller does not support yet file unsubscribes. Please update to js-controller@4.1.x or newer',
                     'warn',
                 );
-                return;
+                return false;
             }
 
             sandbox.verbose &&
@@ -1847,40 +1886,14 @@ export default function sandBox(
 
             if (idOrObject && typeof idOrObject === 'object') {
                 if (Array.isArray(idOrObject)) {
-                    const result = [];
+                    const result: boolean[] = [];
                     for (let t = 0; t < idOrObject.length; t++) {
-                        result.push(sandbox.offFile(idOrObject[t]));
+                        result.push(sandbox.offFile(idOrObject[t] as FileSubscriptionResult | string) as boolean);
                     }
                     return result;
-                } else {
-                    for (let i = context.subscriptionsFile.length - 1; i >= 0; i--) {
-                        if (context.subscriptionsFile[i] === idOrObject) {
-                            unsubscribeFile(
-                                script,
-                                context.subscriptionsFile[i].id,
-                                context.subscriptionsFile[i].fileNamePattern,
-                            );
-
-                            sandbox.verbose &&
-                                sandbox.log(
-                                    `offFile(type=object, fileNamePattern=${fileNamePattern}, removing id=${context.subscriptionsFile[i].id})`,
-                                    'info',
-                                );
-
-                            context.subscriptionsFile.splice(i, 1);
-                            sandbox.__engine.__subscriptionsFile--;
-                            return true;
-                        }
-                    }
                 }
-            } else {
-                let deleted = 0;
                 for (let i = context.subscriptionsFile.length - 1; i >= 0; i--) {
-                    if (
-                        context.subscriptionsFile[i].id === idOrObject &&
-                        context.subscriptionsFile[i].fileNamePattern === fileNamePattern
-                    ) {
-                        deleted++;
+                    if (context.subscriptionsFile[i] === idOrObject) {
                         unsubscribeFile(
                             script,
                             context.subscriptionsFile[i].id,
@@ -1889,40 +1902,81 @@ export default function sandBox(
 
                         sandbox.verbose &&
                             sandbox.log(
-                                `offFile(type=string, fileNamePattern=${fileNamePattern}, removing id=${context.subscriptionsFile[i].id})`,
+                                `offFile(type=object, fileNamePattern=${fileNamePattern}, removing id=${context.subscriptionsFile[i].id})`,
                                 'info',
                             );
 
                         context.subscriptionsFile.splice(i, 1);
                         sandbox.__engine.__subscriptionsFile--;
+                        return true;
                     }
                 }
-                return !!deleted;
+                return false;
             }
+
+            if (isArray(fileNamePattern)) {
+                const result: boolean[] = [];
+                for (let t = 0; t < fileNamePattern.length; t++) {
+                    result.push(sandbox.offFile(idOrObject, fileNamePattern[t]) as boolean);
+                }
+                return result;
+            }
+
+            let deleted = 0;
+            for (let i = context.subscriptionsFile.length - 1; i >= 0; i--) {
+                if (
+                    context.subscriptionsFile[i].id === idOrObject &&
+                    context.subscriptionsFile[i].fileNamePattern === fileNamePattern
+                ) {
+                    deleted++;
+                    unsubscribeFile(
+                        script,
+                        context.subscriptionsFile[i].id,
+                        context.subscriptionsFile[i].fileNamePattern,
+                    );
+
+                    sandbox.verbose &&
+                        sandbox.log(
+                            `offFile(type=string, fileNamePattern=${fileNamePattern}, removing id=${context.subscriptionsFile[i].id})`,
+                            'info',
+                        );
+
+                    context.subscriptionsFile.splice(i, 1);
+                    sandbox.__engine.__subscriptionsFile--;
+                }
+            }
+            return !!deleted;
         },
         /** Registers a one-time subscription which automatically unsubscribes after the first invocation */
-        once: function (pattern, callback) {
-            function _once(cb) {
-                /** @type {iobJS.StateChangeHandler} */
-                const handler = obj => {
-                    sandbox.unsubscribe(subscription);
+        once: function (pattern:
+            | TimeRule
+            | AstroRule
+            | Pattern
+            | SchedulerRule
+            | string
+            | (TimeRule | AstroRule | Pattern | SchedulerRule | string)[], callback?: (event?: EventObj) => void): string | SubscriptionResult | Promise<EventObj | undefined>
+        {
+            function _once(cb: (obj?: EventObj) => void): string | SubscriptionResult {
+                let subscription: string | SubscriptionResult;
+                const handler = (obj?: EventObj): void => {
+                    subscription && sandbox.unsubscribe(subscription);
                     typeof cb === 'function' && cb(obj);
                 };
-                const subscription = sandbox.subscribe(pattern, handler);
+                subscription = sandbox.subscribe(pattern, handler) as string | SubscriptionResult;
                 return subscription;
             }
             if (typeof callback === 'function') {
                 // Callback-style: once("id", (obj) => { ... })
                 return _once(callback);
-            } else {
-                // Promise-style: once("id").then(obj => { ... })
-                return new Promise(resolve => _once(resolve));
             }
+
+            // Promise-style: once("id").then(obj => { ... })
+            return new Promise(resolve => _once(resolve));
         },
-        schedule: function (pattern: SchedulerRule | string, callback) {
+        schedule: function (pattern: SchedulerRule | AstroRule | Date | string, callback: () => void): IobSchedule | string | null | undefined {
             if (typeof callback !== 'function') {
                 sandbox.log(`schedule callback missing`, 'error');
-                return;
+                return null;
             }
 
             if (
@@ -1935,7 +1989,7 @@ export default function sandBox(
                         'info',
                     );
 
-                const schedule = context.scheduler.add(pattern, sandbox.scriptName, callback);
+                const schedule: string | null = context.scheduler.add(pattern as SchedulerRule | string, sandbox.scriptName, callback);
                 if (schedule) {
                     script.wizards.push(schedule);
                     sandbox.__engine.__schedules += 1;
@@ -1951,7 +2005,8 @@ export default function sandBox(
                 return schedule;
             }
 
-            if (typeof pattern === 'object' && pattern.astro) {
+            if (typeof pattern === 'object' && (pattern as AstroRule).astro) {
+                const astroPattern = pattern as AstroRule;
                 const nowdate = new Date();
 
                 if (
@@ -1963,7 +2018,7 @@ export default function sandBox(
                     (adapter.config as AdapterConfig).longitude === null
                 ) {
                     sandbox.log('Longitude or latitude does not set. Cannot use astro.', 'error');
-                    return;
+                    return null;
                 }
 
                 // ensure events are calculated independent of current time
@@ -1974,31 +2029,31 @@ export default function sandBox(
                     todayNoon,
                     (adapter.config as AdapterConfig).latitude,
                     (adapter.config as AdapterConfig).longitude,
-                )[pattern.astro];
+                )[astroPattern.astro];
 
-                // event on next day, correct or force recalculation at midnight
+                // event on the next day, correct or force recalculation at midnight
                 if (todayNoon.getDate() !== ts.getDate()) {
                     todayNoon.setDate(todayNoon.getDate() - 1);
                     ts = mods.suncalc.getTimes(
                         todayNoon,
                         (adapter.config as AdapterConfig).latitude,
                         (adapter.config as AdapterConfig).longitude,
-                    )[pattern.astro];
+                    )[astroPattern.astro];
                 }
 
                 if (ts.getTime().toString() === 'NaN') {
                     sandbox.log(
-                        `Cannot calculate "${pattern.astro}" for ${(adapter.config as AdapterConfig).latitude}, ${(adapter.config as AdapterConfig).longitude}`,
+                        `Cannot calculate "${astroPattern.astro}" for ${(adapter.config as AdapterConfig).latitude}, ${(adapter.config as AdapterConfig).longitude}`,
                         'warn',
                     );
                     ts = new Date(nowdate.getTime());
 
                     if (
-                        pattern.astro === 'sunriseEnd' ||
-                        pattern.astro === 'goldenHourEnd' ||
-                        pattern.astro === 'sunset' ||
-                        pattern.astro === 'nightEnd' ||
-                        pattern.astro === 'nauticalDusk'
+                        astroPattern.astro === 'sunriseEnd' ||
+                        astroPattern.astro === 'goldenHourEnd' ||
+                        astroPattern.astro === 'sunset' ||
+                        astroPattern.astro === 'nightEnd' ||
+                        astroPattern.astro === 'nauticalDusk'
                     ) {
                         ts.setHours(23);
                         ts.setMinutes(59);
@@ -2010,8 +2065,8 @@ export default function sandBox(
                     }
                 }
 
-                if (ts && pattern.shift) {
-                    ts = new Date(ts.getTime() + pattern.shift * 60000);
+                if (ts && astroPattern.shift) {
+                    ts = new Date(ts.getTime() + astroPattern.shift * 60000);
                 }
 
                 if (!ts || ts < nowdate) {
@@ -2035,7 +2090,7 @@ export default function sandBox(
 
                     sandbox.verbose &&
                         sandbox.log(
-                            `schedule(astro=${pattern.astro}, offset=${pattern.shift}) is tomorrow, waiting until ${date.toISOString()}`,
+                            `schedule(astro=${astroPattern.astro}, offset=${astroPattern.shift}) is tomorrow, waiting until ${date.toISOString()}`,
                             'info',
                         );
 
@@ -2044,7 +2099,7 @@ export default function sandBox(
                         if (sandbox.__engine.__schedules > 0) {
                             sandbox.__engine.__schedules--;
                         }
-                        sandbox.schedule(pattern, callback);
+                        sandbox.schedule(astroPattern, callback);
                     }, date.getTime() - Date.now());
 
                     return;
@@ -2070,18 +2125,19 @@ export default function sandBox(
                         if (sandbox.__engine.__schedules > 0) {
                             sandbox.__engine.__schedules--;
                         }
-                        sandbox.schedule(pattern, callback);
+                        sandbox.schedule(astroPattern, callback);
                     }, 2000);
                 }, ts.getTime() - Date.now());
 
                 sandbox.verbose &&
                     sandbox.log(
-                        `schedule(astro=${pattern.astro}, offset=${pattern.shift}) is today, waiting until ${ts.toISOString()}`,
+                        `schedule(astro=${astroPattern.astro}, offset=${astroPattern.shift}) is today, waiting until ${ts.toISOString()}`,
                         'info',
                     );
             } else {
                 // fix a problem with sunday and 7
                 if (typeof pattern === 'string') {
+                    // this could be a CRON
                     const parts = pattern.replace(/\s+/g, ' ').split(' ');
                     if (parts.length >= 5 && parseInt(parts[5], 10) >= 7) {
                         parts[5] = '0';
@@ -2090,11 +2146,11 @@ export default function sandBox(
                 }
                 // created in VM the date object: pattern instanceof Date => false
                 // so fix it
-                if (typeof pattern === 'object' && pattern.getDate) {
-                    pattern = new Date(pattern);
+                if (typeof pattern === 'object' && (pattern as Date).getDate) {
+                    pattern = new Date(pattern as Date);
                 }
 
-                const schedule = mods.nodeSchedule.scheduleJob(pattern, () => {
+                const schedule: IobSchedule = mods.nodeSchedule.scheduleJob(pattern, (): void => {
                     try {
                         callback.call(sandbox);
                     } catch (e) {
@@ -2113,7 +2169,7 @@ export default function sandBox(
 
                     schedule._ioBroker = {
                         type: 'cron',
-                        pattern,
+                        pattern: pattern as string | Date,
                         scriptName: sandbox.scriptName,
                         id: `cron_${Date.now()}_${Math.round(Math.random() * 100000)}`,
                     };
@@ -2128,9 +2184,9 @@ export default function sandBox(
                 return schedule;
             }
         },
-        scheduleById: function (id, ack, callback) {
-            let schedulId = null;
-            let currentExp = null; // current cron expression
+        scheduleById: function (id: string, ack: boolean | (() => void) | undefined, callback?: () => void): void {
+            let scheduleId: IobSchedule | string | null | undefined = null;
+            let currentExp: string | null = null; // current cron expression
 
             if (typeof ack === 'function') {
                 callback = ack;
@@ -2140,23 +2196,20 @@ export default function sandBox(
             const rhms = /^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$/; // hh:mm:ss
             const rhm = /^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$/; // hh:mm
 
-            const init = time => {
+            const init = (time: string): void => {
                 if (typeof time === 'string') {
-                    let h = undefined;
-                    let m = undefined;
-                    let s = undefined;
+                    let h: number | undefined = undefined;
+                    let m: number | undefined = undefined;
+                    let s: number | undefined = undefined;
+
                     let isValid = false;
 
                     if (rhms.test(time)) {
-                        [h, m, s] = time
-                            .match(rhms)
-                            .slice(1)
+                        [h, m, s] = time.match(rhms)?.slice(1)
                             .map(v => parseInt(v));
                         isValid = true;
                     } else if (rhm.test(time)) {
-                        [h, m] = time
-                            .match(rhm)
-                            .slice(1)
+                        [h, m] = time.match(rhm)?.slice(1)
                             .map(v => parseInt(v));
                         isValid = true;
                     }
@@ -2172,12 +2225,12 @@ export default function sandBox(
                                 );
                             currentExp = cronExp;
 
-                            if (schedulId) {
-                                sandbox.clearSchedule(schedulId);
-                                schedulId = null;
+                            if (scheduleId) {
+                                sandbox.clearSchedule(scheduleId);
+                                scheduleId = null;
                             }
 
-                            schedulId = sandbox.schedule(cronExp, () => {
+                            scheduleId = sandbox.schedule(cronExp, () => {
                                 if (typeof callback === 'function') {
                                     try {
                                         callback.call(sandbox);
@@ -2202,26 +2255,26 @@ export default function sandBox(
             };
 
             sandbox.getState(id, (err, state) => {
-                if (!err && state && state.val) {
+                if (!err && state?.val) {
                     sandbox.verbose && sandbox.log(`scheduleById(id=${id}): Init with value ${state.val}`, 'info');
-                    init(state.val);
+                    init(state.val.toString());
                 }
             });
 
-            const triggerDef = { id, change: 'any' };
+            const triggerDef: Pattern = { id, change: 'any' };
             if (ack !== undefined) {
-                triggerDef.ack = ack;
+                triggerDef.ack = ack as boolean;
             }
 
             sandbox.on(triggerDef, obj => {
-                if (obj && obj.state.val) {
+                if (obj?.state?.val) {
                     sandbox.verbose &&
                         sandbox.log(`scheduleById(id=${id}): Update with value ${obj.state.val}`, 'info');
-                    init(obj.state.val);
+                    init(obj.state.val.toString());
                 }
             });
         },
-        getAstroDate: function (pattern, date, offsetMinutes) {
+        getAstroDate: function (pattern: AstroEvent, date?: Date | number, offsetMinutes?: number): Date | undefined {
             if (date === undefined) {
                 date = new Date();
             }
@@ -2268,7 +2321,7 @@ export default function sandBox(
             }
             return ts;
         },
-        isAstroDay: function () {
+        isAstroDay: function (): boolean | undefined {
             const nowDate = new Date();
             const dayBegin = sandbox.getAstroDate('sunrise');
             const dayEnd = sandbox.getAstroDate('sunset');
@@ -2293,23 +2346,10 @@ export default function sandBox(
                 }
                 context.scheduler.remove(schedule);
                 return true;
-            } else {
-                for (let i = 0; i < script.schedules.length; i++) {
-                    if (schedule && typeof schedule === 'object' && schedule.type === 'cron') {
-                        if (script.schedules[i]._ioBroker && script.schedules[i]._ioBroker.id === schedule.id) {
-                            if (!mods.nodeSchedule.cancelJob(script.schedules[i])) {
-                                sandbox.log('Error by canceling scheduled job', 'error');
-                            }
-                            delete script.schedules[i];
-                            script.schedules.splice(i, 1);
-                            if (sandbox.__engine.__schedules > 0) {
-                                sandbox.__engine.__schedules--;
-                            }
-
-                            sandbox.verbose && sandbox.log('clearSchedule() => cleared', 'info');
-                            return true;
-                        }
-                    } else if (script.schedules[i] === schedule) {
+            }
+            for (let i = 0; i < script.schedules.length; i++) {
+                if (schedule && typeof schedule === 'object' && schedule.type === 'cron') {
+                    if (script.schedules[i]._ioBroker && script.schedules[i]._ioBroker.id === schedule.id) {
                         if (!mods.nodeSchedule.cancelJob(script.schedules[i])) {
                             sandbox.log('Error by canceling scheduled job', 'error');
                         }
@@ -2322,6 +2362,18 @@ export default function sandBox(
                         sandbox.verbose && sandbox.log('clearSchedule() => cleared', 'info');
                         return true;
                     }
+                } else if (script.schedules[i] === schedule) {
+                    if (!mods.nodeSchedule.cancelJob(script.schedules[i])) {
+                        sandbox.log('Error by canceling scheduled job', 'error');
+                    }
+                    delete script.schedules[i];
+                    script.schedules.splice(i, 1);
+                    if (sandbox.__engine.__schedules > 0) {
+                        sandbox.__engine.__schedules--;
+                    }
+
+                    sandbox.verbose && sandbox.log('clearSchedule() => cleared', 'info');
+                    return true;
                 }
             }
 
