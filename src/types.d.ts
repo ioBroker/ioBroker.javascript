@@ -1,4 +1,6 @@
-import Scheduler, {SchedulerRule} from "./lib/scheduler";
+import Scheduler, { SchedulerRule } from './lib/scheduler';
+import { ExecOptions } from 'node:child_process';
+import { ResponseType } from 'axios';
 
 export interface AdapterConfig {
     latitude: string;
@@ -39,47 +41,49 @@ export type JavascriptTimer = {
 export type ScriptType = 'TypeScript/ts' | 'Blockly' | 'Rules' | 'JavaScript/js';
 
 export type PushoverOptions = {
-    message:  string; // mandatory - your text message
-    title?:    string, // optional  - your message's title, otherwise your app's name is used
-    sound?: 'magic' | 'pushover' |
-        'bike' |
-        'bugle' |
-        'cashregister' |
-        'classical' |
-        'cosmic' |
-        'falling' |
-        'gamelan' |
-        'incoming' |
-        'intermission' |
-        'mechanical' |
-        'pianobar' |
-        'siren' |
-        'spacealarm' |
-        'tugboat' |
-        'alien' |
-        'climb' |
-        'persistent' |
-        'echo' |
-        'updown' |
-        'none',     // optional  - the name of one of the sounds supported by device clients to override the user's default sound choice
+    message: string; // mandatory - your text message
+    title?: string; // optional  - your message's title, otherwise your app's name is used
+    sound?:
+        | 'magic'
+        | 'pushover'
+        | 'bike'
+        | 'bugle'
+        | 'cashregister'
+        | 'classical'
+        | 'cosmic'
+        | 'falling'
+        | 'gamelan'
+        | 'incoming'
+        | 'intermission'
+        | 'mechanical'
+        | 'pianobar'
+        | 'siren'
+        | 'spacealarm'
+        | 'tugboat'
+        | 'alien'
+        | 'climb'
+        | 'persistent'
+        | 'echo'
+        | 'updown'
+        | 'none'; // optional  - the name of one of the sounds supported by device clients to override the user's default sound choice
     //    pushover, bike, bugle, cashregister, classical, cosmic, falling,
     //    gamelan, incoming, intermission, magic, mechanical, pianobar, siren,
     //    spacealarm, tugboat, alien, climb, persistent, echo, updown, none
-    priority?: -1 | 0| 1 | 2,          // optional
+    priority?: -1 | 0 | 1 | 2; // optional
     //    -1 to always send as a quiet notification,
     //    1 to display as high-priority and bypass the user's quiet hours, or
     //    2 to also require confirmation from the user
-    token?: string // optional
-                           // add other than configured token to the call
-    url?: string,                   // optional  - a supplementary URL to show with your message
-    url_title?: string,             // optional  - a title for your supplementary URL, otherwise just the URL is shown
-    device?: string,                // optional  - your user's device name to send the message directly to that device, rather than all of the user's devices
-    timestamp?: number,             // optional  - a Unix timestamp of your message's date and time to display to the user, rather than the time your message is received by our API
-    html?: string,                  // optional  - 1 to enable parsing of HTML formatting for bold, italic, underlined and font color
-    monospace? : 1,             // optional  - 1 to display the message in monospace font
-                           //    either html or monospace is allowed
-    file?: string | {name: string; data: Buffer}  // optional - attachment
-}
+    token?: string; // optional
+    // add other than configured token to the call
+    url?: string; // optional  - a supplementary URL to show with your message
+    url_title?: string; // optional  - a title for your supplementary URL, otherwise just the URL is shown
+    device?: string; // optional  - your user's device name to send the message directly to that device, rather than all of the user's devices
+    timestamp?: number; // optional  - a Unix timestamp of your message's date and time to display to the user, rather than the time your message is received by our API
+    html?: string; // optional  - 1 to enable parsing of HTML formatting for bold, italic, underlined and font color
+    monospace?: 1; // optional  - 1 to display the message in monospace font
+    //    either html or monospace is allowed
+    file?: string | { name: string; data: Buffer }; // optional - attachment
+};
 export interface JsScript {
     onStopTimeout: number;
     onStopCb: () => void;
@@ -120,11 +124,74 @@ export type SandboxType = {
     log: (msg: string, severity?: string) => void;
     onLog: (severity: ioBroker.LogLevel, callback: (info: any) => void) => number;
     onLogUnregister: (idOrCallbackOrSeverity: string | ((msg: string) => void)) => void;
-    exec: (cmd: string, options: Record<string, any>, callback: (error: Error | null, stdout: string, stderr: string) => void) => void;
+    exec: (
+        cmd: string,
+        options: ExecOptions | ((error: Error | null | string, stdout?: string, stderr?: string) => void),
+        callback?: (error: Error | null | string, stdout?: string, stderr?: string) => void,
+    ) => void;
     email: (msg: string) => void;
     pushover: (msg: string) => void;
-    httpGet: (url: string, options: Record<string, any>, callback: (error: Error | null, response: any, body: any) => void) => void;
-    httpPost: (url: string, data: any, options: Record<string, any>, callback: (error: Error | null, response: any, body: any) => void) => void;
+    httpGet: (
+        url: string,
+        options:
+            | {
+                  timeout?: number;
+                  responseType?: ResponseType;
+                  headers?: Record<string, string>;
+                  basicAuth?: { user: string; password: string } | null;
+                  bearerAuth?: string;
+                  validateCertificate?: boolean;
+              }
+            | ((
+                  error: Error | null,
+                  result: {
+                      statusCode: number | null;
+                      data: any;
+                      headers: Record<string, string>;
+                      responseTime: number;
+                  },
+              ) => void),
+        callback?: (
+            error: Error | null,
+            result: {
+                statusCode: number | null;
+                data: any;
+                headers: Record<string, string>;
+                responseTime: number;
+            },
+        ) => void,
+    ) => void;
+    httpPost: (
+        url: string,
+        data: any,
+        options:
+            | {
+                  timeout?: number;
+                  responseType?: ResponseType;
+                  headers?: Record<string, string>;
+                  basicAuth?: { user: string; password: string } | null;
+                  bearerAuth?: string;
+                  validateCertificate?: boolean;
+              }
+            | ((
+                  error: Error | null,
+                  result: {
+                      statusCode: number | null;
+                      data: any;
+                      headers: Record<string, string>;
+                      responseTime: number;
+                  },
+              ) => void),
+        callback?: (
+            error: Error | null,
+            result: {
+                statusCode: number | null;
+                data: any;
+                headers: Record<string, string>;
+                responseTime: number;
+            },
+        ) => void,
+    ) => void;
     createTempFile: (fileName: string, data: Buffer | string) => string | undefined;
     subscribe: (pattern: string, callbackOrId: string | ((data: any) => void), value?: any) => void;
     getSubscriptions: () => any[];
@@ -132,9 +199,18 @@ export type SandboxType = {
     adapterSubscribe: (id: string) => void;
     adapterUnsubscribe: (id: string) => void;
     unsubscribe: (idOrObject: string | Record<string, any>) => void;
-    on: (pattern: SchedulerRule | string | (SchedulerRule | string)[], callbackOrId: string | ((id: string) => void), value?: any) => void;
+    on: (
+        pattern: SchedulerRule | string | (SchedulerRule | string)[],
+        callbackOrId: string | ((id: string) => void),
+        value?: any,
+    ) => void;
     onEnumMembers: (id: string, callback: (err: Error | null, result: any) => void) => void;
-    onFile: (id: string, fileNamePattern: string | string[], withFile: boolean, callback: (err: Error | null, result: any) => void) => void;
+    onFile: (
+        id: string,
+        fileNamePattern: string | string[],
+        withFile: boolean,
+        callback: (err: Error | null, result: any) => void,
+    ) => void;
     offFile: (idOrObject: string | Record<string, any>, fileNamePattern: string) => void;
     once: (pattern: string, callback: (data: any) => void) => void;
     schedule: (pattern: SchedulerRule | string | (SchedulerRule | string)[], callback: (id: string) => void) => void;
@@ -143,27 +219,79 @@ export type SandboxType = {
     isAstroDay: () => boolean;
     clearSchedule: (schedule: any) => void;
     getSchedules: (allScripts: boolean) => any[];
-    setState: (id: string, state: ioBroker.SettableState | ioBroker.StateValue, isAck: boolean, callback: (err: Error | null) => void) => void;
-    setStateChanged: (id: string, state: ioBroker.SettableState | ioBroker.StateValue, isAck: boolean, callback: (err: Error | null) => void) => void;
-    setStateDelayed: (id: string, state: ioBroker.SettableState | ioBroker.StateValue, isAck: boolean, delay: number, clearRunning: boolean, callback: (err: Error | null) => void) => void;
+    setState: (
+        id: string,
+        state: ioBroker.SettableState | ioBroker.StateValue,
+        isAck: boolean,
+        callback: (err: Error | null) => void,
+    ) => void;
+    setStateChanged: (
+        id: string,
+        state: ioBroker.SettableState | ioBroker.StateValue,
+        isAck: boolean,
+        callback: (err: Error | null) => void,
+    ) => void;
+    setStateDelayed: (
+        id: string,
+        state: ioBroker.SettableState | ioBroker.StateValue,
+        isAck: boolean,
+        delay: number,
+        clearRunning: boolean,
+        callback: (err: Error | null) => void,
+    ) => void;
     clearStateDelayed: (id: string, timerId: number) => void;
     getStateDelayed: (id: string) => ioBroker.State | null | undefined;
     getStateAsync: (id: string) => Promise<ioBroker.State | null | undefined>;
-    setStateAsync: (id: string, state:ioBroker.SettableState | ioBroker.StateValue, isAck?: boolean) => Promise<void>;
-    setStateChangedAsync: (id: string, state: ioBroker.SettableState | ioBroker.StateValue, isAck?: boolean) => Promise<void>;
-    getState: (id: string, callback?: (err: Error | null | undefined, state?: ioBroker.State | null) => void) => undefined | void | (ioBroker.State & { notExist?: true })
+    setStateAsync: (id: string, state: ioBroker.SettableState | ioBroker.StateValue, isAck?: boolean) => Promise<void>;
+    setStateChangedAsync: (
+        id: string,
+        state: ioBroker.SettableState | ioBroker.StateValue,
+        isAck?: boolean,
+    ) => Promise<void>;
+    getState: (
+        id: string,
+        callback?: (err: Error | null | undefined, state?: ioBroker.State | null) => void,
+    ) => undefined | void | (ioBroker.State & { notExist?: true });
     existsState: (id: string, callback: (err: Error | null, exists: boolean) => void) => void;
     existsObject: (id: string, callback: (err: Error | null, exists: boolean) => void) => void;
     getIdByName: (name: string, alwaysArray: boolean) => string | string[];
     getObject: (id: string, enumName: string, cb: (err: Error | null, obj: any) => void) => void;
-    setObject: (id: string, obj: ioBroker.Object, callback?: (err?: Error | null | undefined, res?: { id: string }) => void) => void;
-    extendObject: (id: string, obj: Partial<ioBroker.Object>, callback?: (err?: Error | null | undefined, res?: { id: string }) => void) => void;
-    deleteObject: (id: string, isRecursive?: boolean, callback?: ioBroker.ErrorCallback) => void
+    setObject: (
+        id: string,
+        obj: ioBroker.Object,
+        callback?: (err?: Error | null | undefined, res?: { id: string }) => void,
+    ) => void;
+    extendObject: (
+        id: string,
+        obj: Partial<ioBroker.Object>,
+        callback?: (err?: Error | null | undefined, res?: { id: string }) => void,
+    ) => void;
+    deleteObject: (id: string, isRecursive?: boolean, callback?: ioBroker.ErrorCallback) => void;
     getEnums: (enumName: string) => any;
-    createAlias: (name: string, alias: string, forceCreation: boolean, common: any, native: any, callback: (err: Error | null) => void) => void;
-    createState: (name: string, initValue: any, forceCreation: boolean, common: any, native: any, callback: (err: Error | null) => void) => void;
+    createAlias: (
+        name: string,
+        alias: string,
+        forceCreation: boolean,
+        common: any,
+        native: any,
+        callback: (err: Error | null) => void,
+    ) => void;
+    createState: (
+        name: string,
+        initValue: any,
+        forceCreation: boolean,
+        common: any,
+        native: any,
+        callback: (err: Error | null) => void,
+    ) => void;
     deleteState: (id: string, callback: (err: Error | null) => void) => void;
-    sendTo: (adapter: string, cmd: string, msg: any, options: any, callback: (err: Error | null, result: any) => void) => void;
+    sendTo: (
+        adapter: string,
+        cmd: string,
+        msg: any,
+        options: any,
+        callback: (err: Error | null, result: any) => void,
+    ) => void;
     sendto: (adapter: string, cmd: string, msg: any, callback: (err: Error | null, result: any) => void) => void;
     sendToAsync: (adapter: string, cmd: string, msg: any, options: any) => Promise<any>;
     sendToHost: (host: string, cmd: string, msg: any, callback: (err: Error | null, result: any) => void) => void;
@@ -307,7 +435,12 @@ export interface JavascriptContext {
     names: { [name: string]: string }; // name: id
     scripts: Record<string, JsScript>;
     messageBusHandlers: Record<string, Record<string, { sandbox: SandboxType; cb: (data: any, result: any) => void }>>;
-    logSubscriptions: {sandbox: SandboxType; cb: (info: any) => void, id: string, severity: ioBroker.LogLevel | '*'}[];
+    logSubscriptions: {
+        sandbox: SandboxType;
+        cb: (info: any) => void;
+        id: string;
+        severity: ioBroker.LogLevel | '*';
+    }[];
     tempDirectories: { [scriptName: string]: string }; // name: path
     folderCreationVerifiedObjects: Record<string, boolean>;
     updateLogSubscriptions: () => void;

@@ -7,10 +7,10 @@ import * as eventObjMod from './eventObj';
 import { patternCompareFunctions as patternCompareFunctionsMod } from './patternCompareFunctions';
 import { type PatternEventCompareFunction } from './patternCompareFunctions';
 import * as jsonataMod from 'jsonata';
-import {iobJS} from "./javascript";
+import { iobJS } from "./javascript";
 import {ExecOptions} from "node:child_process";
 import { type SendMailOptions } from 'nodemailer';
-import {AxiosHeaders, AxiosHeaderValue, AxiosResponse, ResponseType} from "axios";
+import { AxiosHeaders, AxiosHeaderValue, AxiosResponse, ResponseType } from "axios";
 import {SchedulerRule} from "./scheduler";
 const pattern2RegEx = commonTools.pattern2RegEx;
 
@@ -1342,7 +1342,37 @@ export default function sandBox(
                     }
                 });
         },
-        httpPost: function (url: string, data, options, callback) {
+        httpPost: function (
+            url: string,
+            data: any,
+            options:
+                | {
+                timeout?: number;
+                responseType?: ResponseType;
+                headers?: Record<string, string>;
+                basicAuth?: { user: string; password: string } | null;
+                bearerAuth?: string;
+                validateCertificate?: boolean;
+            }
+                | ((
+                error: Error | null,
+                result: {
+                    statusCode: number | null;
+                    data: any;
+                    headers: Record<string, string>;
+                    responseTime: number;
+                },
+            ) => void),
+            callback?: (
+                error: Error | null,
+                result: {
+                    statusCode: number | null;
+                    data: any;
+                    headers: Record<string, string>;
+                    responseTime: number;
+                },
+            ) => void,
+        ): void {
             if (typeof options === 'function') {
                 callback = options;
                 options = {};
@@ -1388,6 +1418,7 @@ export default function sandBox(
                             statusCode: null,
                             data: null,
                             headers: {},
+                            responseTime,
                         };
 
                         if (error.response) {
@@ -1457,7 +1488,8 @@ export default function sandBox(
                 (typeof pattern === 'object' && (pattern as SchedulerRule).period)
             ) {
                 return sandbox.schedule(pattern as SchedulerRule, callbackOrId);
-            } else if (pattern && Array.isArray(pattern)) {
+            }
+            if (pattern && Array.isArray(pattern)) {
                 const result = [];
                 for (const p of pattern) {
                     result.push(sandbox.subscribe(p as SchedulerRule | string, callbackOrId, value));
@@ -1476,7 +1508,7 @@ export default function sandBox(
                 value = undefined;
             }
 
-            if (pattern && pattern.id && Array.isArray(pattern.id)) {
+            if (pattern?.id && Array.isArray(pattern.id)) {
                 const result = [];
                 for (let t = 0; t < pattern.id.length; t++) {
                     const pa = JSON.parse(JSON.stringify(pattern));
