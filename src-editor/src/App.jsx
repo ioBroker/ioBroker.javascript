@@ -727,16 +727,9 @@ class App extends GenericApp {
                     if (typeof data === 'string') {
                         // it is a link to the created file
                         const a = document.createElement('a');
-                        if (data.startsWith('admin.')) {
-                            // new controller
-                            // actual position is http://IP:8081/adapter/javascript/index.html
-                            // we need http://IP:8081/files/admin.0/zip/2023-06-20-scripts.zip
-                            a.href = `../../files/${data}`;
-                        } else {
-                            // the data is "system.host.HOST.zip.2020-01-26-scripts.zip"
-                            const parts = data.split('.zip.');
-                            a.href = `./zip/${parts[0]}/${parts[1]}`;
-                        }
+                        // actual position is http://IP:8081/adapter/javascript/index.html
+                        // we need http://IP:8081/files/admin.0/zip/2023-06-20-scripts.zip
+                        a.href = `../../files/${data}`;
                         document.body.appendChild(a);
                         a.click();
                         a.remove();
