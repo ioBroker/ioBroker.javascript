@@ -7,7 +7,6 @@ import type { AxiosRequestConfig, ResponseType } from 'axios';
 /**
  * Tests whether the given variable is a real object and not an Array
  * @param {any} it The variable to test
- * @returns {it is Record<string, any>}
  */
 export function isObject(it: any): boolean {
     // This is necessary because:

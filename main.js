@@ -300,12 +300,11 @@ function checkIsGlobal(obj) {
     return obj && obj.common && (regExGlobalOld.test(obj.common.name) || regExGlobalNew.test(obj._id));
 }
 
-function convertBackStringifiedValues(id, state) {
+function convertBackStringifiedValues(id: string, state: ioBroker.State | null | undefined): ioBroker.State | null | undefined {
     if (
         state &&
         typeof state.val === 'string' &&
-        context.objects[id] &&
-        context.objects[id].common &&
+        context.objects[id]?.common &&
         (context.objects[id].common.type === 'array' || context.objects[id].common.type === 'object')
     ) {
         try {

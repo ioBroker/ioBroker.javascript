@@ -3,7 +3,7 @@ import { commonTools } from '@iobroker/adapter-core';
 import { type ChildProcess } from 'node:child_process';
 import {
     AdapterConfig,
-    AstroRule, ChangeType, FileSubscriptionResult, IobSchedule,
+    AstroRule, ChangeType, CommonAlias, FileSubscriptionResult, IobSchedule,
     JavascriptContext,
     JsScript, LogMessage,
     Pattern,
@@ -22,7 +22,7 @@ import { iobJS } from "./javascript";
 import {ExecOptions} from "node:child_process";
 import { type SendMailOptions } from 'nodemailer';
 import { AxiosHeaders, AxiosHeaderValue, AxiosResponse, ResponseType } from 'axios';
-import { SchedulerRule } from './scheduler';
+import {ScheduleName, SchedulerRule, SchedulerRuleParsed} from './scheduler';
 import {EventObj} from "./eventObj";
 import {AstroEvent} from "./consts";
 const pattern2RegEx = commonTools.pattern2RegEx;
@@ -335,7 +335,7 @@ export default function sandBox(
         id: string,
         state: null | ioBroker.SettableState | ioBroker.StateValue,
         isAck: boolean | 'true' | 'false' | undefined | (() => void),
-        callback?: (error?: string) => void,
+        callback?: (error?: Error | null) => void,
     ): void {
         if (typeof isAck === 'function') {
             callback = isAck;
@@ -1739,9 +1739,9 @@ export default function sandBox(
                 const subscriptions: Record<string, string | SubscriptionResult> = {};
 
                 const init = () => {
-                    const obj = objects[enumId];
-                    const common = obj?.common ?? {};
-                    const members = common?.members ?? [];
+                    const obj: ioBroker.EnumObject = objects[enumId] as ioBroker.EnumObject;
+                    const common: ioBroker.EnumCommon = (obj?.common ?? {}) as ioBroker.EnumCommon;
+                    const members: string[] = common?.members ?? [];
 
                     // Remove old subscriptions
                     for (const [objId, subscription] of Object.entries(subscriptions)) {
@@ -2292,8 +2292,8 @@ export default function sandBox(
             }
 
             if (
-                (!(adapter.config as AdapterConfig).latitude && (adapter.config as AdapterConfig).latitude !== 0) ||
-                (!(adapter.config as AdapterConfig).longitude && (adapter.config as AdapterConfig).longitude !== 0)
+                (!(adapter.config as AdapterConfig).latitude && (adapter.config as AdapterConfig).latitude as unknown as number !== 0) ||
+                (!(adapter.config as AdapterConfig).longitude && (adapter.config as AdapterConfig).longitude as unknown as number !== 0)
             ) {
                 sandbox.log('Longitude or latitude does not set. Cannot use astro.', 'error');
                 return;
@@ -2334,22 +2334,22 @@ export default function sandBox(
 
             return nowDate >= dayBegin && nowDate <= dayEnd;
         },
-        clearSchedule: function (schedule) {
-            if (context.scheduler.get(schedule)) {
+        clearSchedule: function (schedule: IobSchedule | ScheduleName | string): boolean {
+            if (context.scheduler.get(schedule as string | ScheduleName)) {
                 sandbox.verbose && sandbox.log('clearSchedule() => wizard cleared', 'info');
-                const pos = script.wizards.indexOf(schedule);
+                const pos = script.wizards.indexOf(schedule as string);
                 if (pos !== -1) {
                     script.wizards.splice(pos, 1);
                     if (sandbox.__engine.__schedules > 0) {
                         sandbox.__engine.__schedules--;
                     }
                 }
-                context.scheduler.remove(schedule);
+                context.scheduler.remove(schedule as string | ScheduleName);
                 return true;
             }
             for (let i = 0; i < script.schedules.length; i++) {
-                if (schedule && typeof schedule === 'object' && schedule.type === 'cron') {
-                    if (script.schedules[i]._ioBroker && script.schedules[i]._ioBroker.id === schedule.id) {
+                if (schedule && typeof schedule === 'object' && (schedule as IobSchedule)._ioBroker?.type === 'cron') {
+                    if (script.schedules[i]._ioBroker.id === (schedule as IobSchedule)._ioBroker.id) {
                         if (!mods.nodeSchedule.cancelJob(script.schedules[i])) {
                             sandbox.log('Error by canceling scheduled job', 'error');
                         }
@@ -2380,7 +2380,7 @@ export default function sandBox(
             sandbox.verbose && sandbox.log('clearSchedule() => invalid handler', 'warn');
             return false;
         },
-        getSchedules: function (allScripts) {
+        getSchedules: function (allScripts?: boolean): ScheduleName[] {
             const schedules = context.scheduler.getList();
             if (allScripts) {
                 Object.keys(context.scripts).forEach(
@@ -2396,23 +2396,30 @@ export default function sandBox(
             }
             return schedules;
         },
-        setState: function (id, state, isAck, callback) {
+        setState: function (id: string, state: ioBroker.SettableState | ioBroker.StateValue, isAck?: boolean | ((err?: Error | null) => void), callback?: (err?: Error | null) => void): void {
             return setStateHelper(sandbox, false, false, id, state, isAck, callback);
         },
-        setStateChanged: function (id, state, isAck, callback) {
+        setStateChanged: function (id: string, state: ioBroker.SettableState | ioBroker.StateValue, isAck?: boolean | ((err?: Error | null) => void), callback?: (err?: Error | null) => void): void {
             return setStateHelper(sandbox, false, true, id, state, isAck, callback);
         },
-        setStateDelayed: function (id, state, isAck, delay, clearRunning, callback) {
+        setStateDelayed: function (
+            id: string,
+            state: ioBroker.SettableState | ioBroker.StateValue,
+            isAck: boolean | number | undefined,
+            delay?: number | boolean,
+            clearRunning?: boolean | ((err?: Error | null) => void),
+            callback?: (err?: Error | null) => void,
+        ): number | null {
             // find arguments
             if (typeof isAck !== 'boolean') {
-                callback = clearRunning;
-                clearRunning = delay;
-                delay = isAck;
+                callback = clearRunning as (err?: Error | null) => void;
+                clearRunning = delay as boolean;
+                delay = isAck as number;
                 isAck = undefined;
             }
             if (typeof delay !== 'number') {
-                callback = clearRunning;
-                clearRunning = delay;
+                callback = clearRunning as (err?: Error | null) => void;
+                clearRunning = delay as boolean;
                 delay = 0;
             }
             if (typeof clearRunning !== 'boolean') {
@@ -2420,7 +2427,7 @@ export default function sandBox(
                 clearRunning = true;
             }
 
-            // Check type of state
+            // Check a type of state
             if (!objects[id] && objects[`${adapter.namespace}.${id}`]) {
                 id = `${adapter.namespace}.${id}`;
             }
@@ -2444,64 +2451,63 @@ export default function sandBox(
                     sandbox.verbose && sandbox.log('setStateDelayed: no running timers', 'info');
                 }
             }
-            // If no delay => start immediately
+            // If no delay => starts immediately
             if (!delay) {
-                sandbox.setState(id, state, isAck, callback);
+                sandbox.setState(id, state, isAck as boolean | undefined, callback);
                 return null;
-            } else {
-                // If delay
-                timers[id] = timers[id] || [];
+            }
+            // If delay
+            timers[id] = timers[id] || [];
 
-                // calculate timerId
-                context.timerId++;
-                if (context.timerId > 0xfffffffe) {
-                    context.timerId = 0;
-                }
+            // calculate timerId
+            context.timerId++;
+            if (context.timerId > 0xfffffffe) {
+                context.timerId = 0;
+            }
 
-                // Start timeout
-                const timer = setTimeout(
-                    function (_timerId, _id, _state, _isAck) {
-                        sandbox.setState(_id, _state, _isAck, callback);
-                        // delete timer handler
-                        if (timers[_id]) {
-                            // optimisation
-                            if (timers[_id].length === 1) {
-                                delete timers[_id];
-                            } else {
-                                for (let t = 0; t < timers[_id].length; t++) {
-                                    if (timers[_id][t].id === _timerId) {
-                                        timers[_id].splice(t, 1);
-                                        break;
-                                    }
-                                }
-                                if (!timers[_id].length) {
-                                    delete timers[_id];
+            // Start timeout
+            const timer = setTimeout(
+                function (_timerId, _id, _state, _isAck) {
+                    sandbox.setState(_id, _state, _isAck as boolean | undefined, callback);
+                    // delete timer handler
+                    if (timers[_id]) {
+                        // optimisation
+                        if (timers[_id].length === 1) {
+                            delete timers[_id];
+                        } else {
+                            for (let t = 0; t < timers[_id].length; t++) {
+                                if (timers[_id][t].id === _timerId) {
+                                    timers[_id].splice(t, 1);
+                                    break;
                                 }
                             }
+                            if (!timers[_id].length) {
+                                delete timers[_id];
+                            }
                         }
-                    },
-                    delay,
-                    context.timerId,
-                    id,
-                    state,
-                    isAck,
-                );
+                    }
+                },
+                delay,
+                context.timerId,
+                id,
+                state,
+                isAck,
+            );
 
-                // add timer handler
-                timers[id].push({
-                    t: timer,
-                    id: context.timerId,
-                    ts: Date.now(),
-                    delay: delay,
-                    val: isObject(state) && state.val !== undefined ? state.val : state,
-                    ack: isObject(state) && state.val !== undefined && state.ack !== undefined ? state.ack : isAck,
-                });
+            // add timer handler
+            timers[id].push({
+                t: timer,
+                id: context.timerId,
+                ts: Date.now(),
+                delay: delay,
+                val: isObject(state) && (state as ioBroker.SettableState).val !== undefined ? (state as ioBroker.SettableState).val as ioBroker.StateValue : state as ioBroker.StateValue,
+                ack: isObject(state) && (state as ioBroker.SettableState).val !== undefined && (state as ioBroker.SettableState).ack !== undefined ? (state as ioBroker.SettableState).ack : isAck as boolean | undefined,
+            });
 
-                return context.timerId;
-            }
+            return context.timerId;
         },
-        clearStateDelayed: function (id, timerId) {
-            // Check type of state
+        clearStateDelayed: function (id: string, timerId: number): boolean {
+            // Check a type of state
             if (!objects[id] && objects[`${adapter.namespace}.${id}`]) {
                 id = `${adapter.namespace}.${id}`;
             }
@@ -2512,24 +2518,32 @@ export default function sandBox(
                 for (let i = timers[id].length - 1; i >= 0; i--) {
                     if (timerId === undefined || timers[id][i].id === timerId) {
                         clearTimeout(timers[id][i].t);
-                        if (timerId !== undefined) timers[id].splice(i, 1);
+                        if (timerId !== undefined) {
+                            timers[id].splice(i, 1);
+                        }
                         sandbox.verbose && sandbox.log(`clearStateDelayed: clear timer ${timers[id][i].id}`, 'info');
                     }
                 }
                 if (timerId === undefined) {
                     delete timers[id];
                 } else {
-                    if (!timers[id].length) delete timers[id];
+                    if (!timers[id].length) {
+                        delete timers[id];
+                    }
                 }
                 return true;
             }
             return false;
         },
-        getStateDelayed: function (id) {
-            let result;
+        getStateDelayed: function (id: string | number):
+            null |
+            { timerId: number; left: number; delay: number; val: ioBroker.StateValue; ack?: boolean } |
+            { timerId: number; left: number; delay: number; val: ioBroker.StateValue; ack?: boolean }[] |
+            Record<string, { timerId: number; left: number; delay: number; val: ioBroker.StateValue; ack?: boolean }[]>
+        {
             const now = Date.now();
             if (id) {
-                // Check type of state
+                // Check a type of state
                 if (!objects[id] && objects[`${adapter.namespace}.${id}`]) {
                     id = `${adapter.namespace}.${id}`;
                 }
@@ -2540,7 +2554,7 @@ export default function sandBox(
                             for (let ttt = 0; ttt < timers[_id_].length; ttt++) {
                                 if (timers[_id_][ttt].id === id) {
                                     return {
-                                        id: _id_,
+                                        timerId: id,
                                         left: timers[_id_][ttt].delay - (now - timers[id][ttt].ts),
                                         delay: timers[_id_][ttt].delay,
                                         val: timers[_id_][ttt].val,
@@ -2553,7 +2567,7 @@ export default function sandBox(
                     return null;
                 }
 
-                result = [];
+                let result: { timerId: number; left: number; delay: number; val: ioBroker.StateValue; ack?: boolean }[] = [];
                 if (Object.prototype.hasOwnProperty.call(timers, id) && timers[id] && timers[id].length) {
                     for (let tt = 0; tt < timers[id].length; tt++) {
                         result.push({
@@ -2566,27 +2580,26 @@ export default function sandBox(
                     }
                 }
                 return result;
-            } else {
-                result = {};
-                for (const _id in timers) {
-                    if (Object.prototype.hasOwnProperty.call(timers, _id) && timers[_id] && timers[_id].length) {
-                        result[_id] = [];
-                        for (let t = 0; t < timers[_id].length; t++) {
-                            result[_id].push({
-                                timerId: timers[_id][t].id,
-                                left: timers[_id][t].delay - (now - timers[_id][t].ts),
-                                delay: timers[_id][t].delay,
-                                val: timers[_id][t].val,
-                                ack: timers[_id][t].ack,
-                            });
-                        }
+            }
+            let result: Record<string, {timerId: number; left: number; delay: number; val: ioBroker.StateValue; ack?: boolean}[]> = {};
+            for (const _id in timers) {
+                if (Object.prototype.hasOwnProperty.call(timers, _id) && timers[_id] && timers[_id].length) {
+                    result[_id] = [];
+                    for (let t = 0; t < timers[_id].length; t++) {
+                        result[_id].push({
+                            timerId: timers[_id][t].id,
+                            left: timers[_id][t].delay - (now - timers[_id][t].ts),
+                            delay: timers[_id][t].delay,
+                            val: timers[_id][t].val,
+                            ack: timers[_id][t].ack,
+                        });
                     }
                 }
             }
             return result;
         },
-        getStateAsync: async function (id) {
-            let state;
+        getStateAsync: async function (id: string): Promise<ioBroker.State | null | undefined> {
+            let state: ioBroker.State | null | undefined;
             if (id.includes('.')) {
                 state = await adapter.getForeignStateAsync(id);
             } else {
@@ -2666,7 +2679,7 @@ export default function sandBox(
                 }
             }
         },
-        existsState: function (id, callback) {
+        existsState: function (id: string, callback?: (err: Error | null | undefined, stateExists?: boolean) => void): void | boolean {
             if (typeof id !== 'string') {
                 sandbox.log(`existsState has been called with id of type "${typeof id}" but expects a string`, 'error');
                 return false;
@@ -2702,7 +2715,7 @@ export default function sandBox(
                 }
             }
         },
-        existsObject: function (id, callback) {
+        existsObject: function (id: string, callback?: (err: Error | null | undefined, objectExists?: boolean) => void): void | boolean {
             if (typeof id !== 'string') {
                 sandbox.log(
                     `existsObject has been called with id of type "${typeof id}" but expects a string`,
@@ -2712,12 +2725,13 @@ export default function sandBox(
             }
 
             if (typeof callback === 'function') {
-                adapter.getForeignObject(id, (err, obj) => callback(err, !!obj));
+                adapter.getForeignObject(id, (err, obj) =>
+                    callback(err, !!obj));
             } else {
                 return !!objects[id];
             }
         },
-        getIdByName: function (name, alwaysArray) {
+        getIdByName: function (name: string, alwaysArray?: boolean): string | string[] | null {
             sandbox.verbose &&
                 sandbox.log(
                     `getIdByName(name=${name}, alwaysArray=${alwaysArray}) => ${JSON.stringify(context.names[name])}`,
@@ -2734,16 +2748,21 @@ export default function sandBox(
             }
             return null;
         },
-        getObject: function (id, enumName, cb) {
+        getObject: function (
+            id: string,
+            enumName: null | string | ((err: Error | null | undefined, obj?: ioBroker.Object | null | undefined) => void),
+            cb?: (err: Error | null | undefined, obj?: ioBroker.Object | null | undefined) => void,
+        ): void | ioBroker.Object | null {
             if (typeof id !== 'string') {
                 sandbox.log(`getObject has been called with id of type "${typeof id}" but expects a string`, 'error');
-                return false;
+                return null;
             }
 
             if (typeof enumName === 'function') {
                 cb = enumName;
                 enumName = null;
             }
+            // with callback
             if (typeof cb === 'function') {
                 adapter.getForeignObject(id, (err, obj) => {
                     if (obj) {
@@ -2751,7 +2770,7 @@ export default function sandBox(
                     } else if (objects[id]) {
                         delete objects[id];
                     }
-                    let result;
+                    let result: ioBroker.Object | null | undefined;
                     try {
                         result = JSON.parse(JSON.stringify(objects[id]));
                     } catch (err) {
@@ -2761,7 +2780,7 @@ export default function sandBox(
                             c: 'getObject',
                         });
                         sandbox.log(`Object "${id}" can't be copied: ${JSON.stringify(err)}`, 'error');
-                        return cb();
+                        return cb(null, null);
                     }
                     sandbox.verbose &&
                         sandbox.log(`getObject(id=${id}, enumName=${enumName}) => ${JSON.stringify(result)}`, 'info');
@@ -2773,7 +2792,8 @@ export default function sandBox(
                         sandbox.log(`getObject(id=${id}, enumName=${enumName}) => does not exist`, 'info');
                     sandbox.log(`Object "${id}" does not exist`, 'warn');
                     return null;
-                } else if (enumName) {
+                }
+                if (enumName) {
                     const e = eventObj.getObjectEnumsSync(context, id);
                     const obj = JSON.parse(JSON.stringify(objects[id]));
                     obj.enumIds = JSON.parse(JSON.stringify(e.enumIds));
@@ -2791,68 +2811,66 @@ export default function sandBox(
                         sandbox.log(`getObject(id=${id}, enumName=${enumName}) => ${JSON.stringify(obj)}`, 'info');
 
                     return obj;
-                } else {
-                    let result;
-                    try {
-                        result = JSON.parse(JSON.stringify(objects[id]));
-                    } catch (err) {
-                        adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, {
-                            val: true,
-                            ack: true,
-                            c: 'getObject',
-                        });
-                        sandbox.log(`Object "${id}" can't be copied: ${JSON.stringify(err)}`, 'error');
-                        return null;
-                    }
-                    sandbox.verbose &&
-                        sandbox.log(`getObject(id=${id}, enumName=${enumName}) => ${JSON.stringify(result)}`, 'info');
-                    return result;
                 }
+                let result: ioBroker.Object | null | undefined;
+                try {
+                    result = JSON.parse(JSON.stringify(objects[id]));
+                } catch (err) {
+                    adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, {
+                        val: true,
+                        ack: true,
+                        c: 'getObject',
+                    });
+                    sandbox.log(`Object "${id}" can't be copied: ${JSON.stringify(err)}`, 'error');
+                    return null;
+                }
+                sandbox.verbose &&
+                    sandbox.log(`getObject(id=${id}, enumName=${enumName}) => ${JSON.stringify(result)}`, 'info');
+                return result;
             }
         },
         // This function will be overloaded later if the modification of objects is allowed
-        setObject: function (id, obj, callback) {
+        setObject: function (_id: string, _obj: ioBroker.Object, callback?: (err?: Error | null | undefined, res?: { id: string }) => void): void {
             sandbox.log('Function "setObject" is not allowed. Use adapter settings to allow it.', 'error');
             if (typeof callback === 'function') {
                 try {
-                    callback.call(sandbox, 'Function "setObject" is not allowed. Use adapter settings to allow it.');
+                    callback.call(sandbox, new Error('Function "setObject" is not allowed. Use adapter settings to allow it.'));
                 } catch (e) {
                     errorInCallback(e);
                 }
             }
         },
         // This function will be overloaded later if the modification of objects is allowed
-        extendObject: function (id, obj, callback) {
+        extendObject: function (_id: string, _obj: Partial<ioBroker.Object>, callback?: (err?: Error | null | undefined, res?: { id: string }) => void): void {
             sandbox.log('Function "extendObject" is not allowed. Use adapter settings to allow it.', 'error');
             if (typeof callback === 'function') {
                 try {
-                    callback.call(sandbox, 'Function "extendObject" is not allowed. Use adapter settings to allow it.');
+                    callback.call(sandbox, new Error('Function "extendObject" is not allowed. Use adapter settings to allow it.'));
                 } catch (e) {
                     errorInCallback(e);
                 }
             }
         },
         // This function will be overloaded later if the modification of objects is allowed
-        deleteObject: function (id, isRecursive, callback) {
-            if (typeof isRecursive === 'function') {
-                callback = isRecursive;
-                isRecursive = false;
+        deleteObject: function (_id: string, _isRecursive?: boolean | ioBroker.ErrorCallback, callback?: ioBroker.ErrorCallback): void {
+            if (typeof _isRecursive === 'function') {
+                callback = _isRecursive;
             }
             sandbox.log('Function "deleteObject" is not allowed. Use adapter settings to allow it.', 'error');
             if (typeof callback === 'function') {
                 try {
-                    callback.call(sandbox, 'Function "deleteObject" is not allowed. Use adapter settings to allow it.');
+                    callback.call(sandbox, new Error('Function "deleteObject" is not allowed. Use adapter settings to allow it.'));
                 } catch (e) {
                     errorInCallback(e);
                 }
             }
         },
-        getEnums: function (enumName) {
-            const result = [];
+        getEnums: function (enumName?: string): { id: string; members: string[]; name: ioBroker.StringOrTranslated }[] {
+            const result: { id: string; members: string[]; name: ioBroker.StringOrTranslated }[] = [];
             const r = enumName ? new RegExp(`^enum\\.${enumName}\\.`) : false;
             for (let i = 0; i < enums.length; i++) {
                 if (!r || r.test(enums[i])) {
-                    const common = objects[enums[i]].common || {};
+                    const common: ioBroker.EnumCommon = (objects[enums[i]] as ioBroker.EnumObject).common || {} as ioBroker.EnumCommon;
                     result.push({
                         id: enums[i],
                         members: common.members || [],
@@ -2863,22 +2881,29 @@ export default function sandBox(
             sandbox.verbose && sandbox.log(`getEnums(enumName=${enumName}) => ${JSON.stringify(result)}`, 'info');
             return JSON.parse(JSON.stringify(result));
         },
-        createAlias: function (name, alias, forceCreation, common, native, callback) {
+        createAlias: function (
+            name: string,
+            alias: string | CommonAlias,
+            forceCreation: boolean | Partial<ioBroker.StateCommon> | ((err: Error | null) => void) | undefined,
+            common?: Partial<ioBroker.StateCommon> | undefined | Record<string, any> | ((err: Error | null) => void),
+            native?: Record<string, any> | ((err: Error | null) => void),
+            callback?: (err: Error | null) => void,
+        ) {
             if (typeof native === 'function') {
-                callback = native;
+                callback = native as (err: Error | null) => void;
                 native = {};
             }
             if (typeof common === 'function') {
-                callback = common;
+                callback = common as (err: Error | null) => void;
                 common = undefined;
             }
             if (typeof forceCreation === 'function') {
-                callback = forceCreation;
+                callback = forceCreation as (err: Error | null) => void;
                 forceCreation = undefined;
             }
             if (isObject(forceCreation)) {
                 native = common;
-                common = forceCreation;
+                common = forceCreation as Partial<ioBroker.ObjectCommon>;
                 forceCreation = undefined;
             }
 
@@ -2887,7 +2912,7 @@ export default function sandBox(
                 sandbox.log(err, 'error');
                 if (typeof callback === 'function') {
                     try {
-                        callback.call(sandbox, err);
+                        callback.call(sandbox, new Error(err));
                     } catch (e) {
                         errorInCallback(e);
                     }
@@ -2900,7 +2925,7 @@ export default function sandBox(
                 sandbox.log(err, 'error');
                 if (typeof callback === 'function') {
                     try {
-                        callback.call(sandbox, err);
+                        callback.call(sandbox, new Error(err));
                     } catch (e) {
                         errorInCallback(e);
                     }
@@ -2912,19 +2937,19 @@ export default function sandBox(
                 name = `alias.0.${name}`;
             }
 
-            common = common || {};
-            if (isObject(common.alias)) {
+            const _common: Partial<ioBroker.StateCommon> = common as Partial<ioBroker.StateCommon> || {};
+            if (isObject(_common.alias)) {
                 // alias already in common, use this
-            } else if (isObject(alias) && (typeof alias.id === 'string' || isObject(alias.id))) {
-                common.alias = alias;
+            } else if (isObject(alias) && (typeof (alias as CommonAlias).id === 'string' || isObject((alias as CommonAlias).id))) {
+                _common.alias = alias as CommonAlias;
             } else if (typeof alias === 'string') {
-                common.alias = { id: alias };
+                _common.alias = { id: alias };
             } else {
                 const err = 'Source ID needs to be provided as string or object with id property.';
                 sandbox.log(err, 'error');
                 if (typeof callback === 'function') {
                     try {
-                        callback.call(sandbox, err);
+                        callback.call(sandbox, new Error(err));
                     } catch (e) {
                         errorInCallback(e);
                     }
@@ -2932,22 +2957,22 @@ export default function sandBox(
                 return;
             }
 
-            let aliasSourceId = isObject(common.alias.id) ? common.alias.id.read : common.alias.id;
+            let aliasSourceId: string = isObject(_common.alias.id) ? (_common.alias.id as {read: string; write: string}).read : _common.alias.id as string;
             if (!objects[aliasSourceId] && objects[`${adapter.namespace}.${aliasSourceId}`]) {
                 aliasSourceId = `${adapter.namespace}.${aliasSourceId}`;
-                if (isObject(common.alias.id)) {
-                    common.alias.id.read = aliasSourceId;
+                if (isObject(_common.alias.id)) {
+                    (_common.alias.id as {read: string; write: string}).read = aliasSourceId;
                 } else {
-                    common.alias.id = aliasSourceId;
+                    _common.alias.id = aliasSourceId;
                 }
             }
             if (
-                isObject(common.alias.id) &&
-                common.alias.id.write &&
-                !objects[common.alias.id.write] &&
-                objects[`${adapter.namespace}.${common.alias.id.write}`]
+                isObject(_common.alias.id) &&
+                (_common.alias.id as {read: string; write: string}).write &&
+                !objects[(_common.alias.id as {read: string; write: string}).write] &&
+                objects[`${adapter.namespace}.${(_common.alias.id as {read: string; write: string}).write}`]
             ) {
-                common.alias.id.write = `${adapter.namespace}.${common.alias.id.write}`;
+                (_common.alias.id as {read: string; write: string}).write = `${adapter.namespace}.${(_common.alias.id as {read: string; write: string}).write}`;
             }
             const obj = objects[aliasSourceId];
             if (!obj) {
@@ -2955,7 +2980,7 @@ export default function sandBox(
                 sandbox.log(err, 'error');
                 if (typeof callback === 'function') {
                     try {
-                        callback.call(sandbox, err);
+                        callback.call(sandbox, new Error(err));
                     } catch (e) {
                         errorInCallback(e);
                     }
@@ -2967,66 +2992,73 @@ export default function sandBox(
                 sandbox.log(err, 'error');
                 if (typeof callback === 'function') {
                     try {
-                        callback.call(sandbox, err);
+                        callback.call(sandbox, new Error(err));
                     } catch (e) {
                         errorInCallback(e);
                     }
                 }
                 return;
             }
-            if (common.name === undefined) {
-                common.name = obj.common.name || name;
+            if (_common.name === undefined) {
+                _common.name = obj.common.name || name;
             }
-            if (common.type === undefined && obj.common.type !== undefined) {
-                common.type = obj.common.type;
+            if (_common.type === undefined && obj.common.type !== undefined) {
+                _common.type = obj.common.type;
             }
-            if (common.role === undefined && obj.common.role !== undefined) {
-                common.role = obj.common.role;
+            if (_common.role === undefined && obj.common.role !== undefined) {
+                _common.role = obj.common.role;
             }
-            if (common.min === undefined && obj.common.min !== undefined) {
-                common.min = obj.common.min;
+            if (_common.min === undefined && obj.common.min !== undefined) {
+                _common.min = obj.common.min;
             }
-            if (common.max === undefined && obj.common.max !== undefined) {
-                common.max = obj.common.max;
+            if (_common.max === undefined && obj.common.max !== undefined) {
+                _common.max = obj.common.max;
             }
-            if (common.step === undefined && obj.common.step !== undefined) {
-                common.step = obj.common.step;
+            if (_common.step === undefined && obj.common.step !== undefined) {
+                _common.step = obj.common.step;
             }
-            if (common.unit === undefined && obj.common.unit !== undefined) {
-                common.unit = obj.common.unit;
+            if (_common.unit === undefined && obj.common.unit !== undefined) {
+                _common.unit = obj.common.unit;
             }
-            if (common.desc === undefined && obj.common.desc !== undefined) {
-                common.desc = obj.common.desc;
+            if (_common.desc === undefined && obj.common.desc !== undefined) {
+                _common.desc = obj.common.desc;
             }
 
-            return sandbox.createState(name, undefined, forceCreation, common, native, callback);
+            return sandbox.createState(name, undefined, forceCreation as boolean, _common, native, callback as (err: Error | null) => void);
         },
-        createState: async function (name, initValue, forceCreation, common, native, callback) {
+        createState: async function (
+            name: string,
+            initValue: undefined | ioBroker.StateValue | ioBroker.State,
+            forceCreation: boolean | undefined | Record<string, any> | Partial<ioBroker.StateCommon> | ((err: Error | null) => void),
+            common?: Partial<ioBroker.StateCommon> | ((err: Error | null) => void),
+            native?: Record<string, any> | ((err: Error | null) => void),
+            callback?: (error?: Error | null) => void,
+        ) {
             if (typeof native === 'function') {
-                callback = native;
+                callback = native as (err: Error | null) => void;
                 native = {};
             }
             if (typeof common === 'function') {
-                callback = common;
+                callback = common as (err: Error | null) => void;
                 common = undefined;
             }
             if (typeof initValue === 'function') {
-                callback = initValue;
+                callback = initValue as (err: Error | null) => void;;
                 initValue = undefined;
             }
             if (typeof forceCreation === 'function') {
-                callback = forceCreation;
+                callback = forceCreation as (err: Error | null) => void;;
                 forceCreation = undefined;
             }
             if (isObject(initValue)) {
-                common = initValue;
-                native = forceCreation;
+                common = initValue as Partial<ioBroker.StateCommon>;
+                native = forceCreation as Record<string, any>;
                 forceCreation = undefined;
                 initValue = undefined;
             }
             if (isObject(forceCreation)) {
-                native = common;
-                common = forceCreation;
+                native = common as Record<string, any>;
+                common = forceCreation as Partial<ioBroker.StateCommon>;
                 forceCreation = undefined;
             }
 
@@ -3035,7 +3067,7 @@ export default function sandBox(
                 sandbox.log(err, 'error');
                 if (typeof callback === 'function') {
                     try {
-                        callback.call(sandbox, err);
+                        callback.call(sandbox, new Error(err));
                     } catch (e) {
                         errorInCallback(e);
                     }
@@ -3048,7 +3080,7 @@ export default function sandBox(
                 sandbox.log(err, 'error');
                 if (typeof callback === 'function') {
                     try {
-                        callback.call(sandbox, err);
+                        callback.call(sandbox, new Error(err));
                     } catch (e) {
                         errorInCallback(e);
                     }
@@ -3058,24 +3090,24 @@ export default function sandBox(
 
             const isAlias = name.startsWith('alias.0.');
 
-            common = common || {};
-            common.name = common.name || name;
-            common.role = common.role || 'state';
-            common.type = common.type || 'mixed';
+            const _common: ioBroker.StateCommon = (common || {}) as ioBroker.StateCommon;
+            _common.name = _common.name || name;
+            _common.role = _common.role || 'state';
+            _common.type = _common.type || 'mixed';
             if (!isAlias && initValue === undefined) {
-                initValue = common.def;
+                initValue = _common.def;
             }
 
             native = native || {};
 
             // Check min, max and def values for number
-            if (common.type !== undefined && common.type === 'number') {
+            if (_common.type !== undefined && _common.type === 'number') {
                 let min = 0;
                 let max = 0;
                 let def = 0;
-                let err;
-                if (common.min !== undefined) {
-                    min = common.min;
+                let err: string | undefined;
+                if (_common.min !== undefined) {
+                    min = _common.min;
                     if (typeof min !== 'number') {
                         min = parseFloat(min);
                         if (isNaN(min)) {
@@ -3090,12 +3122,12 @@ export default function sandBox(
                             }
                             return;
                         } else {
-                            common.min = min;
+                            _common.min = min;
                         }
                     }
                 }
-                if (common.max !== undefined) {
-                    max = common.max;
+                if (_common.max !== undefined) {
+                    max = _common.max;
                     if (typeof max !== 'number') {
                         max = parseFloat(max);
                         if (isNaN(max)) {
@@ -3103,23 +3135,23 @@ export default function sandBox(
                             sandbox.log(err, 'error');
                             if (typeof callback === 'function') {
                                 try {
-                                    callback.call(sandbox, err);
+                                    callback.call(sandbox, new Error(err));
                                 } catch (e) {
                                     errorInCallback(e);
                                 }
                             }
                             return;
                         } else {
-                            common.max = max;
+                            _common.max = max;
                         }
                     }
                 }
 
-                if (common.def !== undefined) {
+                if (_common.def !== undefined) {
                     if (isAlias) {
-                        delete common.def;
+                        delete _common.def;
                     } else {
-                        def = common.def;
+                        def = _common.def;
                         if (typeof def !== 'number') {
                             def = parseFloat(def);
                             if (isNaN(def)) {
@@ -3127,28 +3159,28 @@ export default function sandBox(
                                 sandbox.log(err, 'error');
                                 if (typeof callback === 'function') {
                                     try {
-                                        callback.call(sandbox, err);
+                                        callback.call(sandbox, new Error(err));
                                     } catch (e) {
                                         errorInCallback(e);
                                     }
                                 }
                                 return;
                             } else {
-                                common.def = def;
+                                _common.def = def;
                             }
                         }
                     }
                 }
 
-                if (common.min !== undefined && common.max !== undefined && min > max) {
-                    common.max = min;
-                    common.min = max;
+                if (_common.min !== undefined && _common.max !== undefined && min > max) {
+                    _common.max = min;
+                    _common.min = max;
                 }
-                if (common.def !== undefined && common.min !== undefined && def < min) {
-                    common.def = min;
+                if (_common.def !== undefined && _common.min !== undefined && def < min) {
+                    _common.def = min;
                 }
-                if (common.def !== undefined && common.max !== undefined && def > max) {
-                    common.def = max;
+                if (_common.def !== undefined && _common.max !== undefined && def > max) {
+                    _common.def = max;
                 }
             }
 
@@ -3177,15 +3209,14 @@ export default function sandBox(
             // User can create aliases by two ways:
             // - id is starting with "alias.0." and common.alias.id is set, so the state defined in common.alias.id will be created automatically if not exists
             // - id is not starting with "alias.0.", but common.alias is set, so the state defined in common.alias will be created automatically if not exists
-            if (!isAlias && common.alias) {
+            if (!isAlias && _common.alias) {
                 // check and create if not exists the alias
-                let alias = common.alias;
-                delete common.alias;
-                if (typeof alias === 'string') {
+                let alias: CommonAlias;
+                if (typeof _common.alias === 'string') {
                     alias = {
-                        id: alias,
+                        id: _common.alias,
                     };
-                } else if (typeof alias === 'boolean') {
+                } else if (typeof _common.alias === 'boolean') {
                     const parts = id.split('.');
                     parts[0] = 'alias';
                     parts[1] = '0';
@@ -3193,29 +3224,33 @@ export default function sandBox(
                     alias = {
                         id: parts.join('.'),
                     };
+                } else {
+                    alias = _common.alias;
                 }
+                delete _common.alias;
 
-                if (!alias.id.startsWith('alias.0.')) {
+                if (!(alias.id as string).startsWith('alias.0.')) {
                     alias.id = `alias.0.${alias.id}`;
                 }
 
-                let aObj;
+                let aObj: ioBroker.StateObject | null | undefined;
                 try {
-                    aObj = await adapter.getForeignObjectAsync(alias.id);
+                    aObj = (await adapter.getForeignObjectAsync(alias.id as string)) as ioBroker.StateObject | null | undefined;
                 } catch (e) {
                     // ignore
                 }
                 if (!aObj) {
                     try {
-                        await adapter.setForeignObjectAsync(alias.id, {
+                        const _obj: ioBroker.StateObject = {
+                            _id: alias.id as string,
                             type: 'state',
                             common: {
                                 name: `Alias to ${id}`,
                                 role: 'state',
-                                type: common.type,
-                                read: common.read,
-                                write: common.write,
-                                unit: common.unit,
+                                type: _common.type,
+                                read: _common.read,
+                                write: _common.write,
+                                unit: _common.unit,
                                 alias: {
                                     id,
                                     read: alias.read,
@@ -3223,26 +3258,28 @@ export default function sandBox(
                                 },
                             },
                             native: {},
-                        });
+                        };
+
+                        await adapter.setForeignObjectAsync(alias.id as string, _obj);
                     } catch (e) {
                         sandbox.log(`Cannot create alias "${alias.id}": ${e}`, 'error');
                     }
                 }
-            } else if (isAlias && common.alias) {
-                if (typeof common.alias === 'string') {
-                    common.alias = {
-                        id: common.alias,
+            } else if (isAlias && _common.alias) {
+                if (typeof _common.alias === 'string') {
+                    _common.alias = {
+                        id: _common.alias,
                     };
                 }
-                const readId = typeof common.alias.id === 'string' ? common.alias.id : common.alias.id.read;
-                let writeId = typeof common.alias.id === 'string' ? common.alias.id : common.alias.id.write;
+                const readId = typeof _common.alias.id === 'string' ? _common.alias.id : _common.alias.id.read;
+                let writeId = typeof _common.alias.id === 'string' ? _common.alias.id : _common.alias.id.write;
                 if (writeId === readId) {
                     writeId = undefined;
                 }
                 // try to create the linked states
-                let aObj;
+                let aObj: ioBroker.StateObject | null | undefined;
                 try {
-                    aObj = await adapter.getForeignObjectAsync(readId);
+                    aObj = await adapter.getForeignObjectAsync(readId) as ioBroker.StateObject | null | undefined;
                 } catch (e) {
                     // ignore
                 }
@@ -3253,10 +3290,10 @@ export default function sandBox(
                             common: {
                                 name: `State for ${id}`,
                                 role: 'state',
-                                type: common.type,
-                                read: common.read,
-                                write: common.write,
-                                unit: common.unit,
+                                type: _common.type,
+                                read: _common.read,
+                                write: _common.write,
+                                unit: _common.unit,
                             },
                             native: {},
                         });
@@ -3264,9 +3301,9 @@ export default function sandBox(
                         sandbox.log(`Cannot create alias "${readId}": ${e}`, 'error');
                     }
                 }
-                if (writeId && common.write !== false) {
+                if (writeId && _common.write !== false) {
                     try {
-                        aObj = await adapter.getForeignObjectAsync(writeId);
+                        aObj = await adapter.getForeignObjectAsync(writeId) as ioBroker.StateObject | null | undefined;
                     } catch (e) {
                         // ignore
                     }
@@ -3277,10 +3314,10 @@ export default function sandBox(
                                 common: {
                                     name: `Write state for ${id}`,
                                     role: 'state',
-                                    type: common.type,
-                                    read: common.read,
-                                    write: common.write,
-                                    unit: common.unit,
+                                    type: _common.type,
+                                    read: _common.read,
+                                    write: _common.write,
+                                    unit: _common.unit,
                                 },
                                 native: {},
                             });
@@ -3291,7 +3328,7 @@ export default function sandBox(
                 }
             }
 
-            let obj;
+            let obj: ioBroker.Object | null | undefined;
             try {
                 obj = await adapter.getForeignObjectAsync(id);
             } catch (err) {
@@ -3299,21 +3336,21 @@ export default function sandBox(
             }
 
             if (
-                obj &&
-                obj._id &&
+                obj?._id &&
                 validIdForAutomaticFolderCreation(obj._id) &&
                 obj.type === 'folder' &&
                 obj.native &&
                 obj.native.autocreated === 'by automatic ensure logic'
             ) {
-                // ignore a default created object because we now have a more defined one
+                // ignore a default created object because we now have a better defined one
                 obj = null;
             }
 
             if (!obj || forceCreation) {
                 // create new one
-                const newObj = {
-                    common,
+                const newObj: ioBroker.StateObject = {
+                    _id: id,
+                    common: _common,
                     native,
                     type: 'state',
                 };
@@ -3335,7 +3372,7 @@ export default function sandBox(
                 context.updateObjectContext(id, newObj);
 
                 if (!isAlias && initValue !== undefined) {
-                    if (isObject(initValue) && initValue.ack !== undefined) {
+                    if (isObject(initValue) && (initValue as ioBroker.State).ack !== undefined) {
                         setStateHelper(sandbox, true, false, id, initValue, callback);
                     } else {
                         setStateHelper(sandbox, true, false, id, initValue, true, callback);
@@ -3344,8 +3381,7 @@ export default function sandBox(
                     setStateHelper(sandbox, true, false, id, null, callback);
                 } else if (isAlias) {
                     try {
-                        const state = await adapter.getForeignStateAsync(id);
-                        states[id] = state;
+                        states[id] = await adapter.getForeignStateAsync(id);
                     } catch (err) {
                         // ignore
                     }
@@ -3371,7 +3407,7 @@ export default function sandBox(
                     !states[id] &&
                     states[`${adapter.namespace}.${id}`] === undefined
                 ) {
-                    states[id] = { val: null, ack: true };
+                    states[id] = { val: null, ack: true, lc: Date.now(), ts: Date.now(), q: 0, from: `system.adapter.${adapter.namespace}` };
                 }
                 if (typeof callback === 'function') {
                     try {
@@ -3384,7 +3420,7 @@ export default function sandBox(
                 await ensureObjectStructure(id);
             }
         },
-        deleteState: function (id, callback) {
+        deleteState: function (id: string, callback?: (err: Error | null | undefined, found?: boolean) => void): void {
             // todo: check rights
             // todo: also remove from "names"
 
@@ -3445,15 +3481,21 @@ export default function sandBox(
                 }
             }
         },
-        sendTo: function (_adapter, cmd, msg, options, callback) {
+        sendTo: function (
+            _adapter: string,
+            cmd: string,
+            msg?: any,
+            options?: Record<string, any> | ((result: any) => void),
+            callback: (result: any, options: Record<string, any>, _adapter: string) => void,
+        ): void {
             const defaultTimeout = 20000;
 
             if (typeof options === 'function') {
-                callback = options;
+                callback = options as (result: any) => void;
                 options = { timeout: defaultTimeout };
             }
 
-            let timeout;
+            let timeout: NodeJS.Timeout | null = null;
             if (typeof callback === 'function') {
                 const timeoutDuration = parseInt(options?.timeout, 10) || defaultTimeout;
 
@@ -3485,7 +3527,7 @@ export default function sandBox(
                     cmd,
                     msg,
                     timeout &&
-                        function (result) {
+                        function (result: any) {
                             timeout && clearTimeout(timeout);
 
                             sandbox.verbose && result && sandbox.log(`sendTo => ${JSON.stringify(result)}`, 'debug');
@@ -3502,7 +3544,7 @@ export default function sandBox(
                     options,
                 );
             } else {
-                // Send to all instances
+                // Send it to all instances
                 context.adapter.getObjectView(
                     'system',
                     'instance',
@@ -3527,7 +3569,7 @@ export default function sandBox(
                                 cmd,
                                 msg,
                                 timeout &&
-                                    function (result) {
+                                    function (result: any) {
                                         timeout && clearTimeout(timeout);
 
                                         sandbox.verbose &&
@@ -3550,10 +3592,10 @@ export default function sandBox(
                 );
             }
         },
-        sendto: function (_adapter, cmd, msg, callback) {
+        sendto: function (_adapter: string, cmd: string, msg: any, callback?: (result: any, options: Record<string, any>, _adapter: string) => void): void {
             return sandbox.sendTo(_adapter, cmd, msg, callback);
         },
-        sendToAsync: function (_adapter, cmd, msg, options) {
+        sendToAsync: function (_adapter: string, cmd: string, msg?: any, options?: Record<string, any>): Promise<any> {
             return new Promise((resolve, reject) => {
                 sandbox.sendTo(_adapter, cmd, msg, options, res => {
                     if (!res || res.error) {
@@ -3564,13 +3606,14 @@ export default function sandBox(
                 });
             });
         },
-        sendToHost: function (host, cmd, msg, callback) {
+        sendToHost: function (host: string, cmd: string, msg?: any, callback?: (result: any) => void): void {
             if (!(adapter.config as AdapterConfig).enableSendToHost) {
                 const error =
                     'sendToHost is not available. Please enable "Enable SendToHost" option in instance settings';
                 sandbox.log(error, 'error');
 
                 if (typeof callback === 'function') {
+                    // leave it as a normal function and not as a lambda, to hide the "this" object
                     setImmediate(function () {
                         callback(error);
                     });
@@ -3581,7 +3624,7 @@ export default function sandBox(
                 adapter.sendToHost(host, cmd, msg, callback);
             }
         },
-        sendToHostAsync: function (host, cmd, msg) {
+        sendToHostAsync: function (host: string, cmd: string, msg?: any): Promise<any> {
             return new Promise((resolve, reject) => {
                 sandbox.sendToHost(host, cmd, msg, res => {
                     if (!res || res.error) {
@@ -3592,16 +3635,16 @@ export default function sandBox(
                 });
             });
         },
-        registerNotification: function (msg, isAlert) {
+        registerNotification: function (msg: string, isAlert?: boolean): void {
             const category = !isAlert ? 'scriptMessage' : 'scriptAlert';
 
             sandbox.verbose && sandbox.log(`registerNotification(msg=${msg}, category=${category})`, 'info');
 
             adapter.registerNotification('javascript', category, msg);
         },
-        setInterval: function (callback, ms, ...args) {
+        setInterval: function (callback: (...args: any[]) => void, ms: number, ...args: any[]): NodeJS.Timeout | null {
             if (typeof callback === 'function') {
-                const int = setInterval(() => {
+                const int: NodeJS.Timeout = setInterval(() => {
                     try {
                         callback.call(sandbox, ...args);
                     } catch (e) {
@@ -3617,7 +3660,7 @@ export default function sandBox(
                 return null;
             }
         },
-        clearInterval: function (id) {
+        clearInterval: function (id: NodeJS.Timeout): void {
             const pos = script.intervals.indexOf(id);
             if (pos !== -1) {
                 sandbox.verbose && sandbox.log('clearInterval() => cleared', 'info');
@@ -3627,7 +3670,7 @@ export default function sandBox(
                 sandbox.verbose && sandbox.log('clearInterval() => not found', 'warn');
             }
         },
-        setTimeout: function (callback, ms, ...args) {
+        setTimeout: function (callback: (args?: any[]) => void, ms: number, ...args: any[]): NodeJS.Timeout | null {
             if (typeof callback === 'function') {
                 const to = setTimeout(() => {
                     // Remove timeout from the list
@@ -3651,7 +3694,7 @@ export default function sandBox(
                 return null;
             }
         },
-        clearTimeout: function (id) {
+        clearTimeout: function (id: NodeJS.Timeout): void {
             const pos = script.timeouts.indexOf(id);
             if (pos !== -1) {
                 sandbox.verbose && sandbox.log('clearTimeout() => cleared', 'info');
@@ -3661,7 +3704,7 @@ export default function sandBox(
                 sandbox.verbose && sandbox.log('clearTimeout() => not found', 'warn');
             }
         },
-        setImmediate: function (callback, ...args) {
+        setImmediate: function (callback: (args: any[]) => void, ...args: any[]): void {
             if (typeof callback === 'function') {
                 setImmediate(() => {
                     try {

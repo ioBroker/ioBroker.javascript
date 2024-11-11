@@ -144,7 +144,7 @@ type SchedulerRuleParsed = {
     cb: (id: string) => void;
 };
 
-type ScheduleName = {
+export type ScheduleName = {
     id: `schedule_${string}`;
     type: 'schedule';
     schedule: string;
@@ -693,7 +693,7 @@ export default class Scheduler {
         }));
     }
 
-    get(id: string | ScheduleName) {
+    get(id: string | ScheduleName): SchedulerRuleParsed | null {
         if (
             id &&
             typeof id === 'object' &&

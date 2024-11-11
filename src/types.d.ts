@@ -33,13 +33,27 @@ export interface AdapterConfig {
     gptKey: string;
 }
 
+export type CommonAlias = {
+    /** The target state id */
+    id:
+        | string
+        | {
+              read: string;
+              write: string;
+          };
+    /** An optional conversion function when reading, e.g. `"(val − 32) * 5/9"` */
+    read?: string;
+    /** An optional conversion function when reading, e.g. `"(val * 9/5) + 32"` */
+    write?: string;
+};
+
 export type JavascriptTimer = {
     t: NodeJS.Timeout;
     id: number;
     ts: number;
     delay: number;
     val: ioBroker.StateValue;
-    ack: boolean;
+    ack?: boolean;
 };
 
 export type ScriptType = 'TypeScript/ts' | 'Blockly' | 'Rules' | 'JavaScript/js';
@@ -281,25 +295,31 @@ export type SandboxType = {
     setState: (
         id: string,
         state: ioBroker.SettableState | ioBroker.StateValue,
-        isAck?: boolean,
-        callback?: (err: Error | null) => void,
+        isAck?: boolean | ((err?: Error | null) => void),
+        callback?: (err?: Error | null) => void,
     ) => void;
     setStateChanged: (
         id: string,
         state: ioBroker.SettableState | ioBroker.StateValue,
-        isAck?: boolean,
-        callback?: (err: Error | null) => void,
+        isAck?: boolean | ((err?: Error | null) => void),
+        callback?: (err?: Error | null) => void,
     ) => void;
     setStateDelayed: (
         id: string,
         state: ioBroker.SettableState | ioBroker.StateValue,
-        isAck: boolean,
-        delay: number,
-        clearRunning: boolean,
-        callback: (err: Error | null) => void,
-    ) => void;
-    clearStateDelayed: (id: string, timerId: number) => void;
-    getStateDelayed: (id: string) => ioBroker.State | null | undefined;
+        isAck: boolean | number | undefined,
+        delay?: number | boolean,
+        clearRunning?: boolean | ((err?: Error | null) => void),
+        callback?: (err?: Error | null) => void,
+    ) => number | null;
+    clearStateDelayed: (id: string, timerId: number) => boolean;
+    getStateDelayed: (
+        id: string,
+    ) =>
+        | null
+        | { timerId: number; left: number; delay: number; val: ioBroker.StateValue; ack?: boolean }
+        | { timerId: number; left: number; delay: number; val: ioBroker.StateValue; ack?: boolean }[]
+        | Record<string, { timerId: number; left: number; delay: number; val: ioBroker.StateValue; ack?: boolean }[]>;
     getStateAsync: (id: string) => Promise<ioBroker.State | null | undefined>;
     setStateAsync: (id: string, state: ioBroker.SettableState | ioBroker.StateValue, isAck?: boolean) => Promise<void>;
     setStateChangedAsync: (
@@ -311,56 +331,66 @@ export type SandboxType = {
         id: string,
         callback?: (err: Error | null | undefined, state?: ioBroker.State | null) => void,
     ) => undefined | void | (ioBroker.State & { notExist?: true });
-    existsState: (id: string, callback: (err: Error | null, exists: boolean) => void) => void;
-    existsObject: (id: string, callback: (err: Error | null, exists: boolean) => void) => void;
-    getIdByName: (name: string, alwaysArray: boolean) => string | string[];
-    getObject: (id: string, enumName: string, cb: (err: Error | null, obj: any) => void) => void;
+    existsState: (
+        id: string,
+        callback?: (err: Error | null | undefined, stateExists?: boolean) => void,
+    ) => void | boolean;
+    existsObject: (
+        id: string,
+        callback?: (err: Error | null | undefined, objectExists?: boolean) => void,
+    ) => void | boolean;
+    getIdByName: (name: string, alwaysArray?: boolean) => string | string[] | null;
+    getObject: (
+        id: string,
+        enumName: null | string | ((err: Error | null | undefined, obj?: ioBroker.Object | null | undefined) => void),
+        cb: (err: Error | null | undefined, obj?: ioBroker.Object | null | undefined) => void,
+    ) => void;
     setObject: (
         id: string,
         obj: ioBroker.Object,
-        callback?: (err?: Error | null | undefined, res?: { id: string }) => void,
+        callback?: (err?: Error | null | string | undefined, res?: { id: string }) => void,
     ) => void;
     extendObject: (
         id: string,
         obj: Partial<ioBroker.Object>,
-        callback?: (err?: Error | null | undefined, res?: { id: string }) => void,
+        callback?: (err?: Error | null | string | undefined, res?: { id: string }) => void,
     ) => void;
     deleteObject: (id: string, isRecursive?: boolean, callback?: ioBroker.ErrorCallback) => void;
-    getEnums: (enumName: string) => any;
+    getEnums: (enumName: string) => { id: string; members: string[]; name: ioBroker.StringOrTranslated }[];
     createAlias: (
         name: string,
         alias: string,
         forceCreation: boolean,
-        common: any,
-        native: any,
+        common: Partial<ioBroker.ObjectCommon>,
+        native: Record<string, any>,
         callback: (err: Error | null) => void,
     ) => void;
     createState: (
         name: string,
-        initValue: any,
+        initValue: ioBroker.StateValue,
         forceCreation: boolean,
-        common: any,
-        native: any,
+        common: Partial<ioBroker.ObjectCommon>,
+        native: Record<string, any>,
         callback: (err: Error | null) => void,
     ) => void;
     deleteState: (id: string, callback: (err: Error | null) => void) => void;
     sendTo: (
         adapter: string,
         cmd: string,
-        msg: any,
-        options: any,
-        callback: (err: Error | null, result: any) => void,
+        msg?: any,
+        options?: Record<string, any> | ((result: any, options: Record<string, any>, _adapter: string) => void),
+        callback?: (result: any, options: Record<string, any>, _adapter: string) => void,
     ) => void;
-    sendto: (adapter: string, cmd: string, msg: any, callback: (err: Error | null, result: any) => void) => void;
+    sendto: (adapter: string, cmd: string, msg?: any, callback?: (result: any, options: Record<string, any>, _adapter: string) => void) => void;
     sendToAsync: (adapter: string, cmd: string, msg: any, options: any) => Promise<any>;
-    sendToHost: (host: string, cmd: string, msg: any, callback: (err: Error | null, result: any) => void) => void;
-    sendToHostAsync: (host: string, cmd: string, msg: any) => Promise<any>;
+    sendToHost: (host: string, cmd: string, msg?: any, callback?: (result: any) => void) => void;
+    sendToHostAsync: (host: string, cmd: string, msg?: any) => Promise<any>;
     registerNotification: (msg: string, isAlert: boolean) => void;
-    setInterval: (callback: () => void, ms: number, ...args: any[]) => number;
-    clearInterval: (id: number) => void;
-    setTimeout: (callback: () => void, ms: number, ...args: any[]) => number;
-    clearTimeout: (id: number) => void;
-    setImmediate: (callback: () => void, ...args: any[]) => number;
+    setInterval: (callback: (...args: any[]) => void, ms: number, ...args: any[]) => NodeJS.Timeout | null;
+    clearInterval: (id: NodeJS.Timeout) => void;
+    setTimeout: (callback: (args?: any[]) => void, ms: number, ...args: any[]) => NodeJS.Timeout | null;
+    clearTimeout: (id: NodeJS.Timeout) => void;
+    setImmediate: (callback: (args: any[]) => void, ...args: any[]) => number;
     cb: (callback: () => void) => void;
     compareTime: (startTime: string, endTime: string, operation: string, time: string) => boolean;
     onStop: (cb: () => void, timeout: number) => void;
@@ -508,7 +538,7 @@ export interface JavascriptContext {
     channels: Record<string, string[]>;
     devices: Record<string, string[]>;
     scheduler: Scheduler;
-    timers: { [scriptName: string]: JavascriptTimer };
+    timers: { [scriptName: string]: JavascriptTimer[] };
     enums: string[];
     timerId: number;
     names: { [name: string]: string }; // name: id
