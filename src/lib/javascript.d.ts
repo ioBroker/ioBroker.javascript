@@ -1,11 +1,10 @@
 // import all modules that are available in the sandbox
 // this has a nice side effect that we may augment the global scope
-import * as child_process from 'child_process';
 import * as os from 'os';
 
 type EmptyCallback = () => void | Promise<void>;
-type ErrorCallback = (err?: string) => void | Promise<void>;
-type GenericCallback<T> = (err?: string | null, result?: T) => void | Promise<void>;
+type ErrorCallback = (err?: Error) => void | Promise<void>;
+type GenericCallback<T> = (err?: Error | null, result?: T) => void | Promise<void>;
 type SimpleCallback<T> = (result?: T) => void | Promise<void>;
 type MessageCallback<T> = (data: T, callback: iobJS.MessageCallback) => void | Promise<void>;
 type LogCallback = (msg: any) => void | Promise<void>;
@@ -78,41 +77,13 @@ declare global {
             sensor_reports_error = 0x84,
         }
 
-        type PrimitiveTypeStateValue = string | number | boolean;
-        type StateValue = null | PrimitiveTypeStateValue | PrimitiveTypeStateValue[] | Record<string, any>;
+        type SettableState = AtLeastOne<ioBroker.State>;
 
-        interface State<T extends StateValue = any> {
-            /** The value of the state. */
+        interface TypedState<T extends ioBroker.StateValue = any> extends ioBroker.State {
             val: T;
-
-            /** Direction flag: false for desired value and true for actual value. Default: false. */
-            ack: boolean;
-
-            /** Unix timestamp. Default: current time */
-            ts: number;
-
-            /** Unix timestamp of the last time the value changed */
-            lc: number;
-
-            /** Name of the adapter instance which set the value, e.g. "system.adapter.web.0" */
-            from: string;
-
-            /** Optional time in seconds after which the state is reset to null */
-            expire?: number;
-
-            /** Optional quality of the state value */
-            q?: StateQuality;
-
-            /** Optional comment */
-            c?: string;
-
-            /** Discriminant property to switch between AbsentState and State<T> */
-            notExist: undefined;
         }
 
-        type SettableState = AtLeastOne<State>;
-
-        interface AbsentState {
+        interface AbsentState extends ioBroker.State {
             val: null;
             notExist: true;
 
@@ -862,8 +833,7 @@ declare global {
         type SettableOtherObject = SettableObject<OtherObject>;
 
         /** Represents the change of a state */
-        interface ChangedStateObject<TOld extends StateValue = any, TNew extends StateValue = TOld>
-            extends StateObject {
+        interface ChangedStateObject<TOld extends ioBroker.StateValue = any, TNew extends ioBroker.StateValue = TOld> extends StateObject {
             common: StateCommon;
             native: Record<string, any>;
             id?: string;
@@ -877,11 +847,11 @@ declare global {
             /** The names of enums this state is assigned to. For example ["Licht","Garten"] */
             enumNames?: Array<iobJS.StringOrTranslated>;
             /** new state */
-            state: State<TNew>;
+            state: TypedState<TNew>;
             /** @deprecated Use state instead **/
-            newState: State<TNew>;
+            newState: TypedState<TNew>;
             /** previous state */
-            oldState: State<TOld>;
+            oldState: TypedState<TOld>;
             /** Name of the adapter instance which set the value, e.g. "system.adapter.web.0" */
             from?: string;
             /** Unix timestamp. Default: current time */
@@ -892,16 +862,16 @@ declare global {
             ack?: boolean;
         }
 
-        type GetStateCallback<T extends StateValue = any> = (
-            err?: string | null,
-            state?: State<T> | AbsentState,
+        type GetStateCallback<T extends ioBroker.StateValue = any> = (
+            err?: Error | null,
+            state?: TypedState<T> | AbsentState,
         ) => void | Promise<void>;
-        type ExistsStateCallback = (err?: string | null, exists?: Boolean) => void | Promise<void>;
+        type ExistsStateCallback = (err?: Error | null, exists?: Boolean) => void | Promise<void>;
 
-        type SetStateCallback = (err?: string | null, id?: string) => void | Promise<void>;
+        type SetStateCallback = (err?: Error | null, id?: string) => void | Promise<void>;
         type SetStatePromise = Promise<NonNullCallbackReturnTypeOf<SetStateCallback>>;
 
-        type StateChangeHandler<TOld extends StateValue = any, TNew extends TOld = any> = (
+        type StateChangeHandler<TOld extends ioBroker.StateValue = any, TNew extends TOld = any> = (
             obj: ChangedStateObject<TOld, TNew>,
         ) => void | Promise<void>;
         type ObjectChangeHandler = (id: string, obj: iobJS.Object) => void | Promise<void>;
@@ -934,11 +904,11 @@ declare global {
                         mimeType?: string,
                     ) => void | Promise<void>;
 
-        type SetObjectCallback = (err?: string | null, obj?: { id: string }) => void | Promise<void>;
+        type SetObjectCallback = (err?: Error | null, obj?: { id: string }) => void | Promise<void>;
         type SetObjectPromise = Promise<NonNullCallbackReturnTypeOf<SetObjectCallback>>;
 
         type GetObjectCallback<T extends string = string> = (
-            err?: string | null,
+            err?: Error | null,
             obj?: ObjectIdToObjectType<T> | null,
         ) => void;
         type GetObjectPromise<T extends string = string> = Promise<CallbackReturnTypeOf<GetObjectCallback<T>>>;
@@ -946,7 +916,7 @@ declare global {
         type LogLevel = 'silly' | 'debug' | 'info' | 'warn' | 'error' | 'force';
 
         type ReadFileCallback = (
-            err?: string | null,
+            err?: Error | null,
             file?: Buffer | string,
             mimeType?: string,
         ) => void | Promise<void>;
@@ -984,9 +954,9 @@ declare global {
             name?: string | string[] | RegExp;
             /** type of change */
             change?: 'eq' | 'ne' | 'gt' | 'ge' | 'lt' | 'le' | 'any';
-            val?: StateValue;
+            val?: ioBroker.StateValue;
             /** New value must not be equal to given one */
-            valNe?: StateValue;
+            valNe?: ioBroker.StateValue;
             /** New value must be greater than given one */
             valGt?: number;
             /** New value must be greater or equal to given one */
@@ -998,9 +968,9 @@ declare global {
             /** Acknowledged state of new value is equal to given one */
             ack?: boolean;
             /** Previous value must be equal to given one */
-            oldVal?: StateValue;
+            oldVal?: ioBroker.StateValue;
             /** Previous value must be not equal to given one */
-            oldValNe?: StateValue;
+            oldValNe?: ioBroker.StateValue;
             /** Previous value must be greater than given one */
             oldValGt?: number;
             /** Previous value must be greater or equal given one */
@@ -1098,15 +1068,15 @@ declare global {
              * this can be called synchronously and immediately returns the state.
              * Otherwise, you need to provide a callback.
              */
-            getState<T extends StateValue = any>(callback: GetStateCallback<T>): void;
-            getState<T extends StateValue = any>(): State<T> | null | undefined;
-            getStateAsync<T extends StateValue = any>(): Promise<State<T> | null | undefined>;
+            getState<T extends ioBroker.StateValue = any>(callback: GetStateCallback<T>): void;
+            getState<T extends ioBroker.StateValue = any>(): TypedState<T> | null | undefined;
+            getStateAsync<T extends ioBroker.StateValue = any>(): Promise<TypedState<T> | null | undefined>;
 
             /**
              * Sets all queried states to the given value.
              */
-            setState(state: State | StateValue | SettableState, ack?: boolean, callback?: SetStateCallback): this;
-            setStateAsync(state: State | StateValue | SettableState, ack?: boolean): Promise<void>;
+            setState(state: ioBroker.StateValue | ioBroker.SettableState, ack?: boolean | 'true' | 'false' | SetStateCallback, callback?: SetStateCallback): this;
+            setStateAsync(state: ioBroker.StateValue | ioBroker.SettableState, ack?: boolean | 'true' | 'false'): Promise<void>;
             setStateDelayed(
                 state: any,
                 isAck?: boolean,
@@ -1119,11 +1089,11 @@ declare global {
              * Sets all queried states to the given value only if the value really changed.
              */
             setStateChanged(
-                state: State | StateValue | SettableState,
+                state: ioBroker.StateValue | ioBroker.SettableState,
                 ack?: boolean,
                 callback?: SetStateCallback,
             ): this;
-            setStateChangedAsync(state: State | StateValue | SettableState, ack?: boolean): Promise<void>;
+            setStateChangedAsync(state: ioBroker.StateValue | ioBroker.SettableState, ack?: boolean): Promise<void>;
 
             /**
              * Subscribes the given callback to changes of the matched states.
@@ -1302,7 +1272,7 @@ declare global {
             validateCertificate?: boolean;
         }
 
-        type HttpResponseCallback = (err?: string | null, response?: iobJS.httpResponse) => void | Promise<void>;
+        type HttpResponseCallback = (err?: Error | null, response?: iobJS.httpResponse) => void | Promise<void>;
         interface httpResponse {
             statusCode: number;
             data: string;
@@ -1562,19 +1532,19 @@ declare global {
      */
     function setState(
         id: string,
-        state: iobJS.State | iobJS.StateValue | iobJS.SettableState,
+        state:ioBroker.StateValue | ioBroker.SettableState,
         callback?: iobJS.SetStateCallback,
     ): void;
     function setState(
         id: string,
-        state: iobJS.State | iobJS.StateValue | iobJS.SettableState,
+        state: ioBroker.StateValue | ioBroker.SettableState,
         ack: boolean,
         callback?: iobJS.SetStateCallback,
     ): void;
 
     function setStateAsync(
         id: string,
-        state: iobJS.State | iobJS.StateValue | iobJS.SettableState,
+        state: ioBroker.StateValue | ioBroker.SettableState,
         ack?: boolean,
     ): iobJS.SetStatePromise;
 
@@ -1584,19 +1554,19 @@ declare global {
      */
     function setStateChanged(
         id: string,
-        state: iobJS.State | iobJS.StateValue | iobJS.SettableState,
+        state: ioBroker.StateValue | ioBroker.SettableState,
         callback?: iobJS.SetStateCallback,
     ): void;
     function setStateChanged(
         id: string,
-        state: iobJS.State | iobJS.StateValue | iobJS.SettableState,
+        state: ioBroker.StateValue | ioBroker.SettableState,
         ack: boolean,
         callback?: iobJS.SetStateCallback,
     ): void;
 
     function setStateChangedAsync(
         id: string,
-        state: iobJS.State | iobJS.StateValue | iobJS.SettableState,
+        state: ioBroker.StateValue | ioBroker.SettableState,
         ack?: boolean,
     ): iobJS.SetStatePromise;
 
@@ -1610,39 +1580,39 @@ declare global {
      */
     function setStateDelayed(
         id: string,
-        state: iobJS.State | iobJS.StateValue | iobJS.SettableState,
+        state: ioBroker.StateValue | ioBroker.SettableState,
         delay: number,
         clearRunning: boolean,
         callback?: iobJS.SetStateCallback,
     ): number | null;
     function setStateDelayed(
         id: string,
-        state: iobJS.State | iobJS.StateValue | iobJS.SettableState,
+        state: ioBroker.StateValue | ioBroker.SettableState,
         ack: boolean,
         clearRunning: boolean,
         callback?: iobJS.SetStateCallback,
     ): number | null;
     function setStateDelayed(
         id: string,
-        state: iobJS.State | iobJS.StateValue | iobJS.SettableState,
+        state: ioBroker.StateValue | ioBroker.SettableState,
         ack: boolean,
         delay: number,
         callback?: iobJS.SetStateCallback,
     ): number | null;
     function setStateDelayed(
         id: string,
-        state: iobJS.State | iobJS.StateValue | iobJS.SettableState,
+        state: ioBroker.StateValue | ioBroker.SettableState,
         delay: number,
         callback?: iobJS.SetStateCallback,
     ): number | null;
     function setStateDelayed(
         id: string,
-        state: iobJS.State | iobJS.StateValue | iobJS.SettableState,
+        state: ioBroker.StateValue | ioBroker.SettableState,
         callback?: iobJS.SetStateCallback,
     ): number | null;
     function setStateDelayed(
         id: string,
-        state: iobJS.State | iobJS.StateValue | iobJS.SettableState,
+        state: ioBroker.StateValue | ioBroker.SettableState,
         ack: boolean,
         delay: number,
         clearRunning: boolean,
@@ -1673,9 +1643,9 @@ declare global {
      * this can be called synchronously and immediately returns the state.
      * Otherwise, you need to provide a callback.
      */
-    function getState<T extends iobJS.StateValue = any>(id: string, callback: iobJS.GetStateCallback<T>): void;
-    function getState<T extends iobJS.StateValue = any>(id: string): iobJS.State<T> | iobJS.AbsentState;
-    function getStateAsync<T extends iobJS.StateValue = any>(id: string): Promise<iobJS.State<T>>;
+    function getState<T extends ioBroker.StateValue = any>(id: string, callback: iobJS.GetStateCallback<T>): void;
+    function getState<T extends ioBroker.StateValue = any>(id: string): iobJS.TypedState<T> | iobJS.AbsentState;
+    function getStateAsync<T extends ioBroker.StateValue = any>(id: string): Promise<iobJS.TypedState<T>>;
 
     /**
      * Checks if the state with the given ID exists
@@ -1729,23 +1699,23 @@ declare global {
      * @param callback (optional) Called after the state was created
      */
     function createState(name: string, callback?: iobJS.SetStateCallback): void;
-    function createState(name: string, initValue: iobJS.StateValue, callback?: iobJS.SetStateCallback): void;
+    function createState(name: string, initValue: ioBroker.StateValue, callback?: iobJS.SetStateCallback): void;
     function createState(
         name: string,
-        initValue: iobJS.StateValue,
+        initValue: ioBroker.StateValue,
         forceCreation: boolean,
         callback?: iobJS.SetStateCallback,
     ): void;
     function createState(
         name: string,
-        initValue: iobJS.StateValue,
+        initValue: ioBroker.StateValue,
         forceCreation: boolean,
         common: Partial<iobJS.StateCommon>,
         callback?: iobJS.SetStateCallback,
     ): void;
     function createState(
         name: string,
-        initValue: iobJS.StateValue,
+        initValue: ioBroker.StateValue,
         forceCreation: boolean,
         common: Partial<iobJS.StateCommon>,
         native: any,
@@ -1754,7 +1724,7 @@ declare global {
     function createState(name: string, common: Partial<iobJS.StateCommon>, callback?: iobJS.SetStateCallback): void;
     function createState(
         name: string,
-        initValue: iobJS.StateValue,
+        initValue: ioBroker.StateValue,
         common: Partial<iobJS.StateCommon>,
         callback?: iobJS.SetStateCallback,
     ): void;
@@ -1766,7 +1736,7 @@ declare global {
     ): void;
     function createState(
         name: string,
-        initValue: iobJS.StateValue,
+        initValue: ioBroker.StateValue,
         common: Partial<iobJS.StateCommon>,
         native: any,
         callback?: iobJS.SetStateCallback,
@@ -1774,7 +1744,7 @@ declare global {
 
     function createStateAsync(
         name: string,
-        initValue?: iobJS.StateValue,
+        initValue?: ioBroker.StateValue,
         forceCreation?: boolean,
         common?: Partial<iobJS.StateCommon>,
         native?: any,
@@ -1783,12 +1753,12 @@ declare global {
     function createStateAsync(name: string, common: Partial<iobJS.StateCommon>, native?: any): iobJS.SetStatePromise;
     function createStateAsync(
         name: string,
-        initValue: iobJS.StateValue,
+        initValue: ioBroker.StateValue,
         common: Partial<iobJS.StateCommon>,
     ): iobJS.SetStatePromise;
     function createStateAsync(
         name: string,
-        initValue: iobJS.StateValue,
+        initValue: ioBroker.StateValue,
         common: Partial<iobJS.StateCommon>,
         native?: any,
     ): iobJS.SetStatePromise;

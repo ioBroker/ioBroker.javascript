@@ -5,6 +5,7 @@ import type { Job } from 'node-schedule';
 import { EventObj } from './lib/eventObj';
 import type { PatternEventCompareFunction } from './lib/patternCompareFunctions';
 import { AstroEvent } from './lib/consts';
+import * as JS from './lib/javascript';
 
 export interface AdapterConfig {
     latitude: string;
@@ -62,6 +63,12 @@ export type TimeRule = {
     time: string | { hour: number; minute: number };
 };
 
+export type SubscribeObject = {
+    name: string;
+    pattern: string;
+    callback: (id: string, obj?: ioBroker.Object | null) => void;
+};
+
 export type IobSchedule = Job & { _ioBroker: { type: 'cron'; pattern: string | Date; scriptName: string; id: string } };
 
 export type PushoverOptions = {
@@ -94,9 +101,9 @@ export type PushoverOptions = {
     //    gamelan, incoming, intermission, magic, mechanical, pianobar, siren,
     //    spacealarm, tugboat, alien, climb, persistent, echo, updown, none
     priority?: -1 | 0 | 1 | 2; // optional
-    //    -1 to always send as a quiet notification,
-    //    1 to display as high-priority and bypass the user's quiet hours, or
-    //    2 to also require confirmation from the user
+    //    -1: always send it as a quiet notification,
+    //    1: to display as high-priority and bypass the user's quiet hours, or
+    //    2: to also require confirmation from the user
     token?: string; // optional
     // add other than configured token to the call
     url?: string; // optional  - a supplementary URL to show with your message
@@ -295,7 +302,7 @@ export type SandboxType = {
     setState: (
         id: string,
         state: ioBroker.SettableState | ioBroker.StateValue,
-        isAck?: boolean | ((err?: Error | null) => void),
+        isAck?: boolean | 'true' | 'false' | ((err?: Error | null) => void),
         callback?: (err?: Error | null) => void,
     ) => void;
     setStateChanged: (
@@ -381,7 +388,12 @@ export type SandboxType = {
         options?: Record<string, any> | ((result: any, options: Record<string, any>, _adapter: string) => void),
         callback?: (result: any, options: Record<string, any>, _adapter: string) => void,
     ) => void;
-    sendto: (adapter: string, cmd: string, msg?: any, callback?: (result: any, options: Record<string, any>, _adapter: string) => void) => void;
+    sendto: (
+        adapter: string,
+        cmd: string,
+        msg?: any,
+        callback?: (result: any, options: Record<string, any>, _adapter: string) => void,
+    ) => void;
     sendToAsync: (adapter: string, cmd: string, msg: any, options: any) => Promise<any>;
     sendToHost: (host: string, cmd: string, msg?: any, callback?: (result: any) => void) => void;
     sendToHostAsync: (host: string, cmd: string, msg?: any) => Promise<any>;
@@ -390,27 +402,40 @@ export type SandboxType = {
     clearInterval: (id: NodeJS.Timeout) => void;
     setTimeout: (callback: (args?: any[]) => void, ms: number, ...args: any[]) => NodeJS.Timeout | null;
     clearTimeout: (id: NodeJS.Timeout) => void;
-    setImmediate: (callback: (args: any[]) => void, ...args: any[]) => number;
+    setImmediate: (callback: (args: any[]) => void, ...args: any[]) => void;
     cb: (callback: () => void) => void;
-    compareTime: (startTime: string, endTime: string, operation: string, time: string) => boolean;
-    onStop: (cb: () => void, timeout: number) => void;
-    formatValue: (value: any, decimals: number, format: string) => string;
+    compareTime: (
+        startTime: iobJS.AstroDate | string | Date | number,
+        endTime: iobJS.AstroDate | string | Date | number | null,
+        operation: 'between' | 'not between' | '<' | '<=' | '>' | '>=' | '==' | '<>' | '!=',
+        time?: iobJS.AstroDate | string | Date | number,
+    ) => boolean;
+    onStop: (cb: () => void, timeout?: number) => void;
+    formatValue: (value: number | string, decimals: number | string, format?: string) => string;
     formatDate: (date: Date, format: string, language: string) => string;
-    formatTimeDiff: (diff: number, format: string) => string;
+    formatTimeDiff: (diff: number, format?: string) => string;
     getDateObject: (date: any) => Date;
     writeFile: (adapter: string, fileName: string, data: any, callback: (err: Error | null) => void) => void;
-    readFile: (adapter: string, fileName: string, callback: (err: Error | null, data: any) => void) => void;
+    readFile: (
+        adapter: string,
+        fileName: string | ((err: Error | null, data?: Buffer | string, mimeType?: string) => void),
+        callback: (err: Error | null, data?: Buffer | string, mimeType?: string) => void,
+    ) => void;
     unlink: (adapter: string, fileName: string, callback: (err: Error | null) => void) => void;
     delFile: (adapter: string, fileName: string, callback: (err: Error | null) => void) => void;
     rename: (adapter: string, oldName: string, newName: string, callback: (err: Error | null) => void) => void;
     renameFile: (adapter: string, oldName: string, newName: string, callback: (err: Error | null) => void) => void;
     getHistory: (instance: string, options: any, callback: (err: Error | null, result: any) => void) => void;
-    runScript: (scriptName: string, callback: (err: Error | null) => void) => void;
+    runScript: (scriptName: string, callback?: (err: Error | null) => void) => boolean;
     runScriptAsync: (scriptName: string) => Promise<void>;
-    startScript: (scriptName: string, ignoreIfStarted: boolean, callback: (err: Error | null) => void) => void;
-    startScriptAsync: (scriptName: string, ...args: any[]) => Promise<void>;
-    stopScript: (scriptName: string, callback: (err: Error | null) => void) => void;
-    stopScriptAsync: (scriptName: string) => Promise<void>;
+    startScript: (
+        scriptName: string,
+        ignoreIfStarted: boolean | ((err: Error | null, started: boolean) => void),
+        callback?: (err: Error | null, started: boolean) => void,
+    ) => boolean;
+    startScriptAsync: (scriptName: string, ignoreIfStarted?: boolean) => Promise<boolean>;
+    stopScript: (scriptName: string, callback: (err: Error | null, stopped: boolean) => void) => boolean;
+    stopScriptAsync: (scriptName: string) => Promise<boolean>;
     isScriptActive: (scriptName: string) => boolean;
     startInstanceAsync: (instanceName: string) => Promise<boolean>;
     restartInstanceAsync: (instanceName: string) => Promise<boolean>;
@@ -419,9 +444,18 @@ export type SandboxType = {
     toFloat: (val: any) => number;
     toBoolean: (val: any) => boolean;
     getAttr: (obj: any, path: string | string[]) => any;
-    messageTo: (target: any, data: any, options: any, callback: (err: Error | null, result: any) => void) => void;
-    messageToAsync: (target: any, data: any, options: any) => Promise<any>;
-    onMessage: (messageName: string, callback: (data: any) => void) => void;
+    messageTo: (
+        target: string | { instance: string | null | number; script: string | null; message: string },
+        data: any,
+        options: any,
+        callback: (result: any, options: { timeout?: number | string }, instance: string | number | null) => void,
+    ) => void;
+    messageToAsync: (
+        target: string | { instance: string | null | number; script: string | null; message: string },
+        data: any,
+        options?: { timeout?: number | string },
+    ) => Promise<any>;
+    onMessage: (messageName: string, callback: (data: any, cb: (result: any) => void) => void) => null | number;
     onMessageUnregister: (idOrName: string) => boolean;
     console: {
         log: (msg: string) => void;
@@ -434,8 +468,11 @@ export type SandboxType = {
     wait: (ms: number) => Promise<void>;
     sleep: (ms: number) => Promise<void>;
     onObject: (pattern: string, callback: (data: any) => void) => void;
-    subscribeObject: (pattern: string, callback: (data: any) => void) => void;
-    unsubscribeObject: (idOrObject: string | Record<string, any>) => void;
+    subscribeObject: (
+        pattern: string | string[],
+        callback: (id: string, obj?: ioBroker.Object | null) => void,
+    ) => SubscribeObject | SubscribeObject[];
+    unsubscribeObject: (idOrObject: SubscribeObject | SubscribeObject[]) => boolean | boolean[];
     _sendToFrontEnd: (blockId: string, data: any) => void;
     logHandler?: ioBroker.LogLevel | '*';
 };
@@ -526,10 +563,16 @@ export interface JavascriptContext {
     states: Record<string, ioBroker.State>;
     interimStateValues: Record<string, ioBroker.State>;
     stateIds: string[];
-    errorLogFunction: (text: string, ...args: any[]) => void;
+    errorLogFunction: {
+        info: (text: string, ...args: any[]) => void;
+        debug: (text: string, ...args: any[]) => void;
+        silly: (text: string, ...args: any[]) => void;
+        warn: (text: string, ...args: any[]) => void;
+        error: (text: string, ...args: any[]) => void;
+    };
     subscriptions: SubscriptionResult[];
     subscriptionsFile: FileSubscriptionResult[];
-    subscriptionsObject: { name: string; pattern: string; options: Record<string, any> }[];
+    subscriptionsObject: SubscribeObject[];
     subscribedPatterns: Record<string, number>;
     subscribedPatternsFile: Record<string, number>;
     adapterSubs: Record<string, string[]>;
@@ -543,13 +586,16 @@ export interface JavascriptContext {
     timerId: number;
     names: { [name: string]: string }; // name: id
     scripts: Record<string, JsScript>;
-    messageBusHandlers: Record<string, Record<string, { sandbox: SandboxType; cb: (data: any, result: any) => void }>>;
-    logSubscriptions: {
+    messageBusHandlers: Record<
+        string,
+        Record<string, { id: number; sandbox: SandboxType; cb: (data: any, result: any) => void }[]>
+    >;
+    logSubscriptions: Record<string, {
         sandbox: SandboxType;
         cb: (info: LogMessage) => void;
         id: string;
         severity: ioBroker.LogLevel | '*';
-    }[];
+    }[]>;
     tempDirectories: { [scriptName: string]: string }; // name: path
     folderCreationVerifiedObjects: Record<string, boolean>;
     updateLogSubscriptions: () => void;

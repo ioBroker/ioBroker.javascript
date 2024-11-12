@@ -43,7 +43,7 @@ interface SunCalc {
     getMoonTimes: (date: Date, latitude: number, longitude: number, inUTC?: boolean) => GetMoonTimes;
 }
 
-type AstroEventName =
+export type AstroEventName =
     | 'dawn'
     | 'dusk'
     | 'goldenHour'
@@ -151,7 +151,7 @@ export type ScheduleName = {
     scriptName: string;
 };
 
-export default class Scheduler {
+export class Scheduler {
     private readonly list: Record<string, SchedulerRuleParsed>;
     private readonly Date: typeof Date;
     private readonly suncalc: SunCalc;

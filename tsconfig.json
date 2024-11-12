@@ -22,9 +22,10 @@
         "noImplicitAny": false,
         // "noUnusedLocals": true,
         // "noUnusedParameters": true,
-
         "target": "es2022",
         "types": ["node", "@iobroker/types"],
     },
-    "include": ["lib/**/*.js", "lib/**/*.d.ts", "main.js"]
+    "include": ["lib/**/*.js", "lib/**/*.d.ts",
+        "src/main"
+    ]
 }

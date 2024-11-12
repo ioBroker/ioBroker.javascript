@@ -78,7 +78,7 @@
     "bugs": {
         "url": "https://github.com/ioBroker/ioBroker.javascript/issues"
     },
-    "main": "main.js",
+    "main": "src/main.ts",
     "files": [
         "admin/",
         "lib/",
@@ -87,7 +87,7 @@
         "lib/",
         "io-package.json",
         "LICENSE",
-        "main.js",
+        "src/main.ts",
         "admin/vsFont/codicon.json"
     ],
     "scripts": {

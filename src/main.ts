@@ -8,76 +8,121 @@
  * Copyright (c) 2014      hobbyquaker
  */
 
-/* jshint -W097 */
-/* jshint -W083 */
-/* jshint strict: false */
-/* jslint node: true */
-/* jshint shadow: true */
-'use strict';
+import { Script } from 'node:vm';
+import { readFileSync, existsSync, statSync, writeFileSync, type Stats } from 'node:fs';
+import { join, sep, normalize } from 'node:path';
+import { fork } from 'node:child_process';
+import { setTypeScriptResolveOptions, Server } from 'virtual-tsc';
+import { isDeepStrictEqual } from 'node:util';
 
-const vm = require('node:vm');
-const nodeFS = require('node:fs');
-const nodePath = require('node:path');
-const tsc = require('virtual-tsc');
-const Mirror = require('./lib/mirror');
-const fork = require('child_process').fork;
+import * as dgram from 'node:dgram';
+import * as crypto from 'node:crypto';
+import * as dns from 'node:dns';
+import * as events from 'node:events';
+import * as http from 'node:http';
+import * as https from 'node:https';
+import * as http2 from 'node:http2';
+import * as net from 'node:net';
+import * as os from 'node:os';
+import * as path from 'node:path';
+import * as util from 'node:util';
+import * as child_process from 'node:child_process';
+import * as stream from 'node:stream';
+import * as zlib from 'node:zlib';
 
-const mods = {
-    fs: {},
-    dgram: require('node:dgram'),
-    crypto: require('node:crypto'),
-    dns: require('node:dns'),
-    events: require('node:events'),
-    http: require('node:http'),
-    https: require('node:https'),
-    http2: require('node:http2'),
-    net: require('node:net'),
-    os: require('node:os'),
-    path: require('node:path'),
-    util: require('node:util'),
-    child_process: require('node:child_process'),
-    stream: require('node:stream'),
-    zlib: require('node:zlib'),
-    suncalc: require('suncalc2'),
-    axios: require('axios'),
-    wake_on_lan: require('wake_on_lan'),
-    nodeSchedule: require('node-schedule'),
+import * as suncalc from 'suncalc2';
+import * as axios from 'axios';
+import * as wake_on_lan from 'wake_on_lan';
+import * as nodeSchedule from 'node-schedule';
+
+import { Mirror } from './lib/mirror';
+import ProtectFs from './lib/protectFs';
+
+import { getAbsoluteDefaultDataDir, Adapter, EXIT_CODES, type AdapterOptions } from '@iobroker/adapter-core';
+import { setLanguage, getLanguage } from './lib/words';
+import { sandBox } from './lib/sandbox';
+import { requestModuleNameByUrl } from './lib/nodeModulesManagement';
+import { createEventObject } from './lib/eventObj';
+import {AstroEventName, Scheduler} from './lib/scheduler';
+import { targetTsLib, tsCompilerOptions, jsDeclarationCompilerOptions } from './lib/typescriptSettings';
+import { hashSource } from './lib/tools';
+import {
+    resolveTypescriptLibs,
+    resolveTypings,
+    scriptIdToTSFilename,
+    transformScriptBeforeCompilation,
+    transformGlobalDeclarations,
+} from '../lib/typescriptTools';
+import type {FileSubscriptionResult, JavascriptContext} from './types';
+import * as ts from 'typescript';
+import { type GetTimesResult } from 'suncalc';
+
+const mods: {
+    fs: typeof ProtectFs;
+    dgram: typeof dgram;
+    crypto: typeof crypto;
+    dns: typeof dns;
+    events: typeof events;
+    http: typeof http;
+    https: typeof https;
+    http2: typeof http2;
+    net: typeof net;
+    os: typeof os;
+    path: typeof path;
+    util: typeof util;
+    child_process: typeof child_process;
+    stream: typeof stream;
+    zlib: typeof zlib;
+    suncalc: typeof suncalc;
+    axios: typeof axios;
+    wake_on_lan: typeof wake_on_lan;
+    nodeSchedule: typeof nodeSchedule;
+} = {
+    fs: {} as typeof ProtectFs,
+    dgram,
+    crypto,
+    dns,
+    events,
+    http,
+    https,
+    http2,
+    net,
+    os,
+    path,
+    util,
+    child_process,
+    stream,
+    zlib,
+
+    suncalc,
+    axios,
+    wake_on_lan,
+    nodeSchedule,
 };
 
 /**
  * List of forbidden Locations for a mirror directory
  * relative to the default data directory
  * ATTENTION: the same list is also located in index_m.html!!
- *
- * @type {*[]}
  */
-const forbiddenMirrorLocations = ['backup-objects', 'files', 'backitup', '../backups', '../node_modules', '../log'];
+const forbiddenMirrorLocations: string[] = [
+    'backup-objects',
+    'files',
+    'backitup',
+    '../backups',
+    '../node_modules',
+    '../log',
+];
 
-const utils = require('@iobroker/adapter-core');
-const words = require('./lib/words');
-const sandBox = require('./lib/sandbox');
-const { requestModuleNameByUrl } = require('./lib/nodeModulesManagement.js');
-const eventObj = require('./lib/eventObj');
-const Scheduler = require('./lib/scheduler');
-const { targetTsLib, tsCompilerOptions, jsDeclarationCompilerOptions } = require('./lib/typescriptSettings');
-const { hashSource, isObject } = require('./lib/tools');
-const { isDeepStrictEqual } = require('node:util');
-const {
-    resolveTypescriptLibs,
-    resolveTypings,
-    scriptIdToTSFilename,
-    transformScriptBeforeCompilation,
-    transformGlobalDeclarations,
-} = require('./lib/typescriptTools');
-
-const packageJson = require('./package.json');
+const packageJson: Record<string, any> = JSON.parse(readFileSync(`${__dirname}/../package.json`).toString());
 const SCRIPT_CODE_MARKER = 'script.js.';
 
 const stopCounters = {};
-let setStateCountCheckInterval = null;
+let setStateCountCheckInterval: NodeJS.Timeout | null = null;
 
-let webstormDebug;
-let debugMode;
+let webstormDebug: string | undefined;
+let debugMode: boolean = false;
+
 if (process.argv) {
     for (let a = 1; a < process.argv.length; a++) {
         if (process.argv[a].startsWith('--webstorm')) {
@@ -88,7 +133,7 @@ if (process.argv) {
                 console.log('No script name provided');
                 process.exit(300);
             } else {
-                debugMode = process.argv[a + 1];
+                debugMode = !!process.argv[a + 1];
             }
         }
     }
@@ -97,8 +142,7 @@ if (process.argv) {
 const isCI = !!process.env.CI;
 
 // ambient declarations for typescript
-/** @type {Record<string, string>} */
-let tsAmbient;
+let tsAmbient: Record<string, string>;
 
 // TypeScript's scripts are only recompiled if their source hash changes.
 // If an adapter update fixes the compilation bugs, a user won't notice until the changes and re-saves the script.
@@ -106,16 +150,16 @@ let tsAmbient;
 // adapter version and TypeScript version in the hash
 const tsSourceHashBase = `versions:adapter=${packageJson.version},typescript=${packageJson.dependencies.typescript}`;
 
-let mirror;
+let mirror: typeof Mirror | undefined;
 
-/** @type {boolean} if logs are subscribed or not */
-let logSubscribed;
+/** if logs are subscribed or not */
+let logSubscribed: boolean = false;
 
 /**
- * @param {string} scriptID - The current script the declarations were generated from
- * @param {string} declarations
+ * @param scriptID - The current script the declarations were generated from
+ * @param declarations
  */
-function provideDeclarationsForGlobalScript(scriptID, declarations) {
+function provideDeclarationsForGlobalScript(scriptID: string, declarations: string): void {
     // Remember which declarations this global script had access to,
     // we need this so the editor doesn't show a duplicate identifier error
     if (globalDeclarations != null && globalDeclarations !== '') {
@@ -137,16 +181,16 @@ function provideDeclarationsForGlobalScript(scriptID, declarations) {
 }
 
 // taken from here: https://stackoverflow.com/questions/11887934/how-to-check-if-dst-daylight-saving-time-is-in-effect-and-if-so-the-offset
-function dstOffsetAtDate(dateInput) {
-    const fullYear = dateInput.getFullYear() | 0;
+function dstOffsetAtDate(dateInput: Date): number {
+    const fullYear: number = dateInput.getFullYear() | 0;
     // "Leap Years are any year that can be exactly divided by 4 (2012, 2016, etc)
     //   except if it can be exactly divided by 100, then it isn't (2100, 2200, etc)
     //    except if it can be exactly divided by 400, then it is (2000, 2400)"
     // (https://www.mathsisfun.com/leap-years.html).
-    const isLeapYear = ((fullYear & 3) | ((fullYear / 100) & 3)) === 0 ? 1 : 0;
+    const isLeapYear: 1 | 0 = ((fullYear & 3) | ((fullYear / 100) & 3)) === 0 ? 1 : 0;
     // (fullYear & 3) = (fullYear % 4), but faster
     //Alternative:var isLeapYear=(new Date(currentYear,1,29,12)).getDate()===29?1:0
-    const fullMonth = dateInput.getMonth() | 0;
+    const fullMonth: number = dateInput.getMonth() | 0;
     return (
         // 1. We know what the time since the Epoch really is
         +dateInput - // same as the dateInput.getTime() method
@@ -154,12 +198,12 @@ function dstOffsetAtDate(dateInput) {
         +new Date(fullYear, 0) - // day defaults to 1 if not explicitly zeroed
         // 3. Now, subtract what we would expect the time to be if daylight savings
         //      did not exist. This yields the time-offset due to daylight savings.
-        ((// Calculate the day of the year in the Gregorian calendar
+        // Calculate the day of the year in the Gregorian calendar
         // The code below works based upon the facts of signed right shifts
         //    • (x) >> n: shifts n and fills in the n highest bits with 0s
         //    • (-x) >> n: shifts n and fills in the n highest bits with 1s
         // (This assumes that x is a positive integer)
-        ((-1 + // first day in the year is day 1
+        ((((-1 + // the first day in the year is day 1
             (31 & (-fullMonth >> 4)) + // January // (-11)>>4 = -1
             ((28 + isLeapYear) & ((1 - fullMonth) >> 4)) + // February
             (31 & ((2 - fullMonth) >> 4)) + // March
@@ -172,7 +216,7 @@ function dstOffsetAtDate(dateInput) {
             (31 & ((9 - fullMonth) >> 4)) + // October
             (30 & ((10 - fullMonth) >> 4)) + // November
             // There are no months past December: the year rolls into the next.
-            // Thus, fullMonth is 0-based, so it will never be 12 in Javascript
+            // Thus, "fullMonth" is 0-based, so it will never be 12 in JavaScript
 
             (dateInput.getDate() | 0)) & // get day of the month
             0xffff) *
@@ -188,7 +232,7 @@ function dstOffsetAtDate(dateInput) {
     );
 }
 
-function loadTypeScriptDeclarations() {
+function loadTypeScriptDeclarations(): void {
     // try to load the typings on disk for all 3rd party modules
     const packages = [
         'node', // this provides auto-completion for most builtins
@@ -252,7 +296,7 @@ function loadTypeScriptDeclarations() {
     }
 }
 
-const context = {
+const context: JavascriptContext = {
     mods,
     objects: {},
     states: {},
@@ -290,17 +334,41 @@ const context = {
         leadingZeros: true,
     },
     rulesOpened: null, //opened rules
-    getAbsoluteDefaultDataDir: utils.getAbsoluteDefaultDataDir,
+    getAbsoluteDefaultDataDir,
+    adapter: null,
+    language: 'en',
+    logError: function (msg: string, e: Error, offs?: number): void {
+        const stack = e.stack ? e.stack.toString().split('\n') : e ? e.toString() : '';
+        if (!msg.includes('\n')) {
+            msg = msg.replace(/[: ]*$/, ': ');
+        }
+
+        // errorLogFunction.error(msg + stack[0]);
+        context.errorLogFunction.error(msg + fixLineNo(stack[0]));
+        for (let i = offs || 1; i < stack.length; i++) {
+            if (!stack[i]) {
+                continue;
+            }
+            if (stack[i].match(/runInNewContext|javascript\.js:/)) {
+                break;
+            }
+            // adapter.log.error(fixLineNo(stack[i]));
+            context.errorLogFunction.error(fixLineNo(stack[i]));
+        }
+    },
 };
 
-const regExGlobalOld = /_global$/;
-const regExGlobalNew = /script\.js\.global\./;
+const regExGlobalOld: RegExp = /_global$/;
+const regExGlobalNew: RegExp = /script\.js\.global\./;
 
-function checkIsGlobal(obj) {
-    return obj && obj.common && (regExGlobalOld.test(obj.common.name) || regExGlobalNew.test(obj._id));
+function checkIsGlobal(obj: ioBroker.ScriptObject): boolean {
+    return obj?.common && (regExGlobalOld.test(obj.common.name) || regExGlobalNew.test(obj._id));
 }
 
-function convertBackStringifiedValues(id: string, state: ioBroker.State | null | undefined): ioBroker.State | null | undefined {
+function convertBackStringifiedValues(
+    id: string,
+    state: ioBroker.State | null | undefined,
+): ioBroker.State | null | undefined {
     if (
         state &&
         typeof state.val === 'string' &&
@@ -356,10 +424,10 @@ function prepareStateObject(id: string, state: ioBroker.SettableState): ioBroker
         }
     }
 
-    return state;
+    return state as ioBroker.State;
 }
 
-function fileMatching(sub, id, fileName) {
+function fileMatching(sub: FileSubscriptionResult, id: string, fileName: string): boolean {
     if (sub.idRegEx) {
         if (!sub.idRegEx.test(id)) {
             return false;
@@ -383,29 +451,23 @@ function fileMatching(sub, id, fileName) {
 }
 
 /**
- * @type {Set<string>}
  * Stores the IDs of script objects whose change should be ignored because
  * the compiled source was just updated
  */
-const ignoreObjectChange = new Set();
+const ignoreObjectChange: Set<string> = new Set();
 
 let objectsInitDone = false;
 let statesInitDone = false;
 
-/** @type {ioBroker.Adapter} */
-let adapter;
+let adapter: ioBroker.Adapter;
 
-function startAdapter(options) {
+function startAdapter(options: Partial<AdapterOptions> = {}) {
     options = options || {};
     Object.assign(options, {
         name: 'javascript',
         useFormatDate: true, // load float formatting
 
-        /**
-         * @param id { string }
-         * @param obj { ioBroker.Object }
-         */
-        objectChange: (id, obj) => {
+        objectChange: (id: string, obj?: ioBroker.Object | null): void => {
             // Check if we should ignore this change (once!) because we just updated the compiled sources
             if (ignoreObjectChange.has(id)) {
                 // Update the cached script object and do nothing more
@@ -445,29 +507,29 @@ function startAdapter(options) {
 
             if (obj && id === 'system.config') {
                 // set language for debug messages
-                if (obj.common && obj.common.language) {
-                    words.setLanguage(obj.common.language);
+                if (obj.common?.language) {
+                    setLanguage(obj.common.language);
                 }
             }
 
             // update stored time format for variables.dayTime
-            if (id === adapter.namespace + '.variables.dayTime' && obj && obj.native) {
+            if (id === `${adapter.namespace}.variables.dayTime` && obj?.native) {
                 context.timeSettings.format12 = obj.native.format12 || false;
                 context.timeSettings.leadingZeros =
                     obj.native.leadingZeros === undefined ? true : obj.native.leadingZeros;
             }
 
             // send changes to disk mirror
-            mirror && mirror.onObjectChange(id, obj);
+            mirror?.onObjectChange(id, obj);
 
             const formerObj = context.objects[id];
 
             updateObjectContext(id, obj); // Update all Meta object data
 
             // for alias object changes on state objects we need to manually update the
-            // state cache value because new value is only published on next change
+            // state cache value because new value is only published on the next change
             if (obj && obj.type === 'state' && id.startsWith('alias.0.')) {
-                adapter.getForeignState(id, (err, state) => {
+                adapter.getForeignState(id, (err: Error | null, state: ioBroker.State | null | undefined): void => {
                     if (err) {
                         return;
                     }
@@ -568,7 +630,7 @@ function startAdapter(options) {
                             load(id);
                         }
                     } else {
-                        //if (obj.common.source !== formerObj.common.source) {
+                        // if (obj.common.source !== formerObj.common.source) {
                         // Source changed => restart it
                         stopCounters[id] = stopCounters[id] ? stopCounters[id] + 1 : 1;
                         stop(
@@ -583,7 +645,7 @@ function startAdapter(options) {
             }
         },
 
-        stateChange: (id, state) => {
+        stateChange: (id: string, state?: ioBroker.State | null): void => {
             if (context.interimStateValues[id] !== undefined) {
                 // any update invalidates the remembered interim value
                 delete context.interimStateValues[id];
@@ -605,7 +667,7 @@ function startAdapter(options) {
                 return;
             }
 
-            const oldState = context.states[id];
+            const oldState: ioBroker.State | null | undefined = context.states[id];
             if (state) {
                 if (oldState) {
                     // enable or disable script
@@ -649,7 +711,7 @@ function startAdapter(options) {
                     context.stateIds.splice(pos, 1);
                 }
             }
-            const _eventObj = eventObj.createEventObject(
+            const _eventObj = createEventObject(
                 context,
                 id,
                 context.convertBackStringifiedValues(id, state),
@@ -669,7 +731,7 @@ function startAdapter(options) {
             }
         },
 
-        fileChange: (id, fileName, size) => {
+        fileChange: (id: string, fileName: string, size?: number): void => {
             // if this file matches any subscriptions
             for (let i = 0, l = context.subscriptionsFile.length; i < l; i++) {
                 const sub = context.subscriptionsFile[i];
@@ -683,7 +745,7 @@ function startAdapter(options) {
             }
         },
 
-        unload: callback => {
+        unload: (callback: () => void) => {
             debugStop().then(() => {
                 stopTimeSchedules();
                 if (setStateCountCheckInterval) {
@@ -693,7 +755,7 @@ function startAdapter(options) {
             });
         },
 
-        ready: () => {
+        ready: (): void => {
             adapter.config.maxSetStatePerMinute = parseInt(adapter.config.maxSetStatePerMinute, 10) || 1000;
             adapter.config.maxTriggersPerScript = parseInt(adapter.config.maxTriggersPerScript, 10) || 100;
 
@@ -721,7 +783,7 @@ function startAdapter(options) {
                                             return null;
                                         }
                                         //Exclude event if own directory is included but not inside own node_modules
-                                        const ownNodeModulesDir = nodePath.join(__dirname, 'node_modules');
+                                        const ownNodeModulesDir = join(__dirname, 'node_modules');
                                         if (
                                             !eventData.stacktrace.frames.find(
                                                 frame =>
@@ -753,310 +815,292 @@ function startAdapter(options) {
             }
         },
 
-        message: obj => {
-            if (obj) {
-                switch (obj.command) {
-                    // process messageTo commands
-                    case 'toScript':
-                    case 'jsMessageBus':
-                        if (
-                            obj.message &&
-                            (obj.message.instance === null ||
-                                obj.message.instance === undefined ||
-                                `javascript.${obj.message.instance}` === adapter.namespace ||
-                                obj.message.instance === adapter.namespace)
-                        ) {
-                            Object.keys(context.messageBusHandlers).forEach(name => {
-                                // script name could be script.js.xxx or only xxx
-                                if (
-                                    (!obj.message.script || obj.message.script === name) &&
-                                    context.messageBusHandlers[name][obj.message.message]
-                                ) {
-                                    context.messageBusHandlers[name][obj.message.message].forEach(handler => {
-                                        const sandbox = handler.sandbox;
+        message: (obj: ioBroker.Message) => {
+            switch (obj?.command) {
+                // process messageTo commands
+                case 'toScript':
+                case 'jsMessageBus':
+                    if (
+                        obj.message &&
+                        (obj.message.instance === null ||
+                            obj.message.instance === undefined ||
+                            `javascript.${obj.message.instance}` === adapter.namespace ||
+                            obj.message.instance === adapter.namespace)
+                    ) {
+                        Object.keys(context.messageBusHandlers).forEach(name => {
+                            // script name could be script.js.xxx or only xxx
+                            if (
+                                (!obj.message.script || obj.message.script === name) &&
+                                context.messageBusHandlers[name][obj.message.message]
+                            ) {
+                                context.messageBusHandlers[name][obj.message.message].forEach(handler => {
+                                    const sandbox = handler.sandbox;
 
-                                        sandbox.verbose &&
-                                            sandbox.log(`onMessage: ${JSON.stringify(obj.message)}`, 'info');
+                                    sandbox.verbose && sandbox.log(`onMessage: ${JSON.stringify(obj.message)}`, 'info');
 
-                                        try {
-                                            if (obj.callback) {
-                                                handler.cb.call(sandbox, obj.message.data, result => {
-                                                    sandbox.verbose &&
-                                                        sandbox.log(
-                                                            `onMessage result: ${JSON.stringify(result)}`,
-                                                            'info',
-                                                        );
+                                    try {
+                                        if (obj.callback) {
+                                            handler.cb.call(sandbox, obj.message.data, result => {
+                                                sandbox.verbose &&
+                                                    sandbox.log(`onMessage result: ${JSON.stringify(result)}`, 'info');
 
-                                                    adapter.sendTo(obj.from, obj.command, result, obj.callback);
-                                                });
-                                            } else {
-                                                handler.cb.call(sandbox, obj.message.data, result => {
-                                                    sandbox.verbose &&
-                                                        sandbox.log(
-                                                            `onMessage result: ${JSON.stringify(result)}`,
-                                                            'info',
-                                                        );
-                                                });
-                                            }
-                                        } catch (e) {
-                                            adapter.setState(
-                                                `scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`,
-                                                true,
-                                                true,
-                                            );
-                                            context.logError('Error in callback', e);
+                                                adapter.sendTo(obj.from, obj.command, result, obj.callback);
+                                            });
+                                        } else {
+                                            handler.cb.call(sandbox, obj.message.data, result => {
+                                                sandbox.verbose &&
+                                                    sandbox.log(`onMessage result: ${JSON.stringify(result)}`, 'info');
+                                            });
                                         }
-                                    });
-                                }
-                            });
-                        }
-                        break;
+                                    } catch (e) {
+                                        adapter.setState(
+                                            `scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`,
+                                            true,
+                                            true,
+                                        );
+                                        context.logError('Error in callback', e);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    break;
 
-                    case 'loadTypings': {
-                        // Load typings for the editor
-                        const typings = {};
+                case 'loadTypings': {
+                    // Load typings for the editor
+                    const typings = {};
 
-                        // try to load TypeScript lib files from disk
-                        try {
-                            const typescriptLibs = resolveTypescriptLibs(targetTsLib);
-                            Object.assign(typings, typescriptLibs);
-                        } catch (e) {
-                            /* ok, no lib then */
-                        }
-
-                        // provide the already-loaded ioBroker typings and global script declarations
-                        Object.assign(typings, tsAmbient);
-
-                        // also provide the known global declarations for each global script
-                        for (const globalScriptPaths of Object.keys(knownGlobalDeclarationsByScript)) {
-                            typings[`${globalScriptPaths}.d.ts`] = knownGlobalDeclarationsByScript[globalScriptPaths];
-                        }
-
-                        if (obj.callback) {
-                            adapter.sendTo(obj.from, obj.command, { typings }, obj.callback);
-                        }
-                        break;
+                    // try to load TypeScript lib files from disk
+                    try {
+                        const typescriptLibs = resolveTypescriptLibs(targetTsLib);
+                        Object.assign(typings, typescriptLibs);
+                    } catch (e) {
+                        /* ok, no lib then */
                     }
 
-                    case 'calcAstroAll': {
-                        if (obj.message) {
-                            const sunriseOffset =
-                                parseInt(
-                                    obj.message.sunriseOffset === undefined
-                                        ? adapter.config.sunriseOffset
-                                        : obj.message.sunriseOffset,
-                                    10,
-                                ) || 0;
-                            const sunsetOffset =
-                                parseInt(
-                                    obj.message.sunsetOffset === undefined
-                                        ? adapter.config.sunsetOffset
-                                        : obj.message.sunsetOffset,
-                                    10,
-                                ) || 0;
-                            const longitude =
-                                parseFloat(
-                                    obj.message.longitude === undefined
-                                        ? adapter.config.longitude
-                                        : obj.message.longitude,
-                                ) || 0;
-                            const latitude =
-                                parseFloat(
-                                    obj.message.latitude === undefined ? adapter.config.latitude : obj.message.latitude,
-                                ) || 0;
-                            const today = getAstroStartOfDay();
-                            let astroEvents = {};
+                    // provide the already-loaded ioBroker typings and global script declarations
+                    Object.assign(typings, tsAmbient);
+
+                    // also provide the known global declarations for each global script
+                    for (const globalScriptPaths of Object.keys(knownGlobalDeclarationsByScript)) {
+                        typings[`${globalScriptPaths}.d.ts`] = knownGlobalDeclarationsByScript[globalScriptPaths];
+                    }
+
+                    if (obj.callback) {
+                        adapter.sendTo(obj.from, obj.command, { typings }, obj.callback);
+                    }
+                    break;
+                }
+
+                case 'calcAstroAll': {
+                    if (obj.message) {
+                        const sunriseOffset =
+                            parseInt(
+                                obj.message.sunriseOffset === undefined
+                                    ? adapter.config.sunriseOffset
+                                    : obj.message.sunriseOffset,
+                                10,
+                            ) || 0;
+                        const sunsetOffset =
+                            parseInt(
+                                obj.message.sunsetOffset === undefined
+                                    ? adapter.config.sunsetOffset
+                                    : obj.message.sunsetOffset,
+                                10,
+                            ) || 0;
+                        const longitude =
+                            parseFloat(
+                                obj.message.longitude === undefined ? adapter.config.longitude : obj.message.longitude,
+                            ) || 0;
+                        const latitude =
+                            parseFloat(
+                                obj.message.latitude === undefined ? adapter.config.latitude : obj.message.latitude,
+                            ) || 0;
+                        const today = getAstroStartOfDay();
+                        let astroEvents: GetTimesResult & { nextSunrise: Date; nextSunset: Date } = {} as GetTimesResult & { nextSunrise: Date; nextSunset: Date };
+                        try {
+                            astroEvents = mods.suncalc.getTimes(today, latitude, longitude);
+                        } catch (e) {
+                            adapter.log.error(`Cannot calculate astro data: ${e}`);
+                        }
+                        if (astroEvents) {
                             try {
-                                astroEvents = mods.suncalc.getTimes(today, latitude, longitude);
+                                astroEvents.nextSunrise = getAstroEvent(
+                                    today,
+                                    obj.message.sunriseEvent || adapter.config.sunriseEvent,
+                                    obj.message.sunriseLimitStart || adapter.config.sunriseLimitStart,
+                                    obj.message.sunriseLimitEnd || adapter.config.sunriseLimitEnd,
+                                    sunriseOffset,
+                                    false,
+                                    latitude,
+                                    longitude,
+                                    true,
+                                );
+                                astroEvents.nextSunset = getAstroEvent(
+                                    today,
+                                    obj.message.sunsetEvent || adapter.config.sunsetEvent,
+                                    obj.message.sunsetLimitStart || adapter.config.sunsetLimitStart,
+                                    obj.message.sunsetLimitEnd || adapter.config.sunsetLimitEnd,
+                                    sunsetOffset,
+                                    true,
+                                    latitude,
+                                    longitude,
+                                    true,
+                                );
                             } catch (e) {
                                 adapter.log.error(`Cannot calculate astro data: ${e}`);
                             }
-                            if (astroEvents) {
-                                try {
-                                    astroEvents.nextSunrise = getAstroEvent(
-                                        today,
-                                        obj.message.sunriseEvent || adapter.config.sunriseEvent,
-                                        obj.message.sunriseLimitStart || adapter.config.sunriseLimitStart,
-                                        obj.message.sunriseLimitEnd || adapter.config.sunriseLimitEnd,
-                                        sunriseOffset,
-                                        false,
-                                        latitude,
-                                        longitude,
-                                        true,
-                                    );
-                                    astroEvents.nextSunset = getAstroEvent(
-                                        today,
-                                        obj.message.sunsetEvent || adapter.config.sunsetEvent,
-                                        obj.message.sunsetLimitStart || adapter.config.sunsetLimitStart,
-                                        obj.message.sunsetLimitEnd || adapter.config.sunsetLimitEnd,
-                                        sunsetOffset,
-                                        true,
-                                        latitude,
-                                        longitude,
-                                        true,
-                                    );
-                                } catch (e) {
-                                    adapter.log.error(`Cannot calculate astro data: ${e}`);
-                                }
-                            }
-
-                            const result = {};
-                            const keys = Object.keys(astroEvents).sort((a, b) => astroEvents[a] - astroEvents[b]);
-                            keys.forEach(key => {
-                                const validDate = astroEvents[key] !== null && !isNaN(astroEvents[key].getTime());
-
-                                result[key] = {
-                                    isValidDate: validDate,
-                                    serverTime: validDate ? formatHoursMinutesSeconds(astroEvents[key]) : 'n/a',
-                                    date: validDate ? astroEvents[key].toISOString() : 'n/a',
-                                };
-                            });
-
-                            obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
                         }
-                        break;
+
+                        const result = {};
+                        const keys = Object.keys(astroEvents).sort((a, b) => astroEvents[a] - astroEvents[b]);
+                        keys.forEach(key => {
+                            const validDate = astroEvents[key] !== null && !isNaN(astroEvents[key].getTime());
+
+                            result[key] = {
+                                isValidDate: validDate,
+                                serverTime: validDate ? formatHoursMinutesSeconds(astroEvents[key]) : 'n/a',
+                                date: validDate ? astroEvents[key].toISOString() : 'n/a',
+                            };
+                        });
+
+                        obj.callback && adapter.sendTo(obj.from, obj.command, result, obj.callback);
                     }
+                    break;
+                }
 
-                    case 'calcAstro': {
-                        if (obj.message) {
-                            const longitude =
-                                parseFloat(
-                                    obj.message.longitude === undefined
-                                        ? adapter.config.longitude
-                                        : obj.message.longitude,
-                                ) || 0;
-                            const latitude =
-                                parseFloat(
-                                    obj.message.latitude === undefined ? adapter.config.latitude : obj.message.latitude,
-                                ) || 0;
-                            const today = getAstroStartOfDay();
+                case 'calcAstro': {
+                    if (obj.message) {
+                        const longitude =
+                            parseFloat(
+                                obj.message.longitude === undefined ? adapter.config.longitude : obj.message.longitude,
+                            ) || 0;
+                        const latitude =
+                            parseFloat(
+                                obj.message.latitude === undefined ? adapter.config.latitude : obj.message.latitude,
+                            ) || 0;
+                        const today = getAstroStartOfDay();
 
-                            const sunriseEvent = obj.message?.sunriseEvent || adapter.config.sunriseEvent;
-                            const sunriseLimitStart =
-                                obj.message?.sunriseLimitStart || adapter.config.sunriseLimitStart;
-                            const sunriseLimitEnd = obj.message?.sunriseLimitEnd || adapter.config.sunriseLimitEnd;
-                            const sunriseOffset =
-                                parseInt(
-                                    obj.message.sunriseOffset === undefined
-                                        ? adapter.config.sunriseOffset
-                                        : obj.message.sunriseOffset,
-                                    10,
-                                ) || 0;
-                            const nextSunrise = getAstroEvent(
-                                today,
-                                sunriseEvent,
-                                sunriseLimitStart,
-                                sunriseLimitEnd,
-                                sunriseOffset,
-                                false,
-                                latitude,
-                                longitude,
-                                true,
-                            );
+                        const sunriseEvent = obj.message?.sunriseEvent || adapter.config.sunriseEvent;
+                        const sunriseLimitStart = obj.message?.sunriseLimitStart || adapter.config.sunriseLimitStart;
+                        const sunriseLimitEnd = obj.message?.sunriseLimitEnd || adapter.config.sunriseLimitEnd;
+                        const sunriseOffset =
+                            parseInt(
+                                obj.message.sunriseOffset === undefined
+                                    ? adapter.config.sunriseOffset
+                                    : obj.message.sunriseOffset,
+                                10,
+                            ) || 0;
+                        const nextSunrise = getAstroEvent(
+                            today,
+                            sunriseEvent,
+                            sunriseLimitStart,
+                            sunriseLimitEnd,
+                            sunriseOffset,
+                            false,
+                            latitude,
+                            longitude,
+                            true,
+                        );
 
-                            const sunsetEvent = obj.message?.sunsetEvent || adapter.config.sunsetEvent;
-                            const sunsetLimitStart = obj.message?.sunsetLimitStart || adapter.config.sunsetLimitStart;
-                            const sunsetLimitEnd = obj.message?.sunsetLimitEnd || adapter.config.sunsetLimitEnd;
-                            const sunsetOffset =
-                                parseInt(
-                                    obj.message.sunsetOffset === undefined
-                                        ? adapter.config.sunsetOffset
-                                        : obj.message.sunsetOffset,
-                                    10,
-                                ) || 0;
-                            const nextSunset = getAstroEvent(
-                                today,
-                                sunsetEvent,
-                                sunsetLimitStart,
-                                sunsetLimitEnd,
-                                sunsetOffset,
-                                true,
-                                latitude,
-                                longitude,
-                                true,
-                            );
+                        const sunsetEvent = obj.message?.sunsetEvent || adapter.config.sunsetEvent;
+                        const sunsetLimitStart = obj.message?.sunsetLimitStart || adapter.config.sunsetLimitStart;
+                        const sunsetLimitEnd = obj.message?.sunsetLimitEnd || adapter.config.sunsetLimitEnd;
+                        const sunsetOffset =
+                            parseInt(
+                                obj.message.sunsetOffset === undefined
+                                    ? adapter.config.sunsetOffset
+                                    : obj.message.sunsetOffset,
+                                10,
+                            ) || 0;
+                        const nextSunset = getAstroEvent(
+                            today,
+                            sunsetEvent,
+                            sunsetLimitStart,
+                            sunsetLimitEnd,
+                            sunsetOffset,
+                            true,
+                            latitude,
+                            longitude,
+                            true,
+                        );
 
-                            const validDateSunrise = nextSunrise !== null && !isNaN(nextSunrise.getTime());
-                            const validDateSunset = nextSunset !== null && !isNaN(nextSunset.getTime());
+                        const validDateSunrise = nextSunrise !== null && !isNaN(nextSunrise.getTime());
+                        const validDateSunset = nextSunset !== null && !isNaN(nextSunset.getTime());
 
-                            adapter.log.debug(
-                                `calcAstro sunrise: ${sunriseEvent} -> start ${sunriseLimitStart}, end: ${sunriseLimitEnd}, offset: ${sunriseOffset} - ${validDateSunrise ? nextSunrise.toISOString() : 'n/a'}`,
-                            );
-                            adapter.log.debug(
-                                `calcAstro sunset:  ${sunsetEvent} -> start ${sunsetLimitStart}, end: ${sunsetLimitEnd}, offset: ${sunsetOffset} - ${validDateSunset ? nextSunset.toISOString() : 'n/a'}`,
-                            );
+                        adapter.log.debug(
+                            `calcAstro sunrise: ${sunriseEvent} -> start ${sunriseLimitStart}, end: ${sunriseLimitEnd}, offset: ${sunriseOffset} - ${validDateSunrise ? nextSunrise.toISOString() : 'n/a'}`,
+                        );
+                        adapter.log.debug(
+                            `calcAstro sunset:  ${sunsetEvent} -> start ${sunsetLimitStart}, end: ${sunsetLimitEnd}, offset: ${sunsetOffset} - ${validDateSunset ? nextSunset.toISOString() : 'n/a'}`,
+                        );
 
-                            obj.callback &&
-                                adapter.sendTo(
-                                    obj.from,
-                                    obj.command,
-                                    {
-                                        nextSunrise: {
-                                            isValidDate: validDateSunrise,
-                                            serverTime: validDateSunrise
-                                                ? formatHoursMinutesSeconds(nextSunrise)
-                                                : 'n/a',
-                                            date: nextSunrise.toISOString(),
-                                        },
-                                        nextSunset: {
-                                            isValidDate: validDateSunset,
-                                            serverTime: validDateSunset ? formatHoursMinutesSeconds(nextSunset) : 'n/a',
-                                            date: nextSunset.toISOString(),
-                                        },
-                                    },
-                                    obj.callback,
-                                );
-                        }
-                        break;
-                    }
-
-                    case 'debug': {
-                        !debugMode && debugStart(obj.message);
-                        break;
-                    }
-
-                    case 'debugStop': {
-                        !debugMode && debugStop().then(() => console.log('stopped'));
-                        break;
-                    }
-
-                    case 'rulesOn': {
-                        context.rulesOpened = obj.message;
-                        console.log(`Enable messaging for ${context.rulesOpened}`);
-                        break;
-                    }
-
-                    case 'rulesOff': {
-                        // maybe if (context.rulesOpened === obj.message)
-                        console.log(`Disable messaging for ${context.rulesOpened}`);
-                        context.rulesOpened = null;
-                        break;
-                    }
-
-                    case 'getIoBrokerDataDir': {
                         obj.callback &&
                             adapter.sendTo(
                                 obj.from,
                                 obj.command,
                                 {
-                                    dataDir: utils.getAbsoluteDefaultDataDir(),
-                                    sep: nodePath.sep,
+                                    nextSunrise: {
+                                        isValidDate: validDateSunrise,
+                                        serverTime: validDateSunrise ? formatHoursMinutesSeconds(nextSunrise) : 'n/a',
+                                        date: nextSunrise.toISOString(),
+                                    },
+                                    nextSunset: {
+                                        isValidDate: validDateSunset,
+                                        serverTime: validDateSunset ? formatHoursMinutesSeconds(nextSunset) : 'n/a',
+                                        date: nextSunset.toISOString(),
+                                    },
                                 },
                                 obj.callback,
                             );
-                        break;
                     }
+                    break;
+                }
+
+                case 'debug': {
+                    !debugMode && debugStart(obj.message);
+                    break;
+                }
+
+                case 'debugStop': {
+                    !debugMode && debugStop().then(() => console.log('stopped'));
+                    break;
+                }
+
+                case 'rulesOn': {
+                    context.rulesOpened = obj.message;
+                    console.log(`Enable messaging for ${context.rulesOpened}`);
+                    break;
+                }
+
+                case 'rulesOff': {
+                    // maybe if (context.rulesOpened === obj.message)
+                    console.log(`Disable messaging for ${context.rulesOpened}`);
+                    context.rulesOpened = null;
+                    break;
+                }
+
+                case 'getIoBrokerDataDir': {
+                    obj.callback &&
+                        adapter.sendTo(
+                            obj.from,
+                            obj.command,
+                            {
+                                dataDir: getAbsoluteDefaultDataDir(),
+                                sep,
+                            },
+                            obj.callback,
+                        );
+                    break;
                 }
             }
         },
 
         /**
          * If the JS-Controller catches an unhandled error, this will be called
-         * so we have a chance to handle it ourself.
-         *
-         * @param {Error} err
+         * so we have a chance to handle it ourselves.
          */
-        error: err => {
+        error: (err: Error): boolean | undefined => {
             // Identify unhandled errors originating from callbacks in scripts
             // These are not caught by wrapping the execution code in try-catch
             if (err && typeof err.stack === 'string') {
@@ -1089,11 +1133,11 @@ function startAdapter(options) {
         },
     });
 
-    adapter = new utils.Adapter(options);
+    adapter = new Adapter(options);
 
     // handler for logs
     adapter.on('log', (msg: any) =>
-        Object.keys(context.logSubscriptions).forEach(name =>
+        Object.keys(context.logSubscriptions).forEach((name: string) =>
             context.logSubscriptions[name].forEach(handler => {
                 if (
                     typeof handler.cb === 'function' &&
@@ -1112,7 +1156,7 @@ function startAdapter(options) {
     return adapter;
 }
 
-function updateObjectContext(id, obj) {
+function updateObjectContext(id: string, obj: ioBroker.Object | null): void {
     if (obj) {
         // add state to state ID's list
         if (obj.type === 'state') {
@@ -1136,7 +1180,9 @@ function updateObjectContext(id, obj) {
     } else {
         // delete object from state ID's list
         const pos = context.stateIds.indexOf(id);
-        pos !== -1 && context.stateIds.splice(pos, 1);
+        if (pos !== -1) {
+            context.stateIds.splice(pos, 1);
+        }
         if (context.devices && context.channels) {
             const parts = id.split('.');
             parts.pop();
@@ -1173,7 +1219,7 @@ function updateObjectContext(id, obj) {
         let nn = context.objects[id].common ? context.objects[id].common.name : '';
 
         if (nn && typeof nn === 'object') {
-            nn = nn[words.getLanguage()] || nn.en;
+            nn = nn[getLanguage()] || nn.en;
         }
 
         if (n !== nn) {
@@ -1187,7 +1233,7 @@ function updateObjectContext(id, obj) {
     }
 }
 
-function main() {
+function main(): void {
     !debugMode && patchFont().then(patched => patched && adapter.log.debug('Font patched'));
 
     adapter.log.debug(`config.subscribe (Do not subscribe all states on start): ${adapter.config.subscribe}`);
@@ -1207,19 +1253,19 @@ function main() {
     context.errorLogFunction = webstormDebug ? console : adapter.log;
     activeStr = `${adapter.namespace}.scriptEnabled.`;
 
-    mods.fs = new require('./lib/protectFs')(adapter.log, utils.getAbsoluteDefaultDataDir());
+    mods.fs = new ProtectFs(adapter.log, getAbsoluteDefaultDataDir());
     mods['fs/promises'] = mods.fs.promises; // to avoid require('fs/promises');
 
     // try to read TS declarations
     try {
         tsAmbient = {
-            'javascript.d.ts': nodeFS.readFileSync(mods.path.join(__dirname, 'lib/javascript.d.ts'), 'utf8'),
+            'javascript.d.ts': readFileSync(mods.path.join(__dirname, 'lib/javascript.d.ts'), 'utf8'),
         };
         tsServer.provideAmbientDeclarations(tsAmbient);
         jsDeclarationServer.provideAmbientDeclarations(tsAmbient);
     } catch (e) {
         adapter.log.warn(`Could not read TypeScript ambient declarations: ${e.message}`);
-        // This should not happen, so send a error report to Sentry
+        // This should not happen, so send an error report to Sentry
         if (adapter.supportsFeature && adapter.supportsFeature('PLUGINS')) {
             const sentryInstance = adapter.getPluginInstance('sentry');
             if (sentryInstance) {
@@ -1423,11 +1469,11 @@ function main() {
                 if (adapter.config.mirrorPath) {
                     adapter.config.mirrorInstance = parseInt(adapter.config.mirrorInstance, 10) || 0;
                     if (adapter.instance === adapter.config.mirrorInstance) {
-                        const ioBDataDir = utils.getAbsoluteDefaultDataDir() + nodePath.sep;
-                        adapter.config.mirrorPath = nodePath.normalize(adapter.config.mirrorPath);
+                        const ioBDataDir = getAbsoluteDefaultDataDir() + sep;
+                        adapter.config.mirrorPath = normalize(adapter.config.mirrorPath);
                         let mirrorForbidden = false;
                         for (let dir of forbiddenMirrorLocations) {
-                            dir = nodePath.join(ioBDataDir, dir) + nodePath.sep;
+                            dir = join(ioBDataDir, dir) + sep;
                             if (dir.includes(adapter.config.mirrorPath) || adapter.config.mirrorPath.startsWith(dir)) {
                                 adapter.log.error(
                                     `The Mirror directory is not allowed to be a central ioBroker directory!`,
@@ -1495,52 +1541,61 @@ let globalDeclarations = '';
 // have access to, because it depends on the compile order
 let knownGlobalDeclarationsByScript = {};
 let globalScriptLines = 0;
-// let activeRegEx     = null;
 let activeStr = ''; // enabled state prefix
 let dayScheduleTimer = null; // schedule for astrological day
 let sunScheduleTimer = null; // schedule for sun moment times
 let timeScheduleTimer = null; // schedule for astrological day
 
-function getNextTimeEvent(time, useNextDay) {
-    const now = getAstroStartOfDay();
+function getNextTimeEvent(time: string, useNextDay?: boolean): Date {
+    const now: Date = getAstroStartOfDay();
     let [timeHours, timeMinutes] = time.split(':');
-    timeHours = parseInt(timeHours, 10);
-    timeMinutes = parseInt(timeMinutes, 10);
+    const nTimeHours = parseInt(timeHours, 10);
+    const nTimeMinutes = parseInt(timeMinutes, 10);
     if (
         useNextDay &&
-        (now.getHours() > timeHours || (now.getHours() === timeHours && now.getMinutes() > timeMinutes))
+        (now.getHours() > nTimeHours || (now.getHours() === nTimeHours && now.getMinutes() > nTimeMinutes))
     ) {
         now.setDate(now.getDate() + 1);
     }
 
-    now.setHours(timeHours);
-    now.setMinutes(timeMinutes);
+    now.setHours(nTimeHours);
+    now.setMinutes(nTimeMinutes);
 
     return now;
 }
 
-function getAstroEvent(date, astroEvent, start, end, offsetMinutes, isDayEnd, latitude, longitude, useNextDay) {
-    let ts = mods.suncalc.getTimes(date, latitude, longitude)[astroEvent];
+function getAstroEvent(
+    date: Date,
+    astroEvent: AstroEventName,
+    start: string,
+    end: string,
+    offsetMinutes: number | string,
+    isDayEnd: boolean,
+    latitude: number,
+    longitude: number,
+    useNextDay?: boolean,
+): Date {
+    let ts: Date = mods.suncalc.getTimes(date, latitude, longitude)[astroEvent];
     if (!ts || ts.getTime().toString() === 'NaN') {
         ts = isDayEnd ? getNextTimeEvent(end, useNextDay) : getNextTimeEvent(start, useNextDay);
     }
     ts.setMilliseconds(0);
-    ts.setMinutes(ts.getMinutes() + (parseInt(offsetMinutes, 10) || 0));
+    ts.setMinutes(ts.getMinutes() + (parseInt(offsetMinutes as unknown as string, 10) || 0));
 
     let [timeHoursStart, timeMinutesStart] = start.split(':');
-    timeHoursStart = parseInt(timeHoursStart, 10);
-    timeMinutesStart = parseInt(timeMinutesStart, 10) || 0;
+    const nTimeHoursStart = parseInt(timeHoursStart, 10);
+    const nTimeMinutesStart = parseInt(timeMinutesStart, 10) || 0;
 
-    if (ts.getHours() < timeHoursStart || (ts.getHours() === timeHoursStart && ts.getMinutes() < timeMinutesStart)) {
+    if (ts.getHours() < nTimeHoursStart || (ts.getHours() === nTimeHoursStart && ts.getMinutes() < nTimeMinutesStart)) {
         ts = getNextTimeEvent(start, useNextDay);
         ts.setSeconds(0);
     }
 
     let [timeHoursEnd, timeMinutesEnd] = end.split(':');
-    timeHoursEnd = parseInt(timeHoursEnd, 10);
-    timeMinutesEnd = parseInt(timeMinutesEnd, 10) || 0;
+    const nTimeHoursEnd = parseInt(timeHoursEnd, 10);
+    const nTimeMinutesEnd = parseInt(timeMinutesEnd, 10) || 0;
 
-    if (ts.getHours() > timeHoursEnd || (ts.getHours() === timeHoursEnd && ts.getMinutes() > timeMinutesEnd)) {
+    if (ts.getHours() > nTimeHoursEnd || (ts.getHours() === nTimeHoursEnd && ts.getMinutes() > nTimeMinutesEnd)) {
         ts = getNextTimeEvent(end, useNextDay);
         ts.setSeconds(0);
     }
@@ -1664,7 +1719,7 @@ function dayTimeSchedules(adapter, context) {
     dayScheduleTimer = setTimeout(dayTimeSchedules, nextTimeout, adapter, context);
 }
 
-function getAstroStartOfDay() {
+function getAstroStartOfDay(): Date {
     const d = new Date();
     d.setMinutes(0);
     d.setSeconds(0);
@@ -1771,22 +1826,20 @@ function tsLog(msg, sev) {
 // Due to a npm bug, virtual-tsc may be hoisted to the top level node_modules but
 // typescript may still be in the adapter level (https://npm.community/t/packages-with-peerdependencies-are-incorrectly-hoisted/4794),
 // so we need to tell virtual-tsc where typescript is
-tsc.setTypeScriptResolveOptions({
+setTypeScriptResolveOptions({
     paths: [require.resolve('typescript')],
 });
 // compiler instance for typescript
-/** @type {tsc.Server} */
-const tsServer = new tsc.Server(tsCompilerOptions, tsLog);
+const tsServer = new Server(tsCompilerOptions, tsLog);
 
 // compiler instance for global JS declarations
-/** @type {tsc.Server} */
-const jsDeclarationServer = new tsc.Server(jsDeclarationCompilerOptions, isCI ? false : undefined);
+const jsDeclarationServer = new Server(jsDeclarationCompilerOptions, isCI ? false : undefined);
 
 function addGetProperty(object) {
     try {
         Object.defineProperty(object, 'get', {
             value: function (id) {
-                return this[id] || this[adapter.namespace + '.' + id];
+                return this[id] || this[`${adapter.namespace}.${id}`];
             },
             enumerable: false,
         });
@@ -1815,26 +1868,6 @@ function fixLineNo(line) {
     }
     return line;
 }
-
-context.logError = function (msg, e, offs) {
-    const stack = e.stack ? e.stack.toString().split('\n') : e ? e.toString() : '';
-    if (!msg.includes('\n')) {
-        msg = msg.replace(/[: ]*$/, ': ');
-    }
-
-    //errorLogFunction.error(msg + stack[0]);
-    context.errorLogFunction.error(msg + fixLineNo(stack[0]));
-    for (let i = offs || 1; i < stack.length; i++) {
-        if (!stack[i]) {
-            continue;
-        }
-        if (stack[i].match(/runInNewContext|javascript\.js:/)) {
-            break;
-        }
-        //adapter.log.error(fixLineNo(stack[i]));
-        context.errorLogFunction.error(fixLineNo(stack[i]));
-    }
-};
 
 function createActiveObject(id, enabled, cb) {
     const idActive = `${adapter.namespace}.scriptEnabled.${id.substring(SCRIPT_CODE_MARKER.length)}`;
@@ -1892,7 +1925,7 @@ function createProblemObject(id, cb) {
         context.objects[idProblem] = {
             _id: idProblem,
             common: {
-                name: 'scriptProblem.' + id.substring(SCRIPT_CODE_MARKER.length),
+                name: `scriptProblem.${id.substring(SCRIPT_CODE_MARKER.length)}`,
                 desc: 'Script has a problem',
                 type: 'boolean',
                 expert: true,
@@ -1929,7 +1962,7 @@ function addToNames(obj) {
     if (obj.common && obj.common.name) {
         let name = obj.common.name;
         if (name && typeof name === 'object') {
-            name = name[words.getLanguage()] || name.en;
+            name = name[getLanguage()] || name.en;
         }
         if (!name || typeof name !== 'string') {
             // TODO, take name in current language
@@ -2079,7 +2112,7 @@ async function installLibraries() {
             } catch (e) {
                 adapter.log.warn(`Cannot install custom npm package "${moduleName}@${version}": ${e.message}`);
             }
-        } else if (!nodeFS.existsSync(`${__dirname}/node_modules/${depName}/package.json`)) {
+        } else if (!existsSync(`${__dirname}/node_modules/${depName}/package.json`)) {
             // js-controller < 6.x
             adapter.log.info(`Installing custom library (legacy mode): "${lib}"`);
 
@@ -2141,7 +2174,7 @@ function createVM(source, name, wrapAsync) {
             // lineOffset: globalScriptLines
         };
         return {
-            script: new vm.Script(source, options),
+            script: new Script(source, options),
         };
     } catch (e) {
         context.logError(`${name} compile failed:\r\nat `, e);
@@ -2577,7 +2610,7 @@ async function getData(callback) {
         if (!adapter.config.subscribe) {
             if (err || !res) {
                 adapter.log.error(`Could not initialize states: ${err ? err.message : 'no result'}`);
-                adapter.terminate(utils.EXIT_CODES.START_IMMEDIATELY_AFTER_STOP);
+                adapter.terminate(EXIT_CODES.START_IMMEDIATELY_AFTER_STOP);
                 return;
             }
             context.states = Object.assign(res, context.states);
@@ -2625,11 +2658,11 @@ async function getData(callback) {
 
         // set language for debug messages
         if (systemConfig?.common?.language) {
-            words.setLanguage(systemConfig.common.language);
+            setLanguage(systemConfig.common.language);
         } else if (adapter.language) {
-            words.setLanguage(adapter.language);
+            setLanguage(adapter.language);
         }
-        context.language = words.getLanguage();
+        context.language = getLanguage();
 
         // try to use system coordinates
         if (adapter.config.useSystemGPS) {
@@ -2848,34 +2881,35 @@ function debugStart(data) {
 }
 
 async function patchFont() {
-    let stat;
-    let dbFile;
+    let stat: Stats | undefined;
+    let dbFile: Buffer | undefined;
     try {
-        stat = nodeFS.statSync(`${__dirname}/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf`);
-        dbFile = await adapter.readFileAsync('javascript.admin', `vs/base/browser/ui/codicons/codicon/codicon.ttf`);
+        stat = statSync(`${__dirname}/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf`);
+        const _dbFile = await adapter.readFileAsync(
+            'javascript.admin',
+            `vs/base/browser/ui/codicons/codicon/codicon.ttf`,
+        );
+        if (_dbFile?.file) {
+            dbFile = _dbFile.file;
+        }
     } catch (error) {
         // ignore
     }
-    if (dbFile && dbFile.file) {
-        dbFile = dbFile.file;
-    }
 
-    if (!stat || stat.size !== 73452 || !dbFile || dbFile.byteLength !== 73452) {
+    if (stat?.size !== 73452 || dbFile?.byteLength !== 73452) {
         try {
             const buffer = Buffer.from(
-                JSON.parse(nodeFS.readFileSync(`${__dirname}/admin/vsFont/codicon.json`)),
+                JSON.parse(readFileSync(`${__dirname}/admin/vsFont/codicon.json`).toString()),
                 'base64',
             );
 
-            const zip = await require('jszip').loadAsync(buffer);
+            const jszip = await import('jszip');
+            const zip = await jszip.loadAsync(buffer);
             const data = await zip.file('codicon.ttf').async('arraybuffer');
             if (data.byteLength !== 73452) {
                 throw new Error('invalid font file!');
             }
-            nodeFS.writeFileSync(
-                `${__dirname}/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf`,
-                Buffer.from(data),
-            );
+            writeFileSync(`${__dirname}/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf`, Buffer.from(data));
             // upload this file
             await adapter.writeFileAsync(
                 'javascript.admin',
@@ -2887,9 +2921,8 @@ async function patchFont() {
             adapter.log.error(`Cannot patch font: ${error}`);
             return false;
         }
-    } else {
-        return false;
     }
+    return false;
 }
 
 // If started as allInOne mode => return function to create instance

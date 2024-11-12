@@ -1,9 +1,22 @@
-import {BufferEncodingOption, CopyOptions, Mode, ObjectEncodingOptions, OpenMode, PathLike} from 'node:fs';
+import {
+    BufferEncodingOption,
+    CopyOptions,
+    MakeDirectoryOptions,
+    Mode,
+    ObjectEncodingOptions,
+    OpenMode,
+    PathLike,
+    RmDirOptions,
+    RmOptions,
+    StatOptions,
+    Stats,
+    TimeLike,
+} from 'node:fs';
 import { Abortable } from 'node:events';
-import {FileHandle, FlagAndOpenMode} from 'fs/promises';
-import {NoParamCallback} from "fs";
-import {URL} from "node:url";
-import {Stream} from "node:stream";
+import { FileHandle, FlagAndOpenMode } from 'fs/promises';
+import { CopySyncOptions, NoParamCallback, PathOrFileDescriptor } from 'fs';
+import { URL } from 'node:url';
+import { Stream } from 'node:stream';
 
 const nodeFS = require('node:fs');
 const { sep, normalize, join } = require('node:path');
@@ -16,7 +29,14 @@ export default class ProtectFs {
 
     constructor(log: ioBroker.Logger, ioBrokerDataDir: string) {
         this.ioBrokerDataDir = ioBrokerDataDir;
-        this.log = log || console;
+        this.log = log || {
+            silly: (message: string): void => console.log(message),
+            debug: (message: string): void => console.debug(message),
+            info: (message: string): void => console.info(message),
+            warn: (message: string): void => console.warn(message),
+            error: (message: string): void => console.error(message),
+            level: 'info',
+        };
 
         this.promises = {
             access: async (path: PathLike, mode?: number): Promise<void> => {
@@ -59,103 +79,115 @@ export default class ProtectFs {
                     | Stream,
                 options?:
                     | (ObjectEncodingOptions & {
-                    mode?: Mode | undefined;
-                    flag?: OpenMode | undefined;
-                    /**
-                     * If all data is successfully written to the file, and `flush`
-                     * is `true`, `filehandle.sync()` is used to flush the data.
-                     * @default false
-                     */
-                    flush?: boolean | undefined;
-                } & Abortable)
+                          mode?: Mode | undefined;
+                          flag?: OpenMode | undefined;
+                          /**
+                           * If all data is successfully written to the file, and `flush`
+                           * is `true`, `filehandle.sync()` is used to flush the data.
+                           * @default false
+                           */
+                          flush?: boolean | undefined;
+                      } & Abortable)
                     | BufferEncoding
                     | null,
             ): Promise<void> => {
-                this.#checkProtected(arguments[0], true);
-                return nodeFS.promises.writeFile.apply(this, arguments); // async function writeFile(path, data, options) {
+                this.#checkProtected(file, true);
+                return nodeFS.promises.writeFile.call(this, file, data, options); // async function writeFile(path, data, options) {
             },
             unlink: async (path: PathLike): Promise<void> => {
                 this.#checkProtected(path, false);
-                return nodeFS.promises.unlink.apply(this, arguments); // async function unlink(path) {
+                return nodeFS.promises.unlink.call(this, path); // async function unlink(path) {
             },
             appendFile: async (
                 path: PathLike | FileHandle,
                 data: string | Uint8Array,
-                options?: (ObjectEncodingOptions & FlagAndOpenMode & { flush?: boolean | undefined }) | BufferEncoding | null,
+                options?:
+                    | (ObjectEncodingOptions & FlagAndOpenMode & { flush?: boolean | undefined })
+                    | BufferEncoding
+                    | null,
             ): Promise<void> => {
                 this.#checkProtected(path, false);
-                return nodeFS.promises.appendFile.apply(this, arguments); // async function appendFile(path, data, options) {
+                return nodeFS.promises.appendFile.call(this, path, data, options); // async function appendFile(path, data, options) {
             },
             chmod: async (path: PathLike, mode: Mode): Promise<void> => {
                 this.#checkProtected(path, false);
-                return nodeFS.promises.chmod.apply(this, arguments); // async function chmod(path, mode) {
+                return nodeFS.promises.chmod.call(this, path, mode); // async function chmod(path, mode) {
             },
             copyFile: async (src: PathLike, dest: PathLike, mode?: number): Promise<void> => {
                 this.#checkProtected(src, false);
                 this.#checkProtected(dest, false);
-                return nodeFS.promises.copyFile.apply(this, arguments); // async function copyFile(src, dest, mode) {
+                return nodeFS.promises.copyFile.call(this, src, dest, mode); // async function copyFile(src, dest, mode) {
             },
             rename: async (oldPath: PathLike, newPath: PathLike): Promise<void> => {
                 this.#checkProtected(oldPath, false);
                 this.#checkProtected(newPath, false);
-                return nodeFS.promises.rename.apply(this, arguments); // async function rename(oldPath, newPath) {
+                return nodeFS.promises.rename.call(this, oldPath, newPath); // async function rename(oldPath, newPath) {
             },
             open: async (path: PathLike, flags?: string | number, mode?: Mode): Promise<FileHandle> => {
                 this.#checkProtected(path, true);
-                return nodeFS.promises.open.apply(this, arguments); // async function open(path, flags, mode) {
+                return nodeFS.promises.open.call(this, path, flags, mode); // async function open(path, flags, mode) {
             },
             truncate: async (path: PathLike, len?: number): Promise<void> => {
-                this.#checkProtected(arguments[0], false);
-                return nodeFS.promises.truncate.apply(this, arguments); // async function truncate(path, len = 0) {
+                this.#checkProtected(path, false);
+                return nodeFS.promises.truncate.call(this, path, len); // async function truncate(path, len = 0) {
             },
-            stat: async () => {
-                this.#checkProtected(arguments[0], true);
-                return nodeFS.promises.stat.apply(this, arguments); // async function stat(path, options = { bigint: false }) {
+            stat: async (path: PathLike, opts?: StatOptions): Promise<Stats> => {
+                this.#checkProtected(path, true);
+                return nodeFS.promises.stat.call(this, path, opts); // async function stat(path, options = { bigint: false }) {
             },
-            utimes: async () => {
-                this.#checkProtected(arguments[0], false);
-                return nodeFS.promises.utimes.apply(this, arguments); // async function utimes(path, atime, mtime) {
+            utimes: async (path: PathLike, atime: TimeLike, mtime: TimeLike): Promise<void> => {
+                this.#checkProtected(path, false);
+                return nodeFS.promises.utimes.call(this, path, atime, mtime); // async function utimes(path, atime, mtime) {
             },
-            readdir: async () => {
-                this.#checkProtected(arguments[0], true);
-                return nodeFS.promises.readdir.apply(this, arguments); // async function readdir(path, options) {
+            readdir: async (
+                path: PathLike,
+                options?: ObjectEncodingOptions & {
+                    withFileTypes: true;
+                    recursive?: boolean | undefined;
+                },
+            ) => {
+                this.#checkProtected(path, true);
+                return nodeFS.promises.readdir.call(this, path, options); // async function readdir(path, options) {
             },
-            lchmod: async () => {
-                this.#checkProtected(arguments[0], false);
-                return nodeFS.promises.lchmod.apply(this, arguments); // async function lchmod(path, mode) {
+            lchmod: async (path: PathLike, mode: Mode): Promise<void> => {
+                this.#checkProtected(path, false);
+                return nodeFS.promises.lchmod.call(this, path, mode); // async function lchmod(path, mode) {
             },
-            lchown: async () => {
-                this.#checkProtected(arguments[0], false);
-                return nodeFS.promises.lchown.apply(this, arguments); // async function lchown(path, uid, gid) {
+            lchown: async (path: PathLike, uid: number, gid: number): Promise<void> => {
+                this.#checkProtected(path, false);
+                return nodeFS.promises.lchown.call(this, path, uid, gid); // async function lchown(path, uid, gid) {
             },
-            link: async () => {
-                this.#checkProtected(arguments[0], false);
-                this.#checkProtected(arguments[1], false);
-                return nodeFS.promises.link.apply(this, arguments); // async function link(existingPath, newPath) {
+            link: async (existingPath: PathLike, newPath: PathLike): Promise<void> => {
+                this.#checkProtected(existingPath, false);
+                this.#checkProtected(newPath, false);
+                return nodeFS.promises.link.call(this, existingPath, newPath); // async function link(existingPath, newPath) {
             },
-            lstat: async () => {
-                this.#checkProtected(arguments[0], true);
-                return nodeFS.promises.lstat.apply(this, arguments); // async function lstat(path, options = { bigint: false }) {
+            lstat: async (path: PathLike, opts?: StatOptions): Promise<Stats> => {
+                this.#checkProtected(path, true);
+                return nodeFS.promises.lstat.call(this, path, opts); // async function lstat(path, options = { bigint: false }) {
             },
-            lutimes: async () => {
-                this.#checkProtected(arguments[0], false);
-                return nodeFS.promises.lutimes.apply(this, arguments); // async function lutimes(path, atime, mtime) {
+            lutimes: async (path: PathLike, atime: TimeLike, mtime: TimeLike): Promise<void> => {
+                this.#checkProtected(path, false);
+                return nodeFS.promises.lutimes.call(this, path, atime, mtime); // async function lutimes(path, atime, mtime) {
             },
-            mkdir: async () => {
-                this.#checkProtected(arguments[0], false);
-                return nodeFS.promises.mkdir.apply(this, arguments); // async function mkdir(path, options) {
+            mkdir: async (
+                path: PathLike,
+                options?: Mode | MakeDirectoryOptions | null,
+            ): Promise<string | undefined> => {
+                this.#checkProtected(path, false);
+                return nodeFS.promises.mkdir.call(this, path, options); // async function mkdir(path, options) {
             },
-            mkdtemp: async () => {
-                this.#checkProtected(arguments[0], false);
-                return nodeFS.promises.mkdtemp.apply(this, arguments); // async function mkdtemp(prefix, options) {
+            mkdtemp: async (prefix: string, options: BufferEncodingOption): Promise<Buffer> => {
+                this.#checkProtected(prefix, false);
+                return nodeFS.promises.mkdtemp.call(this, prefix, options); // async function mkdtemp(prefix, options) {
             },
-            rm: async () => {
-                this.#checkProtected(arguments[0], false);
-                return nodeFS.promises.rm.apply(this, arguments); // async function rm(path, options) {
+            rm: async (path: PathLike, options?: RmOptions): Promise<void> => {
+                this.#checkProtected(path, false);
+                return nodeFS.promises.rm.call(this, path, options); // async function rm(path, options) {
             },
-            rmdir: async () => {
-                this.#checkProtected(arguments[0], false);
-                return nodeFS.promises.rmdir.apply(this, arguments); // async function rmdir(path, options) {
+            rmdir: async (path: PathLike, options?: RmDirOptions): Promise<void> => {
+                this.#checkProtected(path, false);
+                return nodeFS.promises.rmdir.call(this, path, options); // async function rmdir(path, options) {
             },
         };
 
@@ -220,20 +252,32 @@ export default class ProtectFs {
         return nodeFS.cp(source, destination, opts);
     }
 
-    cpSync() {
-        this.#checkProtected(arguments[0], false);
-        this.#checkProtected(arguments[1], false);
-        return nodeFS.cpSync.apply(this, arguments); // function cpSync(src, dest, options) {
+    cpSync(source: string | URL, destination: string | URL, opts?: CopySyncOptions): void {
+        this.#checkProtected(source, false);
+        this.#checkProtected(destination, false);
+        return nodeFS.cpSync.call(this, source, destination, opts); // function cpSync(src, dest, options) {
     }
 
-    readFile() {
-        this.#checkProtected(arguments[0], true);
-        return nodeFS.readFile.apply(this, arguments); // function readFile(path, options, callback) {
+    readFile(path: PathOrFileDescriptor, callback: (err: NodeJS.ErrnoException | null, data: Buffer) => void): void {
+        if (typeof path !== 'number') {
+            this.#checkProtected(path, true);
+        }
+        return nodeFS.readFile.call(this, path, callback); // function readFile(path, options, callback) {
     }
 
-    readFileSync() {
-        this.#checkProtected(arguments[0], true);
-        return nodeFS.readFileSync.apply(this, arguments); // function readFileSync(path, options) {
+    readFileSync(
+        path: PathOrFileDescriptor,
+        options:
+            | {
+                  encoding: BufferEncoding;
+                  flag?: string | undefined;
+              }
+            | BufferEncoding,
+    ): string | Buffer {
+        if (typeof path !== 'number') {
+            this.#checkProtected(path, true);
+        }
+        return nodeFS.readFileSync.call(this, path, options); // function readFileSync(path, options) {
     }
 
     readlink() {

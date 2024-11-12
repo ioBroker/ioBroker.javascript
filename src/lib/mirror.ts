@@ -17,7 +17,7 @@ import { ScriptType } from '../types';
 
 const MODE_0777 = 511;
 
-export default class Mirror {
+export class Mirror {
     private adapter: ioBroker.Adapter;
     private readonly diskRoot: string;
     private readonly from: string;
