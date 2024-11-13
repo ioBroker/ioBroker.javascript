@@ -2865,10 +2865,9 @@ export function sandBox(
 
                     sandbox.verbose && sandbox.log(`getState(id=${id}, timerId=${timers[id]}) => not found`, 'info');
 
-                    context.logWithLineInfo &&
-                        context.logWithLineInfo.warn(
-                            `getState "${id}" not found (3)${states[id] !== undefined ? ` states[id]=${states[id]}` : ''}`,
-                        ); ///xxx
+                    context.logWithLineInfo?.warn(
+                        `getState "${id}" not found (3)${states[id] !== undefined ? ` states[id]=${states[id]}` : ''}`,
+                    ); ///xxx
                     return { val: null, notExist: true } as ioBroker.State & { notExist?: true };
                 }
             }

@@ -252,10 +252,10 @@ export class Mirror {
     /**
      * Write file to disk, synchron, catch (and print) error.
      *
-     * @param {string} id of script
-     * @returns {boolean} true if write was successful
+     * @param id of script
+     * @returns true if write was successful
      */
-    private _writeFile(id) {
+    private _writeFile(id: string): boolean {
         const diskListEntry = this.diskList[id];
         try {
             //check if the directory exists and create if not:

@@ -523,9 +523,9 @@ export default class ProtectFs {
         return nodeFS.rm.apply(this, arguments); // function rm(path, options, callback) {
     }
 
-    rmSync() {
-        this.#checkProtected(arguments[0], false);
-        return nodeFS.rmSync.apply(this, arguments); // function rmSync(path, options) {
+    rmSync(path: PathLike, options?: RmOptions): void {
+        this.#checkProtected(path, false);
+        return nodeFS.rmSync.call(this, path, options); // function rmSync(path, options) {
     }
 
     rmdir() {

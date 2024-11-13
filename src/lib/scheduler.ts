@@ -160,7 +160,6 @@ export class Scheduler {
     private log: {
         debug: (text: string) => void;
         info: (text: string) => void;
-        log: (text: string) => void;
         warn: (text: string) => void;
         error: (text: string) => void;
         silly: (text: string) => void;
@@ -175,7 +174,6 @@ export class Scheduler {
         log: {
             debug: (text: string) => void;
             info: (text: string) => void;
-            log: (text: string) => void;
             warn: (text: string) => void;
             error: (text: string) => void;
             silly: (text: string) => void;

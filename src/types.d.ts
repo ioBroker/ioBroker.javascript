@@ -1,4 +1,4 @@
-import Scheduler, { SchedulerRule } from './lib/scheduler';
+import { Scheduler, type SchedulerRule } from './lib/scheduler';
 import { ExecOptions } from 'node:child_process';
 import { AxiosHeaderValue, ResponseType } from 'axios';
 import type { Job } from 'node-schedule';
@@ -6,10 +6,11 @@ import { EventObj } from './lib/eventObj';
 import type { PatternEventCompareFunction } from './lib/patternCompareFunctions';
 import { AstroEvent } from './lib/consts';
 import * as JS from './lib/javascript';
+import {Script} from "node:vm";
 
 export interface AdapterConfig {
-    latitude: string;
-    longitude: string;
+    latitude: number;
+    longitude: number;
     enableSetObject: boolean;
     enableSendToHost: boolean;
     enableExec: boolean;
@@ -20,15 +21,15 @@ export interface AdapterConfig {
     mirrorPath: string;
     mirrorInstance: number;
     allowSelfSignedCerts: boolean;
-    sunriseEvent: string;
+    sunriseEvent: AstroEvent;
     sunriseOffset: number;
     sunriseLimitStart: string;
     sunriseLimitEnd: string;
-    sunsetEvent: string;
+    sunsetEvent: AstroEvent;
     sunsetOffset: number;
     sunsetLimitStart: string;
     sunsetLimitEnd: string;
-    createAstroStates: true;
+    createAstroStates: boolean;
     maxSetStatePerMinute: number;
     maxTriggersPerScript: number;
     gptKey: string;
@@ -117,15 +118,16 @@ export type PushoverOptions = {
 };
 
 export interface JsScript {
+    script: Script;
     onStopTimeout: number;
-    onStopCb: () => void;
+    onStopCb: (cb: () => void) => void;
     intervals: NodeJS.Timeout[];
     timeouts: NodeJS.Timeout[];
     schedules: IobSchedule[];
     wizards: string[];
     name: string;
     engineType: ScriptType;
-    _id: string;
+    _id: number;
     subscribes: { [pattern: string]: number };
     subscribesFile: { [key: string]: number };
     setStatePerMinuteCounter: number;
@@ -584,25 +586,28 @@ export interface JavascriptContext {
     timers: { [scriptName: string]: JavascriptTimer[] };
     enums: string[];
     timerId: number;
-    names: { [name: string]: string }; // name: id
+    names: { [name: string]: string | string[] }; // name: id
     scripts: Record<string, JsScript>;
     messageBusHandlers: Record<
         string,
         Record<string, { id: number; sandbox: SandboxType; cb: (data: any, result: any) => void }[]>
     >;
-    logSubscriptions: Record<string, {
-        sandbox: SandboxType;
-        cb: (info: LogMessage) => void;
-        id: string;
-        severity: ioBroker.LogLevel | '*';
-    }[]>;
+    logSubscriptions: Record<
+        string,
+        {
+            sandbox: SandboxType;
+            cb: (info: LogMessage) => void;
+            id: string;
+            severity: ioBroker.LogLevel | '*';
+        }[]
+    >;
     tempDirectories: { [scriptName: string]: string }; // name: path
     folderCreationVerifiedObjects: Record<string, boolean>;
     updateLogSubscriptions: () => void;
     convertBackStringifiedValues: (id: string, state: ioBroker.State | null | undefined) => ioBroker.State;
     updateObjectContext: (id: string, obj: ioBroker.Object) => void;
-    prepareStateObject: (id: string, state: ioBroker.SettableState) => ioBroker.State;
-    debugMode: boolean;
+    prepareStateObject: (id: string, state: ioBroker.StateValue | ioBroker.SettableState | null, ack?: boolean | 'true' | 'false') => ioBroker.State;
+    debugMode: string | undefined;
     timeSettings: {
         format12: boolean;
         leadingZeros: boolean;
@@ -612,7 +617,9 @@ export interface JavascriptContext {
     language: ioBroker.Languages;
     logError: (message: string, ...args: any[]) => void;
     logWithLineInfo?: {
-        warn: (message: string, ...args: any[]) => void;
+        warn: (message: string) => void;
+        error: (message: string) => void;
+        info: (message: string) => void;
     };
     schedules?: string[];
 }
