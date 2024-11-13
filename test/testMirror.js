@@ -1,7 +1,7 @@
+const os = require('node:os');
+const path = require('node:path');
+const fs = require('node:fs');
 const expect = require('chai').expect;
-const os = require('os');
-const path = require('path');
-const fs = require('fs');
 const Mirror = require('../lib/mirror');
 
 describe('Mirror', () => {
@@ -24,7 +24,7 @@ describe('Mirror', () => {
         });
 
         describe('watchFolders', () => {
-            it('notifies about changes to normal files', (done) => {
+            it('notifies about changes to normal files', done => {
                 const script = path.join(watched, 'script.js');
                 fs.closeSync(fs.openSync(script, 'w'));
 
@@ -39,7 +39,7 @@ describe('Mirror', () => {
                 fs.appendFileSync(script, 'some code');
             });
 
-            it('notifies about changes to symlinked files', (done) => {
+            it('notifies about changes to symlinked files', done => {
                 // Script is located in an unwatched directory...
                 const unwatched = fs.mkdtempSync(path.join(os.tmpdir(), 'mirror-test-unwatched-'));
 
@@ -61,7 +61,7 @@ describe('Mirror', () => {
                 fs.appendFileSync(script, 'some code');
             });
 
-            it('notifies about changes to symlinked directories', (done) => {
+            it('notifies about changes to symlinked directories', done => {
                 // Script is located in an unwatched directory...
                 const unwatched = fs.mkdtempSync(path.join(os.tmpdir(), 'mirror-test-unwatched-'));
 
@@ -91,26 +91,18 @@ describe('Mirror', () => {
                 fs.appendFileSync(script, 'some code');
             });
 
-            it('notifies about changes to relatively symlinked files', (done) => {
+            it('notifies about changes to relatively symlinked files', done => {
                 // Script is located in an unwatched directory...
-                const unwatched = fs.mkdtempSync(
-                    path.join(os.tmpdir(), 'mirror-test-unwatched-')
-                );
+                const unwatched = fs.mkdtempSync(path.join(os.tmpdir(), 'mirror-test-unwatched-'));
 
                 const script = path.join(unwatched, 'script.js');
                 fs.closeSync(fs.openSync(script, 'w'));
 
                 // ...but symlinked as a file from a watched directory.
                 const symlink = path.join(watched, 'symlinked-script.js');
-                const relativeDirectory = path.relative(
-                    path.dirname(symlink),
-                    path.dirname(script)
-                );
+                const relativeDirectory = path.relative(path.dirname(symlink), path.dirname(script));
 
-                fs.symlinkSync(
-                    path.join(relativeDirectory, path.basename(script)),
-                    symlink
-                );
+                fs.symlinkSync(path.join(relativeDirectory, path.basename(script)), symlink);
 
                 mirror.onFileChange = (_event, file) => {
                     expect(path.normalize(file)).to.equal(symlink);
@@ -123,7 +115,7 @@ describe('Mirror', () => {
                 fs.appendFileSync(script, 'some code');
             });
 
-            it('notifies about changes to relatively symlinked directories', (done) => {
+            it('notifies about changes to relatively symlinked directories', done => {
                 // Script is located in an unwatched directory...
                 const unwatched = fs.mkdtempSync(path.join(os.tmpdir(), 'mirror-test-unwatched-'));
 

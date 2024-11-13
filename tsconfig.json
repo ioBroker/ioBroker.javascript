@@ -23,9 +23,8 @@
         // "noUnusedLocals": true,
         // "noUnusedParameters": true,
         "target": "es2022",
+        "esModuleInterop": true,
         "types": ["node", "@iobroker/types"],
     },
-    "include": ["lib/**/*.js", "lib/**/*.d.ts",
-        "src/main"
-    ]
+    "include": ["src/**/*.ts"]
 }

@@ -1,4 +1,5 @@
 import { fork, type ForkOptions } from 'node:child_process';
+import type { DebugState } from '../types';
 
 const adapter = {
     log: {
@@ -7,7 +8,7 @@ const adapter = {
         warn: (text: string) => console.warn(text),
         debug: (text: string) => console.log(text),
     },
-    setState: (id:string, val: any): void => {
+    setState: (id: string, val: any): void => {
         try {
             val = JSON.parse(val);
         } catch (e) {
@@ -18,7 +19,7 @@ const adapter = {
     extendForeignObjectAsync: (id: string, obj: Partial<ioBroker.ScriptObject>) => {
         console.log(`EXTEND: ${id} ${JSON.stringify(obj)}`);
         return Promise.resolve();
-    }
+    },
 };
 const context: {
     objects: Record<string, ioBroker.Object>;
@@ -26,15 +27,7 @@ const context: {
     objects: {},
 };
 
-const debugState: {
-    scriptName: string;
-    child: any;
-    promiseOnEnd: any;
-    paused: boolean;
-    endTimeout: NodeJS.Timeout | null;
-    running: boolean;
-    breakOnStart: boolean;
-} = {
+const debugState: DebugState = {
     scriptName: '',
     child: null,
     promiseOnEnd: null,
@@ -42,32 +35,38 @@ const debugState: {
     endTimeout: null,
     running: false,
     breakOnStart: false,
+    started: 0,
 };
 
-function stopDebug() {
+function stopDebug(): Promise<void> {
     if (debugState.child) {
         sendToInspector({ cmd: 'end' });
         debugState.endTimeout = setTimeout(() => {
             debugState.endTimeout = null;
-            debugState.child.kill('SIGTERM');
+            debugState.child?.kill('SIGTERM');
         });
+        debugState.promiseOnEnd = debugState.promiseOnEnd || Promise.resolve(0);
     } else {
-        debugState.promiseOnEnd = Promise.resolve();
+        debugState.promiseOnEnd = Promise.resolve(0);
     }
 
     return debugState.promiseOnEnd.then(() => {
         debugState.child = null;
         debugState.running = false;
         debugState.scriptName = '';
-        debugState.endTimeout && clearTimeout(debugState.endTimeout);
-        debugState.endTimeout = null;
+        if (debugState.endTimeout) {
+            clearTimeout(debugState.endTimeout);
+            debugState.endTimeout = null;
+        }
     });
 }
 
-function disableScript(id) {
+function disableScript(id: string): Promise<void> {
     const obj = context.objects[id];
     if (obj?.common?.enabled) {
-        return adapter.extendForeignObjectAsync(obj._id, { common: { enabled: false } } as Partial<ioBroker.ScriptObject>);
+        return adapter.extendForeignObjectAsync(obj._id, {
+            common: { enabled: false },
+        } as Partial<ioBroker.ScriptObject>);
     }
     return Promise.resolve();
 }
@@ -76,8 +75,8 @@ function sendToInspector(message: string | Record<string, any>): void {
     if (typeof message === 'string') {
         try {
             message = JSON.parse(message);
-        } catch (e) {
-            adapter.log.error(`Cannot parse message to inspector: ${message}`);
+        } catch {
+            adapter.log.error(`Cannot parse message to inspector: ${JSON.stringify(message)}`);
             return adapter.setState('debug.from', JSON.stringify({ error: 'Cannot parse message to inspector' }));
         }
     }
@@ -89,7 +88,7 @@ function sendToInspector(message: string | Record<string, any>): void {
         return adapter.setState('debug.from', JSON.stringify({ error: `Cannot send command to terminated inspector` }));
     }
 }
-
+/*
 function childPrint(text: string): void {
     console.log(
         text
@@ -100,8 +99,9 @@ function childPrint(text: string): void {
             .join('\n'),
     );
 }
+*/
 
-function debugScript(data): Promise<void> {
+function debugScript(data: { breakOnStart?: boolean; scriptName: string }): Promise<void> {
     // stop a script if it is running
 
     return disableScript(data.scriptName)
@@ -133,7 +133,7 @@ function debugScript(data): Promise<void> {
                 };
                 try {
                     debugMessage = JSON.parse(message);
-                } catch (e) {
+                } catch {
                     return adapter.log.error(`Cannot parse message from inspector: ${message}`);
                 }
 
@@ -141,7 +141,7 @@ function debugScript(data): Promise<void> {
 
                 switch (debugMessage.cmd) {
                     case 'ready': {
-                        debugState.child.send(JSON.stringify({ cmd: 'start', scriptName: debugState.scriptName }));
+                        debugState.child?.send(JSON.stringify({ cmd: 'start', scriptName: debugState.scriptName }));
                         break;
                     }
 
@@ -168,7 +168,9 @@ function debugScript(data): Promise<void> {
                     }
 
                     case 'readyToDebug': {
-                        console.log(`readyToDebug (set breakpoints): [${debugMessage.scriptId}] ${debugMessage.script}`);
+                        console.log(
+                            `readyToDebug (set breakpoints): [${debugMessage.scriptId}] ${debugMessage.script}`,
+                        );
                         break;
                     }
                 }

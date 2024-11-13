@@ -1,14 +1,14 @@
-import { Scheduler, type SchedulerRule } from './lib/scheduler';
-import { ExecOptions } from 'node:child_process';
-import { AxiosHeaderValue, ResponseType } from 'axios';
+import type { ExecOptions, ChildProcess } from 'node:child_process';
+import type { Script } from 'node:vm';
+import type { AxiosHeaderValue, ResponseType } from 'axios';
 import type { Job } from 'node-schedule';
-import { EventObj } from './lib/eventObj';
-import type { PatternEventCompareFunction } from './lib/patternCompareFunctions';
-import { AstroEvent } from './lib/consts';
-import * as JS from './lib/javascript';
-import {Script} from "node:vm";
 
-export interface AdapterConfig {
+import type { Scheduler, SchedulerRule } from './lib/scheduler';
+import type { EventObj } from './lib/eventObj';
+import type { PatternEventCompareFunction } from './lib/patternCompareFunctions';
+import type { AstroEvent } from './lib/consts';
+
+export interface JavaScriptAdapterConfig {
     latitude: number;
     longitude: number;
     enableSetObject: boolean;
@@ -146,7 +146,7 @@ export type AstroRule = {
 
 export type SandboxType = {
     mods: Record<string, any>;
-    _id: string;
+    _id: number;
     name: string; // deprecated
     scriptName: string;
     instance: number;
@@ -167,7 +167,7 @@ export type SandboxType = {
     $: (selector: string) => any;
     log: (msg: string, severity?: ioBroker.LogLevel) => void;
     onLog: (severity: ioBroker.LogLevel, callback: (info: any) => void) => number;
-    onLogUnregister: (idOrCallbackOrSeverity: string | ((msg: string) => void)) => void;
+    onLogUnregister: (idOrCallbackOrSeverity: number | ((msg: string) => void)) => void;
     exec: (
         cmd: string,
         options: ExecOptions | ((error: Error | null | string, stdout?: string, stderr?: string) => void),
@@ -245,6 +245,7 @@ export type SandboxType = {
             | SchedulerRule
             | string
             | (TimeRule | AstroRule | Pattern | SchedulerRule | string)[],
+        // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
         callbackOrChangeTypeOrId: string | ChangeType | ((event?: EventObj) => void),
         value?: any,
     ) =>
@@ -269,6 +270,7 @@ export type SandboxType = {
             | SchedulerRule
             | string
             | (TimeRule | AstroRule | Pattern | SchedulerRule | string)[],
+        // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
         callbackOrChangeTypeOrId: string | ChangeType | ((event?: EventObj) => void),
         value?: any,
     ) =>
@@ -284,8 +286,14 @@ export type SandboxType = {
         fileNamePattern: string | string[],
         withFileOrCallback:
             | boolean
-            | ((id: string, fileName: string, size: number, file?: string | Buffer, mimeType?: string) => void),
-        callback?: (id: string, fileName: string, size: number, file?: string | Buffer, mimeType?: string) => void,
+            | ((id: string, fileName: string, size: number | null, file?: string | Buffer, mimeType?: string) => void),
+        callback?: (
+            id: string,
+            fileName: string,
+            size: number | null,
+            file?: string | Buffer,
+            mimeType?: string,
+        ) => void,
     ) => undefined | FileSubscriptionResult | (undefined | FileSubscriptionResult)[];
     offFile: (
         idOrObject: FileSubscriptionResult | string | (FileSubscriptionResult | string)[],
@@ -339,7 +347,7 @@ export type SandboxType = {
     getState: (
         id: string,
         callback?: (err: Error | null | undefined, state?: ioBroker.State | null) => void,
-    ) => undefined | void | (ioBroker.State & { notExist?: true });
+    ) => undefined | void | (ioBroker.State & { notExist?: true }) | null;
     existsState: (
         id: string,
         callback?: (err: Error | null | undefined, stateExists?: boolean) => void,
@@ -351,18 +359,18 @@ export type SandboxType = {
     getIdByName: (name: string, alwaysArray?: boolean) => string | string[] | null;
     getObject: (
         id: string,
-        enumName: null | string | ((err: Error | null | undefined, obj?: ioBroker.Object | null | undefined) => void),
-        cb: (err: Error | null | undefined, obj?: ioBroker.Object | null | undefined) => void,
+        enumName: null | string | ((err: Error | null | undefined, obj?: ioBroker.Object | null) => void),
+        cb: (err: Error | null | undefined, obj?: ioBroker.Object | null) => void,
     ) => void;
     setObject: (
         id: string,
         obj: ioBroker.Object,
-        callback?: (err?: Error | null | string | undefined, res?: { id: string }) => void,
+        callback?: (err?: Error | null | string, res?: { id: string }) => void,
     ) => void;
     extendObject: (
         id: string,
         obj: Partial<ioBroker.Object>,
-        callback?: (err?: Error | null | string | undefined, res?: { id: string }) => void,
+        callback?: (err?: Error | null | string, res?: { id: string }) => void,
     ) => void;
     deleteObject: (id: string, isRecursive?: boolean, callback?: ioBroker.ErrorCallback) => void;
     getEnums: (enumName: string) => { id: string; members: string[]; name: ioBroker.StringOrTranslated }[];
@@ -376,13 +384,18 @@ export type SandboxType = {
     ) => void;
     createState: (
         name: string,
-        initValue: ioBroker.StateValue,
-        forceCreation: boolean,
-        common: Partial<ioBroker.ObjectCommon>,
-        native: Record<string, any>,
-        callback: (err: Error | null) => void,
+        initValue: undefined | ioBroker.StateValue | ioBroker.State,
+        forceCreation:
+            | boolean
+            | undefined
+            | Record<string, any>
+            | Partial<ioBroker.StateCommon>
+            | ((err: Error | null) => void),
+        common?: Partial<ioBroker.StateCommon> | ((err: Error | null) => void),
+        native?: Record<string, any> | ((err: Error | null) => void),
+        callback?: (error: Error | null | undefined, id?: string) => void,
     ) => void;
-    deleteState: (id: string, callback: (err: Error | null) => void) => void;
+    deleteState: (id: string, callback: (err: Error | null | undefined, found?: boolean) => void) => void;
     sendTo: (
         adapter: string,
         cmd: string,
@@ -414,29 +427,33 @@ export type SandboxType = {
     ) => boolean;
     onStop: (cb: () => void, timeout?: number) => void;
     formatValue: (value: number | string, decimals: number | string, format?: string) => string;
-    formatDate: (date: Date, format: string, language: string) => string;
+    formatDate: (
+        date: Date | string | number | iobJS.AstroDate,
+        format?: string,
+        language?: ioBroker.Languages,
+    ) => string;
     formatTimeDiff: (diff: number, format?: string) => string;
     getDateObject: (date: any) => Date;
-    writeFile: (adapter: string, fileName: string, data: any, callback: (err: Error | null) => void) => void;
+    writeFile: (adapter: string, fileName: string, data: any, callback?: (err?: Error | null) => void) => void;
     readFile: (
         adapter: string,
-        fileName: string | ((err: Error | null, data?: Buffer | string, mimeType?: string) => void),
-        callback: (err: Error | null, data?: Buffer | string, mimeType?: string) => void,
+        fileName: string | ((err: Error | null | undefined, data?: Buffer | string, mimeType?: string) => void),
+        callback: (err: Error | null | undefined, data?: Buffer | string, mimeType?: string) => void,
     ) => void;
-    unlink: (adapter: string, fileName: string, callback: (err: Error | null) => void) => void;
-    delFile: (adapter: string, fileName: string, callback: (err: Error | null) => void) => void;
-    rename: (adapter: string, oldName: string, newName: string, callback: (err: Error | null) => void) => void;
-    renameFile: (adapter: string, oldName: string, newName: string, callback: (err: Error | null) => void) => void;
+    unlink: (adapter: string, fileName: string, callback?: (err?: Error | null) => void) => void;
+    delFile: (adapter: string, fileName: string, callback?: (err?: Error | null) => void) => void;
+    rename: (adapter: string, oldName: string, newName: string, callback?: (err?: Error | null) => void) => void;
+    renameFile: (adapter: string, oldName: string, newName: string, callback?: (err?: Error | null) => void) => void;
     getHistory: (instance: string, options: any, callback: (err: Error | null, result: any) => void) => void;
-    runScript: (scriptName: string, callback?: (err: Error | null) => void) => boolean;
+    runScript: (scriptName: string, callback?: (err?: Error | null) => void) => boolean;
     runScriptAsync: (scriptName: string) => Promise<void>;
     startScript: (
         scriptName: string,
-        ignoreIfStarted: boolean | ((err: Error | null, started: boolean) => void),
-        callback?: (err: Error | null, started: boolean) => void,
+        ignoreIfStarted: boolean | ((err: Error | null | undefined, started: boolean) => void),
+        callback?: (err: Error | null | undefined, started: boolean) => void,
     ) => boolean;
     startScriptAsync: (scriptName: string, ignoreIfStarted?: boolean) => Promise<boolean>;
-    stopScript: (scriptName: string, callback: (err: Error | null, stopped: boolean) => void) => boolean;
+    stopScript: (scriptName: string, callback: (err: Error | null | undefined, stopped: boolean) => void) => boolean;
     stopScriptAsync: (scriptName: string) => Promise<boolean>;
     isScriptActive: (scriptName: string) => boolean;
     startInstanceAsync: (instanceName: string) => Promise<boolean>;
@@ -469,11 +486,14 @@ export type SandboxType = {
     jsonataExpression: (data: any, expression: string) => any;
     wait: (ms: number) => Promise<void>;
     sleep: (ms: number) => Promise<void>;
-    onObject: (pattern: string, callback: (data: any) => void) => void;
+    onObject: (
+        pattern: string | string[],
+        callback: (id: string, obj?: ioBroker.Object | null) => void,
+    ) => SubscribeObject | SubscribeObject[] | null;
     subscribeObject: (
         pattern: string | string[],
         callback: (id: string, obj?: ioBroker.Object | null) => void,
-    ) => SubscribeObject | SubscribeObject[];
+    ) => SubscribeObject | SubscribeObject[] | null;
     unsubscribeObject: (idOrObject: SubscribeObject | SubscribeObject[]) => boolean | boolean[];
     _sendToFrontEnd: (blockId: string, data: any) => void;
     logHandler?: ioBroker.LogLevel | '*';
@@ -534,6 +554,18 @@ export type Pattern = {
     enumName?: RegExp | string | string[];
 };
 
+export type DebugState = {
+    scriptName: string;
+    child: null | ChildProcess;
+    promiseOnEnd: null | Promise<number>;
+    paused: boolean;
+    started: number;
+    endTimeout?: null | NodeJS.Timeout;
+    running: boolean;
+    adapterInstance?: string;
+    breakOnStart?: boolean;
+};
+
 export type Selector = {
     attr: string;
     value: string;
@@ -555,7 +587,7 @@ export type FileSubscriptionResult = {
     idRegEx: RegExp | undefined;
     fileRegEx: RegExp | undefined;
     withFile: boolean;
-    callback: (id: string, fileName: string, size: number, withFile: boolean) => void;
+    callback: (id: string, fileName: string, size: number | null, withFile: boolean) => void;
 };
 
 export interface JavascriptContext {
@@ -580,9 +612,9 @@ export interface JavascriptContext {
     adapterSubs: Record<string, string[]>;
     cacheObjectEnums: Record<string, { enumIds: string[]; enumNames: string[] }>;
     isEnums: boolean; // If some subscription wants enum
-    channels: Record<string, string[]>;
-    devices: Record<string, string[]>;
-    scheduler: Scheduler;
+    channels: Record<string, string[]> | null;
+    devices: Record<string, string[]> | null;
+    scheduler: Scheduler | null;
     timers: { [scriptName: string]: JavascriptTimer[] };
     enums: string[];
     timerId: number;
@@ -597,29 +629,24 @@ export interface JavascriptContext {
         {
             sandbox: SandboxType;
             cb: (info: LogMessage) => void;
-            id: string;
+            id: number;
             severity: ioBroker.LogLevel | '*';
         }[]
     >;
     tempDirectories: { [scriptName: string]: string }; // name: path
     folderCreationVerifiedObjects: Record<string, boolean>;
     updateLogSubscriptions: () => void;
-    convertBackStringifiedValues: (id: string, state: ioBroker.State | null | undefined) => ioBroker.State;
+    convertBackStringifiedValues: (
+        id: string,
+        state: ioBroker.State | null | undefined,
+    ) => ioBroker.State | null | undefined;
     updateObjectContext: (id: string, obj: ioBroker.Object) => void;
-    prepareStateObject: (id: string, state: ioBroker.StateValue | ioBroker.SettableState | null, ack?: boolean | 'true' | 'false') => ioBroker.State;
+    prepareStateObject: (id: string, state: ioBroker.SettableState | null) => ioBroker.State;
     debugMode: string | undefined;
-    timeSettings: {
-        format12: boolean;
-        leadingZeros: boolean;
-    };
     rulesOpened: string | null; // opened rules
-    getAbsoluteDefaultDataDir: () => string;
     language: ioBroker.Languages;
+    getAbsoluteDefaultDataDir: () => string;
     logError: (message: string, ...args: any[]) => void;
-    logWithLineInfo?: {
-        warn: (message: string) => void;
-        error: (message: string) => void;
-        info: (message: string) => void;
-    };
+    logWithLineInfo: (message: string) => void;
     schedules?: string[];
 }

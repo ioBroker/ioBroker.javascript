@@ -24,7 +24,7 @@ import {
     SyntaxKind,
     type Modifier,
     NodeFlags,
-    ModuleDeclaration,
+    type ModuleDeclaration,
     visitNode,
     visitNodes,
     isSourceFile,
@@ -32,12 +32,8 @@ import {
     type NodeArray,
     type TransformerFactory,
     type SourceFile,
-    TransformationContext,
-    Transformer,
-    ModifierLike,
-    NamedExportBindings,
-    Expression,
-    ImportAttributes, ExportDeclaration,
+    type TransformationContext,
+    type Transformer,
 } from 'typescript';
 import { matchAll } from './tools';
 
@@ -47,7 +43,7 @@ import { matchAll } from './tools';
  * @param targetLib The lib to target (e.g., es2017)
  */
 export function resolveTypescriptLibs(
-    targetLib: 'es2017' | 'es2018' | 'es2019' | 'es2020' | 'es2021' | 'esnext',
+    targetLib: 'es2017' | 'es2018' | 'es2019' | 'es2020' | 'es2021' | 'es2022' | 'esnext',
 ): Record<string, string> {
     const typescriptLibRoot = dirname(require.resolve(`typescript/lib/lib.d.ts`));
     const ret: Record<string, string> = {};
@@ -92,7 +88,7 @@ function normalizeDTSImport(filename: string): string {
  *
  * @param pkg The package whose typings we're interested in
  * @param adapterScopedPackageName the package name on the system
- * @param [wrapInDeclareModule=false] Whether the root file should be wrapped in `declare module "<pkg>" { ... }`
+ * @param wrapInDeclareModule Whether the root file should be wrapped in `declare module "<pkg>" { ... }`
  * @returns The found declarations or undefined if none were found
  */
 export function resolveTypings(
@@ -140,7 +136,7 @@ export function resolveTypings(
     }
 
     const packageRoot: string = dirname(packageJsonPath);
-    const normalizeImportPath = (filename: string) =>
+    const normalizeImportPath = (filename: string): string =>
         normalize(
             `node_modules/${pkgIncludesTypings ? adapterScopedPackageName : `@types/${pkg}`}/${relative(packageRoot, filename)}`,
         ).replace(/\\/g, '/');
@@ -174,9 +170,9 @@ export function resolveTypings(
         let fileContent: string;
         try {
             fileContent = readFileSync(filename, 'utf8');
-        } catch (e) {
+        } catch (e: any) {
             // The typings are malformed
-            console.error(`Failed to load definitions for ${pkg}: ${e}`);
+            console.error(`Failed to load definitions for ${pkg}: ${e.toString()}`);
             // Since we cannot use them, return undefined
             return undefined;
         }
@@ -211,25 +207,25 @@ export function resolveTypings(
 function mustBeHoisted(s: Statement & { modifiers?: Modifier[] }, isGlobal?: boolean): boolean {
     return !!(
         // Import/export statements must be moved to the top
-        isImportDeclaration(s) ||
-        isImportEqualsDeclaration(s) ||
-        isExportDeclaration(s) ||
-        isExportAssignment(s) ||
-        // as well as many declarations
-        isTypeAliasDeclaration(s) ||
-        isInterfaceDeclaration(s) ||
-        isModuleDeclaration(s) ||
-        isEnumDeclaration(s) ||
-        (isGlobal &&
-            // in global scripts we don't wrap classes and functions, so they can be accessed from non-global scripts
-            (isClassDeclaration(s) || isFunctionDeclaration(s))) ||
-        // and declare ... / export ... statements
-        (s.modifiers?.some(s =>
-            s.kind === SyntaxKind.DeclareKeyword || s.kind === SyntaxKind.ExportKeyword))
+        (
+            isImportDeclaration(s) ||
+            isImportEqualsDeclaration(s) ||
+            isExportDeclaration(s) ||
+            isExportAssignment(s) ||
+            // as well as many declarations
+            isTypeAliasDeclaration(s) ||
+            isInterfaceDeclaration(s) ||
+            isModuleDeclaration(s) ||
+            isEnumDeclaration(s) ||
+            (isGlobal &&
+                // in global scripts we don't wrap classes and functions, so they can be accessed from non-global scripts
+                (isClassDeclaration(s) || isFunctionDeclaration(s))) ||
+            // and declare ... / export ... statements
+            s.modifiers?.some(s => s.kind === SyntaxKind.DeclareKeyword || s.kind === SyntaxKind.ExportKeyword)
+        )
     );
 }
 
-/** @param {import("typescript").Statement} s */
 function canBeExported(s: Statement): boolean {
     return (
         // const, let, var
@@ -243,7 +239,7 @@ function canBeExported(s: Statement): boolean {
     );
 }
 
-function addExportModifier(s: Statement & { modifiers?: Modifier[] }) {
+function addExportModifier(s: Statement & { modifiers?: Modifier[] }): Statement {
     let modifiers: Modifier[] | undefined;
     // Add export modifiers
     if (!s.modifiers) {
@@ -261,14 +257,7 @@ function addExportModifier(s: Statement & { modifiers?: Modifier[] }) {
         return factory.updateTypeAliasDeclaration(s, modifiers, s.name, s.typeParameters, s.type);
     }
     if (isInterfaceDeclaration(s)) {
-        return factory.updateInterfaceDeclaration(
-            s,
-            modifiers,
-            s.name,
-            s.typeParameters,
-            s.heritageClauses,
-            s.members,
-        );
+        return factory.updateInterfaceDeclaration(s, modifiers, s.name, s.typeParameters, s.heritageClauses, s.members);
     }
     if (isEnumDeclaration(s)) {
         return factory.updateEnumDeclaration(s, modifiers, s.name, s.members);
@@ -291,7 +280,7 @@ function addExportModifier(s: Statement & { modifiers?: Modifier[] }) {
     return s;
 }
 
-function removeDeclareModifier(s: Statement & { modifiers?: Modifier[] }): Statement  {
+function removeDeclareModifier(s: Statement & { modifiers?: Modifier[] }): Statement {
     let modifiers: Modifier[] | undefined;
     // Remove declare modifiers
     if (s.modifiers) {
@@ -307,14 +296,7 @@ function removeDeclareModifier(s: Statement & { modifiers?: Modifier[] }): State
         return factory.updateTypeAliasDeclaration(s, modifiers, s.name, s.typeParameters, s.type);
     }
     if (isInterfaceDeclaration(s)) {
-        return factory.updateInterfaceDeclaration(
-            s,
-            modifiers,
-            s.name,
-            s.typeParameters,
-            s.heritageClauses,
-            s.members,
-        );
+        return factory.updateInterfaceDeclaration(s, modifiers, s.name, s.typeParameters, s.heritageClauses, s.members);
     }
     if (isEnumDeclaration(s)) {
         return factory.updateEnumDeclaration(s, modifiers, s.name, s.members);
@@ -407,7 +389,6 @@ const NodeJSGlobals = [
     'v8debug',
 ];
 
-/** @param {import("typescript").Statement} s */
 function isGlobalAugmentation(s: Statement): boolean {
     return !!(
         (isInterfaceDeclaration(s) || isClassDeclaration(s) || isFunctionDeclaration(s)) &&
@@ -432,7 +413,6 @@ function wrapInDeclareGlobal(statements: Statement[]): ModuleDeclaration {
  * @param isGlobal Whether the transformed script is a global script or not
  */
 export function transformScriptBeforeCompilation(source: string, isGlobal?: boolean): string {
-    // eslint-disable-next-line no-unused-vars
     const transformer: TransformerFactory<SourceFile> = (_context: TransformationContext): Transformer<SourceFile> => {
         return (sourceFile: SourceFile) =>
             visitNode(sourceFile, (node: SourceFile): any => {
@@ -460,7 +440,7 @@ export function transformScriptBeforeCompilation(source: string, isGlobal?: bool
                             hoistedStatements,
                             // @ts-expect-error s is definitely a Statement
                             s => (canBeExported(s) ? addExportModifier(s) : s),
-                        ) as NodeArray<Statement>
+                        ) as NodeArray<Statement>;
                         // 3. We need to transform the generated declarations to use `declare global` (this will happen in transformGlobalDeclarations)
                     }
                     const needsEmptyExport =
@@ -504,9 +484,9 @@ export function transformScriptBeforeCompilation(source: string, isGlobal?: bool
                         ...(needsEmptyExport
                             ? [
                                   // Put an empty export {}; at the bottom to force TypeScript to treat the script as a module
-                                factory.createExportDeclaration(
+                                  factory.createExportDeclaration(
                                       undefined, // ModifierLike[] | undefined
-                                      false,     // isTypeOnly
+                                      false, // isTypeOnly
                                       factory.createNamedExports([]), // NamedExportBindings | undefined
                                       undefined, // moduleSpecifier
                                       undefined, // attributes
@@ -514,9 +494,8 @@ export function transformScriptBeforeCompilation(source: string, isGlobal?: bool
                               ]
                             : []),
                     ]);
-                } else {
-                    return node;
                 }
+                return node;
             });
     };
 
@@ -528,6 +507,7 @@ export function transformScriptBeforeCompilation(source: string, isGlobal?: bool
 
 /**
  * Takes the global declarations for a TypeScript and wraps export statements in `declare global`
+ *
  * @param decl The untransformed global declarations
  */
 export function transformGlobalDeclarations(decl: string): string {
@@ -543,9 +523,7 @@ export function transformGlobalDeclarations(decl: string): string {
                     const otherStatements = node.statements.filter(s => !exportStatements.includes(s));
 
                     const hasExportStatements = exportStatements.length > 0;
-                    const hasImport = otherStatements.some(
-                        s => isImportDeclaration(s) || isImportEqualsDeclaration(s),
-                    );
+                    const hasImport = otherStatements.some(s => isImportDeclaration(s) || isImportEqualsDeclaration(s));
 
                     return factory.updateSourceFile(node, [
                         ...otherStatements,

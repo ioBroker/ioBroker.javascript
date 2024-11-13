@@ -25,18 +25,22 @@ import { connect } from 'node:net';
 import { debuglog as utilDebugLog, inspect } from 'node:util';
 import { normalize, join } from 'node:path';
 import { existsSync } from 'node:fs';
-import { WriteStream, ReadStream } from 'node:tty';
+import type { WriteStream, ReadStream } from 'node:tty';
 
 import InspectClient from 'node-inspect/lib/internal/inspect_client';
 import createRepl from './debugger';
-import { Debugger, Runtime } from 'node:inspector';
-import { REPLServer } from 'repl';
-import { ChildProcessWithoutNullStreams } from 'child_process';
+import type { Debugger, Runtime } from 'node:inspector';
+import type { REPLServer } from 'repl';
+import type { ChildProcessWithoutNullStreams } from 'child_process';
 // const runAsStandalone = typeof __dirname !== 'undefined';
 
 const breakOnStart = process.argv.includes('--breakOnStart');
 
 const debuglog = utilDebugLog('inspect');
+let inspector: NodeInspector;
+let scriptToDebug = ''; // script.js.yy
+let instanceToDebug = ''; // adapter.X
+let alreadyPausedOnFirstLine = false;
 
 class StartupError extends Error {
     constructor(message: string) {
@@ -60,14 +64,14 @@ function portIsFree(host: string, port: number, timeout: number = 9999): Promise
             reject(new StartupError(`Timeout (${timeout}) waiting for ${host}:${port} to be free`));
         }, timeout);
 
-        function pingPort() {
+        function pingPort(): void {
             if (didTimeOut) {
                 return;
             }
 
             const socket = connect(port, host);
             let didRetry = false;
-            function retry() {
+            function retry(): void {
                 if (!didRetry && !didTimeOut) {
                     didRetry = true;
                     setTimeout(pingPort, retryDelay);
@@ -450,7 +454,7 @@ export class NodeInspector {
             );
     }
 
-    killChild() {
+    killChild(): void {
         this.client.reset();
         if (this.child) {
             this.child.kill();
@@ -458,14 +462,14 @@ export class NodeInspector {
         }
     }
 
-    run() {
+    run(): Promise<void> {
         this.killChild();
 
         return this._runScript().then(([child, port, host]) => {
             this.child = child;
 
             let connectionAttempts = 0;
-            const attemptConnect = () => {
+            const attemptConnect = (): void => {
                 ++connectionAttempts;
                 debuglog('connection attempt #%d', connectionAttempts);
                 this.stdout.write('.');
@@ -474,7 +478,7 @@ export class NodeInspector {
                         debuglog('connection established');
                         this.stdout.write(' ok');
                     },
-                    (error: any) => {
+                    (error: unknown): Promise<void> => {
                         debuglog('connect failed', error);
                         // If it's failed to connect 10 times, then print a failed message
                         if (connectionAttempts >= 10) {
@@ -581,25 +585,24 @@ function startInspect(
     argv: string[] = process.argv.slice(2),
     stdin: ReadStream = process.stdin,
     stdout: WriteStream = process.stdout,
-) {
-    /* eslint-disable no-console */
-    /*if (argv.length < 1) {
-        const invokedAs = runAsStandalone ?
-            'node-inspect' :
-            `${process.argv0} ${process.argv[1]}`;
+): void {
+    /*
+    if (argv.length < 1) {
+        const invokedAs = runAsStandalone ? 'node-inspect' : `${process.argv0} ${process.argv[1]}`;
 
         console.error(`Usage: ${invokedAs} script.js`);
         console.error(`       ${invokedAs} <host>:<port>`);
         console.error(`       ${invokedAs} -p <pid>`);
         process.exit(1);
-    }*/
+    }
+    */
 
     const options = parseArgv(argv);
     inspector = new NodeInspector(options, stdin, stdout);
 
     stdin.resume();
 
-    function handleUnexpectedError(e) {
+    function handleUnexpectedError(e: Error): void {
         if (!(e instanceof StartupError)) {
             console.error('There was an internal error in node-inspect. Please report this bug.');
             console.error(e.message);
@@ -631,17 +634,12 @@ function convertResultToError(result: Runtime.RemoteObject): Error {
     return err;
 }
 
-let inspector: NodeInspector;
-let scriptToDebug: string; // script.js.yy
-let instanceToDebug: string; // adapter.X
-let alreadyPausedOnFirstLine = false;
-
-process.on('message', (message: DebugCommand) => {
+process.on('message', (message: DebugCommand): void => {
     if (typeof message === 'string') {
         try {
             message = JSON.parse(message);
-        } catch (e) {
-            return console.error(`Cannot parse: ${message}`);
+        } catch {
+            return console.error(`Cannot parse: ${JSON.stringify(message)}`);
         }
     }
     processCommand(message);
@@ -705,7 +703,7 @@ type DebugCommand = {
     end?: number;
 };
 
-function processCommand(data: DebugCommand) {
+function processCommand(data: DebugCommand): void {
     if (data.cmd === 'start') {
         scriptToDebug = data.scriptName as string;
         // we can request the script by name or iobroker instance to debug
@@ -735,10 +733,11 @@ function processCommand(data: DebugCommand) {
 
                 if (!file) {
                     sendToHost({ cmd: 'error', error: `Cannot locate iobroker.${adapter}`, errorContext: e });
-                    return setTimeout(() => {
+                    setTimeout(() => {
                         sendToHost({ cmd: 'finished', context: `Cannot locate iobroker.${adapter}` });
                         setTimeout(() => process.exit(124), 500);
                     }, 200);
+                    return;
                 }
             }
             file = file.replace(/\\/g, '/');
@@ -750,7 +749,8 @@ function processCommand(data: DebugCommand) {
         process.exit();
     } else if (data.cmd === 'source') {
         inspector.Debugger.getScriptSource({ scriptId: data.scriptId } as Debugger.GetScriptSourceParameterType).then(
-            (script: Debugger.GetScriptSourceReturnType) => sendToHost({ cmd: 'script', scriptId: data.scriptId, text: script.scriptSource }),
+            (script: Debugger.GetScriptSourceReturnType) =>
+                sendToHost({ cmd: 'script', scriptId: data.scriptId, text: script.scriptSource }),
         );
     } else if (data.cmd === 'cont') {
         inspector.Debugger.resume().catch(e => sendToHost({ cmd: 'error', error: e }));
@@ -869,12 +869,16 @@ function processCommand(data: DebugCommand) {
             ) || [],
         ).then(expressions => sendToHost({ cmd: 'expressions', expressions }));
     } else if (data.cmd === 'stopOnException') {
-        inspector.Debugger.setPauseOnExceptions({ state: data.state ? 'all' : 'none' } as Debugger.SetPauseOnExceptionsParameterType).catch(e =>
+        inspector.Debugger.setPauseOnExceptions({
+            state: data.state ? 'all' : 'none',
+        } as Debugger.SetPauseOnExceptionsParameterType).catch(e =>
             sendToHost({ cmd: 'stopOnException', variableName: `Cannot stopOnException: ${e}`, errorContext: e }),
         );
     } else if (data.cmd === 'getPossibleBreakpoints') {
         inspector.Debugger.getPossibleBreakpoints({ start: data.start, end: data.end })
-            .then((breakpoints: Debugger.GetPossibleBreakpointsReturnType) => sendToHost({ cmd: 'getPossibleBreakpoints', breakpoints: breakpoints.locations }))
+            .then((breakpoints: Debugger.GetPossibleBreakpointsReturnType) =>
+                sendToHost({ cmd: 'getPossibleBreakpoints', breakpoints: breakpoints.locations }),
+            )
             .catch(e =>
                 sendToHost({
                     cmd: 'getPossibleBreakpoints',
@@ -887,11 +891,15 @@ function processCommand(data: DebugCommand) {
     }
 }
 
-function sendToHost(data: CommandToHost) {
+function sendToHost(data: CommandToHost): void {
     if (data.cmd === 'error') {
         console.error(data.text);
-        data.expr && console.error(`[EXPRESSION] ${data.expr}`);
-        data.bp && console.error(`[BP] ${data.bp}`);
+        if (data.expr) {
+            console.error(`[EXPRESSION] ${JSON.stringify(data.expr)}`);
+        }
+        if (data.bp) {
+            console.error(`[BP] ${JSON.stringify(data.bp)}`);
+        }
     }
 
     process.send && process.send(JSON.stringify(data));

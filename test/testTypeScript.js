@@ -1,8 +1,8 @@
 const tsc = require('virtual-tsc');
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
+const { EOL } = require('node:os');
 const { tsCompilerOptions } = require('../lib/typescriptSettings');
-const { EOL } = require('os');
 
 const { expect } = require('chai');
 const {
@@ -54,7 +54,9 @@ class Foo {
 import * as fs from "fs";
 export class Foo {
     do() { }
-}`.trim().replace(/\r?\n/g, EOL);
+}`
+                .trim()
+                .replace(/\r?\n/g, EOL);
             const transformed = transformScriptBeforeCompilation(source, true);
             expect(transformed.trim()).to.equal(expected);
         });
@@ -71,7 +73,9 @@ declare global {
         getWeekYear(): number;
     }
 }
-export {};`.trim().replace(/\r?\n/g, EOL);
+export {};`
+                .trim()
+                .replace(/\r?\n/g, EOL);
             const transformed = transformScriptBeforeCompilation(source, true);
             expect(transformed.trim()).to.equal(expected);
         });
@@ -91,7 +95,9 @@ declare global {
     export class Foo {
         do(): void;
     }
-}`.trim().replace(/\r?\n/g, EOL);
+}`
+                .trim()
+                .replace(/\r?\n/g, EOL);
             const transformed = transformGlobalDeclarations(source);
             expect(transformed.trim()).to.equal(expected);
         });
@@ -108,7 +114,9 @@ declare global {
     }
 }
 export {};
-`.trim().replace(/\r?\n/g, EOL);
+`
+                .trim()
+                .replace(/\r?\n/g, EOL);
             const transformed = transformGlobalDeclarations(source);
             expect(transformed.trim()).to.equal(expected);
         });
@@ -126,7 +134,9 @@ declare global {
         getWeekYear(): number;
     }
 }
-export {};`.trim().replace(/\r?\n/g, EOL);
+export {};`
+                .trim()
+                .replace(/\r?\n/g, EOL);
             const transformed = transformGlobalDeclarations(source);
             expect(transformed.trim()).to.equal(expected);
         });
@@ -134,9 +144,7 @@ export {};`.trim().replace(/\r?\n/g, EOL);
 
     describe('scriptIdToTSFilename', () => {
         it('generates a valid filename from a script ID', () => {
-            expect(scriptIdToTSFilename('script.js.foo.bar.baz')).to.equal(
-                'foo/bar/baz.ts'
-            );
+            expect(scriptIdToTSFilename('script.js.foo.bar.baz')).to.equal('foo/bar/baz.ts');
         });
     });
 });
@@ -144,11 +152,8 @@ export {};`.trim().replace(/\r?\n/g, EOL);
 describe('TypeScript compilation regression tests (non-global scripts)', () => {
     const tsServer = new tsc.Server(tsCompilerOptions, undefined);
     const tsAmbient = {
-        'javascript.d.ts': fs.readFileSync(
-            path.join(__dirname, '../lib/javascript.d.ts'),
-            'utf8'
-        ),
-        'fs.d.ts': `declare module "fs" { }`
+        'javascript.d.ts': fs.readFileSync(path.join(__dirname, '../lib/javascript.d.ts'), 'utf8'),
+        'fs.d.ts': `declare module "fs" { }`,
     };
     tsServer.provideAmbientDeclarations(tsAmbient);
 
@@ -199,7 +204,7 @@ async function bar():Promise<void> {
 }
 
 await bar();
-`
+`,
     ];
 
     for (let i = 0; i < tests.length; i++) {
@@ -217,10 +222,7 @@ await bar();
 describe('TypeScript compilation regression tests (global scripts)', () => {
     const tsServer = new tsc.Server(tsCompilerOptions, undefined);
     const tsAmbient = {
-        'javascript.d.ts': fs.readFileSync(
-            path.join(__dirname, '../lib/javascript.d.ts'),
-            'utf8'
-        ),
+        'javascript.d.ts': fs.readFileSync(path.join(__dirname, '../lib/javascript.d.ts'), 'utf8'),
         'fs.d.ts': `declare module "fs" { }`,
         'otherglobal.d.ts': `
 declare global {
@@ -229,7 +231,7 @@ declare global {
     }
 };
 export {};
-`
+`,
     };
     tsServer.provideAmbientDeclarations(tsAmbient);
 
@@ -264,7 +266,7 @@ d.getWeekYear()
 function test(): void {
     log("test global");
 }
-`
+`,
     ];
 
     for (let i = 0; i < tests.length; i++) {

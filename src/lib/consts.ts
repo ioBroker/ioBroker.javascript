@@ -327,7 +327,21 @@ export const monthShort: Record<ioBroker.Languages, string[]> = {
     'zh-cn': ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
 };
 
-export type AstroEvent = 'sunrise' | 'sunset' | 'sunriseEnd' | 'sunsetStart' | 'dawn' | 'dusk' | 'nauticalDawn' | 'nauticalDusk' | 'nadir' | 'nightEnd' | 'night' | 'goldenHourEnd' | 'goldenHour' | 'solarNoon';
+export type AstroEvent =
+    | 'sunrise'
+    | 'sunset'
+    | 'sunriseEnd'
+    | 'sunsetStart'
+    | 'dawn'
+    | 'dusk'
+    | 'nauticalDawn'
+    | 'nauticalDusk'
+    | 'nadir'
+    | 'nightEnd'
+    | 'night'
+    | 'goldenHourEnd'
+    | 'goldenHour'
+    | 'solarNoon';
 
 export const astroList: AstroEvent[] = [
     'sunrise',

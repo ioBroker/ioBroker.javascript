@@ -20,12 +20,12 @@
  * IN THE SOFTWARE.
  */
 import { join, resolve } from 'node:path';
-import { ReplOptions, REPLServer, start } from 'repl';
+import { type ReplOptions, type REPLServer, start } from 'repl';
 import { debuglog as debuglogUtil, type InspectOptions, inspect as inspectUtil } from 'node:util';
-import { Context, runInContext } from 'vm';
+import { type Context, runInContext } from 'node:vm';
 import { fileURLToPath } from 'node:url';
-import { builtinModules as PUBLIC_BUILTINS } from 'module';
-import { Debugger, Runtime } from 'node:inspector';
+import { builtinModules as PUBLIC_BUILTINS } from 'node:module';
+import type { Debugger, Runtime } from 'node:inspector';
 import { type NodeInspector } from './inspect';
 
 const debuglog = debuglogUtil('inspect');
@@ -93,7 +93,9 @@ const NATIVES = PUBLIC_BUILTINS ? process.binding('natives') : {};
 function isNativeUrl(url: string): boolean {
     url = url.replace(/\.js$/, '');
     if (PUBLIC_BUILTINS) {
-        if (url.startsWith('internal/') || PUBLIC_BUILTINS.includes(url)) return true;
+        if (url.startsWith('internal/') || PUBLIC_BUILTINS.includes(url)) {
+            return true;
+        }
     }
 
     return url in NATIVES || url === 'bootstrap_node';
@@ -182,8 +184,8 @@ class RemoteObject implements Runtime.RemoteObject {
         }
     }
 
-    [inspectUtil.custom](_depth: number, opts) {
-        function formatProperty(prop) {
+    [inspectUtil.custom](_depth: number, opts): string {
+        function formatProperty(prop): any {
             switch (prop.type) {
                 case 'string':
                 case 'undefined':
@@ -207,6 +209,7 @@ class RemoteObject implements Runtime.RemoteObject {
                     return prop.value;
             }
         }
+
         switch (this.type) {
             case 'boolean':
             case 'number':
@@ -240,7 +243,9 @@ class RemoteObject implements Runtime.RemoteObject {
                 if (this.preview) {
                     const props = this.preview.properties.map((prop, idx) => {
                         const value = formatProperty(prop);
-                        if (prop.name === `${idx}`) return value;
+                        if (prop.name === `${idx}`) {
+                            return value;
+                        }
                         return `${prop.name}: ${value}`;
                     });
                     if (this.preview.overflow) {
@@ -251,10 +256,10 @@ class RemoteObject implements Runtime.RemoteObject {
 
                     return this.subtype === 'array' ? `[ ${propString} ]` : `{ ${propString} }`;
                 }
-                return this.description;
+                return this.description || '';
 
             default:
-                return this.description;
+                return this.description || '';
         }
     }
 
@@ -306,14 +311,14 @@ class ScopeSnapshot implements Debugger.Scope {
         this.completionGroup = properties.map(prop => prop.name);
     }
 
-    [inspectUtil.custom](_depth: number, opts: InspectOptions) {
+    [inspectUtil.custom](_depth: number, opts: InspectOptions): string {
         const type = `${this.type[0].toUpperCase()}${this.type.slice(1)}`;
         const name = this.name ? `<${this.name}>` : '';
         const prefix = `${type}${name} `;
         return inspectUtil(this.properties, opts).replace(/^Map /, prefix);
     }
 }
-
+/*
 function copyOwnProperties(target: any, source: any): void {
     Object.getOwnPropertyNames(source).forEach(prop => {
         const descriptor = Object.getOwnPropertyDescriptor(source, prop);
@@ -322,7 +327,7 @@ function copyOwnProperties(target: any, source: any): void {
         }
     });
 }
-/*
+
 function aliasProperties(target, mapping) {
     Object.keys(mapping).forEach((key) => {
         const descriptor = Object.getOwnPropertyDescriptor(target, key);
@@ -333,7 +338,7 @@ function aliasProperties(target, mapping) {
 export default function createRepl(inspector: NodeInspector): () => REPLServer {
     const { Debugger, /*HeapProfiler, Profiler,*/ Runtime } = inspector;
 
-    let repl: REPLServer; // eslint-disable-line prefer-const
+    let repl: REPLServer;
 
     // Things we want to keep around
     // const history = { control: [], debug: [] };
@@ -343,45 +348,50 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
     let lastCommand: string;
 
     // Things we need to reset when the app restarts
-    let knownScripts: Record<string, any>;
-    let currentBacktrace;
-    let selectedFrame;
-    let exitDebugRepl;
+    let knownScripts: Record<string, Debugger.ScriptParsedEventDataType & { isNative: boolean }> = {};
+    let currentBacktrace: CallFrame[] | undefined;
+    let selectedFrame: CallFrame | undefined;
+    let exitDebugRepl: undefined | (() => void);
 
-    function resetOnStart() {
+    function resetOnStart(): void {
         knownScripts = {};
-        currentBacktrace = null;
-        selectedFrame = null;
+        currentBacktrace = undefined;
+        selectedFrame = undefined;
 
-        if (exitDebugRepl) exitDebugRepl();
-        exitDebugRepl = null;
+        if (exitDebugRepl) {
+            exitDebugRepl();
+        }
+        exitDebugRepl = undefined;
     }
+
     resetOnStart();
 
     const INSPECT_OPTIONS: InspectOptions = { colors: inspector.stdout.isTTY };
-    function inspect(value) {
+    function inspect(value: any): string {
         return inspectUtil(value, INSPECT_OPTIONS);
     }
 
-    function print(value, oneline = false) {
+    function print(value: any, oneline = false): void {
         const text = typeof value === 'string' ? value : inspect(value);
         return inspector.print(text, oneline);
     }
 
-    function getCurrentLocation() {
+    function getCurrentLocation(): Debugger.Location {
         if (!selectedFrame) {
             throw new Error('Requires execution to be paused');
         }
         return selectedFrame.location;
     }
 
-    function isCurrentScript(script) {
-        return selectedFrame && getCurrentLocation().scriptId === script.scriptId;
+    function isCurrentScript(script): boolean {
+        return !!selectedFrame && getCurrentLocation().scriptId === script.scriptId;
     }
 
-    function formatScripts(displayNatives = false) {
-        function isVisible(script) {
-            if (displayNatives) return true;
+    function formatScripts(displayNatives = false): string {
+        function isVisible(script): boolean {
+            if (displayNatives) {
+                return true;
+            }
             return !script.isNative || isCurrentScript(script);
         }
 
@@ -396,10 +406,10 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
             })
             .join('\n');
     }
-    function listScripts(displayNatives = false) {
+    function listScripts(displayNatives = false): void {
         print(formatScripts(displayNatives));
     }
-    listScripts[inspectUtil.custom] = function listWithoutInternal() {
+    listScripts[inspectUtil.custom] = function listWithoutInternal(): string {
         return formatScripts();
     };
     /*
@@ -452,7 +462,7 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
             Object.assign(this, location);
         }
 
-        [inspectUtil.custom](_depth: number, options: InspectOptions) {
+        [inspectUtil.custom](_depth: number, options: InspectOptions): string {
             const { /* scriptId, */ lineNumber, columnNumber, delta, scriptSource } = this;
             const start = Math.max(1, lineNumber - delta + 1);
             const end = lineNumber + delta + 1;
@@ -542,7 +552,7 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
             Object.assign(this, callFrame);
         }
 
-        loadScopes() {
+        loadScopes(): Promise<ScopeSnapshot[]> {
             return Promise.all(
                 this.scopeChain
                     .filter(scope => scope.type !== 'global')
@@ -551,11 +561,9 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
                         return Runtime.getProperties({
                             objectId,
                             generatePreview: true,
-                        } as Runtime.GetPropertiesParameterType).then(
-                            ({ result }: Runtime.GetPropertiesReturnType) => {
-                                return new ScopeSnapshot(scope, result);
-                            },
-                        );
+                        } as Runtime.GetPropertiesParameterType).then(({ result }: Runtime.GetPropertiesReturnType) => {
+                            return new ScopeSnapshot(scope, result);
+                        });
                     }),
             );
         }
@@ -566,7 +574,7 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
     }
 
     class Backtrace extends Array {
-        [inspectUtil.custom]() {
+        [inspectUtil.custom](): string {
             return this.map((callFrame, idx) => {
                 const {
                     location: { scriptId, lineNumber, columnNumber },
@@ -641,7 +649,7 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
         callback: (error: Error | null, result?: any) => void,
     ): void {
         debuglog('eval:', input);
-        function returnToCallback(error: Error | null, result?: any) {
+        function returnToCallback(error: Error | null, result?: any): void {
             debuglog('end-eval:', input, error);
             callback(error, result);
         }
@@ -900,7 +908,10 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
     //         });
     // }
 
-    Debugger.on('paused', ({ callFrames, reason /* , hitBreakpoints */ }: Debugger.PausedEventDataType) => {
+    Debugger.on('paused', (data: Debugger.PausedEventDataType): void => {
+        const callFrames: CallFrame[] = data.callFrames as CallFrame[];
+        const reason: string = data.reason;
+
         if (process.env.NODE_INSPECT_RESUME_ON_START === '1' && reason === 'Break on start') {
             debuglog('Paused on start, but NODE_INSPECT_RESUME_ON_START environment variable is set to 1, resuming');
             inspector.client.callMethod('Debugger.resume');
@@ -908,7 +919,7 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
         }
 
         // Save execution context's data
-        currentBacktrace = Backtrace.from(callFrames as CallFrame[]);
+        currentBacktrace = Backtrace.from(callFrames);
         selectedFrame = currentBacktrace[0];
         const { scriptId, lineNumber } = selectedFrame.location;
 
@@ -919,7 +930,7 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
         const header = `${breakType} in ${scriptUrl}:${lineNumber + 1}`;
 
         inspector.suspendReplWhile(() =>
-            Promise.all([/*formatWatchers(true), */ selectedFrame.list(3)])
+            Promise.all([/*formatWatchers(true), */ selectedFrame?.list(3)])
                 .then(([/*watcherList, */ context]) => {
                     /*if (watcherList) {
                         return `${watcherList}\n${inspect(context)}`;
@@ -932,9 +943,9 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
         );
     });
 
-    function handleResumed() {
-        currentBacktrace = null;
-        selectedFrame = null;
+    function handleResumed(): void {
+        currentBacktrace = undefined;
+        selectedFrame = undefined;
     }
 
     Debugger.on('resumed', handleResumed);

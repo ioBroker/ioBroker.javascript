@@ -1,6 +1,7 @@
-import {
+import type {
     BufferEncodingOption,
     CopyOptions,
+    Dirent,
     MakeDirectoryOptions,
     Mode,
     ObjectEncodingOptions,
@@ -11,20 +12,86 @@ import {
     StatOptions,
     Stats,
     TimeLike,
+    CopySyncOptions,
+    NoParamCallback,
+    PathOrFileDescriptor,
+    WriteFileOptions,
 } from 'node:fs';
-import { Abortable } from 'node:events';
-import { FileHandle, FlagAndOpenMode } from 'fs/promises';
-import { CopySyncOptions, NoParamCallback, PathOrFileDescriptor } from 'fs';
-import { URL } from 'node:url';
-import { Stream } from 'node:stream';
+import type { Abortable } from 'node:events';
+import type { FileHandle, FlagAndOpenMode } from 'node:fs/promises';
+import type { URL } from 'node:url';
+import type { Stream } from 'node:stream';
 
-const nodeFS = require('node:fs');
-const { sep, normalize, join } = require('node:path');
+import * as nodeFS from 'node:fs';
+import { sep, normalize, join } from 'node:path';
 
 export default class ProtectFs {
     private readonly log: ioBroker.Logger;
     private readonly ioBrokerDataDir: string;
-    public readonly promises: Record<string, Function>;
+    public readonly promises: {
+        access: (path: PathLike, mode?: number) => Promise<void>;
+        cp: (source: string | URL, destination: string | URL, opts?: CopyOptions) => Promise<void>;
+        readFile: (
+            path: PathLike | FileHandle,
+            options:
+                | ({
+                      encoding: BufferEncoding;
+                      flag?: OpenMode | undefined;
+                  } & Abortable)
+                | BufferEncoding,
+        ) => Promise<string>;
+        readlink: (path: PathLike, options: BufferEncodingOption) => Promise<Buffer>;
+        symlink: (target: PathLike, path: PathLike, type?: string | null) => Promise<void>;
+        writeFile: (
+            file: PathLike | FileHandle,
+            data:
+                | string
+                | NodeJS.ArrayBufferView
+                | Iterable<string | NodeJS.ArrayBufferView>
+                | AsyncIterable<string | NodeJS.ArrayBufferView>
+                | Stream,
+            options?:
+                | (ObjectEncodingOptions & {
+                      mode?: Mode | undefined;
+                      flag?: OpenMode | undefined;
+                      flush?: boolean | undefined;
+                  } & Abortable)
+                | BufferEncoding
+                | null,
+        ) => Promise<void>;
+        unlink: (path: PathLike) => Promise<void>;
+        appendFile: (
+            path: PathLike | FileHandle,
+            data: string | Uint8Array,
+            options?:
+                | (ObjectEncodingOptions & FlagAndOpenMode & { flush?: boolean | undefined })
+                | BufferEncoding
+                | null,
+        ) => Promise<void>;
+        chmod: (path: PathLike, mode: Mode) => Promise<void>;
+        copyFile: (src: PathLike, dest: PathLike, mode?: number) => Promise<void>;
+        rename: (oldPath: PathLike, newPath: PathLike) => Promise<void>;
+        open: (path: PathLike, flags?: string | number, mode?: Mode) => Promise<FileHandle>;
+        truncate: (path: PathLike, len?: number) => Promise<void>;
+        stat: (path: PathLike, opts?: StatOptions) => Promise<Stats>;
+        utimes: (path: PathLike, atime: TimeLike, mtime: TimeLike) => Promise<void>;
+        readdir: (
+            path: PathLike,
+            options?: ObjectEncodingOptions & {
+                withFileTypes: true;
+                recursive?: boolean | undefined;
+            },
+        ) => Promise<Dirent[]>;
+        lchmod: (path: PathLike, mode: Mode) => Promise<void>;
+        lchown: (path: PathLike, uid: number, gid: number) => Promise<void>;
+        link: (existingPath: PathLike, newPath: PathLike) => Promise<void>;
+        lstat: (path: PathLike, opts?: StatOptions) => Promise<Stats>;
+        lutimes: (path: PathLike, atime: TimeLike, mtime: TimeLike) => Promise<void>;
+        mkdir: (path: PathLike, options?: Mode | MakeDirectoryOptions | null) => Promise<string | undefined>;
+        mkdtemp: (prefix: string, options?: ObjectEncodingOptions | BufferEncoding | null) => Promise<string>;
+        rm: (path: PathLike, options?: RmOptions) => Promise<void>;
+        rmdir: (path: PathLike, options?: RmDirOptions) => Promise<void>;
+    };
     public readonly constants: Record<string, number>;
 
     constructor(log: ioBroker.Logger, ioBrokerDataDir: string) {
@@ -67,7 +134,7 @@ export default class ProtectFs {
             symlink: async (target: PathLike, path: PathLike, type?: string | null): Promise<void> => {
                 this.#checkProtected(target, true);
                 this.#checkProtected(path, false);
-                return nodeFS.promises.symlink(target, path); // async function symlink(target, path, type_) {
+                return nodeFS.promises.symlink(target, path, type); // async function symlink(target, path, type_) {
             },
             writeFile: async (
                 file: PathLike | FileHandle,
@@ -84,6 +151,7 @@ export default class ProtectFs {
                           /**
                            * If all data is successfully written to the file, and `flush`
                            * is `true`, `filehandle.sync()` is used to flush the data.
+                           *
                            * @default false
                            */
                           flush?: boolean | undefined;
@@ -133,7 +201,8 @@ export default class ProtectFs {
             },
             stat: async (path: PathLike, opts?: StatOptions): Promise<Stats> => {
                 this.#checkProtected(path, true);
-                return nodeFS.promises.stat.call(this, path, opts); // async function stat(path, options = { bigint: false }) {
+                const result = await nodeFS.promises.stat.call(this, path, opts); // async function stat(path, options = { bigint: false }) {
+                return result as Stats;
             },
             utimes: async (path: PathLike, atime: TimeLike, mtime: TimeLike): Promise<void> => {
                 this.#checkProtected(path, false);
@@ -145,9 +214,9 @@ export default class ProtectFs {
                     withFileTypes: true;
                     recursive?: boolean | undefined;
                 },
-            ) => {
+            ): Promise<Dirent[]> => {
                 this.#checkProtected(path, true);
-                return nodeFS.promises.readdir.call(this, path, options); // async function readdir(path, options) {
+                return nodeFS.promises.readdir.call(this, path, options || { encoding: null, withFileTypes: true }); // async function readdir(path, options) {
             },
             lchmod: async (path: PathLike, mode: Mode): Promise<void> => {
                 this.#checkProtected(path, false);
@@ -164,7 +233,8 @@ export default class ProtectFs {
             },
             lstat: async (path: PathLike, opts?: StatOptions): Promise<Stats> => {
                 this.#checkProtected(path, true);
-                return nodeFS.promises.lstat.call(this, path, opts); // async function lstat(path, options = { bigint: false }) {
+                const res = await nodeFS.promises.lstat.call(this, path, opts); // async function lstat(path, options = { bigint: false }) {
+                return res as Stats;
             },
             lutimes: async (path: PathLike, atime: TimeLike, mtime: TimeLike): Promise<void> => {
                 this.#checkProtected(path, false);
@@ -177,9 +247,13 @@ export default class ProtectFs {
                 this.#checkProtected(path, false);
                 return nodeFS.promises.mkdir.call(this, path, options); // async function mkdir(path, options) {
             },
-            mkdtemp: async (prefix: string, options: BufferEncodingOption): Promise<Buffer> => {
+            mkdtemp: async (
+                prefix: string,
+                options?: ObjectEncodingOptions | BufferEncoding | null,
+            ): Promise<string> => {
                 this.#checkProtected(prefix, false);
-                return nodeFS.promises.mkdtemp.call(this, prefix, options); // async function mkdtemp(prefix, options) {
+                const tmp = await nodeFS.promises.mkdtemp.call(this, prefix, options); // async function mkdtemp(prefix, options) {
+                return tmp.toString();
             },
             rm: async (path: PathLike, options?: RmOptions): Promise<void> => {
                 this.#checkProtected(path, false);
@@ -214,16 +288,21 @@ export default class ProtectFs {
         }
     }
 
-    #checkProtected(file: PathLike | FileHandle, readonly: boolean): void {
-        const filePath = normalize(file.toString());
+    #checkProtected(file: PathLike | FileHandle, readOnly: boolean): void {
+        if ((file as FileHandle).fd) {
+            return;
+        }
+        const filePath = normalize((file as PathLike).toString());
 
         // todo: protect against file://...
         if (filePath.endsWith(`-data${sep}objects.json`) || filePath.endsWith(`-data${sep}objects.jsonl`)) {
-            this.log.error(`May not read ${file}`);
+            this.log.error(`May not read ${(file as PathLike).toString()}`);
             throw new Error('Permission denied');
         }
-        if (!readonly && filePath.startsWith(join(this.ioBrokerDataDir, 'files'))) {
-            this.log.error(`May not read ${file} - use ${readonly ? 'readFile' : 'writeFile'} instead`);
+        if (!readOnly && filePath.startsWith(join(this.ioBrokerDataDir, 'files'))) {
+            this.log.error(
+                `May not read ${(file as PathLike).toString()} - use ${readOnly ? 'readFile' : 'writeFile'} instead`,
+            );
             throw new Error('Permission denied');
         }
     }
@@ -243,13 +322,16 @@ export default class ProtectFs {
         destination: string | URL,
         opts: CopyOptions | ((err: NodeJS.ErrnoException | null) => void),
         callback?: (err: NodeJS.ErrnoException | null) => void,
-    ) {
+    ): void {
         this.#checkProtected(source, false);
         this.#checkProtected(destination, false);
         if (callback) {
             return nodeFS.cp(source, destination, opts as CopyOptions, callback);
         }
-        return nodeFS.cp(source, destination, opts);
+        if (typeof opts === 'function') {
+            return nodeFS.cp(source, destination, opts);
+        }
+        return nodeFS.cp(source, destination, opts as (err: NodeJS.ErrnoException | null) => void);
     }
 
     cpSync(source: string | URL, destination: string | URL, opts?: CopySyncOptions): void {
@@ -280,103 +362,131 @@ export default class ProtectFs {
         return nodeFS.readFileSync.call(this, path, options); // function readFileSync(path, options) {
     }
 
-    readlink() {
-        this.#checkProtected(arguments[0], true);
-        return nodeFS.readlink.apply(this, arguments); // function readlink(path, options, callback) {
+    readlink(path: PathLike, callback: (err: NodeJS.ErrnoException | null, linkString: string) => void): void {
+        this.#checkProtected(path, true);
+        return nodeFS.readlink.call(this, path, callback); // function readlink(path, options, callback) {
     }
 
-    readlinkSync() {
-        this.#checkProtected(arguments[0], true);
-        return nodeFS.readlinkSync.apply(this, arguments); // function readlinkSync(path, options) {
+    readlinkSync(path: PathLike, options?: any): string | Buffer {
+        this.#checkProtected(path, true);
+        return nodeFS.readlinkSync.call(this, path, options); // function readlinkSync(path, options) {
     }
 
-    symlink() {
-        this.#checkProtected(arguments[0], true);
-        this.#checkProtected(arguments[0], false);
-        return nodeFS.symlink.apply(this, arguments); // function symlink(target, path, type_, callback_) {
+    symlink(
+        target: PathLike,
+        path: PathLike,
+        type: 'dir' | 'file' | 'junction' | undefined | null | NoParamCallback,
+        callback?: NoParamCallback,
+    ): void {
+        this.#checkProtected(target, true);
+        this.#checkProtected(path, false);
+        if (typeof callback === 'function') {
+            // @ts-expect-error should work
+            return nodeFS.symlink.call(this, target, path, type, callback);
+        }
+        return nodeFS.symlink.call(this, target, path, type as NoParamCallback); // function symlink(target, path, type_, callback_) {
     }
 
-    symlinkSync() {
-        this.#checkProtected(arguments[0], true);
-        this.#checkProtected(arguments[0], false);
-        return nodeFS.symlinkSync.apply(this, arguments); // function symlinkSync(target, path, type) {
+    symlinkSync(target: PathLike, path: PathLike, type?: 'dir' | 'file' | 'junction' | null): void {
+        this.#checkProtected(target, true);
+        this.#checkProtected(path, false);
+        return nodeFS.symlinkSync.call(this, target, path, type); // function symlinkSync(target, path, type) {
     }
 
-    writeFile() {
-        this.#checkProtected(arguments[0], false);
-        return nodeFS.writeFile.apply(this, arguments); // function writeFile(path, data, options, callback) {
+    writeFile(
+        file: PathLike | number,
+        data: string | NodeJS.ArrayBufferView,
+        options?: WriteFileOptions,
+        callback?: NoParamCallback,
+    ): void {
+        if (typeof file !== 'number') {
+            this.#checkProtected(file, false);
+        }
+        // @ts-expect-error should work
+        return nodeFS.writeFile.call(this, file, data, options, callback); // function writeFile(path, data, options, callback) {
     }
 
-    writeFileSync() {
-        this.#checkProtected(arguments[0], false);
-        return nodeFS.writeFileSync.apply(this, arguments); // function writeFileSync(path, data, options) {
+    writeFileSync(file: PathLike | number, data: string | NodeJS.ArrayBufferView, options?: WriteFileOptions): void {
+        if (typeof file !== 'number') {
+            this.#checkProtected(file, false);
+        }
+        return nodeFS.writeFileSync.call(this, file, data, options); // function writeFileSync(path, data, options) {
     }
 
-    unlink() {
-        this.#checkProtected(arguments[0], false);
-        return nodeFS.unlink.apply(this, arguments); // function unlink(path, callback) {
+    unlink(path: PathLike, callback?: NoParamCallback): void {
+        this.#checkProtected(path, false);
+        // @ts-expect-error should work
+        return nodeFS.unlink.call(this, path, callback); // function unlink(path, callback) {
     }
 
-    unlinkSync() {
-        this.#checkProtected(arguments[0], false);
-        return nodeFS.unlinkSync.apply(this, arguments); // function unlinkSync(path) {
+    unlinkSync(path: PathLike): void {
+        this.#checkProtected(path, false);
+        return nodeFS.unlinkSync.call(this, path); // function unlinkSync(path) {
     }
 
-    appendFile() {
-        this.#checkProtected(arguments[0], false);
-        return nodeFS.appendFile.apply(this, arguments); // function appendFile(path, data, options, callback) {
+    appendFile(file: PathLike | number, data: string | Uint8Array, callback?: NoParamCallback): void {
+        if (typeof file !== 'number') {
+            this.#checkProtected(file, false);
+        }
+        // @ts-expect-error should work
+        return nodeFS.appendFile.call(this, file, data, callback); // function appendFile(path, data, options, callback) {
     }
 
-    appendFileSync() {
-        this.#checkProtected(arguments[0], false);
-        return nodeFS.appendFileSync.apply(this, arguments); // function appendFileSync(path, data, options) {
+    appendFileSync(file: PathLike | number, data: string | Uint8Array): void {
+        if (typeof file !== 'number') {
+            this.#checkProtected(file, false);
+        }
+        return nodeFS.appendFileSync.call(this, file, data); // function appendFileSync(path, data, options) {
     }
 
-    chmod() {
-        this.#checkProtected(arguments[0], false);
-        return nodeFS.chmod.apply(this, arguments); // function chmod(path, mode, callback) {
+    chmod(path: PathLike, mode: Mode, callback?: NoParamCallback): void {
+        this.#checkProtected(path, false);
+        // @ts-expect-error should work
+        return nodeFS.chmod.call(this, path, mode, callback); // function chmod(path, mode, callback) {
     }
 
-    chmodSync() {
-        this.#checkProtected(arguments[0], false);
-        return nodeFS.chmodSync.apply(this, arguments); // function chmodSync(path, mode) {
+    chmodSync(path: PathLike, mode: Mode): void {
+        this.#checkProtected(path, false);
+        return nodeFS.chmodSync.call(this, path, mode); // function chmodSync(path, mode) {
     }
 
-    chown() {
-        this.#checkProtected(arguments[0], false);
-        return nodeFS.chmodSync.apply(this, arguments); // function chown(path, uid, gid, callback) {
+    chown(path: PathLike, uid: number, gid: number, callback?: NoParamCallback): void {
+        this.#checkProtected(path, false);
+        // @ts-expect-error should work
+        return nodeFS.chown.call(this, path, uid, gid, callback); // function chown(path, uid, gid, callback) {
     }
 
-    chownSync() {
-        this.#checkProtected(arguments[0], false);
-        return nodeFS.chownSync.apply(this, arguments); // function chownSync(path, uid, gid) {
+    chownSync(path: PathLike, uid: number, gid: number): void {
+        this.#checkProtected(path, false);
+        return nodeFS.chownSync.call(this, path, uid, gid); // function chownSync(path, uid, gid) {
     }
 
-    copyFile() {
-        this.#checkProtected(arguments[0], false);
-        this.#checkProtected(arguments[1], false);
-        return nodeFS.copyFile.apply(this, arguments); // function copyFile(src, dest, mode, callback) {
+    copyFile(src: PathLike, dest: PathLike, mode?: number | NoParamCallback, callback?: NoParamCallback): void {
+        this.#checkProtected(src, true);
+        this.#checkProtected(dest, false);
+        // @ts-expect-error should work
+        return nodeFS.copyFile.call(this, src, dest, mode, callback); // function copyFile(src, dest, mode, callback) {
     }
 
-    copyFileSync() {
-        this.#checkProtected(arguments[0], true);
-        this.#checkProtected(arguments[1], false);
-        return nodeFS.copyFileSync.apply(this, arguments); // function copyFileSync(src, dest, mode) {
+    copyFileSync(src: PathLike, dest: PathLike, mode?: number): void {
+        this.#checkProtected(src, true);
+        this.#checkProtected(dest, false);
+        return nodeFS.copyFileSync.call(this, src, dest, mode); // function copyFileSync(src, dest, mode) {
     }
 
-    rename() {
+    rename(): void {
         this.#checkProtected(arguments[0], false);
         this.#checkProtected(arguments[1], false);
         return nodeFS.rename.apply(this, arguments); // function rename(oldPath, newPath, callback) {
     }
 
-    renameSync() {
+    renameSync(): void {
         this.#checkProtected(arguments[0], false);
         this.#checkProtected(arguments[1], false);
         return nodeFS.renameSync.apply(this, arguments); // function renameSync(oldPath, newPath) {
     }
 
-    open() {
+    open(): void {
         this.#checkProtected(arguments[0], true);
         return nodeFS.open.apply(this, arguments); // function open(path, flags, mode, callback) {
     }
@@ -386,99 +496,99 @@ export default class ProtectFs {
         return nodeFS.openSync.apply(this, arguments); // function openSync(path, flags, mode) {
     }
 
-    truncate() {
+    truncate(): void {
         this.#checkProtected(arguments[0], false);
         return nodeFS.truncate.apply(this, arguments); // function truncate(path, len, callback) {
     }
 
-    truncateSync() {
+    truncateSync(): void {
         this.#checkProtected(arguments[0], false);
         return nodeFS.truncateSync.apply(this, arguments); // function truncateSync(path, len) {
     }
 
-    exists() {
+    exists(): void {
         this.#checkProtected(arguments[0], true);
         return nodeFS.exists.apply(this, arguments); // function exists(path, callback) {
     }
 
-    existsSync() {
+    existsSync(): boolean {
         this.#checkProtected(arguments[0], true);
         return nodeFS.existsSync.apply(this, arguments); // function existsSync(path) {
     }
 
-    stat() {
+    stat(): void {
         this.#checkProtected(arguments[0], true);
         return nodeFS.stat.apply(this, arguments); // function stat(path, options = { bigint: false }, callback) {
     }
 
-    statSync() {
+    statSync(): void {
         this.#checkProtected(arguments[0], true);
         return nodeFS.statSync.apply(this, arguments); // function statSync(path, options = { bigint: false, throwIfNoEntry: true }) {
     }
 
-    utimes() {
+    utimes(): void {
         this.#checkProtected(arguments[0], false);
         return nodeFS.utimes.apply(this, arguments); // function utimes(path, atime, mtime, callback) {
     }
 
-    utimesSync() {
+    utimesSync(): void {
         this.#checkProtected(arguments[0], false);
         return nodeFS.utimesSync.apply(this, arguments); // function utimesSync(path, atime, mtime) {
     }
 
-    readdir() {
+    readdir(): void {
         this.#checkProtected(arguments[0], true);
         return nodeFS.readdir.apply(this, arguments); // function readdir(path, options, callback) {
     }
 
-    readdirSync() {
+    readdirSync(): void {
         this.#checkProtected(arguments[0], true);
         return nodeFS.readdirSync.apply(this, arguments); // function readdirSync(path, options) {
     }
 
-    createReadStream() {
+    createReadStream(): void {
         this.#checkProtected(arguments[0], true);
         return nodeFS.createReadStream.apply(this, arguments); // function createReadStream(path, options) {
     }
 
-    createWriteStream() {
+    createWriteStream(): void {
         this.#checkProtected(arguments[0], false);
         return nodeFS.createWriteStream.apply(this, arguments); // function createWriteStream(path, options) {
     }
 
-    lchmod() {
+    lchmod(): void {
         this.#checkProtected(arguments[0], false);
         return nodeFS.lchmod.apply(this, arguments); // function lchmod(path, mode, callback) {
     }
 
-    lchmodSync() {
+    lchmodSync(): void {
         this.#checkProtected(arguments[0], false);
         return nodeFS.lchmodSync.apply(this, arguments); // function lchmodSync(path, mode) {
     }
 
-    lchown() {
+    lchown(): void {
         this.#checkProtected(arguments[0], false);
         return nodeFS.lchown.apply(this, arguments); // function lchown(path, uid, gid, callback) {
     }
 
-    lchownSync() {
+    lchownSync(): void {
         this.#checkProtected(arguments[0], false);
         return nodeFS.lchownSync.apply(this, arguments); // function lchownSync(path, uid, gid) {
     }
 
-    link() {
+    link(): void {
         this.#checkProtected(arguments[0], false);
         this.#checkProtected(arguments[1], false);
         return nodeFS.link.apply(this, arguments); // function link(existingPath, newPath, callback) {
     }
 
-    linkSync() {
+    linkSync(): void {
         this.#checkProtected(arguments[0], false);
         this.#checkProtected(arguments[1], false);
         return nodeFS.linkSync.apply(this, arguments); // function linkSync(existingPath, newPath) {
     }
 
-    lstat() {
+    lstat(): void {
         this.#checkProtected(arguments[0], true);
         return nodeFS.lstat.apply(this, arguments); // function lstat(path, options = { bigint: false }, callback) {
     }
@@ -488,7 +598,7 @@ export default class ProtectFs {
         return nodeFS.lstatSync.apply(this, arguments); // function lstatSync(path, options = { bigint: false, throwIfNoEntry: true }) {
     }
 
-    lutimes() {
+    lutimes(): void {
         this.#checkProtected(arguments[0], false);
         return nodeFS.lutimes.apply(this, arguments); // function lutimes(path, atime, mtime, callback) {
     }

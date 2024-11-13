@@ -1,4 +1,4 @@
-import { JavascriptContext } from '../types';
+import type { JavascriptContext } from '../types';
 
 let gContext: JavascriptContext;
 
@@ -30,13 +30,11 @@ export function getObjectEnumsSync(
     }
 
     for (let i = 0, l = context.enums.length; i < l; i++) {
-        if (
-            context.objects[context.enums[i]]?.common?.members?.includes(idObj)
-        ) {
+        if (context.objects[context.enums[i]]?.common?.members?.includes(idObj)) {
             if (!enumIds.includes(context.enums[i])) {
                 enumIds.push(context.enums[i]);
             }
-            let name: ioBroker.StringOrTranslated = context.objects[context.enums[i]].common.name;
+            const name: ioBroker.StringOrTranslated = context.objects[context.enums[i]].common.name;
             const str: string | undefined = typeof name === 'object' ? name[gContext.language || 'en'] : name;
             if (str && !enumNames.includes(str)) {
                 enumNames.push(str);
@@ -71,7 +69,7 @@ export function getObjectEnumsSync(
     return context.cacheObjectEnums[idObj];
 }
 
-function doGetter(obj: Record<string, any>, name: string, ret: any) {
+function doGetter(obj: Record<string, any>, name: string, ret: any): any {
     //adapter.log.debug('getter: ' + name + ' returns ' + ret);
     Object.defineProperty(obj, name, { value: ret });
     return ret;
@@ -83,38 +81,37 @@ export class EventObj {
     public newState: ioBroker.State;
     public oldState: ioBroker.State;
 
-    constructor(id: string, state: ioBroker.State, oldState?: ioBroker.State, context?: JavascriptContext) {
+    constructor(
+        id: string,
+        state: ioBroker.State | null | undefined,
+        oldState?: ioBroker.State | null,
+        context?: JavascriptContext,
+    ) {
         if (context && !gContext) {
             gContext = context;
         }
         this.id = id;
-        this.newState = {
-            val: state.val,
-            ts: state.ts,
-            ack: state.ack,
-            lc: state.lc,
-            from: state.from,
-            q: state.q,
-            c: state.c,
-            user: state.user,
-        };
-        //if (oldState === undefined) oldState = {};
+        if (!state) {
+            this.newState = { q: undefined, c: undefined, user: undefined } as ioBroker.State;
+        } else {
+            this.newState = {
+                val: state.val,
+                ts: state.ts,
+                ack: state.ack,
+                lc: state.lc,
+                from: state.from,
+                q: state.q,
+                c: state.c,
+                user: state.user,
+            };
+        }
+        // if (oldState === undefined) oldState = {};
         if (!oldState) {
             this.oldState = {
-                // @ts-expect-error we assume it could be
-                val: undefined,
-                // @ts-expect-error we assume it could be
-                ts: undefined,
-                // @ts-expect-error we assume it could be
-                ack: undefined,
-                // @ts-expect-error we assume it could be
-                lc: undefined,
-                // @ts-expect-error we assume it could be
-                from: undefined,
                 q: undefined,
                 c: undefined,
                 user: undefined,
-            };
+            } as ioBroker.State;
         } else {
             this.oldState = {
                 val: oldState.val,
@@ -133,7 +130,7 @@ export class EventObj {
     get common(): ioBroker.ObjectCommon {
         const ret = gContext.objects[this.id] ? gContext.objects[this.id].common : {};
         return doGetter(this, 'common', ret);
-    };
+    }
     get native(): Record<string, any> {
         const ret = gContext.objects[this.id] ? gContext.objects[this.id].native : {};
         return doGetter(this, 'native', ret);
@@ -142,14 +139,13 @@ export class EventObj {
         const ret = this.common ? this.common.name : null;
         return doGetter(this, 'name', ret);
     }
-    get channelId(): string | null{
+    get channelId(): string | null {
         const ret = this.id.replace(/\.*[^.]+$/, '');
         return doGetter(this, 'channelId', gContext.objects[ret] ? ret : null);
     }
-    get channelName(): string | null{
+    get channelName(): string | null {
         const channelId = this.channelId;
-        const ret =
-            channelId && gContext.objects[channelId].common ? gContext.objects[channelId].common.name : null;
+        const ret = channelId && gContext.objects[channelId].common ? gContext.objects[channelId].common.name : null;
         return doGetter(this, 'channelName', ret);
     }
     get deviceId(): string | null {
@@ -163,8 +159,7 @@ export class EventObj {
     }
     get deviceName(): ioBroker.StringOrTranslated | null {
         const deviceId = this.deviceId;
-        const ret =
-            deviceId && gContext.objects[deviceId].common ? gContext.objects[deviceId].common.name : null;
+        const ret = deviceId && gContext.objects[deviceId].common ? gContext.objects[deviceId].common.name : null;
         return doGetter(this, 'deviceName', ret);
     }
     get enumIds(): string[] | undefined {
@@ -192,9 +187,9 @@ export class EventObj {
 export function createEventObject(
     context: JavascriptContext,
     id: string,
-    state: ioBroker.State,
-    oldState: ioBroker.State,
-) {
+    state: ioBroker.State | null | undefined,
+    oldState: ioBroker.State | null | undefined,
+): EventObj {
     gContext = gContext || context;
 
     return new EventObj(id, state, oldState, context);

@@ -1,5 +1,5 @@
 let systemLang: ioBroker.Languages = 'en';
-let systemDictionary: Record<string, ioBroker.Translated> = {
+const systemDictionary: Record<string, ioBroker.Translated> = {
     'was not executed, while debug mode is active': {
         en: 'was not executed, while debug mode is active',
         de: 'wurde nicht ausgeführt, während der Debug-Modus aktiv ist',
@@ -23,7 +23,11 @@ export function getLanguage(): ioBroker.Languages {
     return systemLang;
 }
 
-function translateWord(text: string, lang?: ioBroker.Languages, dictionary?: Record<string, ioBroker.Translated>): string {
+function translateWord(
+    text: string,
+    lang?: ioBroker.Languages,
+    dictionary?: Record<string, ioBroker.Translated>,
+): string {
     if (!text) {
         return '';
     }
@@ -43,7 +47,7 @@ function translateWord(text: string, lang?: ioBroker.Languages, dictionary?: Rec
     } else if (typeof text === 'string' && !text.match(/_tooltip$/)) {
         console.log(`"${text}": {"en": "${text}", "de": "${text}", "ru": "${text}"},`);
     } else if (typeof text !== 'string') {
-        console.warn(`Trying to translate non-text:${text}`);
+        console.warn(`Trying to translate non-text: ${JSON.stringify(text)}`);
     }
     return text;
 }

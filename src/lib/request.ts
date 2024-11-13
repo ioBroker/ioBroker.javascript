@@ -13,24 +13,20 @@ let logger: {
 function requestError(error: Error | string): void {
     logger.error(`Request error: ${error}`);
 }
-type METHODS = 'get' | 'post' | 'put' | 'head' | 'patch' | 'del' | 'delete' | 'initParams';
 
 /**
  * Calls a request method which accepts a callback and handles errors in the request and the callback itself
  */
-function requestSafe(
-    method: (..._args: any[]) => any,
-    ...args: any[]
-) {
+function requestSafe(method: (..._args: any[]) => any, ...args: any[]): any {
     const lastArg = args[args.length - 1];
     if (typeof lastArg === 'function') {
         // If a callback was provided, handle errors in the callback
         const otherArgs = args.slice(0, args.length - 1);
-        return method(...otherArgs, (...cbArgs) => {
+        return method(...otherArgs, (...cbArgs: any[]): void => {
             try {
                 lastArg(...cbArgs);
-            } catch (e) {
-                logger.error(`Error in request callback: ${e}`);
+            } catch (err: unknown) {
+                logger.error(`Error in request callback: ${err as Error}`);
             }
         }).on('error', requestError);
     }
@@ -42,6 +38,7 @@ function requestSafe(
 // Wrap all methods that accept a callback
 const methodsWithCallback = ['get', 'post', 'put', 'head', 'patch', 'del', 'delete', 'initParams'];
 // and request itself
+// @ts-expect-error fix later
 const request = (...args: any[]): any => requestSafe(_request, ...args);
 
 for (const methodName of methodsWithCallback) {
@@ -54,9 +51,7 @@ for (const propName of otherPropsAndMethods) {
     request[propName] = _request[propName];
 }
 
-request.setLogger = function (_logger: {
-    error: (e: string) => void;
-}): void {
+request.setLogger = function (_logger: { error: (e: string) => void }): void {
     logger = _logger;
 };
 

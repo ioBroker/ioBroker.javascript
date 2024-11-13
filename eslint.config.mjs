@@ -6,14 +6,23 @@ export default [
         languageOptions: {
             parserOptions: {
                 projectService: {
-                    allowDefaultProject: ['eslint.config.mjs'],
+                    allowDefaultProject: ['*.mjs'],
                 },
                 tsconfigRootDir: import.meta.dirname,
+                project: './tsconfig.json',
             },
         },
     },
     {
-        ignores: ['src-admin/**/*', 'src/**/*', 'admin/**/*'],
+        ignores: [
+            'src-admin/**/*',
+            'admin/**/*',
+            'admin-config/**/*',
+            'detection/*',
+            'lib/**/*',
+            'node_modules/**/*',
+            'test/**/*',
+        ],
     },
     {
         // disable temporary the rule 'jsdoc/require-param' and enable 'jsdoc/require-jsdoc'

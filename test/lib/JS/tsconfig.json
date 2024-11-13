@@ -3,16 +3,13 @@
 */
 
 {
-	"files": [
-		"../../../lib/javascript.d.ts",
-		"./testDeclarations.js",
-	],
-	"compilerOptions": {
-		"allowJs": true,
-		"checkJs": true,
-		"noEmit": true,
-		"target": "es6",
-		"moduleResolution": "node",
-		"skipLibCheck": true
-	}
+    "files": ["../../../lib/javascript.d.ts", "./testDeclarations.js"],
+    "compilerOptions": {
+        "allowJs": true,
+        "checkJs": true,
+        "noEmit": true,
+        "target": "es6",
+        "moduleResolution": "node",
+        "skipLibCheck": true
+    }
 }

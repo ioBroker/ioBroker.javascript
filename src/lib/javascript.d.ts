@@ -1,6 +1,7 @@
 // import all modules that are available in the sandbox
 // this has a nice side effect that we may augment the global scope
-import * as os from 'os';
+import type * as os from 'node:os';
+import type { ChildProcess, ExecException } from 'node:child_process';
 
 type EmptyCallback = () => void | Promise<void>;
 type ErrorCallback = (err?: Error) => void | Promise<void>;
@@ -68,7 +69,6 @@ declare global {
         enum StateQuality {
             good = 0x00, // or undefined or null
             bad = 0x01,
-            general_problem = 0x01,
             general_device_problem = 0x41,
             general_sensor_problem = 0x81,
             device_not_connected = 0x42,
@@ -83,7 +83,7 @@ declare global {
             val: T;
         }
 
-        interface AbsentState extends ioBroker.State {
+        interface AbsentState extends Omit<ioBroker.State, 'ack' | 'from' | 'ts' | 'lc'> {
             val: null;
             notExist: true;
 
@@ -227,8 +227,7 @@ declare global {
         type ObjectIdToObjectType<
             T extends string,
             Read extends 'read' | 'write' = 'read',
-            O = // State must come before Adapter or system.adapter.admin.0.foobar will resolve to AdapterObject
-            T extends ObjectIDs.State
+            O = T extends ObjectIDs.State // State must come before Adapter or system.adapter.admin.0.foobar will resolve to AdapterObject
                 ? StateObject
                 : // Instance and Adapter must come before meta or `system.adapter.admin` will resolve to MetaObject
                   T extends ObjectIDs.Instance
@@ -308,7 +307,7 @@ declare global {
             role: string;
 
             /** the default value */
-            def?: any;
+            def?: ioBroker.StateValue;
             /** the default status of the ack flag */
             defAck?: boolean;
 
@@ -432,199 +431,13 @@ declare global {
             };
         }
 
-        interface UserCommon extends ObjectCommon {
-            /** The username */
-            name: string;
-            /** The hashed password */
-            password: string;
-            /** Whether this user is enabled */
-            enabled: boolean;
+        type UserCommon = ioBroker.UserCommon;
 
-            // Make it possible to narrow the object type using the custom property
-            custom?: undefined;
-        }
+        type GroupCommon = ioBroker.GroupCommon;
 
-        interface GroupCommon extends ObjectCommon {
-            /** The name of this group */
-            name: string;
-            /** The users of this group */
-            members: string[]; // system.user.name, ...
-            /** The default permissions of this group */
-            acl: Omit<PermissionSet, 'user' | 'groups'>;
+        type ScriptCommon = ioBroker.ScriptCommon;
 
-            // Make it possible to narrow the object type using the custom property
-            custom?: undefined;
-        }
-
-        interface ScriptCommon extends ObjectCommon {
-            name: string;
-            /** Defines the type of the script, e.g. TypeScript/ts, JavaScript/js or Blockly */
-            engineType: string;
-            /** The instance id of the instance which executes this script */
-            engine: string;
-            /** The source code of this script */
-            source: string;
-            debug: boolean;
-            verbose: boolean;
-            /** Whether this script should be executed */
-            enabled: boolean;
-            /** Is used to determine whether a script has changed and needs to be recompiled */
-            sourceHash?: string;
-            /** If the script uses a compiled language like TypeScript, this contains the compilation output */
-            compiled?: string;
-            /** If the script uses a compiled language like TypeScript, this contains the generated declarations (global scripts only) */
-            declarations?: string;
-
-            // Make it possible to narrow the object type using the custom property
-            custom?: undefined;
-        }
-
-        type WelcomeScreenEntry =
-            | string
-            | {
-                  link: string;
-                  name: string;
-                  img: string;
-                  color: string;
-              };
-
-        interface AdapterCommon extends ObjectCommon {
-            /** Custom attributes to be shown in admin in the object browser */
-            adminColumns?: any[];
-            /** Settings for custom Admin Tabs */
-            adminTab?: {
-                name?: string;
-                /** Icon name for FontAwesome */
-                'fa-icon'?: string;
-                /** If true, the Tab is not reloaded when the configuration changes */
-                ignoreConfigUpdate?: boolean;
-                /** Which URL should be loaded in the tab. Supports placeholders like http://%ip%:%port% */
-                link?: string;
-                /** If true, only one instance of this tab will be created for all instances */
-                singleton?: boolean;
-            };
-            allowInit?: boolean;
-            /** Possible values for the instance mode (if more than one is possible) */
-            availableModes?: InstanceMode[];
-            /** Whether this adapter includes custom blocks for Blockly. If true, `admin/blockly.js` must exist. */
-            blockly?: boolean;
-            /** Where the adapter will get its data from. Set this together with @see dataSource */
-            connectionType?: 'local' | 'cloud';
-            /** If true, this adapter can be started in compact mode (in the same process as other adpaters) */
-            compact?: boolean;
-            /** The directory relative to iobroker-data where the adapter stores the data. Supports the placeholder `%INSTANCE%`. This folder will be backed up and restored automatically. */
-            dataFolder?: string;
-            /** How the adapter will mainly receive its data. Set this together with @see connectionType */
-            dataSource?: 'poll' | 'push' | 'assumption';
-            /** A record of ioBroker adapters (including "js-controller") and version ranges which are required for this adapter. */
-            dependencies?: Array<Record<string, string>>;
-            /** Which files outside of the README.md have documentation for the adapter */
-            docs?: Partial<Record<Languages, string | string[]>>;
-            /** Whether new instances should be enabled by default. *Should* be `false`! */
-            enabled: boolean;
-            /** If true, all previous data in the target directory (web) should be deleted before uploading */
-            eraseOnUpload?: boolean;
-            /** URL of an external icon that is shown for adapters that are not installed */
-            extIcon?: string;
-            /** Whether this adapter responds to `getHistory` messages */
-            getHistory?: boolean;
-            /** Filename of the local icon which is shown for installed adapters. Should be located in the `admin` directory */
-            icon?: string;
-            /** Which version of this adapter is installed */
-            installedVersion: string;
-            keywords?: string[];
-            /** A dictionary of links to web services this adapter provides */
-            localLinks?: Record<string, string>;
-            /** @deprecated Use @see localLinks */
-            localLink?: string;
-            logLevel?: LogLevel;
-            /** Whether this adapter receives logs from other hosts and adapters (e.g., to strore them somewhere) */
-            logTransporter?: boolean;
-            /** Path to the start file of the adapter. Should be the same as in `package.json` */
-            main?: string;
-            /** Whether the admin tab is written in materialize style. Required for Admin 3+ */
-            materializeTab: boolean;
-            /** Whether the admin configuration dialog is written in materialize style. Required for Admin 3+ */
-            materialize: boolean;
-            /** If `true`, the object `system.adapter.<adaptername>.<adapterinstance>.messagebox will be created to send messages to the adapter (used for email, pushover, etc...) */
-            messagebox?: true;
-            mode: InstanceMode;
-            /** Name of the adapter (without leading `ioBroker.`) */
-            name: string;
-            /** If `true`, no configuration dialog will be shown */
-            noConfig?: true;
-            /** If `true`, this adapter's instances will not be shown in the admin overview screen. Useful for icon sets and widgets... */
-            noIntro?: true;
-            /** Set to `true` if the adapter is not available in the official ioBroker repositories. */
-            noRepository?: true;
-            /** If `true`, manual installation from GitHub is not possible */
-            nogit?: true;
-            /** If `true`, this adapter cannot be deleted or updated manually. */
-            nondeletable?: true;
-            /** If `true`, this "adapter" only contains HTML files and no main executable */
-            onlyWWW?: boolean;
-            /** Used to configure native (OS) dependencies of this adapter that need to be installed with system package manager before installing the adapter */
-            osDependencies?: {
-                /** For OSX */
-                darwin: string[];
-                /** For Linux */
-                linux: string[];
-                /** For Windows */
-                win32: string[];
-            };
-            /** Which OSes this adapter supports */
-            os?: 'linux' | 'darwin' | 'win32' | Array<'linux' | 'darwin' | 'win32'>;
-            platform: 'Javascript/Node.js';
-            /** The keys of common attributes (e.g. `history`) which are not deleted in a `setObject` call even if they are not present. Deletion must be done explicitly by setting them to `null`. */
-            preserveSettings?: string | string[];
-            /** Which adapters must be restarted after installing or updating this adapter. */
-            restartAdapters?: string[];
-            /** If the adapter runs in `schedule` mode, this contains the CRON */
-            schedule?: string;
-            serviceStates?: boolean | string;
-            /** Whether this adapter may only be installed once per host */
-            singletonHost?: boolean;
-            /** Whether this adapter may only be installed once in the whole system */
-            singleton?: boolean;
-            /** Whether the adapter must be stopped before an update */
-            stopBeforeUpdate?: boolean;
-            /** Overrides the default timeout that ioBroker will wait before force-stopping the adapter */
-            stopTimeout?: number;
-            subscribable?: boolean;
-            subscribe?: any; // ?
-            /** If `true`, this adapter provides custom per-state settings. Requires a `custom_m.html` file in the `admin` directory. */
-            supportCustoms?: boolean;
-            /** Whether the adapter supports the signal stopInstance via messagebox */
-            supportStopInstance?: boolean;
-            /** The translated names of this adapter to be shown in the admin UI */
-            titleLang?: Record<Languages, string>;
-            /** @deprecated The name of this adapter to be shown in the admin UI. Use @see titleLang instead. */
-            title?: string;
-            /** The type of this adapter */
-            type?: string;
-            /** If `true`, the `npm` package must be installed with the `--unsafe-perm` flag */
-            unsafePerm?: true;
-            /** The available version in the ioBroker repo. */
-            version: string;
-            /** If `true`, the adapter will be started if any value is written into `system.adapter.<name>.<instance>.wakeup. Normally, the adapter should stop after processing the event. */
-            wakeup?: boolean;
-            /** Include the adapter version in the URL of the web adapter, e.g. `http://ip:port/1.2.3/material` instead of `http://ip:port/material` */
-            webByVersion?: boolean;
-            /** Whether the web server in this adapter can be extended with plugin/extensions */
-            webExtendable?: boolean;
-            /** Relative path to a module that contains an extension for the web adapter. Use together with @see native.webInstance to configure which instances this affects */
-            webExtension?: string;
-            webPreSettings?: any; // ?
-            webservers?: any; // ?
-            /** A list of pages that should be shown on the "web" index page */
-            welcomeScreen?: WelcomeScreenEntry[];
-            /** A list of pages that should be shown on the ioBroker cloud index page */
-            welcomeScreenPro?: WelcomeScreenEntry[];
-            wwwDontUpload?: boolean;
-
-            // Make it possible to narrow the object type using the custom property
-            custom?: undefined;
-        }
+        type AdapterCommon = ioBroker.AdapterCommon;
 
         interface OtherCommon extends ObjectCommon {
             [propName: string]: any;
@@ -833,7 +646,8 @@ declare global {
         type SettableOtherObject = SettableObject<OtherObject>;
 
         /** Represents the change of a state */
-        interface ChangedStateObject<TOld extends ioBroker.StateValue = any, TNew extends ioBroker.StateValue = TOld> extends StateObject {
+        interface ChangedStateObject<TOld extends ioBroker.StateValue = any, TNew extends ioBroker.StateValue = TOld>
+            extends StateObject {
             common: StateCommon;
             native: Record<string, any>;
             id?: string;
@@ -866,7 +680,7 @@ declare global {
             err?: Error | null,
             state?: TypedState<T> | AbsentState,
         ) => void | Promise<void>;
-        type ExistsStateCallback = (err?: Error | null, exists?: Boolean) => void | Promise<void>;
+        type ExistsStateCallback = (err?: Error | null, exists?: boolean) => void | Promise<void>;
 
         type SetStateCallback = (err?: Error | null, id?: string) => void | Promise<void>;
         type SetStatePromise = Promise<NonNullCallbackReturnTypeOf<SetStateCallback>>;
@@ -915,11 +729,7 @@ declare global {
 
         type LogLevel = 'silly' | 'debug' | 'info' | 'warn' | 'error' | 'force';
 
-        type ReadFileCallback = (
-            err?: Error | null,
-            file?: Buffer | string,
-            mimeType?: string,
-        ) => void | Promise<void>;
+        type ReadFileCallback = (err?: Error | null, file?: Buffer | string, mimeType?: string) => void | Promise<void>;
         type ReadFilePromise = Promise<NonNullCallbackReturnTypeOf<ReadFileCallback>>;
 
         /** Callback information for a passed message */
@@ -1070,19 +880,28 @@ declare global {
              */
             getState<T extends ioBroker.StateValue = any>(callback: GetStateCallback<T>): void;
             getState<T extends ioBroker.StateValue = any>(): TypedState<T> | null | undefined;
-            getStateAsync<T extends ioBroker.StateValue = any>(): Promise<TypedState<T> | null | undefined>;
+            getStateAsync<T extends ioBroker.StateValue = any>(): Promise<
+                TypedState<T> | iobJS.AbsentState | null | undefined
+            >;
 
             /**
              * Sets all queried states to the given value.
              */
-            setState(state: ioBroker.StateValue | ioBroker.SettableState, ack?: boolean | 'true' | 'false' | SetStateCallback, callback?: SetStateCallback): this;
-            setStateAsync(state: ioBroker.StateValue | ioBroker.SettableState, ack?: boolean | 'true' | 'false'): Promise<void>;
+            setState(
+                state: ioBroker.StateValue | ioBroker.SettableState,
+                ack?: boolean | 'true' | 'false' | SetStateCallback,
+                callback?: SetStateCallback,
+            ): this;
+            setStateAsync(
+                state: ioBroker.StateValue | ioBroker.SettableState,
+                ack?: boolean | 'true' | 'false',
+            ): Promise<void>;
             setStateDelayed(
                 state: any,
-                isAck?: boolean,
-                delay?: number,
-                clearRunning?: boolean,
-                callback?: SetStateCallback,
+                isAck: boolean | number | undefined,
+                delay?: number | boolean,
+                clearRunning?: boolean | (() => void),
+                callback?: () => void,
             ): this;
 
             /**
@@ -1102,20 +921,20 @@ declare global {
         }
 
         /**
-         * * "sunrise": sunrise (top edge of the sun appears on the horizon)
-         * * "sunriseEnd": sunrise ends (bottom edge of the sun touches the horizon)
-         * * "goldenHourEnd": morning golden hour (soft light, best time for photography) ends
-         * * "solarNoon": solar noon (sun is in the highest position)
-         * * "goldenHour": evening golden hour starts
-         * * "sunsetStart": sunset starts (bottom edge of the sun touches the horizon)
-         * * "sunset": sunset (sun disappears below the horizon, evening civil twilight starts)
-         * * "dusk": dusk (evening nautical twilight starts)
-         * * "nauticalDusk": nautical dusk (evening astronomical twilight starts)
-         * * "night": night starts (dark enough for astronomical observations)
-         * * "nightEnd": night ends (morning astronomical twilight starts)
-         * * "nauticalDawn": nautical dawn (morning nautical twilight starts)
-         * * "dawn": dawn (morning nautical twilight ends, morning civil twilight starts)
-         * * "nadir": nadir (darkest moment of the night, sun is in the lowest position)
+         * - "sunrise": sunrise (top edge of the sun appears on the horizon)
+         * - "sunriseEnd": sunrise ends (bottom edge of the sun touches the horizon)
+         * - "goldenHourEnd": morning golden hour (soft light, best time for photography) ends
+         * - "solarNoon": solar noon (sun is in the highest position)
+         * - "goldenHour": evening golden hour starts
+         * - "sunsetStart": sunset starts (bottom edge of the sun touches the horizon)
+         * - "sunset": sunset (sun disappears below the horizon, evening civil twilight starts)
+         * - "dusk": dusk (evening nautical twilight starts)
+         * - "nauticalDusk": nautical dusk (evening astronomical twilight starts)
+         * - "night": night starts (dark enough for astronomical observations)
+         * - "nightEnd": night ends (morning astronomical twilight starts)
+         * - "nauticalDawn": nautical dawn (morning nautical twilight starts)
+         * - "dawn": dawn (morning nautical twilight ends, morning civil twilight starts)
+         * - "nadir": nadir (darkest moment of the night, sun is in the lowest position)
          */
         type AstroPattern =
             | 'sunrise'
@@ -1292,7 +1111,7 @@ declare global {
     /**
      * The name of the current script
      */
-    // @ts-ignore We need this variable, although it conflicts with lib.es6
+    // @ts-expect-error We need this variable, although it conflicts with lib.es6
     const name: string;
     /**
      * The name of the current script
@@ -1311,20 +1130,21 @@ declare global {
 
     /**
      * Queries all states with the given selector
+     *
      * @param selector See @link{https://github.com/ioBroker/ioBroker.javascript#---selector} for a description
      */
-    // @ts-ignore We need this function, although it conflicts with vue
     function $(selector: string): iobJS.QueryResult;
 
     /**
      * Prints a message in the ioBroker log
+     *
      * @param message The message to print
      * @param severity (optional) severity of the message. default = "info"
      */
     function log(message: any, severity?: iobJS.LogLevel): void;
 
     // console functions
-    // @ts-ignore We need this variable, although it conflicts with the node typings
+    // @ts-expect-error We need this variable, although it conflicts with the node typings
     namespace console {
         /** log a message with info level */
         function log(message: any): void;
@@ -1341,7 +1161,10 @@ declare global {
     /**
      * Executes a system command
      */
-    const exec: typeof import('child_process').exec;
+    const exec: (
+        command: string,
+        callback?: (error: ExecException | null, stdout: string, stderr: string) => void,
+    ) => ChildProcess;
 
     /**
      * Sends an email using the email adapter.
@@ -1410,6 +1233,7 @@ declare global {
     /**
      * Subscribe to the changes of the matched files.
      * The return value can be used for offFile later
+     *
      * @param id ID of meta-object, like `vis.0`
      * @param filePattern File name or file pattern, like `main/*`
      * @param withFile If the content of the file must be returned in callback (high usage of memory)
@@ -1425,10 +1249,11 @@ declare global {
 
     /**
      * Un-subscribe from the changes of the matched files.
-     * @param id ID of meta-object, like `vis.0`. You can provide here can be a returned object from onFile. In this case, no filePattern required.
+     *
+     * @param id ID of a meta-object, like `vis.0`. You can provide here can be a returned object from onFile. In this case, no filePattern required.
      * @param filePattern File name or file pattern, like `main/*`
      */
-    function offFile(id: string | any, filePattern?: string | string[]): boolean;
+    function offFile(id: string | string[], filePattern?: string | string[]): boolean;
 
     /**
      * Registers a one-time subscription which automatically unsubscribes after the first invocation
@@ -1445,26 +1270,30 @@ declare global {
      * Causes all changes of the state with id1 to the state with id2.
      * The return value can be used to unsubscribe later
      */
-    function on(id1: string, id2: string): any;
+    function on(id1: string, id2: string): void;
+
     /**
      * Watches the state with id1 for changes and overwrites the state with id2 with value2 when any occur.
+     *
      * @param id1 The state to watch for changes
      * @param id2 The state to update when changes occur
      * @param value2 The value to write into state `id2` when `id1` gets changed
      */
-    function on(id1: string, id2: string, value2: any): any;
+    function on(id1: string, id2: string, value2: any): void;
 
     /**
      * Causes all changes of the state with id1 to the state with id2
      */
-    function subscribe(id1: string, id2: string): any;
+    function subscribe(id1: string, id2: string): void;
+
     /**
      * Watches the state with id1 for changes and overwrites the state with id2 with value2 when any occur.
+     *
      * @param id1 The state to watch for changes
      * @param id2 The state to update when changes occur
      * @param value2 The value to write into state `id2` when `id1` gets changed
      */
-    function subscribe(id1: string, id2: string, value2: any): any;
+    function subscribe(id1: string, id2: string, value2: any): void;
 
     /**
      * Returns the list of all active subscriptions
@@ -1479,8 +1308,7 @@ declare global {
     /**
      * Unsubscribe from changes of the given object ID(s) or handler(s)
      */
-    function unsubscribe(id: string | string[]): boolean;
-    function unsubscribe(handler: any | any[]): boolean;
+    function unsubscribe(id: string | RegExp | string[]): boolean;
 
     function adapterSubscribe(id: string): void;
     function adapterUnsubscribe(id: string): void;
@@ -1515,6 +1343,7 @@ declare global {
     /**
      * Calculates the astro time which corresponds to the given pattern.
      * For valid patterns, see @link{https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#astro-function}
+     *
      * @param pattern One of predefined patterns, like: sunrise, sunriseEnd, ...
      * @param date (optional) The date for which the astro time should be calculated. Default = today
      * @param offsetMinutes (optional) The number of minutes to be added to the return value.
@@ -1528,11 +1357,12 @@ declare global {
 
     /**
      * Sets a state to the given value
+     *
      * @param id The ID of the state to be set
      */
     function setState(
         id: string,
-        state:ioBroker.StateValue | ioBroker.SettableState,
+        state: ioBroker.StateValue | ioBroker.SettableState,
         callback?: iobJS.SetStateCallback,
     ): void;
     function setState(
@@ -1550,6 +1380,7 @@ declare global {
 
     /**
      * Sets a state to the given value only if the value really changed.
+     *
      * @param id The ID of the state to be set
      */
     function setStateChanged(
@@ -1573,6 +1404,7 @@ declare global {
     /**
      * Sets a state to the given value after a timeout has passed.
      * Returns the timer, so it can be manually cleared with clearStateDelayed
+     *
      * @param id The ID of the state to be set
      * @param delay The delay in milliseconds
      * @param clearRunning (optional) Whether an existing timeout for this state should be cleared
@@ -1621,6 +1453,7 @@ declare global {
 
     /**
      * Clears a timer created by setStateDelayed
+     *
      * @param id The state id for which the timer should be cleared
      * @param timerID (optional) ID of the specific timer to clear. If none is given, all timers are cleared.
      */
@@ -1628,11 +1461,13 @@ declare global {
 
     /**
      * Returns information about a specific timer created with `setStateDelayed`.
+     *
      * @param timerId The timer id that was returned by `setStateDelayed`.
      */
     function getStateDelayed(timerId: number): iobJS.StateTimer | null;
     /**
      * Returns a list of all timers created with `setStateDelayed`. Can be limited to a specific state id.
+     *
      * @param id The state id for which the timers should be.
      */
     function getStateDelayed(id?: string): iobJS.StateTimer[];
@@ -1661,6 +1496,7 @@ declare global {
 
     /**
      * Returns the IDs of the states with the given name
+     *
      * @param name Name of the state
      * @param forceArray (optional) Ensures that the return value is always an array, even if only one ID was found.
      */
@@ -1668,6 +1504,7 @@ declare global {
 
     /**
      * Reads an object from the object db.
+     *
      * @param enumName Which enum should be included in the returned object. `true` to return all enums.
      */
     function getObject<T extends string>(id: T, enumName?: string | true): iobJS.ObjectIdToObjectType<T, 'read'>;
@@ -1687,10 +1524,11 @@ declare global {
     function deleteObject(id: string, recursive: boolean, callback?: ErrorCallback): void;
     function deleteObjectAsync(id: string, recursive?: boolean): Promise<void>;
 
-    function getEnums(enumName?: string): any;
+    function getEnums(enumName?: string): { id: string; members: string[]; name: ioBroker.StringOrTranslated }[];
 
     /**
-     * Creates a state and the corresponding object under the javascript namespace.
+     * Creates a state and the corresponding object under the JavaScript namespace.
+     *
      * @param name The name of the state without the namespace
      * @param initValue (optional) Initial value of the state
      * @param forceCreation (optional) Override the state if it already exists
@@ -1820,6 +1658,7 @@ declare global {
 
     /**
      * Deletes the state with the given ID
+     *
      * @param callback (optional) Is called after the state was deleted (or not).
      */
     function deleteState(id: string, callback?: GenericCallback<boolean>): void;
@@ -1827,6 +1666,7 @@ declare global {
 
     /**
      * Sends a message to a specific instance or all instances of some specific adapter.
+     *
      * @param instanceName The instance to send this message to.
      * If the ID of an instance is given (e.g. "admin.0"), only this instance will receive the message.
      * If the name of an adapter is given (e.g. "admin"), all instances of this adapter will receive it.
@@ -1869,6 +1709,7 @@ declare global {
 
     /**
      * Sends a message to a specific instance or all instances of some specific adapter.
+     *
      * @param host Host name.
      * @param command Command name for the target host.
      * @param message The message (e.g., params) to send.
@@ -1886,7 +1727,8 @@ declare global {
     ): Promise<iobJS.MessageCallback | iobJS.MessageCallbackInfo>;
 
     /**
-     * Creates a new notification (visible in admin adpter)
+     * Creates a new notification (visible in admin adapter)
+     *
      * @param msg Message text
      */
     function registerNotification(msg: string): void;
@@ -1902,6 +1744,7 @@ declare global {
 
     /**
      * Compares two or more times
+     *
      * @param timeToCompare - The time to compare with startTime and/or endTime. If none is given, the current time is used
      */
     function compareTime(
@@ -1930,6 +1773,7 @@ declare global {
 
     /**
      * Writes a file.
+     *
      * @param id Name of the root directory. This should be the adapter instance, e.g. "admin.0"
      * @param name File name
      * @param data Contents of the file
@@ -1940,6 +1784,7 @@ declare global {
 
     /**
      * Reads a file.
+     *
      * @param id Name of the root directory. This should be the adapter instance, e.g. "admin.0"
      * @param name File name
      * @param callback Is called when the operation has finished (successfully or not)
@@ -1949,6 +1794,7 @@ declare global {
 
     /**
      * Deletes a file.
+     *
      * @param id Name of the root directory. This should be the adapter instance, e.g. "admin.0"
      * @param name File name
      * @param callback Is called when the operation has finished (successfully or not)
@@ -1958,6 +1804,7 @@ declare global {
 
     /**
      * Deletes a file.
+     *
      * @param id Name of the root directory. This should be the adapter instance, e.g. "admin.0"
      * @param name File name
      * @param callback Is called when the operation has finished (successfully or not)
@@ -1967,6 +1814,7 @@ declare global {
 
     /**
      * Renames a file.
+     *
      * @param id Name of the root directory. This should be the adapter instance, e.g. "admin.0"
      * @param oldName Current file name
      * @param newName New file name
@@ -1977,6 +1825,7 @@ declare global {
 
     /**
      * Renames a file.
+     *
      * @param id Name of the root directory. This should be the adapter instance, e.g. "admin.0"
      * @param oldName Current file name
      * @param newName New file name
@@ -1990,6 +1839,7 @@ declare global {
 
     /**
      * Starts or restarts a script by name
+     *
      * @param scriptName (optional) Name of the script. If none is given, the current script is (re)started.
      */
     function runScript(scriptName?: string, callback?: ErrorCallback): boolean;
@@ -1997,6 +1847,7 @@ declare global {
 
     /**
      * Starts or restarts a script by name
+     *
      * @param scriptName (optional) Name of the script. If none is given, the current script is (re)started.
      * @param ignoreIfStarted If set to true, running scripts will not be restarted.
      * @param callback (optional) Is called when the script has finished (successfully or not)
@@ -2006,16 +1857,18 @@ declare global {
         ignoreIfStarted: boolean,
         callback?: GenericCallback<boolean>,
     ): boolean;
-    function startScriptAsync(scriptName?: string | undefined, ignoreIfStarted?: boolean): Promise<void>;
+    function startScriptAsync(scriptName?: string, ignoreIfStarted?: boolean): Promise<void>;
 
     /**
      * Starts or restarts a script by name
+     *
      * @param scriptName (optional) Name of the script. If none is given, the current script is (re)started.
      * @param callback (optional) Is called when the script has finished (successfully or not)
      */
     function startScript(scriptName?: string, callback?: GenericCallback<boolean>): boolean;
     /**
      * Stops a script by name
+     *
      * @param scriptName (optional) Name of the script. If none is given, the current script is stopped.
      */
     function stopScript(scriptName: string | undefined, callback?: GenericCallback<boolean>): boolean;
@@ -2036,6 +1889,7 @@ declare global {
 
     /**
      * Digs in an object for the property value at the given path.
+     *
      * @param obj The object to dig in
      * @param path The path of the property to dig for in the given object
      */
@@ -2043,11 +1897,12 @@ declare global {
 
     /**
      * Sends a message to another script.
+     *
      * @param target Message name or target object
      * @param data Any data, that should be sent to message bus
      * @param options Actually only {timeout: X} is supported as option
      * @param callback Callback to get the result from other script
-     * @return ID of the subscription. It could be used for un-subscribe.
+     * @return ID of the subscription. It could be used for unsubscribe.
      */
     function messageTo(
         target: iobJS.MessageTarget | string,
@@ -2063,6 +1918,7 @@ declare global {
 
     /**
      * Process message from another script.
+     *
      * @param message Message name
      * @param callback Callback to send the result to another script
      */
@@ -2070,6 +1926,7 @@ declare global {
 
     /**
      * Unregister onmessage handler
+     *
      * @param id Message subscription id from onMessage or by message name
      * @return true if subscription exists and was deleted.
      */
@@ -2084,6 +1941,7 @@ declare global {
 
     /**
      * Receives logs of specified severity level in a script.
+     *
      * @param severity Severity level
      * @param callback Callback to send the result to another script
      */
@@ -2091,6 +1949,7 @@ declare global {
 
     /**
      * Unsubscribe log handler.
+     *
      * @param idOrCallbackOrSeverity Message subscription id from onLog or by callback function
      * @return true if subscription exists and was deleted.
      */

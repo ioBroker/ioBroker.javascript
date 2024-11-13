@@ -13,7 +13,7 @@ import {
     type FSWatcher,
 } from 'node:fs';
 import { join, normalize, dirname } from 'node:path';
-import { ScriptType } from '../types';
+import type { ScriptType } from '../types';
 
 const MODE_0777 = 511;
 
@@ -72,8 +72,8 @@ export class Mirror {
         if (!existsSync(this.diskRoot)) {
             try {
                 mkdirSync(this.diskRoot);
-            } catch (e) {
-                this.log.error(`Cannot create directory ${this.diskRoot}: ${e}`);
+            } catch (err: unknown) {
+                this.log.error(`Cannot create directory ${this.diskRoot}: ${err as Error}`);
                 return;
             }
         }
@@ -120,8 +120,8 @@ export class Mirror {
                     });
                 }
             });
-        } catch (err) {
-            return this.log.warn(`Error while trying to watch folder ${root_}: ${err}`);
+        } catch (err: unknown) {
+            return this.log.warn(`Error while trying to watch folder ${root_}: ${err as Error}`);
         }
 
         if (!this.watchedFolder[root_]) {
@@ -140,7 +140,7 @@ export class Mirror {
                 this.log.debug(`Folder ${root_} was deleted`);
                 try {
                     this.watchedFolder[root_] && this.watchedFolder[root_].close();
-                } catch (e) {
+                } catch {
                     // ignore error
                 }
 
@@ -243,7 +243,7 @@ export class Mirror {
     }
 
     private _getObjectsInPath(pathDB: string): string[] {
-        const reg = new RegExp(pathDB.replace(/\./g, '\\.') + '\\.[^.]+$');
+        const reg = new RegExp(`${pathDB.replace(/\./g, '\\.')}\\.[^.]+$`);
         return Object.keys(this.dbList)
             .filter(id => reg.test(id))
             .map(id => id.split('.').pop() || '');
@@ -263,8 +263,8 @@ export class Mirror {
             writeFileSync(diskListEntry.name, diskListEntry.source, { mode: MODE_0777 });
             diskListEntry.ts = Date.now();
             return true;
-        } catch (e) {
-            this.log.error(`Cannot write file ${diskListEntry ? diskListEntry.name : id}: ${e}`);
+        } catch (err: unknown) {
+            this.log.error(`Cannot write file ${diskListEntry ? diskListEntry.name : id}: ${err as Error}`);
             return false;
         }
     }
@@ -417,8 +417,8 @@ export class Mirror {
         if (exists) {
             try {
                 stats = statSync(file);
-            } catch (e) {
-                this.log.error(`Cannot read file ${file}: ${e}`);
+            } catch (err: unknown) {
+                this.log.error(`Cannot read file ${file}: ${err as Error}`);
             }
 
             if (stats?.isDirectory()) {
@@ -431,8 +431,8 @@ export class Mirror {
 
                         // update all files in this directory
                         files.forEach(f => this.onFileChange('change', join(file, f).replace(/\\/g, '/')));
-                    } catch (err) {
-                        this.log.error(`Error while checking files in directory ${file}: ${err}`);
+                    } catch (err: unknown) {
+                        this.log.error(`Error while checking files in directory ${file}: ${err as Error}`);
                     }
                 } else {
                     if (this.watchedFolder[file]) {
@@ -450,7 +450,7 @@ export class Mirror {
                         this.watchedFolder[file].close();
                         delete this.watchedFolder[file];
                     }
-                } catch (e) {
+                } catch {
                     // ignore error
                 }
                 this.removeScriptsInFolder(file);
@@ -466,7 +466,7 @@ export class Mirror {
                         this.watchedFolder[file].close();
                         delete this.watchedFolder[file];
                     }
-                } catch (e) {
+                } catch {
                     // ignore error
                 }
                 this.removeScriptsInFolder(file);
@@ -518,14 +518,14 @@ export class Mirror {
                     this._checkIfAllFoldersAreExist(id, this.dbList);
                     this.adapter.setForeignObject(id, this.dbList[id] as ioBroker.Object);
                 }
-            } catch (e) {
-                this.log.error(`Cannot read file ${file}: ${e}`);
+            } catch (err: unknown) {
+                this.log.error(`Cannot read file ${file}: ${err as Error}`);
             }
         } else if (event === 'delete' || event === 'rename') {
             // there is a bug: just after creation of a script on disk from ioBroker, "rename" event is generated!
             if (event === 'rename' && this.diskList[id] && Date.now() - this.diskList[id].ts < 200) {
                 console.log(`Interval: ${Date.now() - this.diskList[id].ts}`);
-                // 'rename is ignored
+                // 'rename' is ignored
                 this.log.debug(`Rename event for ${id} is ignored`);
             } else {
                 if (this.dbList[id]) {
@@ -560,8 +560,8 @@ export class Mirror {
                     try {
                         this.log.debug(`Delete ${file} on disk`);
                         unlinkSync(file);
-                    } catch (e) {
-                        this.log.error(`Cannot delete ${file}: ${e}`);
+                    } catch (err: unknown) {
+                        this.log.error(`Cannot delete ${file}: ${err as Error}`);
                     }
                 }
                 if (this.diskList[id]) {
@@ -619,8 +619,8 @@ export class Mirror {
                     }
                 });
             }
-        } catch (err) {
-            this.log.error(`Error while checking files in directory ${dirPath}: ${err}`);
+        } catch (err: unknown) {
+            this.log.error(`Error while checking files in directory ${dirPath}: ${err as Error}`);
         }
         return list;
     }
@@ -641,15 +641,13 @@ export class Mirror {
                 };
                 list[folderId] = obj;
                 try {
-                    this.adapter.setForeignObject(
-                        folderId,
-                        obj,
-                        err =>
-                            err &&
-                            this.log.warn(`Error while checking script folder ${folderId} for id "${id}": ${err}`),
-                    );
-                } catch (err) {
-                    this.log.warn(`Error while checking script folder ${folderId} for id "${id}": ${err}`);
+                    this.adapter.setForeignObject(folderId, obj, err => {
+                        if (err) {
+                            this.log.warn(`Error while checking script folder ${folderId} for id "${id}": ${err}`);
+                        }
+                    });
+                } catch (err: unknown) {
+                    this.log.warn(`Error while checking script folder ${folderId} for id "${id}": ${err as Error}`);
                 }
             }
         }
@@ -665,7 +663,7 @@ export class Mirror {
                 // adapter.subscribeForeignObjects('script.js.*');
                 const list = {};
                 if (err) {
-                    this.log.error('Error while checking scripts channel from objects database: ' + err);
+                    this.log.error(`Error while checking scripts channel from objects database: ${err}`);
                 }
                 if (res && res.rows) {
                     for (let i = 0; i < res.rows.length; i++) {

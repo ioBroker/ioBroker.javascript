@@ -6,7 +6,8 @@ import type { AxiosRequestConfig, ResponseType } from 'axios';
 
 /**
  * Tests whether the given variable is a real object and not an Array
- * @param {any} it The variable to test
+ *
+ * @param it The variable to test
  */
 export function isObject(it: any): boolean {
     // This is necessary because:
@@ -18,8 +19,8 @@ export function isObject(it: any): boolean {
 
 /**
  * Tests whether the given variable is really an Array
- * @param {any} it The variable to test
- * @returns {it is any[]}
+ *
+ * @param it The variable to test
  */
 export function isArray(it: any): boolean {
     return Array.isArray(it);
@@ -27,8 +28,9 @@ export function isArray(it: any): boolean {
 
 /**
  * Finds all matches of a regular expression and returns the matched groups
- * @param {RegExp} regex The regular expression to match against the string
- * @param {string} string The string to test
+ *
+ * @param regex The regular expression to match against the string
+ * @param string The string to test
  */
 export function matchAll(regex: RegExp, string: string): string[][] {
     const ret: string[][] = [];
@@ -62,8 +64,8 @@ export function enumFilesRecursiveSync(rootDir: string, predicate: (filename: st
                 ret.push(fullPath);
             }
         }
-    } catch (err) {
-        console.error(`Cannot read directory: "${rootDir}": ${err}`);
+    } catch (err: unknown) {
+        console.error(`Cannot read directory: "${rootDir}": ${err as Error}`);
     }
 
     return ret;
@@ -71,30 +73,31 @@ export function enumFilesRecursiveSync(rootDir: string, predicate: (filename: st
 
 /**
  * Promisifies a callback-style function with parameters (err, result)
- * @param {(...args: any[]) => any} fn The callback-style function to promisify
- * @param {*} [context] The value of `this` in the function
+ *
+ * @param  fn The callback-style function to promisify
+ * @param context The value of `this` in the function
  */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export function promisify(fn: Function, context?: any): (...args: any[]) => Promise<any> {
     return function (...args) {
-        // @ts-ignore We want this behavior
+        // @ts-expect-error We want this behavior
         context = context || this;
         return new Promise((resolve, reject) => {
             try {
                 fn.apply(context, [
                     ...args,
-                    (error, result) => {
+                    (error: Error | string | null, result: null) => {
                         if (error) {
                             if (typeof error === 'string') {
                                 return reject(new Error(error));
                             }
                             return reject(error);
-                        } else {
-                            return resolve(result);
                         }
+                        return resolve(result);
                     },
                 ]);
-            } catch (error) {
-                reject(error);
+            } catch (error: unknown) {
+                reject(error as Error);
             }
         });
     };
@@ -102,17 +105,19 @@ export function promisify(fn: Function, context?: any): (...args: any[]) => Prom
 
 /**
  * Promisifies a callback-style function without an error parameter
- * @param {(...args: any[]) => any} fn The callback-style function to promisify
- * @param {*} [context] The value of `this` in the function
+ *
+ * @param fn The callback-style function to promisify
+ * @param context The value of `this` in the function
  */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export function promisifyNoError(fn: Function, context: any): (...args: any[]) => Promise<any> {
     return function (...args) {
-        // @ts-ignore We want this behavior
+        // @ts-expect-error We want this behavior
         context = context || this;
         return new Promise(resolve => {
             try {
                 fn.apply(context, [...args, result => resolve(result)]);
-            } catch (error) {
+            } catch {
                 resolve(null); // what to do in this case??
             }
         });
@@ -121,8 +126,8 @@ export function promisifyNoError(fn: Function, context: any): (...args: any[]) =
 
 /**
  * Creates an MD5 hash of a script source which can be used to check whether the source of a compiled language changed
- * @param {string} source The source code to hash
- * @returns {string}
+ *
+ * @param source The source code to hash
  */
 export function hashSource(source: string | Buffer): string {
     return createHash('md5').update(source).digest('hex');
@@ -160,7 +165,7 @@ export function getHttpRequestConfig(
             password: options.basicAuth.password,
         };
     } else if (options.bearerAuth) {
-        options.headers['Authorization'] = `Bearer ${options.bearerAuth}`;
+        options.headers.Authorization = `Bearer ${options.bearerAuth}`;
     } else {
         const uri = new URL(url);
         if (uri.username && uri.password) {

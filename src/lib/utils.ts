@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { IoBJson } from '@iobroker/types/build/config';
+import type { IoBJson } from '@iobroker/types/build/config';
 
 const EXIT_CODES = {
     NO_ERROR: 0,
@@ -30,7 +30,7 @@ function getControllerDir(isInstall?: boolean): string {
                 controllerPath = possiblePath;
                 break;
             }
-        } catch (e) {
+        } catch {
             /* not found */
         }
     }
@@ -47,6 +47,11 @@ function getControllerDir(isInstall?: boolean): string {
     return dirname(controllerPath);
 }
 
+export const appName = getAppName();
+export const controllerDir = getControllerDir(
+    typeof process !== 'undefined' && process.argv && process.argv.includes('--install'),
+);
+
 /**
  * Reads controller base settings
  */
@@ -60,8 +65,5 @@ export function getConfig(): IoBJson {
     }
     throw new Error(`Cannot find ${controllerDir}/conf/${appName}.json`);
 }
-export const appName = getAppName();
-export const controllerDir = getControllerDir(
-    typeof process !== 'undefined' && process.argv && process.argv.includes('--install'),
-);
+
 export const Adapter = require(join(controllerDir, 'lib/adapter.js'));

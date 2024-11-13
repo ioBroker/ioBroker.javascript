@@ -1,6 +1,9 @@
 // controller uses this file when build uploads
-export function stringify(data: { data: ioBroker.ScriptObject | ioBroker.ChannelObject, id: string }): { id: string; data: string | undefined } {
-    let obj = data.data;
+export function stringify(data: { data: ioBroker.ScriptObject | ioBroker.ChannelObject; id: string }): {
+    id: string;
+    data: string | undefined;
+} {
+    const obj = data.data;
     let id = data.id;
     let result: string | undefined;
     if (data.data.type === 'channel') {
@@ -39,7 +42,10 @@ export function stringify(data: { data: ioBroker.ScriptObject | ioBroker.Channel
     return { id, data: result };
 }
 
-export function parse(data: { data: string, id: string }): { id: string; data: ioBroker.ScriptObject; error: string | undefined } | null {
+export function parse(data: {
+    data: string;
+    id: string;
+}): { id: string; data: ioBroker.ScriptObject; error: string | undefined } | null {
     let obj: string = data.data;
     let id = data.id;
     let error: string | undefined;
@@ -58,8 +64,8 @@ export function parse(data: { data: string, id: string }): { id: string; data: i
 
         try {
             result = JSON.parse(obj);
-        } catch (e) {
-            error = `Cannot parse object "${name}": ${e}`;
+        } catch (err: unknown) {
+            error = `Cannot parse object "${name}": ${err as Error}`;
             result = {
                 common: {
                     name: name.split('.').pop() || name,
@@ -92,8 +98,8 @@ export function parse(data: { data: string, id: string }): { id: string; data: i
                 result = {} as ioBroker.Object;
                 result.common = JSON.parse(stringObj);
                 result.common.source = source;
-            } catch (e) {
-                error = `Cannot parse object "${id}": ${e}`;
+            } catch (err: unknown) {
+                error = `Cannot parse object "${id}": ${err as Error}`;
             }
         } else {
             source = obj;
