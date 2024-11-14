@@ -42,7 +42,7 @@
     },
     "dependencies": {
         "@iobroker/adapter-core": "^3.2.2",
-        "@types/node": "^22.9.0",
+        "@types/node": "^18.19.64",
         "axios": "^1.7.7",
         "jsonata": "^2.0.5",
         "jszip": "^3.10.1",
@@ -61,7 +61,7 @@
         "@iobroker/build-tools": "^2.0.6",
         "@iobroker/eslint-config": "^0.1.7",
         "@iobroker/testing": "^5.0.0",
-        "@iobroker/types": "^7.0.3",
+        "@iobroker/types": "^6.0.11",
         "@types/nodemailer": "^6.4.16",
         "@types/node-schedule": "^2.1.7",
         "@types/request": "^2.48.12",
@@ -75,17 +75,14 @@
     "bugs": {
         "url": "https://github.com/ioBroker/ioBroker.javascript/issues"
     },
-    "main": "src/main.ts",
+    "main": "build-backend/main.js",
     "files": [
         "admin/",
-        "lib/",
+        "build-backend/",
         "docs/",
         "install/",
-        "lib/",
         "io-package.json",
-        "LICENSE",
-        "src/main.ts",
-        "admin/vsFont/codicon.json"
+        "LICENSE"
     ],
     "scripts": {
         "test:declarations": "tsc -p test/lib/TS/tsconfig.json && tsc -p test/lib/JS/tsconfig.json",

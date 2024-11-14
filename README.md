@@ -28,14 +28,17 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+-   (@GermanBluefox) Backend re-written to typescript
+-   (@GermanBluefox) Removed the `request` module from the default modules
 
 ### 8.8.3 (2024-09-05)
 
--   (bluefox) Fixed object selector in rules
+-   (@GermanBluefox) Fixed object selector in rules
 
 ### 8.8.2 (2024-08-07)
 
--   (bluefox) updated dependencies
+-   (@GermanBluefox) updated dependencies
 
 ### 8.8.0 (2024-08-05)
 
@@ -55,7 +58,7 @@ Executes Javascript, Typescript Scripts.
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2024 bluefox <dogafox@gmail.com>,
+Copyright (c) 2014-2024 @GermanBluefox <dogafox@gmail.com>,
 
 Copyright (c) 2014 hobbyquaker
 
