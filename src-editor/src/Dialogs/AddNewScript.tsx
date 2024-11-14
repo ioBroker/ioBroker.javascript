@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import {
     Button,
@@ -23,7 +22,7 @@ import ImgTS from '../assets/tileTS.png';
 import ImgBlockly from '../assets/tileBlockly.png';
 import ImgRules from '../assets/tileRules.png';
 
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
     card: {
         maxWidth: 345,
         minWidth: 250,
@@ -44,25 +43,25 @@ const styles = {
     },
 };
 
-class DialogAddNew extends React.Component {
-    handleCancel = () => {
+interface DialogAddNewProps {
+    onClose: (type?: 'TypeScript/ts' | 'Javascript/js' | 'Blockly' | 'Rules') => void;
+}
+
+class DialogAddNew extends React.Component<DialogAddNewProps> {
+    handleCancel = (): void => {
         this.props.onClose();
     };
 
-    handleOk = type => {
-        this.props.onClose(type);
-    };
-
-    openHtml(html) {
+    static openHtml(html: string): void {
         const lang = I18n.getLanguage();
         if (!html.includes('javascript.md') && (lang === 'de' || lang === 'ru')) {
             html = html.replace(/\/en\//, `/${lang}/`);
         }
-        const win = window.open(html, '_blank');
-        win.focus();
+        const win: Window | null = window.open(html, '_blank');
+        win?.focus();
     }
 
-    getJSCard() {
+    getJSCard(): React.JSX.Element {
         return (
             <Card style={styles.card}>
                 <CardActionArea onClick={() => this.props.onClose && this.props.onClose('Javascript/js')}>
@@ -90,7 +89,7 @@ class DialogAddNew extends React.Component {
                         size="small"
                         color="secondary"
                         onClick={() =>
-                            this.openHtml(
+                            DialogAddNew.openHtml(
                                 'https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md',
                             )
                         }
@@ -102,7 +101,7 @@ class DialogAddNew extends React.Component {
         );
     }
 
-    getTSCard() {
+    getTSCard(): React.JSX.Element {
         return (
             <Card style={styles.card}>
                 <CardActionArea onClick={() => this.props.onClose && this.props.onClose('TypeScript/ts')}>
@@ -130,7 +129,7 @@ class DialogAddNew extends React.Component {
                         size="small"
                         color="secondary"
                         onClick={() =>
-                            this.openHtml(
+                            DialogAddNew.openHtml(
                                 'https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md',
                             )
                         }
@@ -142,7 +141,7 @@ class DialogAddNew extends React.Component {
         );
     }
 
-    getBlocklyCard() {
+    getBlocklyCard(): React.JSX.Element {
         return (
             <Card style={styles.card}>
                 <CardActionArea onClick={() => this.props.onClose && this.props.onClose('Blockly')}>
@@ -170,7 +169,7 @@ class DialogAddNew extends React.Component {
                         size="small"
                         color="secondary"
                         onClick={() =>
-                            this.openHtml(
+                            DialogAddNew.openHtml(
                                 'https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/blockly.md',
                             )
                         }
@@ -182,7 +181,7 @@ class DialogAddNew extends React.Component {
         );
     }
 
-    getRulesCard() {
+    getRulesCard(): React.JSX.Element {
         return (
             <Card style={styles.card}>
                 <CardActionArea onClick={() => this.props.onClose && this.props.onClose('Rules')}>
@@ -210,7 +209,7 @@ class DialogAddNew extends React.Component {
                         size="small"
                         color="secondary"
                         onClick={() =>
-                            this.openHtml(
+                            DialogAddNew.openHtml(
                                 'https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md',
                             )
                         }
@@ -222,7 +221,7 @@ class DialogAddNew extends React.Component {
         );
     }
 
-    render() {
+    render(): React.JSX.Element {
         return (
             <Dialog
                 onClose={() => false}
@@ -251,9 +250,5 @@ class DialogAddNew extends React.Component {
         );
     }
 }
-
-DialogAddNew.propTypes = {
-    onClose: PropTypes.func,
-};
 
 export default DialogAddNew;

@@ -90,7 +90,7 @@
         "test": "npm run test:declarations && npm run test:javascript",
         "translate": "translate-adapter",
         "//postinstall": "node ./install/installTypings.js",
-        "build": "node tasks",
+        "build": "node tasks && npm run tsc-backend",
         "tsc-backend": "tsc -p tsconfig.build.json",
         "release": "release-script --noPush -y --all",
         "update-packages": "ncu --upgrade && cd src && ncu --upgrade && cd ../src-admin && ncu --upgrade",

@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import {
     Button,
@@ -18,44 +17,76 @@ import { Check as IconOk, Cancel as IconCancel } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-class DialogNew extends React.Component {
-    constructor(props) {
+interface DialogNewProps {
+    onClose: () => void;
+    onAdd: (id: string, name: string, instance: number, type: string) => void;
+    name: string;
+    title: string;
+    parent: string;
+    instance: number;
+    instances: number[];
+    parents: { id: string; name: string }[];
+    existingItems: string[];
+    folder: boolean;
+    type: string;
+    source: string;
+}
+
+interface DialogNewState {
+    name: string;
+    instance: number;
+    parent: string;
+    error: string;
+    id: string;
+}
+
+class DialogNew extends React.Component<DialogNewProps, DialogNewState> {
+    private readonly isShowInstance: boolean;
+
+    constructor(props: DialogNewProps) {
         super(props);
         this.state = {
             name: props.name || 'Script',
             instance: props.instance || 0,
             parent: props.parent,
             error: '',
+            id: '',
         };
+
         this.isShowInstance =
-            !props.folder && props.instances && (props.instance || props.instances[0] || props.instances.length > 1);
+            !props.folder && // if not folder
+            !!props.instances && // and list of instances is defined
+            (!!props.instance || // and instance is not 0
+                !!props.instances[0] || // or first instance is not 0
+                props.instances.length > 1); // or more than one instance
     }
 
-    getId(name) {
+    getId(name?: string): string {
         name = name || this.state.name || '';
         name = name
             .replace(/[\\/\][.*,;'"`<>?\s]/g, '_')
             .trim()
             .replace(/\.$/, '_');
-        return (this.state ? this.state.parent : this.props.parent) + '.' + name;
+        return `${this.state ? this.state.parent : this.props.parent}.${name}`;
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.name !== this.props.name) {
-            this.setState({ name: nextProps.name });
+    static getDerivedStateFromProps(props: DialogNewProps, state: DialogNewState): Partial<DialogNewState> | null {
+        if (props.name !== state.name) {
+            return { name: props.name };
         }
+        return null;
     }
 
-    handleCancel = () => {
+    handleCancel = (): void => {
         this.props.onClose();
     };
 
-    handleOk = () => {
+    handleOk = (): void => {
         this.props.onAdd(this.getId(this.state.name), this.state.name, this.state.instance, this.props.type);
         this.props.onClose();
     };
 
-    handleChange = name => {
+    handleChange = (name: string): void => {
         const id = this.getId(name);
         if (!name) {
             this.setState({ name, id, error: I18n.t('Empty name is not allowed') });
@@ -66,10 +97,10 @@ class DialogNew extends React.Component {
         }
     };
 
-    render() {
+    render(): React.JSX.Element {
         return (
             <Dialog
-                onClose={(event, reason) => false}
+                onClose={() => false}
                 maxWidth="md"
                 fullWidth
                 open={!0}
@@ -117,7 +148,7 @@ class DialogNew extends React.Component {
                                     parts.splice(0, 2); // remove script.js
                                     const names = [];
                                     let id = 'script.js';
-                                    parts.forEach((n, i) => {
+                                    parts.forEach(n => {
                                         id += `.${n}`;
                                         const el = this.props.parents.find(item => item.id === id);
                                         if (el) {
@@ -155,7 +186,7 @@ class DialogNew extends React.Component {
                                 <Select
                                     variant="standard"
                                     value={this.state.instance}
-                                    onChange={e => this.setState({ instance: parseInt(e.target.value, 10) })}
+                                    onChange={e => this.setState({ instance: parseInt(e.target.value as string, 10) })}
                                     inputProps={{ name: 'instance', id: 'instance' }}
                                 >
                                     {this.props.instances.map(instance => (
@@ -194,20 +225,5 @@ class DialogNew extends React.Component {
         );
     }
 }
-
-DialogNew.propTypes = {
-    onClose: PropTypes.func,
-    onAdd: PropTypes.func,
-    name: PropTypes.string,
-    title: PropTypes.string,
-    parent: PropTypes.string,
-    instance: PropTypes.number,
-    instances: PropTypes.array,
-    parents: PropTypes.array,
-    existingItems: PropTypes.array,
-    folder: PropTypes.bool,
-    type: PropTypes.string,
-    source: PropTypes.string,
-};
 
 export default DialogNew;

@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { useDrag, useDrop, DndProvider as DragDropContext } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
@@ -48,7 +47,7 @@ import {
 
 import { red, green, yellow } from '@mui/material/colors';
 
-import { I18n, Utils } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n, type IobTheme, type ThemeName, Utils } from '@iobroker/adapter-react-v5';
 
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';
@@ -72,22 +71,22 @@ const GLOBAL_ID = `${ROOT_ID}.global`;
 const NARROW_WIDTH = 350;
 const LEVEL_PADDING = 16;
 
-const SELECTED_STYLE = {
+const SELECTED_STYLE: React.CSSProperties = {
     background: '#164477',
     color: 'white',
 };
 
-const styles = {
+const styles: Record<string, any> = {
     drawerPaper: {
         position: 'relative',
         width: '100%', //Theme.menu.width,
         height: '100%',
         overflow: 'hidden',
     },
-    toolbar: theme => ({
+    toolbar: (theme: IobTheme): React.CSSProperties => ({
         height: theme.toolbar.height,
     }),
-    toolbarButtons: theme => ({
+    toolbarButtons: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? 'white !important' : 'black !important',
     }),
     iconButtonsDisabled: {
@@ -198,7 +197,7 @@ const styles = {
         height: 24,
         display: 'flex',
     },
-    footerButtons: theme => ({
+    footerButtons: (theme: IobTheme): any => ({
         '& img': {
             color: theme.palette.mode === 'dark' ? '#ffffff' : '#111111',
             cursor: 'pointer',
@@ -239,7 +238,7 @@ const styles = {
     },
 };
 
-const images = {
+const images: Record<string, React.JSX.Element> = {
     Blockly: ImgBlockly,
     'Javascript/js': ImgJS,
     def: ImgJS,
@@ -247,9 +246,9 @@ const images = {
     'TypeScript/ts': ImgTypeScript,
 };
 
-const getObjectName = (id, obj, lang) => {
+function getObjectName(id: string, obj: ioBroker.Object, lang?: ioBroker.Languages): string {
     lang = lang || I18n.getLanguage();
-    if (obj && obj.common && obj.common.name) {
+    if (obj?.common?.name) {
         if (typeof obj.common.name === 'object') {
             return (obj.common.name[lang] || obj.common.name.en || id.replace(/^script\.js./, '')).toString();
         }
@@ -258,20 +257,35 @@ const getObjectName = (id, obj, lang) => {
     }
 
     return id.replace(/^script\.js./, '');
-};
+}
 
-const prepareList = data => {
-    const result = [
+interface ListElement {
+    id: string;
+    depth: number;
+    index?: number;
+    parent: string | null;
+    title: string;
+    enabled: boolean;
+    type: 'folder' | 'Javascript/js' | 'TypeScript/ts' | 'Blockly' | 'Rules';
+    instance?: number | null;
+    parentIndex?: number;
+    filteredPartly?: boolean;
+    filtered?: boolean;
+}
+
+function prepareList(data: Record<string, ioBroker.ScriptObject>): ListElement[] {
+    const result: ListElement[] = [
         {
             id: ROOT_ID,
             depth: 0,
             index: 0,
             parent: null,
+            enabled: false,
             title: 'root',
             type: 'folder',
         },
     ];
-    const ids = Object.keys(data);
+    const ids: string[] = Object.keys(data);
 
     /*ids.sort((a, b) => {
         if ((a === 'script.js.common' || a === 'script.js.global') && (b === 'script.js.common' || b === 'script.js.global')) {
@@ -290,11 +304,14 @@ const prepareList = data => {
         result.push({
             id: ids[i],
             title: getObjectName(ids[i], obj),
-            enabled: obj && obj.common && obj.common.enabled,
+            enabled: !!obj?.common?.enabled,
             depth: parts.length - 1,
-            type: obj.type === 'script' ? obj.common.engineType : 'folder',
+            type:
+                obj.type === 'script'
+                    ? (obj.common.engineType as 'folder' | 'Javascript/js' | 'TypeScript/ts' | 'Blockly' | 'Rules')
+                    : 'folder',
             parent: parts.length > 1 ? parts.join('.') : null,
-            instance: obj.common.engine ? parseInt(obj.common.engine.split('.').pop(), 10) || 0 : null,
+            instance: obj.common.engine ? parseInt(obj.common.engine.split('.').pop() as string, 10) || 0 : null,
         });
     }
 
@@ -347,10 +364,11 @@ const prepareList = data => {
                     parts.pop();
                     result.push({
                         id: item.parent,
-                        title: item.parent.split('.').pop(),
+                        title: item.parent.split('.').pop() || '',
                         depth: parts.length - 1,
                         type: 'folder',
                         parent: parts.length > 1 ? parts.join('.') : null,
+                        enabled: false,
                     });
                     modified = true;
                 }
@@ -364,17 +382,18 @@ const prepareList = data => {
         const idB = b.id.toLowerCase();
         if (a.type === 'folder' && b.type !== 'folder') {
             return -1;
-        } else if (b.type === 'folder' && a.type !== 'folder') {
+        }
+        if (b.type === 'folder' && a.type !== 'folder') {
             return 1;
         }
 
         if (idA > idB) {
             return 1;
-        } else if (idA < idB) {
-            return -1;
-        } else {
-            return 0;
         }
+        if (idA < idB) {
+            return -1;
+        }
+        return 0;
     });
 
     // Fill all indexes
@@ -391,14 +410,17 @@ const prepareList = data => {
     });
 
     return result;
-};
+}
 
-export const Droppable = props => {
+export function Droppable(props: {
+    children: (React.JSX.Element | null)[];
+    onDrop: (obj: { name: string }) => void;
+}): React.JSX.Element {
     const { onDrop } = props;
 
     const [{ isOver, isOverAny }, drop] = useDrop({
         accept: ['script'],
-        drop: e => (isOver ? onDrop(e) : undefined),
+        drop: (e: { name: string }): undefined | void => (isOver ? onDrop(e) : undefined),
         collect: monitor => ({
             isOver: monitor.isOver({ shallow: true }),
             isOverAny: monitor.isOver(),
@@ -413,9 +435,14 @@ export const Droppable = props => {
             {props.children}
         </div>
     );
-};
+}
 
-export const Draggable = props => {
+interface DraggableProps {
+    name: string;
+    children: React.JSX.Element | (React.JSX.Element | null)[] | null;
+}
+
+export function Draggable(props: DraggableProps): React.JSX.Element {
     const { name } = props;
     const [{ opacity }, drag] = useDrag({
         type: 'script',
@@ -431,20 +458,84 @@ export const Draggable = props => {
             {props.children}
         </div>
     );
-};
+}
 
-class SideDrawer extends React.Component {
-    constructor(props) {
+interface SideDrawerProps {
+    socket: AdminConnection;
+    onEdit: (id: string) => void;
+    onEnableDisable: (id: string, enabled: boolean) => void;
+    onReorder: (oldIndex: number, newIndex: number) => void;
+    onCopy: (id: string) => void;
+    onDelete: (id: string) => void;
+    onExport: () => void;
+    onImport: () => void;
+    onAdd: (type: string) => void;
+    onAddFolder: () => void;
+    onRename: (id: string, newName: string) => void;
+    instances: number[];
+    scripts: Record<string, ioBroker.ScriptObject>;
+    runningInstances: Record<string, boolean>;
+    expertMode: boolean;
+    themeName: ThemeName;
+    width: number;
+    debugMode: boolean;
+    searchText: string;
+    selectId: string;
+    scriptsHash: string;
+}
+
+interface SideDrawerState {
+    listItems: ListElement[];
+    expanded: string[];
+    problems: string[];
+    reorder: boolean;
+    themeName: ThemeName;
+    selected: string | null;
+    creatingScript: boolean;
+    creatingFolder: boolean;
+    copingScript: string;
+    renaming: string | null;
+    deleting: string | null;
+    choosingType: string | null;
+    errorText: string;
+    instances: number[];
+    menuOpened: boolean;
+    menuAnchorEl: null | HTMLElement;
+    searchMode: boolean;
+    expertMode: boolean;
+    searchText: string;
+    width: number;
+    typeFilter: string;
+    statusFilter: string;
+    runningInstances: Record<string, boolean>;
+    scriptsHash: string;
+    showAdapterDebug: boolean;
+    isAllZeroInstances: boolean;
+}
+
+class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
+    private readonly inputRef: React.RefObject<HTMLInputElement>;
+
+    private filterTimer: ReturnType<typeof setTimeout> | null;
+
+    private problems: string[] | null;
+
+    private problemsTimer: ReturnType<typeof setTimeout> | null;
+
+    private readonly onProblemUpdatedBound: (id: string, state: ioBroker.State | null | undefined) => void;
+
+    constructor(props: SideDrawerProps) {
         super(props);
 
-        let expanded = window.localStorage ? window.localStorage.getItem('SideMenu.expanded') : '[]';
+        const expandedStr = window.localStorage ? window.localStorage.getItem('SideMenu.expanded') : '[]';
+        let expanded: string[];
         try {
-            expanded = JSON.parse(expanded) || [];
-        } catch (e) {
+            expanded = JSON.parse(expandedStr || '[]') || [];
+        } catch {
             expanded = [];
         }
 
-        this.inputRef = new React.createRef();
+        this.inputRef = new React.createRef<HTMLInputElement>();
 
         this.state = {
             listItems: prepareList(props.scripts || {}),
@@ -472,43 +563,42 @@ class SideDrawer extends React.Component {
             runningInstances: this.props.runningInstances || {},
             scriptsHash: props.scriptsHash,
             showAdapterDebug: false,
+            isAllZeroInstances: false,
         };
 
         const newExp = this.ensureSelectedIsVisible();
         if (newExp) {
-            this.state.expanded = newExp;
+            Object.assign(this.state, { expanded: newExp });
         }
 
         // debounce search process
         this.filterTimer = null;
 
-        this.state.isAllZeroInstances = this.getIsAllZeroInstances();
+        Object.assign(this.state, { isAllZeroInstances: this.getIsAllZeroInstances() });
 
         this.problems = null; //cache
         this.problemsTimer = null;
         this.onProblemUpdatedBound = this.onProblemUpdated.bind(this);
     }
 
-    readProblems(cb, tasks) {
+    readProblems(cb: () => void, tasks?: string[]): void {
         if (!tasks) {
             tasks = Object.keys(this.props.scripts);
         }
         if (!tasks || !tasks.length) {
             cb && cb();
         } else {
-            const id = tasks.shift();
+            const id: string = tasks.shift() as string;
             if (
-                this.props.scripts[id] &&
-                this.props.scripts[id].type === 'script' &&
-                this.props.scripts[id].common &&
-                this.props.scripts[id].common.enabled &&
+                this.props.scripts?.[id].type === 'script' &&
+                this.props.scripts[id].common?.enabled &&
                 !id.match(/^script\.js\.global\./) // GLOBAL_ID
             ) {
                 const instance = this.props.scripts[id].common.engine.split('.').pop();
                 const that = this; // sometimes lambda does not work
                 const _id = `javascript.${instance}.scriptProblem.${id.substring(ROOT_ID.length + 1)}`;
 
-                this.props.socket.getState(_id, (err, state) => {
+                this.props.socket.getState(_id).then((state: ioBroker.State | null | undefined) => {
                     that.onProblemUpdated(_id, state);
                     setTimeout(() => that.readProblems(cb, tasks), 0);
                 });
@@ -518,7 +608,7 @@ class SideDrawer extends React.Component {
         }
     }
 
-    componentDidMount() {
+    componentDidMount(): void {
         this.readProblems(() => {
             this.props.instances.forEach(instance => {
                 this.props.socket.subscribeState(`javascript.${instance}.scriptProblem.*`, this.onProblemUpdatedBound);
@@ -526,30 +616,32 @@ class SideDrawer extends React.Component {
         });
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         this.props.instances.forEach(instance => {
             this.props.socket.unsubscribeState(`javascript.${instance}.scriptProblem.*`, this.onProblemUpdatedBound);
         });
     }
 
-    onProblemUpdated(id, state) {
-        if (!state || !id) return;
+    onProblemUpdated(id: string, state: ioBroker.State | null | undefined): void {
+        if (!state || !id) {
+            return;
+        }
         id = `${ROOT_ID}.${id.replace(/^javascript\.\d+\.scriptProblem\./, '')}`;
 
         if (!this.problems) {
-            this.problems = JSON.parse(JSON.stringify(this.state.problems));
+            this.problems = JSON.parse(JSON.stringify(this.state.problems)) || [];
         }
         let changed = false;
 
         if (state.val) {
-            if (this.problems.indexOf(id) === -1) {
-                this.problems.push(id);
+            if (!(this.problems as string[]).includes(id)) {
+                (this.problems as string[]).push(id);
                 changed = true;
             }
         } else {
-            const pos = this.problems.indexOf(id);
+            const pos = (this.problems as string[]).indexOf(id);
             if (pos !== -1) {
-                this.problems.splice(pos, 1);
+                (this.problems as string[]).splice(pos, 1);
                 changed = true;
             }
         }
@@ -557,29 +649,29 @@ class SideDrawer extends React.Component {
         if (changed && !this.problemsTimer) {
             this.problemsTimer = setTimeout(() => {
                 this.problemsTimer = null;
-                this.setState({ problems: this.problems });
+                this.setState({ problems: this.problems as string[] });
                 this.problems = null;
             }, 300);
         }
     }
 
-    static filterListStatic(isSearchEnabled, listItems, searchMode, searchText, objects) {
+    static filterListStatic(
+        isSearchEnabled: boolean,
+        listItems: ListElement[],
+        searchMode: boolean,
+        searchText: string,
+        objects: Record<string, ioBroker.ScriptObject>,
+    ): Partial<SideDrawerState> | null {
         listItems = JSON.parse(JSON.stringify(listItems));
         let changed = false;
-        let newState = { listItems };
+        const newState: Partial<SideDrawerState> = { listItems };
         if (isSearchEnabled !== false && searchMode && searchText) {
             const text = searchText.toLowerCase();
             listItems.forEach(item => {
                 const id = item.title.toLowerCase();
                 item.filteredPartly = false;
                 let found = id.includes(text);
-                if (
-                    !found &&
-                    objects &&
-                    objects[item.id] &&
-                    objects[item.id].common &&
-                    objects[item.id].common.source
-                ) {
+                if (!found && objects?.[item.id]?.common?.source) {
                     if (objects[item.id].common.engineType === 'Blockly') {
                         const pos = objects[item.id].common.source.lastIndexOf('//');
                         found = objects[item.id].common.source.substring(0, pos).toLowerCase().includes(text);
@@ -601,15 +693,18 @@ class SideDrawer extends React.Component {
             if (changed) {
                 // check that all parents of every non-filtered item are visible
                 for (let i = listItems.length - 1; i >= 0; i--) {
-                    const item = listItems[i];
+                    const item: ListElement = listItems[i];
                     if (!item.filtered || item.filteredPartly) {
-                        let it = item;
+                        let it: ListElement | null = item;
                         do {
-                            if (it.parent && listItems[it.parentIndex]) {
+                            if (it?.parent && listItems[it.parentIndex as number]) {
                                 changed = true;
-                                listItems[it.parentIndex].filteredPartly = true;
+                                listItems[it.parentIndex as number].filteredPartly = true;
                             }
-                            it = it.parent && listItems[it.parentIndex] ? listItems[it.parentIndex] : null;
+                            it =
+                                it?.parent && listItems[it.parentIndex as number]
+                                    ? listItems[it.parentIndex as number]
+                                    : null;
                         } while (it);
                     }
                 }
@@ -632,7 +727,7 @@ class SideDrawer extends React.Component {
         return changed ? newState : null;
     }
 
-    filterList(isSearchEnabled, cb) {
+    filterList(isSearchEnabled: boolean, cb?: () => void): void {
         const newState = SideDrawer.filterListStatic(
             isSearchEnabled,
             this.state.listItems,
@@ -642,21 +737,31 @@ class SideDrawer extends React.Component {
         );
 
         if (newState) {
-            this.setState(newState, () => cb && cb());
+            this.setState(newState as SideDrawerState, () => cb && cb());
         } else if (cb) {
             cb();
         }
     }
 
-    static ensureSelectedIsVisibleStatic(selected, expanded, listItems) {
+    static ensureSelectedIsVisibleStatic(
+        selected: string | ListElement | null,
+        expanded: string[],
+        listItems: ListElement[],
+    ): string[] | null {
         expanded = JSON.parse(JSON.stringify(expanded));
         let changed = false;
 
         // ensure that the item is visible
-        let el = typeof selected === 'object' ? selected : listItems.find(it => it.id === selected);
+        let el: ListElement | undefined | null =
+            typeof selected === 'object' ? selected : listItems.find(it => it.id === selected);
         do {
             // eslint-disable-next-line
-            el = el && el.parent && listItems.find(it => it.id === el.parent);
+            if (el?.parent) {
+                const parent: string = el.parent;
+                el = listItems.find(it => it.id === parent);
+            } else {
+                el = undefined;
+            }
             if (el) {
                 if (!expanded.includes(el.id)) {
                     expanded.push(el.id);
@@ -665,10 +770,10 @@ class SideDrawer extends React.Component {
             }
         } while (el);
 
-        return changed && expanded;
+        return changed ? expanded : null;
     }
 
-    ensureSelectedIsVisible(selected, expanded) {
+    ensureSelectedIsVisible(selected?: string, expanded?: string[]): string[] | null {
         return SideDrawer.ensureSelectedIsVisibleStatic(
             selected || this.state.selected,
             expanded || this.state.expanded,
@@ -676,8 +781,8 @@ class SideDrawer extends React.Component {
         );
     }
 
-    static getDerivedStateFromProps(props, state) {
-        const newState = {};
+    static getDerivedStateFromProps(props: SideDrawerProps, state: SideDrawerState): Partial<SideDrawerState> | null {
+        const newState: Partial<SideDrawerState> = {};
         let changed = false;
         if (state.expertMode !== props.expertMode) {
             changed = true;
@@ -735,12 +840,11 @@ class SideDrawer extends React.Component {
 
         if (changed) {
             return newState;
-        } else {
-            return null;
         }
+        return null;
     }
 
-    static getIsAllZeroInstancesStatic(listItems, instances) {
+    static getIsAllZeroInstancesStatic(listItems: ListElement[], instances: number[]): boolean {
         let isAllZeroInstances = !instances[0] && instances.length <= 1;
 
         if (isAllZeroInstances) {
@@ -753,7 +857,7 @@ class SideDrawer extends React.Component {
         return isAllZeroInstances;
     }
 
-    getIsAllZeroInstances(listItems, instances) {
+    getIsAllZeroInstances(listItems?: ListElement[], instances?: number[]): boolean {
         listItems = listItems || this.state.listItems;
         instances = instances || this.state.instances;
         return SideDrawer.getIsAllZeroInstancesStatic(
@@ -762,21 +866,21 @@ class SideDrawer extends React.Component {
         );
     }
 
-    saveExpanded(expanded) {
+    saveExpanded(expanded?: string[]): void {
         window.localStorage.setItem('SideMenu.expanded', JSON.stringify(expanded || this.state.expanded));
     }
 
-    showError(errorText) {
+    showError(errorText: string): void {
         this.setState({ errorText });
     }
 
-    onToggle(id, e) {
-        e && e.stopPropagation();
+    onToggle(id: string, e?: React.MouseEvent<any>): void {
+        e?.stopPropagation();
         if (id === ROOT_ID) {
             return;
         }
         const expanded = [...this.state.expanded];
-        const newState = { expanded };
+        const newState: Partial<SideDrawerState> = { expanded };
         const pos = expanded.indexOf(id);
         if (pos !== -1) {
             expanded.splice(pos, 1);
@@ -792,12 +896,15 @@ class SideDrawer extends React.Component {
         this.saveExpanded(expanded);
     }
 
-    renderItemButtonsOnEnd(item, children) {
+    renderItemButtonsOnEnd(
+        item: ListElement,
+        children: ListElement[],
+    ): (React.JSX.Element | null)[] | React.JSX.Element | null {
         if (this.state.reorder) {
             return null;
         }
         if (item.type !== 'folder') {
-            let color = item.enabled ? COLOR_RUN : COLOR_PAUSE;
+            let color: string = item.enabled ? COLOR_RUN : COLOR_PAUSE;
             if (item.enabled && this.state.problems.includes(item.id)) {
                 color = COLOR_PROBLEM;
             }
@@ -843,13 +950,9 @@ class SideDrawer extends React.Component {
                     <IconDoEdit />
                 </IconButton>,
             ];
-        } else if (this.state.width > NARROW_WIDTH) {
-            if (
-                item.id !== ROOT_ID &&
-                item.id !== COMMON_ID &&
-                item.id !== GLOBAL_ID &&
-                (!children || !children.length)
-            ) {
+        }
+        if (this.state.width > NARROW_WIDTH) {
+            if (item.id !== ROOT_ID && item.id !== COMMON_ID && item.id !== GLOBAL_ID && children?.length) {
                 return (
                     <IconButton
                         style={this.props.debugMode ? styles.iconButtonsDisabled : undefined}
@@ -862,14 +965,13 @@ class SideDrawer extends React.Component {
                         <IconDelete />
                     </IconButton>
                 );
-            } else {
-                return null;
             }
         }
+        return null;
     }
 
-    onDelete(item, e) {
-        e && e.stopPropagation();
+    onDelete(item: ListElement, e?: React.MouseEvent): Promise<void> {
+        e?.stopPropagation();
         return new Promise(resolve => {
             if (typeof item !== 'object') {
                 this.setState({ deleting: item }, () => resolve());
@@ -879,12 +981,12 @@ class SideDrawer extends React.Component {
         });
     }
 
-    onEdit(item, e) {
+    onEdit(item: ListElement, e?: React.MouseEvent): void {
         this.onClick(item, e);
         this.props.onEdit && this.props.onEdit(item.id);
     }
 
-    getTextStyle(item) {
+    getTextStyle(item: ListElement): React.CSSProperties {
         if (!this.state.reorder && item.type !== 'folder') {
             return {
                 //width: 130,
@@ -902,8 +1004,8 @@ class SideDrawer extends React.Component {
         };
     }
 
-    onClick(item, e) {
-        e && e.stopPropagation();
+    onClick(item: ListElement, e?: React.MouseEvent): void {
+        e?.stopPropagation();
         if (!this.state.reorder && item) {
             const expanded = this.ensureSelectedIsVisible(item);
             const newState = { selected: item.id };
@@ -915,8 +1017,8 @@ class SideDrawer extends React.Component {
         }
     }
 
-    onDblClick(item, e) {
-        e && e.stopPropagation();
+    onDblClick(item: ListElement, e?: React.MouseEvent): void {
+        e?.stopPropagation();
         if (this.state.reorder) {
             return;
         }
@@ -927,7 +1029,7 @@ class SideDrawer extends React.Component {
         }
     }
 
-    isFilteredOut(item) {
+    isFilteredOut(item: ListElement): boolean {
         if (item.filtered && !item.filteredPartly) {
             return true;
         }
@@ -950,14 +1052,18 @@ class SideDrawer extends React.Component {
         return item.id === GLOBAL_ID && !this.state.expertMode;
     }
 
-    renderListItem(item, children, childrenFiltered) {
+    renderListItem(
+        item: ListElement,
+        children: ListElement[],
+        childrenFiltered: ListElement[],
+    ): React.JSX.Element | null {
         if (item.id === ROOT_ID && !this.state.reorder) {
             return null;
         }
 
         const depthPx = (this.state.reorder ? item.depth : item.depth - 1) * LEVEL_PADDING;
 
-        let title = item.title;
+        let title: string | React.JSX.Element[] = item.title;
 
         if (this.state.searchText) {
             const pos = title.toLowerCase().indexOf(this.state.searchText.toLowerCase());
@@ -1098,7 +1204,7 @@ class SideDrawer extends React.Component {
         );
     }
 
-    onDragFinish(source, target) {
+    onDragFinish(source: string, target: string): undefined {
         let newId = `${target}.${source.split('.').pop()}`;
         if (newId !== source) {
             // If target yet exists => add Copy to
@@ -1111,24 +1217,26 @@ class SideDrawer extends React.Component {
         return undefined;
     }
 
-    renderOneItem(items, item /* , dragging */) {
-        let childrenFiltered =
-            (this.state.statusFilter || this.state.typeFilter) &&
-            items.filter(i => (i.parent === item.id ? !this.isFilteredOut(i) : false));
-        let children = items.filter(i => i.parent === item.id);
+    renderOneItem(items: ListElement[], item: ListElement /* , dragging */): React.JSX.Element[] | null {
+        const childrenFiltered: ListElement[] =
+            this.state.statusFilter || this.state.typeFilter
+                ? items.filter(i => (i.parent === item.id ? !this.isFilteredOut(i) : false))
+                : [];
+
+        const children: ListElement[] = items.filter(i => i.parent === item.id);
 
         if (this.isFilteredOut(item)) {
-            return;
+            return null;
         }
 
         if (item.type === 'folder' && (this.state.statusFilter || this.state.typeFilter) && !childrenFiltered.length) {
-            return;
+            return null;
         }
         const reorder = this.state.reorder && !this.props.debugMode;
 
         const element = this.renderListItem(item, children, childrenFiltered);
-        const result = [];
-        let reactChildren;
+        const result: (React.JSX.Element | null)[] = [];
+        let reactChildren: (React.JSX.Element[] | null)[] | undefined;
         if (children && (reorder || this.state.expanded.includes(item.id) || item.id === ROOT_ID)) {
             reactChildren = children.map(it => this.renderOneItem(items, it));
         }
@@ -1146,7 +1254,7 @@ class SideDrawer extends React.Component {
                         >
                             {element}
                         </Draggable>
-                        {reactChildren || null}
+                        {(reactChildren as unknown as React.JSX.Element) || null}
                     </Droppable>,
                 );
             } else {
@@ -1162,13 +1270,13 @@ class SideDrawer extends React.Component {
             }
         } else {
             result.push(element);
-            reactChildren && reactChildren.forEach(e => result.push(e));
+            reactChildren?.forEach(e => result.push(e));
         }
 
         return result;
     }
 
-    renderAllItems(items) {
+    renderAllItems(items: ListElement[]): React.JSX.Element {
         const result = items.filter(item => !item.parent).map(item => this.renderOneItem(items, item));
 
         return (
@@ -1994,32 +2102,5 @@ class SideDrawer extends React.Component {
         ];
     }
 }
-
-SideDrawer.propTypes = {
-    instances: PropTypes.array.isRequired,
-    scripts: PropTypes.object.isRequired,
-    scriptsHash: PropTypes.number,
-    onEdit: PropTypes.func,
-    selectId: PropTypes.string,
-    expertMode: PropTypes.bool,
-    onExpertModeChange: PropTypes.func,
-    onEnableDisable: PropTypes.func,
-    runningInstances: PropTypes.object,
-    socket: PropTypes.object,
-    themeName: PropTypes.string,
-    themeType: PropTypes.string,
-    onSelect: PropTypes.func,
-    onAddNew: PropTypes.func,
-    onRename: PropTypes.func,
-    onDelete: PropTypes.func,
-    onImport: PropTypes.func,
-    onExport: PropTypes.func,
-    onSearch: PropTypes.func,
-    onThemeChange: PropTypes.func,
-    onDebugInstance: PropTypes.func,
-    width: PropTypes.number,
-    debugMode: PropTypes.bool,
-    version: PropTypes.string,
-};
 
 export default SideDrawer;

@@ -1,14 +1,13 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 import { Check as IconOk } from '@mui/icons-material';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n, type IobTheme } from '@iobroker/adapter-react-v5';
 
-const styles = {
-    title: theme => ({
+const styles: Record<string, any> = {
+    title: (theme: IobTheme) => ({
         background: theme.palette.error.main,
         color: theme.palette.error.contrastText,
         '&>h2': {
@@ -16,17 +15,18 @@ const styles = {
         },
     }),
 };
+interface DialogErrorProps {
+    onClose: () => void;
+    title?: string;
+    text: string;
+}
 
-class DialogError extends React.Component {
-    constructor(props) {
-        super(props);
-        console.log('Error created');
-    }
-    handleOk = () => {
-        this.props.onClose && this.props.onClose();
+class DialogError extends React.Component<DialogErrorProps> {
+    handleOk = (): void => {
+        this.props.onClose();
     };
 
-    render() {
+    render(): React.JSX.Element {
         return (
             <Dialog
                 open={!0}
@@ -62,12 +62,5 @@ class DialogError extends React.Component {
         );
     }
 }
-
-DialogError.propTypes = {
-    onClose: PropTypes.func,
-    title: PropTypes.string,
-    text: PropTypes.string,
-    icon: PropTypes.object,
-};
 
 export default DialogError;

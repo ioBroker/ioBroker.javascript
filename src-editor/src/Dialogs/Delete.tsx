@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import { Button, DialogTitle, DialogContent, DialogActions, Dialog } from '@mui/material';
 
@@ -7,8 +6,19 @@ import { Check as IconOk, Cancel as IconCancel, Delete as IconDelete } from '@mu
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-class DialogDelete extends React.Component {
-    constructor(props) {
+interface DialogDeleteProps {
+    onClose: () => void;
+    onDelete: (id: string) => void;
+    name: string;
+    id: string;
+}
+interface DialogDeleteState {
+    name: string;
+    id: string;
+}
+
+class DialogDelete extends React.Component<DialogDeleteProps, DialogDeleteState> {
+    constructor(props: DialogDeleteProps) {
         super(props);
         this.state = {
             name: props.name,
@@ -16,28 +26,32 @@ class DialogDelete extends React.Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.name !== this.props.name) {
-            this.setState({ name: nextProps.name });
+    static getDerivedStateFromProps(
+        props: DialogDeleteProps,
+        state: DialogDeleteState,
+    ): Partial<DialogDeleteState> | null {
+        if (props.name !== state.name) {
+            return { name: props.name };
         }
-        if (nextProps.id !== this.props.id) {
-            this.setState({ id: nextProps.id });
+        if (props.id !== state.id) {
+            return { id: props.id };
         }
+        return null;
     }
 
-    handleCancel = () => {
-        this.props.onClose(null);
+    handleCancel = (): void => {
+        this.props.onClose();
     };
 
-    handleOk = () => {
+    handleOk = (): void => {
         this.props.onDelete(this.state.id);
-        this.props.onClose(this.props.value);
+        this.props.onClose();
     };
 
-    render() {
+    render(): React.JSX.Element {
         return (
             <Dialog
-                onClose={(event, reason) => false}
+                onClose={() => false}
                 maxWidth="md"
                 open={!0}
                 aria-labelledby="confirmation-dialog-title"
@@ -69,12 +83,5 @@ class DialogDelete extends React.Component {
         );
     }
 }
-
-DialogDelete.propTypes = {
-    onClose: PropTypes.func,
-    onDelete: PropTypes.func,
-    name: PropTypes.string,
-    id: PropTypes.string,
-};
 
 export default DialogDelete;

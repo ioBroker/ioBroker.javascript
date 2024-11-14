@@ -6,7 +6,7 @@ import {
     Schedule,
     I18n,
 } from '@iobroker/adapter-react-v5';
-import convertCronToText from '@iobroker/adapter-react-v5/Components/SimpleCron/cronText';
+import convertCronToText from '@iobroker/adapter-react-v5/build/Components/SimpleCron/cronText';
 
 import GenericBlock from '../GenericBlock';
 import Compile from '../../helpers/Compile';

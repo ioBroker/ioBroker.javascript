@@ -160,17 +160,13 @@ const RulesEditor = ({
                 allBlocks={allBlocks}
                 socket={socket}
             />
-            {importExport === 'export' ? (
+            {modal ? (importExport === 'export' ? (
                 <DialogExport
-                    key="dialogExport"
                     onClose={() => setModal(false)}
-                    open={modal}
                     text={JSON.stringify(userRules, null, 2)}
                 />
             ) : (
                 <DialogImport
-                    open={modal}
-                    key="dialogImport"
                     onClose={text => {
                         setModal(false);
                         if (text) {
@@ -178,7 +174,7 @@ const RulesEditor = ({
                         }
                     }}
                 />
-            )}
+            )) : null}
             {
                 <div className={Utils.clsx(cls.rootWrapper, addClass[835] && cls.addClass)}>
                     <Menu

@@ -8,8 +8,8 @@ import {
 } from '@mui/material';
 import { HelpOutline as IconHelp } from '@mui/icons-material';
 
-import { getSelectIdIcon } from '@iobroker/adapter-react-v5/Components/Icon';
 import {
+    getSelectIdIcon,
     I18n, Utils,
     SelectID as DialogSelectID,
     Error as DialogError,

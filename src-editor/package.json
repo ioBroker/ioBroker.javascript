@@ -44,7 +44,8 @@
     "scripts": {
         "start": "craco start",
         "lint": "eslint -c eslint.config.mjs",
-        "build": "craco build"
+        "build": "craco build",
+        "tsc": "tsc -p tsconfig.json"
     },
     "eslintConfig": {
         "extends": "react-app"

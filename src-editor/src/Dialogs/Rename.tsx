@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import {
     Button,
@@ -18,58 +17,87 @@ import { Cancel as IconCancel, Check as IconOk } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-class DialogRename extends React.Component {
-    constructor(props) {
+interface DialogRenameProps {
+    onClose: () => void;
+    onRename: (oldId: string, newId: string, newName: string, instance: number) => void;
+    name: string;
+    id: string;
+    instance: number;
+    instances: number[];
+    folder: boolean;
+}
+
+interface DialogRenameState {
+    name: string;
+    id: string;
+    instance: number;
+    prefix: string;
+}
+
+class DialogRename extends React.Component<DialogRenameProps, DialogRenameState> {
+    private readonly isShowInstance: boolean;
+
+    private readonly oldId: string;
+
+    constructor(props: DialogRenameProps) {
         super(props);
         this.state = {
             name: props.name,
             id: props.id,
             instance: props.instance || 0,
+            prefix: DialogRename.getPrefix(props.id),
         };
         this.isShowInstance =
-            !props.folder && props.instances && (props.instance || props.instances[0] || props.instances.length > 1);
-        this.prefix = this.getPrefix(props.id);
+            !props.folder && // if not folder
+            !!props.instances && // and list of instances is defined
+            (!!props.instance || // and instance is not 0
+                !!props.instances[0] || // or first instance is not 0
+                props.instances.length > 1); // or more than one instance
+
         this.oldId = props.id;
     }
 
-    getPrefix(id) {
+    static getPrefix(id: string): string {
         const parts = (id || '').split('.');
         parts.pop();
         return parts.join('.');
     }
 
-    getId(name) {
+    getId(name: string): string {
         name = (name || '').replace(/[\\/\][*,;'"`<>?\s]/g, '_');
-        return this.prefix + '.' + name;
+        return `${this.state.prefix}.${name}`;
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.name !== this.props.name) {
-            this.setState({ name: nextProps.name });
+    static getDerivedStateFromProps(
+        props: DialogRenameProps,
+        state: DialogRenameState,
+    ): Partial<DialogRenameState> | null {
+        if (props.name !== state.name) {
+            return { name: props.name };
         }
-        if (nextProps.id !== this.props.id) {
-            this.prefix = this.getPrefix(nextProps.id);
-            this.setState({ id: nextProps.id });
+        if (props.id !== state.id) {
+            return { id: props.id, prefix: DialogRename.getPrefix(props.id) };
         }
+        return null;
     }
 
-    handleCancel = () => {
+    handleCancel = (): void => {
         this.props.onClose();
     };
 
-    handleOk = () => {
+    handleOk = (): void => {
         this.props.onRename(this.oldId, this.state.id, this.state.name, this.state.instance);
         this.props.onClose();
     };
 
-    handleChange = name => {
+    handleChange = (name: string): void => {
         this.setState({ name, id: this.getId(name) });
     };
 
-    render() {
+    render(): React.JSX.Element {
         return (
             <Dialog
-                onClose={(event, reason) => false}
+                onClose={() => false}
                 maxWidth="md"
                 fullWidth
                 open={!0}
@@ -113,7 +141,7 @@ class DialogRename extends React.Component {
                                 <Select
                                     variant="standard"
                                     value={this.state.instance}
-                                    onChange={e => this.setState({ instance: parseInt(e.target.value, 10) })}
+                                    onChange={e => this.setState({ instance: parseInt(e.target.value as string, 10) })}
                                     inputProps={{ name: 'instance', id: 'instance' }}
                                 >
                                     {this.props.instances.map(instance => (
@@ -151,15 +179,5 @@ class DialogRename extends React.Component {
         );
     }
 }
-
-DialogRename.propTypes = {
-    onClose: PropTypes.func,
-    onRename: PropTypes.func,
-    name: PropTypes.string,
-    id: PropTypes.string,
-    instance: PropTypes.number,
-    instances: PropTypes.array,
-    folder: PropTypes.bool,
-};
 
 export default DialogRename;

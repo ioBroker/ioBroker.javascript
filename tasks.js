@@ -38,8 +38,8 @@ function adminCopy() {
 }
 
 function clean() {
-    deleteFoldersRecursive(`${__dirname}/admin`, ['jsonConfig.json', 'javascript.png']);
-    deleteFoldersRecursive(`${__dirname}/src/build`);
+    deleteFoldersRecursive(`${__dirname}/admin`, ['jsonConfig.json', 'javascript.png', 'vsFont']);
+    deleteFoldersRecursive(`${__dirname}/src-editor/build`);
 }
 
 function copyAllFiles() {
@@ -47,21 +47,21 @@ function copyAllFiles() {
 
     copyFiles(
         [
-            'src/build/**/*',
-            '!src/build/index.html',
-            '!src/build/static/js/main.*.chunk.js',
-            '!src/build/i18n/**/*',
-            '!src/build/i18n',
+            'src-editor/build/**/*',
+            '!src-editor/build/index.html',
+            '!src-editor/build/static/js/main.*.chunk.js',
+            '!src-editor/build/i18n/**/*',
+            '!src-editor/build/i18n',
         ],
         'admin/',
     );
 
-    let index = readFileSync(`${__dirname}/src/build/index.html`).toString();
+    let index = readFileSync(`${__dirname}/src-editor/build/index.html`).toString();
     index = index.replace('href="/', 'href="');
     index = index.replace('src="/', 'src="');
     writeFileSync(`${__dirname}/admin/tab.html`, index);
 
-    copyFiles(['src/build/static/js/main.*.chunk.js'], 'admin/assets/', {
+    copyFiles(['src-editor/build/static/js/main.*.chunk.js'], 'admin/assets/', {
         replace: {
             find: '"/assets',
             text: '"./assets',
@@ -91,8 +91,8 @@ function patch() {
         writeFileSync(`${__dirname}/admin/tab.html`, code);
     }
 
-    if (existsSync(`${__dirname}/src/build/index.html`)) {
-        let code = readFileSync(`${__dirname}/src/build/index.html`).toString('utf8');
+    if (existsSync(`${__dirname}/src-editor/build/index.html`)) {
+        let code = readFileSync(`${__dirname}/src-editor/build/index.html`).toString('utf8');
         code = code.replace(
             /<script>var head=document\.getElementsByTagName\("head"\)\[0][^<]+<\/script>/,
             `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./../../lib/js/socket.io.js"></script>`,
@@ -109,7 +109,7 @@ function patch() {
             );
         }
 
-        writeFileSync(`${__dirname}/src/build/index.html`, code);
+        writeFileSync(`${__dirname}/src-editor/build/index.html`, code);
     }
 
     const buffer = Buffer.from(JSON.parse(readFileSync(`${__dirname}/admin/vsFont/codicon.json`).toString()), 'base64');
@@ -180,8 +180,8 @@ function lang2data(lang, isFlat) {
 const EMPTY = '';
 
 function blocklyWords2json() {
-    const src = './src/public/';
-    const data = require('./src/public/google-blockly/own/blocks_words.js').Words;
+    const src = './src-editor/public/';
+    const data = require('./src-editor/public/google-blockly/own/blocks_words.js').Words;
     const langs = Object.assign({}, languages);
     if (data) {
         for (const word in data) {
@@ -245,7 +245,7 @@ function monacoTypescript() {
         version = version.substr('--version='.length);
     }
 
-    const vsDir = join(__dirname, 'src/public/vs');
+    const vsDir = join(__dirname, 'src-editor/public/vs');
 
     // Download the tarball
     console.log('downloading new monaco version');
@@ -261,11 +261,11 @@ function monacoTypescript() {
     console.log('installing new version');
     // extract the new monaco-editor
     execSync(
-        `tar -xvzf typescript-deploys-monaco-editor-${version}.tgz --strip-components=3 -C src/public/vs package/min/vs`,
+        `tar -xvzf typescript-deploys-monaco-editor-${version}.tgz --strip-components=3 -C src-editor/public/vs package/min/vs`,
     );
     // and the .d.ts file
     execSync(
-        `tar -xvzf typescript-deploys-monaco-editor-${version}.tgz --strip-components=1 -C src/public/vs package/monaco.d.ts`,
+        `tar -xvzf typescript-deploys-monaco-editor-${version}.tgz --strip-components=1 -C src-editor/public/vs package/monaco.d.ts`,
     );
 
     console.log('finalizing');
@@ -286,7 +286,7 @@ function monacoUpdate() {
         version = version.substr('--version='.length);
     }
 
-    const vsDir = join(__dirname, 'src/public/vs');
+    const vsDir = join(__dirname, 'src-editor/public/vs');
 
     // Download the tarball
     console.log('downloading new monaco version');
@@ -301,9 +301,9 @@ function monacoUpdate() {
 
     console.log('installing new version');
     // extract the new monaco-editor
-    execSync(`tar -xvzf monaco-editor-${version}.tgz --strip-components=3 -C src/public/vs package/min/vs`);
+    execSync(`tar -xvzf monaco-editor-${version}.tgz --strip-components=3 -C src-editor/public/vs package/min/vs`);
     // and the .d.ts file
-    execSync(`tar -xvzf monaco-editor-${version}.tgz --strip-components=1 -C src/public/vs package/monaco.d.ts`);
+    execSync(`tar -xvzf monaco-editor-${version}.tgz --strip-components=1 -C src-editor/public/vs package/monaco.d.ts`);
 
     console.log('finalizing');
     // restore the old configure.js
@@ -313,7 +313,7 @@ function monacoUpdate() {
 }
 
 function blocklyJson2words() {
-    const src = './src/public/';
+    const src = './src-editor/public/';
     const dirs = readdirSync(`${src}i18n/`);
     const langs = {};
     const bigOne = {};
@@ -368,7 +368,7 @@ function blocklyJson2words() {
         }
     }
     // read actual words.js
-    const aWords = require('./src/public/google-blockly/own/blocks_words.js').Words;
+    const aWords = require('./src-editor/public/google-blockly/own/blocks_words.js').Words;
 
     const temporaryIgnore = ['pt', 'fr', 'nl', 'es', 'flat.txt'];
     if (aWords) {
@@ -455,7 +455,7 @@ if (typeof module !== 'undefined' && typeof module.parent !== 'undefined') {
     module.exports = Blockly;
 }
 `;
-    writeFileSync('./src/public/google-blockly/own/blocks_words.js', text);
+    writeFileSync('./src-editor/public/google-blockly/own/blocks_words.js', text);
 }
 
 if (process.argv.includes('--admin-0-clean')) {
@@ -484,14 +484,14 @@ if (process.argv.includes('--admin-0-clean')) {
 } else if (process.argv.includes('--0-clean')) {
     clean();
 } else if (process.argv.includes('--1-npm')) {
-    if (!existsSync(`${__dirname}/src/node_modules`)) {
-        npmInstall(`${__dirname}/src`).catch(e => {
+    if (!existsSync(`${__dirname}/src-editor/node_modules`)) {
+        npmInstall(`${__dirname}/src-editor`).catch(e => {
             console.error(`Cannot install npm: ${e}`);
             process.exit(1);
         });
     }
 } else if (process.argv.includes('--2-build')) {
-    buildReact(`${__dirname}/src/`, {
+    buildReact(`${__dirname}/src-editor/`, {
         rootDir: __dirname,
         craco: true,
         maxRam: 7000,
@@ -508,9 +508,9 @@ if (process.argv.includes('--admin-0-clean')) {
     });
 } else if (process.argv.includes('--build')) {
     clean();
-    npmInstall(`${__dirname}/src`)
+    npmInstall(`${__dirname}/src-editor`)
         .then(() =>
-            buildReact(`${__dirname}/src/`, {
+            buildReact(`${__dirname}/src-editor/`, {
                 rootDir: __dirname,
                 craco: true,
                 maxRam: 7000,
@@ -534,9 +534,9 @@ if (process.argv.includes('--admin-0-clean')) {
     clean();
     adminClean();
 
-    npmInstall(`${__dirname}/src`)
+    npmInstall(`${__dirname}/src-editor`)
         .then(() =>
-            buildReact(`${__dirname}/src/`, {
+            buildReact(`${__dirname}/src-editor/`, {
                 rootDir: __dirname,
                 craco: true,
                 maxRam: 7000,

@@ -1,21 +1,22 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import Dropzone from 'react-dropzone';
+import Dropzone, { type FileRejection } from 'react-dropzone';
 
 import { Button, DialogTitle, DialogContent, DialogActions, Dialog } from '@mui/material';
-
-import { Check as IconOk, Cancel as IconCancel } from '@mui/icons-material';
 import { MdFileUpload as IconUpload, MdCancel as IconNo, MdAdd as IconPlus } from 'react-icons/md';
+
+import { Cancel as IconCancel } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-const styles = {
-    textArea: {
-        width: 'calc(100% - 10px)',
-        height: '80%',
-        resize: 'none',
-        fontFamily: 'monospace',
-        fontSize: '1em',
+import DialogError from './Error';
+
+const styles: Record<string, React.CSSProperties> = {
+    dialog: {
+        height: '95%',
+    },
+    fullHeight: {
+        height: '100%',
+        overflow: 'hidden',
     },
     dropzone: {
         marginTop: 20,
@@ -31,8 +32,7 @@ const styles = {
     },
     dropzoneDiv: {
         width: '100%',
-        height: '20%',
-        position: 'relative',
+        height: '100%',
     },
     dropzoneRejected: {
         borderColor: '#970000',
@@ -64,32 +64,44 @@ const styles = {
         position: 'absolute',
         zIndex: 1,
     },
-    dialog: {
-        height: '95%',
-    },
-    fullHeight: {
-        height: '100%',
-        overflow: 'hidden',
-    },
 };
 
-class DialogImport extends React.Component {
-    constructor(props) {
+interface DialogImportFileProps {
+    onClose: (data?: string) => void;
+}
+interface DialogImportFileState {
+    error: string;
+    imageStatus: string;
+}
+
+class DialogImportFile extends React.Component<DialogImportFileProps, DialogImportFileState> {
+    constructor(props: DialogImportFileProps) {
         super(props);
         this.state = {
-            text: '',
+            error: '',
+            imageStatus: '',
         };
     }
 
-    componentDidMount() {
+    // eslint-disable-next-line class-methods-use-this
+    componentDidMount(): void {
         setTimeout(() => {
             try {
-                window.document.getElementById('import-text-area').focus();
-            } catch (e) {}
+                window.document.getElementById('import-text-area')?.focus();
+            } catch {
+                // ignore
+            }
         }, 100);
     }
 
-    static readFileDataUrl(file, cb) {
+    handleCancel(): void {
+        this.props.onClose();
+    }
+
+    static readFileDataUrl(
+        file: File,
+        cb: (error: string | null, result?: { data: string | ArrayBuffer | null; name: string }) => void,
+    ): void {
         const reader = new FileReader();
         reader.onload = () => {
             cb(null, { data: reader.result, name: file.name });
@@ -103,15 +115,11 @@ class DialogImport extends React.Component {
             cb(I18n.t('file reading has failed: %s', e));
         };
 
-        reader.readAsText(file);
+        reader.readAsDataURL(file);
     }
 
-    handleDropFile(files) {
-        if (files && files.hasOwnProperty('target')) {
-            files = files.target.files;
-        }
-
-        if (!files && !files.length) {
+    handleDropFile(files: File[]): void {
+        if (!files?.length) {
             return;
         }
 
@@ -120,29 +128,19 @@ class DialogImport extends React.Component {
         if (!file) {
             return;
         }
-
-        DialogImport.readFileDataUrl(file, (err, result) => {
-            if (err) {
-                this.setState({ error: err });
-            } else {
-                this.setState({ text: result.data });
-            }
-        });
+        DialogImportFile.readFileDataUrl(
+            file,
+            (err: string | null, result?: { data: string | ArrayBuffer | null; name: string }): void => {
+                if (err || !result) {
+                    this.setState({ error: err || 'No data' });
+                } else {
+                    this.props.onClose(result.data?.toString() || '');
+                }
+            },
+        );
     }
 
-    handleCancel() {
-        this.props.onClose();
-    }
-
-    handleOk() {
-        this.props.onClose(this.state.text);
-    }
-
-    onChange(e) {
-        this.setState({ text: e.target.value });
-    }
-
-    render() {
+    render(): React.JSX.Element {
         const style = {
             ...styles.dropzone,
             ...(this.state.imageStatus === 'accepted'
@@ -158,37 +156,24 @@ class DialogImport extends React.Component {
                 maxWidth="lg"
                 sx={{ '& .MuiDialog-paper': styles.dialog }}
                 fullWidth
-                open={this.props.open}
+                open={!0}
                 aria-labelledby="import-dialog-title"
+                PaperProps={{ style: { minHeight: '90%', maxHeight: '90%' } }}
             >
-                <DialogTitle id="import-dialog-title">{I18n.t('Import blocks')}</DialogTitle>
-                <DialogContent style={styles.fullHeight}>
-                    <style>
-                        {`
-.dropzoneRejected {
-    borderColor: #970000;
-}
-.dropzoneAccepted: {
-    borderColor: #17cd02;
-}
-`}
-                    </style>
-                    <textarea
-                        autoFocus
-                        id="import-text-area"
-                        style={styles.textArea}
-                        onChange={e => this.onChange(e)}
-                        value={this.state.text}
-                    />
+                <DialogTitle id="import-dialog-title">{I18n.t('Import scripts')}</DialogTitle>
+                <DialogContent>
                     <Dropzone
                         key="image-drop"
                         maxSize={50000000}
-                        acceptClassName="dropzoneAccepted"
-                        rejectClassName="dropzoneRejected"
-                        onDrop={files => this.handleDropFile(files)}
+                        onDrop={(acceptedFiles: File[], errors: FileRejection[]) => {
+                            if (!acceptedFiles.length) {
+                                window.alert(errors?.[0]?.errors?.[0]?.message || I18n.t('ra_Cannot upload'));
+                            } else {
+                                this.handleDropFile(acceptedFiles);
+                            }
+                        }}
                         multiple={false}
-                        accept="text/plain,text/xml,application/xml"
-                        style={style}
+                        accept={{ 'application/zip': [], 'application/x-zip-compressed': [] }}
                     >
                         {({ getRootProps, getInputProps, isDragActive, isDragReject }) => {
                             if (isDragReject) {
@@ -197,7 +182,10 @@ class DialogImport extends React.Component {
                                 }
                                 return (
                                     <div
-                                        style={styles.dropzoneDiv}
+                                        style={{
+                                            ...style,
+                                            ...styles.dropzoneDiv,
+                                        }}
                                         {...getRootProps()}
                                     >
                                         <input {...getInputProps()} />
@@ -213,14 +201,18 @@ class DialogImport extends React.Component {
                                         />
                                     </div>
                                 );
-                            } else if (isDragActive) {
+                            }
+                            if (isDragActive) {
                                 if (this.state.imageStatus !== 'accepted') {
                                     this.setState({ imageStatus: 'accepted' });
                                 }
 
                                 return (
                                     <div
-                                        style={styles.dropzoneDiv}
+                                        style={{
+                                            ...style,
+                                            ...styles.dropzoneDiv,
+                                        }}
                                         {...getRootProps()}
                                     >
                                         <input {...getInputProps()} />
@@ -236,42 +228,41 @@ class DialogImport extends React.Component {
                                         />
                                     </div>
                                 );
-                            } else {
-                                if (this.state.imageStatus !== 'wait') {
-                                    this.setState({ imageStatus: 'wait' });
-                                }
-                                return (
-                                    <div
-                                        style={styles.dropzoneDiv}
-                                        {...getRootProps()}
-                                    >
-                                        <input {...getInputProps()} />
-                                        <span
-                                            key="text"
-                                            style={styles.text}
-                                        >
-                                            {I18n.t('Drop some files here or click...')}
-                                        </span>
-                                        <IconUpload
-                                            key="icon"
-                                            style={styles.icon}
-                                        />
-                                    </div>
-                                );
                             }
+                            if (this.state.imageStatus !== 'wait') {
+                                this.setState({ imageStatus: 'wait' });
+                            }
+                            return (
+                                <div
+                                    style={{
+                                        ...style,
+                                        ...styles.dropzoneDiv,
+                                    }}
+                                    {...getRootProps()}
+                                >
+                                    <input {...getInputProps()} />
+                                    <span
+                                        key="text"
+                                        style={styles.text}
+                                    >
+                                        {I18n.t('Drop some files here or click...')}
+                                    </span>
+                                    <IconUpload
+                                        key="icon"
+                                        style={styles.icon}
+                                    />
+                                </div>
+                            );
                         }}
                     </Dropzone>
+                    {this.state.error ? (
+                        <DialogError
+                            text={this.state.error}
+                            onClose={() => this.setState({ error: '' })}
+                        />
+                    ) : null}
                 </DialogContent>
                 <DialogActions>
-                    <Button
-                        variant="contained"
-                        disabled={!this.state.text}
-                        onClick={event => this.handleOk()}
-                        color="primary"
-                        startIcon={<IconOk />}
-                    >
-                        {I18n.t('Import')}
-                    </Button>
                     <Button
                         color="grey"
                         variant="contained"
@@ -286,13 +277,4 @@ class DialogImport extends React.Component {
     }
 }
 
-DialogImport.defaultProps = {
-    open: true,
-};
-
-DialogImport.propTypes = {
-    onClose: PropTypes.func,
-    text: PropTypes.string,
-};
-
-export default DialogImport;
+export default DialogImportFile;

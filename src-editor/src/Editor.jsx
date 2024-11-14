@@ -1156,7 +1156,7 @@ class Editor extends React.Component {
                     {this.state.blockly && !this.state.rules && this.state.showCompiledCode && <Button color="grey" key="convert2js" aria-label="convert to javascript"
                         title={I18n.t('Convert blockly to javascript for ever.')}
                         onClick={() => this.onConvertBlockly2JS()}
-                    >Blockly=>JS</Button>}
+                    >Blockly=&gt;JS</Button>}
                     {this.state.rules && !this.state.showCompiledCode &&
                         <IconButton
                             key="export"
