@@ -1,65 +1,53 @@
-import type { ChildProcess, ExecOptions } from 'node:child_process';
-import * as jsonataMod from 'jsonata';
-import type { SendMailOptions } from 'nodemailer';
-import type { AxiosError, AxiosHeaderValue, AxiosResponse, ResponseType } from 'axios';
-
-import { commonTools } from '@iobroker/adapter-core';
-
-import { isObject, isArray, promisify, getHttpRequestConfig } from './tools';
-import type {
-    JavaScriptAdapterConfig,
-    AstroRule,
-    ChangeType,
-    CommonAlias,
-    FileSubscriptionResult,
-    IobSchedule,
-    JavascriptContext,
-    JsScript,
-    LogMessage,
-    Pattern,
-    PushoverOptions,
-    SandboxType,
-    Selector,
-    SubscribeObject,
-    SubscriptionResult,
-    TimeRule,
-} from '../types';
-import * as constsMod from './consts';
-import * as wordsMod from './words';
-import * as eventObjMod from './eventObj';
-import { patternCompareFunctions as patternCompareFunctionsMod } from './patternCompareFunctions';
-import type { PatternEventCompareFunction } from './patternCompareFunctions';
-import type { ScheduleName, SchedulerRule } from './scheduler';
-import type { EventObj } from './eventObj';
-import type { AstroEvent } from './consts';
-
-const pattern2RegEx = commonTools.pattern2RegEx;
-
-export function sandBox(
-    script: JsScript,
-    name: string,
-    verbose: boolean | undefined,
-    debug: boolean | undefined,
-    context: JavascriptContext,
-): SandboxType {
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.sandBox = sandBox;
+const jsonataMod = __importStar(require("jsonata"));
+const adapter_core_1 = require("@iobroker/adapter-core");
+const tools_1 = require("./tools");
+const constsMod = __importStar(require("./consts"));
+const wordsMod = __importStar(require("./words"));
+const eventObjMod = __importStar(require("./eventObj"));
+const patternCompareFunctions_1 = require("./patternCompareFunctions");
+const pattern2RegEx = adapter_core_1.commonTools.pattern2RegEx;
+function sandBox(script, name, verbose, debug, context) {
     const consts = constsMod;
     const words = wordsMod;
     const eventObj = eventObjMod;
-    const patternCompareFunctions = patternCompareFunctionsMod;
+    const patternCompareFunctions = patternCompareFunctions_1.patternCompareFunctions;
     const jsonata = jsonataMod.default;
-
-    const adapter: ioBroker.Adapter = context.adapter;
+    const adapter = context.adapter;
     const mods = context.mods;
     const states = context.states;
     const objects = context.objects;
     const timers = context.timers;
     const enums = context.enums;
     const debugMode = context.debugMode;
-
     // eslint-disable-next-line prefer-const
-    let sandbox: SandboxType;
-
-    function errorInCallback(e: Error): void {
+    let sandbox;
+    function errorInCallback(e) {
         adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, {
             val: true,
             ack: true,
@@ -68,23 +56,20 @@ export function sandBox(
         context.logError('Error in callback', e);
         context.debugMode && console.log(`error$$${name}$$Exception in callback: ${e}`, Date.now());
     }
-
-    function subscribePattern(script: JsScript, pattern: string): void {
-        if ((adapter.config as JavaScriptAdapterConfig).subscribe) {
+    function subscribePattern(script, pattern) {
+        if (adapter.config.subscribe) {
             if (!script.subscribes[pattern]) {
                 script.subscribes[pattern] = 1;
-            } else {
+            }
+            else {
                 script.subscribes[pattern]++;
             }
-
             if (!context.subscribedPatterns[pattern]) {
                 context.subscribedPatterns[pattern] = 1;
-
                 if (sandbox.verbose) {
                     sandbox.log(`subscribePattern(pattern=${pattern})`, 'info');
                 }
                 adapter.subscribeForeignStates(pattern);
-
                 // request current value to deliver old value on change.
                 if (typeof pattern === 'string' && !pattern.includes('*')) {
                     adapter.getForeignState(pattern, (_err, state) => {
@@ -92,33 +77,29 @@ export function sandBox(
                             states[pattern] = state;
                         }
                     });
-                } else {
-                    adapter.getForeignStates(
-                        pattern,
-                        (_err, _states) => _states && Object.keys(_states).forEach(id => (states[id] = _states[id])),
-                    );
                 }
-            } else {
+                else {
+                    adapter.getForeignStates(pattern, (_err, _states) => _states && Object.keys(_states).forEach(id => (states[id] = _states[id])));
+                }
+            }
+            else {
                 context.subscribedPatterns[pattern]++;
             }
         }
     }
-
-    function unsubscribePattern(script: JsScript, pattern: string): void {
-        if ((adapter.config as JavaScriptAdapterConfig).subscribe) {
+    function unsubscribePattern(script, pattern) {
+        if (adapter.config.subscribe) {
             if (script.subscribes[pattern]) {
                 script.subscribes[pattern]--;
                 if (!script.subscribes[pattern]) {
                     delete script.subscribes[pattern];
                 }
             }
-
             if (context.subscribedPatterns[pattern]) {
                 context.subscribedPatterns[pattern]--;
                 if (!context.subscribedPatterns[pattern]) {
                     adapter.unsubscribeForeignStates(pattern);
                     delete context.subscribedPatterns[pattern];
-
                     // if the pattern was regex or with * some states will stay in RAM, but it is OK.
                     if (states[pattern]) {
                         delete states[pattern];
@@ -127,24 +108,23 @@ export function sandBox(
             }
         }
     }
-
-    function subscribeFile(script: JsScript, id: string, fileNamePattern: string): void {
+    function subscribeFile(script, id, fileNamePattern) {
         const key = `${id}$%$${fileNamePattern}`;
         if (!script.subscribesFile[key]) {
             script.subscribesFile[key] = 1;
-        } else {
+        }
+        else {
             script.subscribesFile[key]++;
         }
-
         if (!context.subscribedPatternsFile[key]) {
             context.subscribedPatternsFile[key] = 1;
             adapter.subscribeForeignFiles(id, fileNamePattern);
-        } else {
+        }
+        else {
             context.subscribedPatternsFile[key]++;
         }
     }
-
-    function unsubscribeFile(script: JsScript, id: string, fileNamePattern: string): void {
+    function unsubscribeFile(script, id, fileNamePattern) {
         const key = `${id}$%$${fileNamePattern}`;
         if (script.subscribesFile[key]) {
             script.subscribesFile[key]--;
@@ -152,7 +132,6 @@ export function sandBox(
                 delete script.subscribesFile[key];
             }
         }
-
         if (context.subscribedPatternsFile[key]) {
             context.subscribedPatternsFile[key]--;
             if (!context.subscribedPatternsFile[key]) {
@@ -161,12 +140,10 @@ export function sandBox(
             }
         }
     }
-
-    function getPatternCompareFunctions(pattern: Pattern): PatternEventCompareFunction[] & { logic?: 'and' | 'or' } {
-        let func: PatternEventCompareFunction;
-        const functions: PatternEventCompareFunction[] & { logic?: 'and' | 'or' } = [];
+    function getPatternCompareFunctions(pattern) {
+        let func;
+        const functions = [];
         functions.logic = pattern.logic || 'and';
-
         for (const key in pattern) {
             if (!Object.prototype.hasOwnProperty.call(pattern, key)) {
                 continue;
@@ -177,9 +154,7 @@ export function sandBox(
             if (key === 'change' && pattern.change === 'any') {
                 continue;
             }
-            const _func: (pattern: Pattern) => PatternEventCompareFunction = (
-                patternCompareFunctions as unknown as Record<string, (pattern: Pattern) => PatternEventCompareFunction>
-            )[key];
+            const _func = patternCompareFunctions[key];
             if (!_func) {
                 continue;
             }
@@ -191,13 +166,12 @@ export function sandBox(
         }
         return functions;
     }
-
     /**
      * Splits a selector string into attribute and value
      *
      * @param selector The selector string to split
      */
-    function splitSelectorString(selector: string): Selector {
+    function splitSelectorString(selector) {
         const parts = selector.split('=', 2);
         if (parts[1] && parts[1][0] === '"') {
             parts[1] = parts[1].substring(1);
@@ -213,39 +187,33 @@ export function sandBox(
                 parts[1] = parts[1].substring(0, len - 1);
             }
         }
-
         if (parts[1]) {
             parts[1] = parts[1].trim();
         }
         parts[0] = parts[0].trim();
-
         return { attr: parts[0], value: parts[1] };
     }
-
     /**
      * Transforms a selector string with wildcards into a regular expression
      *
      * @param str The selector string to transform into a regular expression
      */
-    function selectorStringToRegExp(str: string): RegExp {
+    function selectorStringToRegExp(str) {
         const startsWithWildcard = str[0] === '*';
         const endsWithWildcard = str[str.length - 1] === '*';
-
         // Sanitize the selector, so it is safe to use in a RegEx
         // Taken from https://stackoverflow.com/a/3561711/10179833 but modified
         // since * has a special meaning in our selector and should not be escaped
         // eslint-disable-next-line no-useless-escape
         str = str.replace(/[-\/\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '.*');
-
         return new RegExp((startsWithWildcard ? '' : '^') + str + (endsWithWildcard ? '' : '$'));
     }
-
     /**
      * Adds a regular expression for selectors targeting the state ID
      *
      * @param selector The selector to apply the transform to
      */
-    function addRegExpToIdAttrSelectors(selector: Selector): Selector {
+    function addRegExpToIdAttrSelectors(selector) {
         if ((selector.attr === 'id' || selector.attr === 'state.id') && !selector.idRegExp && selector.value) {
             return {
                 attr: selector.attr,
@@ -255,7 +223,6 @@ export function sandBox(
         }
         return selector;
     }
-
     /**
      * Tests if a value loosely equals (==) the reference string.
      * In contrast to the equality operator, this treats true == "true" as well
@@ -264,34 +231,31 @@ export function sandBox(
      * @param value The value to compare with the reference
      * @param reference The reference to compare the value to
      */
-    function looselyEqualsString(value: string | number | boolean | undefined, reference: string): boolean {
+    function looselyEqualsString(value, reference) {
         // For booleans, compare the string representation
         // For other types do a loose comparison
         return typeof value === 'boolean'
             ? (value && reference === 'true') || (!value && reference === 'false')
             : value == reference;
     }
-
     /**
      * Returns the `common.type` for a given variable
      */
-    function getCommonTypeOf(value: any): ioBroker.CommonType {
-        return isArray(value) ? 'array' : isObject(value) ? 'object' : (typeof value as ioBroker.CommonType);
+    function getCommonTypeOf(value) {
+        return (0, tools_1.isArray)(value) ? 'array' : (0, tools_1.isObject)(value) ? 'object' : typeof value;
     }
-
     /**
      * Returns if an id is in an allowed namespace for automatic object creations
      *
      * @param id id to check
      */
-    function validIdForAutomaticFolderCreation(id: string): boolean {
+    function validIdForAutomaticFolderCreation(id) {
         return id.startsWith('javascript.') || id.startsWith('0_userdata.0.') || id.startsWith('alias.0.');
     }
-
     /**
      * Iterate through object structure to create missing folder objects
      */
-    async function ensureObjectStructure(id: string): Promise<void> {
+    async function ensureObjectStructure(id) {
         if (!validIdForAutomaticFolderCreation(id)) {
             return;
         }
@@ -305,7 +269,6 @@ export function sandBox(
         }
         // We just create sublevel projects
         let idToCheck = idArr.splice(0, 2).join('.');
-
         context.folderCreationVerifiedObjects[id] = true;
         for (const part of idArr) {
             idToCheck += `.${part}`;
@@ -313,10 +276,11 @@ export function sandBox(
                 continue;
             }
             context.folderCreationVerifiedObjects[idToCheck] = true;
-            let obj: ioBroker.Object | null | undefined;
+            let obj;
             try {
                 obj = await adapter.getForeignObjectAsync(idToCheck);
-            } catch {
+            }
+            catch {
                 // ignore
             }
             if (!obj?.common) {
@@ -331,32 +295,23 @@ export function sandBox(
                         native: {
                             autocreated: 'by automatic ensure logic',
                         },
-                    } as ioBroker.FolderObject);
-                } catch (err: any) {
+                    });
+                }
+                catch (err) {
                     sandbox.log(`Could not automatically create folder object ${idToCheck}: ${err.message}`, 'info');
                 }
-            } else {
+            }
+            else {
                 //sandbox.log(`    already existing "${idToCheck}": ${JSON.stringify(obj)}`, 'debug');
             }
         }
     }
-
-    function setStateHelper(
-        sandbox: SandboxType,
-        isCreate: boolean,
-        isChanged: boolean,
-        id: string,
-        state: null | ioBroker.SettableState | ioBroker.StateValue,
-        isAck: boolean | 'true' | 'false' | undefined | ((error?: Error | null) => void),
-        callback?: (error?: Error | null) => void,
-    ): void {
+    function setStateHelper(sandbox, isCreate, isChanged, id, state, isAck, callback) {
         if (typeof isAck === 'function') {
             callback = isAck;
             isAck = undefined;
         }
-
-        let stateNotNull: ioBroker.SettableState | ioBroker.StateValue;
-
+        let stateNotNull;
         if (isAck === true || isAck === false || isAck === 'true' || isAck === 'false') {
             if (state && typeof state === 'object' && state.val !== undefined) {
                 stateNotNull = state;
@@ -365,78 +320,68 @@ export function sandBox(
                 if (!Object.prototype.hasOwnProperty.call(state, 'ack')) {
                     stateNotNull.ack = isAck === true || isAck === 'true';
                 }
-            } else if (state === null) {
-                stateNotNull = { val: null, ack: isAck === true || isAck === 'true' };
-            } else {
-                // otherwise, assume that the given state is the value to be set
-                stateNotNull = { val: state as ioBroker.StateValue, ack: isAck === true || isAck === 'true' };
             }
-        } else if (state === null) {
+            else if (state === null) {
+                stateNotNull = { val: null, ack: isAck === true || isAck === 'true' };
+            }
+            else {
+                // otherwise, assume that the given state is the value to be set
+                stateNotNull = { val: state, ack: isAck === true || isAck === 'true' };
+            }
+        }
+        else if (state === null) {
             stateNotNull = { val: null };
-        } else {
+        }
+        else {
             stateNotNull = state;
         }
-
         // Check a type of state
         if (!objects[id] && objects[`${adapter.namespace}.${id}`]) {
             id = `${adapter.namespace}.${id}`;
         }
-
         if (isCreate) {
             if (id.match(/^javascript\.\d+\.scriptEnabled/)) {
-                sandbox.log(
-                    `Own states (${id}) should not be used in javascript.X.scriptEnabled.*! Please move the states to 0_userdata.0.*`,
-                    'info',
-                );
-            } else if (id.match(/^javascript\.\d+\.scriptProblem/)) {
-                sandbox.log(
-                    `Own states (${id}) should not be used in javascript.X.scriptProblem.*! Please move the states to 0_userdata.0.*`,
-                    'info',
-                );
+                sandbox.log(`Own states (${id}) should not be used in javascript.X.scriptEnabled.*! Please move the states to 0_userdata.0.*`, 'info');
+            }
+            else if (id.match(/^javascript\.\d+\.scriptProblem/)) {
+                sandbox.log(`Own states (${id}) should not be used in javascript.X.scriptProblem.*! Please move the states to 0_userdata.0.*`, 'info');
             }
         }
-
         const common = objects[id] ? objects[id].common : null;
         if (common?.type && common.type !== 'mixed' && common.type !== 'json') {
             // Find out which type the value has
-            let actualCommonType: ioBroker.CommonType | undefined;
+            let actualCommonType;
             if (typeof stateNotNull === 'object') {
                 if (stateNotNull && stateNotNull.val !== undefined && stateNotNull.val !== null) {
                     actualCommonType = getCommonTypeOf(stateNotNull.val);
                 }
-            } else if (stateNotNull !== null && stateNotNull !== undefined) {
+            }
+            else if (stateNotNull !== null && stateNotNull !== undefined) {
                 actualCommonType = getCommonTypeOf(stateNotNull);
             }
             // If this is not the expected one, issue a warning
             if (actualCommonType && actualCommonType !== common.type) {
-                context.logWithLineInfo(
-                    `You are assigning a ${actualCommonType} to the state "${id}" which expects a ${common.type}. ` +
-                        `Please fix your code to use a ${common.type} or change the state type to ${actualCommonType}. ` +
-                        `This warning might become an error in future versions.`,
-                );
+                context.logWithLineInfo(`You are assigning a ${actualCommonType} to the state "${id}" which expects a ${common.type}. ` +
+                    `Please fix your code to use a ${common.type} or change the state type to ${actualCommonType}. ` +
+                    `This warning might become an error in future versions.`);
             }
-
             if (actualCommonType === 'array' || actualCommonType === 'object') {
                 try {
                     if (typeof stateNotNull === 'object' && typeof stateNotNull.val !== 'undefined') {
                         stateNotNull.val = JSON.stringify(stateNotNull.val);
-                    } else {
+                    }
+                    else {
                         stateNotNull = JSON.stringify(stateNotNull);
                     }
-                } catch (err: any) {
-                    context.logWithLineInfo(
-                        `Could not stringify value for type ${actualCommonType} and id ${id}: ${err.message}`,
-                    );
+                }
+                catch (err) {
+                    context.logWithLineInfo(`Could not stringify value for type ${actualCommonType} and id ${id}: ${err.message}`);
                     if (typeof callback === 'function') {
                         try {
-                            callback.call(
-                                sandbox,
-                                new Error(
-                                    `Could not stringify value for type ${actualCommonType} and id ${id}: ${err.message}`,
-                                ),
-                            );
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
+                            callback.call(sandbox, new Error(`Could not stringify value for type ${actualCommonType} and id ${id}: ${err.message}`));
+                        }
+                        catch (err) {
+                            errorInCallback(err);
                         }
                     }
                 }
@@ -445,15 +390,17 @@ export function sandBox(
         // Check min and max of value
         if (typeof stateNotNull === 'object') {
             if (common && typeof stateNotNull.val === 'number') {
-                const num: number = stateNotNull.val;
+                const num = stateNotNull.val;
                 if (common.min !== undefined && num < common.min) {
                     stateNotNull.val = common.min;
-                } else if (common.max !== undefined && num > common.max) {
+                }
+                else if (common.max !== undefined && num > common.max) {
                     stateNotNull.val = common.max;
                 }
             }
-        } else if (common && typeof stateNotNull === 'number') {
-            const num: number = stateNotNull;
+        }
+        else if (common && typeof stateNotNull === 'number') {
+            const num = stateNotNull;
             if (common.min !== undefined && num < common.min) {
                 stateNotNull = common.min;
             }
@@ -461,48 +408,41 @@ export function sandBox(
                 stateNotNull = common.max;
             }
         }
-
-        let stateAsObject: ioBroker.State;
+        let stateAsObject;
         // modify state here, to make it available in callback
-        if (
-            stateNotNull === null ||
+        if (stateNotNull === null ||
             typeof stateNotNull !== 'object' ||
-            (stateNotNull as ioBroker.SettableState).val === undefined
-        ) {
+            stateNotNull.val === undefined) {
             stateAsObject = context.prepareStateObject(id, {
-                val: stateNotNull as ioBroker.StateValue,
+                val: stateNotNull,
                 ack: isAck === true || isAck === 'true',
             });
-        } else {
-            stateAsObject = context.prepareStateObject(id, stateNotNull as ioBroker.SettableState);
         }
-
+        else {
+            stateAsObject = context.prepareStateObject(id, stateNotNull);
+        }
         // set as comment: from which script this state was set.
         stateAsObject.c = sandbox.scriptName;
-
         if (objects[id]) {
             script.setStatePerMinuteCounter++;
             if (sandbox.verbose) {
                 sandbox.log(`setForeignState(id=${id}, state=${JSON.stringify(stateAsObject)})`, 'info');
             }
-
             if (debug) {
-                sandbox.log(
-                    `setForeignState(id=${id}, state=${JSON.stringify(stateAsObject)}) - ${words._('was not executed, while debug mode is active')}`,
-                    'warn',
-                );
-
+                sandbox.log(`setForeignState(id=${id}, state=${JSON.stringify(stateAsObject)}) - ${words._('was not executed, while debug mode is active')}`, 'warn');
                 if (typeof callback === 'function') {
                     setImmediate(() => {
                         try {
                             callback.call(sandbox);
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
+                        }
+                        catch (err) {
+                            errorInCallback(err);
                         }
                     });
                 }
-            } else {
-                if (!(adapter.config as JavaScriptAdapterConfig).subscribe) {
+            }
+            else {
+                if (!adapter.config.subscribe) {
                     // store actual state to make possible to process value in callback
                     // risk that there will be an error on setState is very low,
                     // but we will not store new state if the setStateChanged is called
@@ -510,69 +450,64 @@ export function sandBox(
                         context.interimStateValues[id] = stateAsObject;
                     }
                 }
-                const errHandler = (err: Error | null | undefined, funcId: string): void => {
+                const errHandler = (err, funcId) => {
                     err && sandbox.log(`${funcId}: ${err}`, 'error');
                     // If adapter holds all states
-                    if (err && !(adapter.config as JavaScriptAdapterConfig).subscribe) {
+                    if (err && !adapter.config.subscribe) {
                         delete context.interimStateValues[id];
                     }
-
                     if (typeof callback === 'function') {
                         setImmediate(() => {
                             try {
                                 callback.call(sandbox);
-                            } catch (err: unknown) {
-                                errorInCallback(err as Error);
+                            }
+                            catch (err) {
+                                errorInCallback(err);
                             }
                         });
                     }
                 };
                 if (isChanged) {
-                    if (!(adapter.config as JavaScriptAdapterConfig).subscribe && context.interimStateValues[id]) {
+                    if (!adapter.config.subscribe && context.interimStateValues[id]) {
                         // if the state is changed, we will compare it with interimStateValues
                         const oldState = context.interimStateValues[id];
-                        const attrs: string[] = Object.keys(stateAsObject).filter(
-                            attr => attr !== 'ts' && (stateAsObject as Record<string, any>)[attr] !== undefined,
-                        );
-                        if (
-                            !attrs.every(
-                                attr =>
-                                    (stateAsObject as Record<string, any>)[attr] ===
-                                    (oldState as Record<string, any>)[attr],
-                            )
-                        ) {
+                        const attrs = Object.keys(stateAsObject).filter(attr => attr !== 'ts' && stateAsObject[attr] !== undefined);
+                        if (!attrs.every(attr => stateAsObject[attr] ===
+                            oldState[attr])) {
                             // state is changed for sure, and we will call setForeignState
                             // and store new state to interimStateValues
                             context.interimStateValues[id] = stateAsObject;
                             adapter.setForeignState(id, stateAsObject, err => errHandler(err, 'setForeignState'));
-                        } else {
+                        }
+                        else {
                             // otherwise - do nothing as we have cached state, except callback
                             errHandler(null, 'setForeignStateCached');
                         }
-                    } else {
-                        // adapter doesn't hold all states, or it has not cached then we will simply call setForeignStateChanged
-                        adapter.setForeignStateChanged(id, { ...stateAsObject, ts: undefined }, err =>
-                            errHandler(err, 'setForeignStateChanged'),
-                        );
                     }
-                } else {
+                    else {
+                        // adapter doesn't hold all states, or it has not cached then we will simply call setForeignStateChanged
+                        adapter.setForeignStateChanged(id, { ...stateAsObject, ts: undefined }, err => errHandler(err, 'setForeignStateChanged'));
+                    }
+                }
+                else {
                     adapter.setForeignState(id, stateAsObject, err => errHandler(err, 'setForeignState'));
                 }
             }
-        } else {
+        }
+        else {
             context.logWithLineInfo(`State "${id}" not found`);
             if (typeof callback === 'function') {
                 setImmediate(() => {
                     try {
                         callback.call(sandbox, new Error(`State "${id}" not found`));
-                    } catch (err: unknown) {
-                        errorInCallback(err as Error);
+                    }
+                    catch (err) {
+                        errorInCallback(err);
                     }
                 });
             }
         }
     }
-
     sandbox = {
         mods,
         _id: script._id,
@@ -583,44 +518,35 @@ export function sandBox(
         defaultDataDir: context.getAbsoluteDefaultDataDir(),
         verbose,
         exports: {}, // Polyfill for the export object in TypeScript modules
-        require: function (md: string): any {
+        require: function (md) {
             if (typeof md === 'string' && md.startsWith('node:')) {
                 md = md.replace(/^node:/, '');
             }
-
             if (md === 'request') {
                 if (!sandbox.__engine.__deprecatedWarnings.includes(md)) {
-                    sandbox.log(
-                        `request package is deprecated - please use httpGet (or a stable lib like axios) instead!`,
-                        'warn',
-                    );
+                    sandbox.log(`request package is deprecated - please use httpGet (or a stable lib like axios) instead!`, 'warn');
                     sandbox.__engine.__deprecatedWarnings.push(md);
                 }
             }
-
             if (mods[md]) {
                 return mods[md];
             }
-
-            let error: Error | undefined;
-
+            let error;
             try {
-                mods[md] = require(
-                    adapter.getAdapterScopedPackageIdentifier ? adapter.getAdapterScopedPackageIdentifier(md) : md,
-                );
+                mods[md] = require(adapter.getAdapterScopedPackageIdentifier ? adapter.getAdapterScopedPackageIdentifier(md) : md);
                 return mods[md];
-            } catch (e: any) {
-                error = e as Error;
             }
-
+            catch (e) {
+                error = e;
+            }
             try {
                 // the user requires a module which is not specified in the additional node modules
                 // for backward compatibility we check if the module can simply be required directly before we fail (e.g., direct dependencies of JavaScript adapter)
                 adapter.log.debug(`Try direct require of "${md}" as not specified in the additional dependencies`);
                 mods[md] = require(md);
-
                 return mods[md];
-            } catch (e: any) {
+            }
+            catch (e) {
                 context.logError(name, error || e, 6);
                 adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, {
                     val: true,
@@ -639,8 +565,7 @@ export function sandBox(
             __subscriptionsLog: 0,
             __schedules: 0,
         },
-
-        $: function (selector: string): iobJS.QueryResult {
+        $: function (selector) {
             // following is supported
             // 'type[commonAttr=something]', 'id[commonAttr=something]', id(enumName="something")', id{nativeName="something"}
             // Type can be state, channel or device
@@ -652,15 +577,12 @@ export function sandBox(
             // $('channel[role=switch][state.id=*.STATE](rooms=Wohnzimmer)').setState(false);
             //
             // Following functions are possible, setValue, getValue (only from first), on, each
-
             // Todo CACHE!!!
-
-            const result: iobJS.QueryResult = {} as iobJS.QueryResult;
-
+            const result = {};
             let name = '';
-            const commonStrings: string[] = [];
-            const enumStrings: string[] = [];
-            const nativeStrings: string[] = [];
+            const commonStrings = [];
+            const enumStrings = [];
+            const nativeStrings = [];
             let isInsideName = true;
             let isInsideCommonString = false;
             let isInsideEnumString = false;
@@ -668,7 +590,6 @@ export function sandBox(
             let currentCommonString = '';
             let currentNativeString = '';
             let currentEnumString = '';
-
             // parse string
             let selectorHasInvalidType = false;
             if (typeof selector === 'string') {
@@ -680,48 +601,57 @@ export function sandBox(
                             break;
                         }
                         isInsideNativeString = true;
-                    } else if (selector[i] === '}') {
+                    }
+                    else if (selector[i] === '}') {
                         isInsideNativeString = false;
                         nativeStrings.push(currentNativeString);
                         currentNativeString = '';
-                    } else if (selector[i] === '[') {
+                    }
+                    else if (selector[i] === '[') {
                         isInsideName = false;
                         if (isInsideCommonString || isInsideEnumString || isInsideNativeString) {
                             // Error
                             break;
                         }
                         isInsideCommonString = true;
-                    } else if (selector[i] === ']') {
+                    }
+                    else if (selector[i] === ']') {
                         isInsideCommonString = false;
                         commonStrings.push(currentCommonString);
                         currentCommonString = '';
-                    } else if (selector[i] === '(') {
+                    }
+                    else if (selector[i] === '(') {
                         isInsideName = false;
                         if (isInsideCommonString || isInsideEnumString || isInsideNativeString) {
                             // Error
                             break;
                         }
                         isInsideEnumString = true;
-                    } else if (selector[i] === ')') {
+                    }
+                    else if (selector[i] === ')') {
                         isInsideEnumString = false;
                         enumStrings.push(currentEnumString);
                         currentEnumString = '';
-                    } else if (isInsideName) {
+                    }
+                    else if (isInsideName) {
                         name += selector[i];
-                    } else if (isInsideCommonString) {
+                    }
+                    else if (isInsideCommonString) {
                         currentCommonString += selector[i];
-                    } else if (isInsideEnumString) {
+                    }
+                    else if (isInsideEnumString) {
                         currentEnumString += selector[i];
-                    } else if (isInsideNativeString) {
+                    }
+                    else if (isInsideNativeString) {
                         currentNativeString += selector[i];
                     } //else {
                     // some error
                     //}
                 }
-            } else {
+            }
+            else {
                 selectorHasInvalidType = true;
             }
-
             // If some error in the selector
             if (selectorHasInvalidType || isInsideEnumString || isInsideCommonString || isInsideNativeString) {
                 result.length = 0;
@@ -741,52 +671,46 @@ export function sandBox(
                     return this;
                 };
             }
-
             if (isInsideEnumString) {
                 sandbox.log(`Invalid selector: enum close bracket ")" cannot be found in "${selector}"`, 'warn');
                 result.error = 'Invalid selector: enum close bracket ")" cannot be found';
                 return result;
-            } else if (isInsideCommonString) {
+            }
+            else if (isInsideCommonString) {
                 sandbox.log(`Invalid selector: common close bracket "]" cannot be found in "${selector}"`, 'warn');
                 result.error = 'Invalid selector: common close bracket "]" cannot be found';
                 return result;
-            } else if (isInsideNativeString) {
+            }
+            else if (isInsideNativeString) {
                 sandbox.log(`Invalid selector: native close bracket "}" cannot be found in "${selector}"`, 'warn');
                 result.error = 'Invalid selector: native close bracket "}" cannot be found';
                 return result;
-            } else if (selectorHasInvalidType) {
+            }
+            else if (selectorHasInvalidType) {
                 const message = `Invalid selector: selector must be a string but is of type ${typeof selector}`;
                 sandbox.log(message, 'warn');
                 result.error = message;
                 return result;
             }
-
-            let commonSelectors: Selector[] = commonStrings.map(selector => splitSelectorString(selector));
-            let nativeSelectors: Selector[] = nativeStrings.map(selector => splitSelectorString(selector));
-            const enumSelectorObjects: Selector[] = enumStrings.map(_enum => splitSelectorString(_enum));
-            const allSelectors: Selector[] = commonSelectors.concat(nativeSelectors, enumSelectorObjects);
-
+            let commonSelectors = commonStrings.map(selector => splitSelectorString(selector));
+            let nativeSelectors = nativeStrings.map(selector => splitSelectorString(selector));
+            const enumSelectorObjects = enumStrings.map(_enum => splitSelectorString(_enum));
+            const allSelectors = commonSelectors.concat(nativeSelectors, enumSelectorObjects);
             // These selectors match the state or object ID and don't belong in the common/native selectors
             // Also use RegExp for the ID matching
-            const stateIdSelectors: Selector[] = allSelectors
+            const stateIdSelectors = allSelectors
                 .filter(selector => selector.attr === 'state.id')
                 .map(selector => addRegExpToIdAttrSelectors(selector));
-            const objectIdSelectors: Selector[] = allSelectors
+            const objectIdSelectors = allSelectors
                 .filter(selector => selector.attr === 'id')
                 .map(selector => addRegExpToIdAttrSelectors(selector));
-            commonSelectors = commonSelectors.filter(
-                selector => selector.attr !== 'state.id' && selector.attr !== 'id',
-            );
-            nativeSelectors = nativeSelectors.filter(
-                selector => selector.attr !== 'state.id' && selector.attr !== 'id',
-            );
-            const enumSelectors: string[] = enumSelectorObjects
+            commonSelectors = commonSelectors.filter(selector => selector.attr !== 'state.id' && selector.attr !== 'id');
+            nativeSelectors = nativeSelectors.filter(selector => selector.attr !== 'state.id' && selector.attr !== 'id');
+            const enumSelectors = enumSelectorObjects
                 .filter(selector => selector.attr !== 'state.id' && selector.attr !== 'id')
                 // enums are filtered by their enum id, so transform the selector into that
                 .map(selector => `enum.${selector.attr}.${selector.value}`);
-
             name = name.trim();
-
             if (name === 'channel' || name === 'device') {
                 // Fill the channels and devices objects with the IDs of all their states,
                 // so we can loop over them afterward
@@ -798,20 +722,16 @@ export function sandBox(
                             const parts = _id.split('.');
                             parts.pop();
                             const chn = parts.join('.');
-
                             parts.pop();
                             const dev = parts.join('.');
-
                             context.devices[dev] = context.devices[dev] || [];
                             context.devices[dev].push(_id);
-
                             context.channels[chn] = context.channels[chn] || [];
                             context.channels[chn].push(_id);
                         }
                     }
                 }
             }
-
             if (name === 'schedule') {
                 if (!context.schedules) {
                     context.schedules = [];
@@ -822,98 +742,84 @@ export function sandBox(
                     }
                 }
             }
-
             /**
              * applies all selectors targeting an object or state ID
              */
-            function applyIDSelectors(objId: string, selectors: Selector[]): boolean {
+            function applyIDSelectors(objId, selectors) {
                 // Only keep the ID if it matches every ID selector
                 return selectors.every(selector => !selector.idRegExp || selector.idRegExp.test(objId));
             }
-
             /**
              * Applies all selectors targeting the Object common properties
              *
              * @param objId - The ID of the object in question
              */
-            function applyCommonSelectors(objId: string): boolean {
+            function applyCommonSelectors(objId) {
                 const obj = objects[objId];
                 if (!obj?.common) {
                     return false;
                 }
                 const objCommon = obj.common;
-
                 // make sure this object satisfies all selectors
-                return commonSelectors.every(
-                    selector =>
-                        // ensure a property exists
-                        (selector.value === undefined && objCommon[selector.attr] !== undefined) ||
-                        // or match exact values
-                        looselyEqualsString(objCommon[selector.attr], selector.value),
-                );
+                return commonSelectors.every(selector => 
+                // ensure a property exists
+                (selector.value === undefined && objCommon[selector.attr] !== undefined) ||
+                    // or match exact values
+                    looselyEqualsString(objCommon[selector.attr], selector.value));
             }
-
             /**
              * Applies all selectors targeting the Object native properties
              *
              * @param objId - The ID of the object in question
              */
-            function applyNativeSelectors(objId: string): boolean {
+            function applyNativeSelectors(objId) {
                 const obj = objects[objId];
                 if (!obj || !obj.native) {
                     return false;
                 }
                 const objNative = obj.native;
                 // make sure this object satisfies all selectors
-                return nativeSelectors.every(
-                    selector =>
-                        // ensure a property exists
-                        (selector.value === undefined && objNative[selector.attr] !== undefined) ||
-                        // or match exact values
-                        looselyEqualsString(objNative[selector.attr], selector.value),
-                );
+                return nativeSelectors.every(selector => 
+                // ensure a property exists
+                (selector.value === undefined && objNative[selector.attr] !== undefined) ||
+                    // or match exact values
+                    looselyEqualsString(objNative[selector.attr], selector.value));
             }
-
             /**
              * Applies all selectors targeting the Objects enums
              *
              * @param objId - The ID of the object in question
              */
-            function applyEnumSelectors(objId: string): boolean {
-                const enumIds: string[] = [];
+            function applyEnumSelectors(objId) {
+                const enumIds = [];
                 eventObj.getObjectEnumsSync(context, objId, enumIds);
                 // make sure this object satisfies all selectors
                 return enumSelectors.every(_enum => enumIds.includes(_enum));
             }
-
-            let res: string[];
-
+            let res;
             if (name === 'schedule') {
                 res = context.schedules || [];
                 if (objectIdSelectors.length) {
                     res = res.filter(channelId => applyIDSelectors(channelId, objectIdSelectors));
                 }
-
                 // filter out those that don't match every common selector
                 if (commonSelectors.length) {
                     res = res.filter(id => applyCommonSelectors(id));
                 }
-
                 // filter out those that don't match every native selector
                 if (nativeSelectors.length) {
                     res = res.filter(id => applyNativeSelectors(id));
                 }
-
                 // filter out those that don't match every enum selector
                 if (enumSelectors.length) {
                     res = res.filter(channelId => applyEnumSelectors(channelId));
                 }
-            } else if (name === 'channel') {
+            }
+            else if (name === 'channel') {
                 if (!context.channels) {
                     // TODO: fill the channels and maintain them on all places where context.stateIds will be changed
                 }
                 const channels = context.channels || {};
-
                 // go through all channels
                 res = Object.keys(channels);
                 // filter out those that don't match every ID selector for the channel ID
@@ -932,57 +838,50 @@ export function sandBox(
                 if (enumSelectors.length) {
                     res = res.filter(channelId => applyEnumSelectors(channelId));
                 }
-
                 // retrieve the state ID collection for all remaining channels
                 res = res
                     .map(id => channels[id])
                     // and flatten the array to get only the state IDs
                     .reduce((acc, next) => acc.concat(next), []);
-
                 // now filter out those that don't match every ID selector for the state ID
                 if (stateIdSelectors.length) {
                     res = res.filter(stateId => applyIDSelectors(stateId, stateIdSelectors));
                 }
-            } else if (name === 'device') {
+            }
+            else if (name === 'device') {
                 if (!context.devices) {
                     // TODO: fill the devices and maintain them on all places where context.stateIds will be changed
                 }
-
                 const devices = context.devices || {};
-
                 // go through all devices
                 res = Object.keys(devices);
                 // filter out those that don't match every ID selector for the channel ID
                 if (objectIdSelectors.length) {
                     res = res.filter(deviceId => applyIDSelectors(deviceId, objectIdSelectors));
                 }
-
                 // filter out those that don't match every common selector
                 if (commonSelectors.length) {
                     res = res.filter(deviceId => applyCommonSelectors(deviceId));
                 }
-
                 // filter out those that don't match every native selector
                 if (nativeSelectors.length) {
                     res = res.filter(deviceId => applyNativeSelectors(deviceId));
                 }
-
                 // filter out those that don't match every enum selector
                 if (enumSelectors.length) {
                     res = res.filter(deviceId => applyEnumSelectors(deviceId));
                 }
-
                 // retrieve the state ID collection for all remaining devices
                 res = res
                     .map(id => devices[id])
                     // and flatten the array to get only the state IDs
                     .reduce((acc, next) => acc.concat(next), []);
-
                 // now filter out those that don't match every ID selector for the state ID
                 if (stateIdSelectors.length) {
                     res = res.filter(stateId => applyIDSelectors(stateId, stateIdSelectors));
                 }
-            } else {
+            }
+            else {
                 // go through all states
                 res = context.stateIds;
                 // if the "name" is not state, then we filter for the ID as well
@@ -990,57 +889,49 @@ export function sandBox(
                     const r = new RegExp(`^${name.replace(/\./g, '\\.').replace(/\*/g, '.*')}$`);
                     res = res.filter(id => r.test(id));
                 }
-
                 // filter out those that don't match every ID selector for the object ID or the state ID
                 if (objectIdSelectors.length) {
                     res = res.filter(id => applyIDSelectors(id, objectIdSelectors));
                 }
-
                 // filter out those that don't match every ID selector for the state ID
                 if (stateIdSelectors.length) {
                     res = res.filter(id => applyIDSelectors(id, stateIdSelectors));
                 }
-
                 // filter out those that don't match every common selector
                 if (commonSelectors.length) {
                     res = res.filter(id => applyCommonSelectors(id));
                 }
-
                 // filter out those that don't match every native selector
                 if (nativeSelectors.length) {
                     res = res.filter(id => applyNativeSelectors(id));
                 }
-
                 // filter out those that don't match every enum selector
                 if (enumSelectors.length) {
                     res = res.filter(id => applyEnumSelectors(id));
                 }
             }
-
-            const resUnique: string[] = [];
+            const resUnique = [];
             for (let i = 0; i < res.length; i++) {
                 if (!resUnique.includes(res[i])) {
                     resUnique.push(res[i]);
                 }
             }
-
             for (let i = 0; i < resUnique.length; i++) {
                 result[i] = resUnique[i];
             }
             result.length = resUnique.length;
-
             // Implementing the Symbol.iterator contract makes the query result iterable
             result[Symbol.iterator] = function* () {
                 for (let i = 0; i < result.length; i++) {
                     yield result[i];
                 }
             };
-            result.toArray = function (): string[] {
+            result.toArray = function () {
                 return [...resUnique];
             };
-            result.each = function (callback: (id: string, index: number) => void | false): iobJS.QueryResult {
+            result.each = function (callback) {
                 if (typeof callback === 'function') {
-                    let r: boolean | void;
+                    let r;
                     for (let i = 0; i < this.length; i++) {
                         r = callback(result[i], i);
                         if (r === false) {
@@ -1051,90 +942,56 @@ export function sandBox(
                 return this;
             };
             // @ts-expect-error fix later
-            result.getState = function <T extends ioBroker.StateValue = any>(
-                callback?: iobJS.GetStateCallback<T>,
-            ): void | null | undefined | iobJS.TypedState<T> | iobJS.AbsentState {
-                if ((adapter.config as JavaScriptAdapterConfig).subscribe) {
+            result.getState = function (callback) {
+                if (adapter.config.subscribe) {
                     if (typeof callback !== 'function') {
                         sandbox.log('You cannot use this function synchronous', 'error');
-                    } else {
-                        adapter.getForeignState(
-                            this[0],
-                            (err: Error | null | undefined, state?: ioBroker.State | null): void => {
-                                callback(
-                                    err,
-                                    context.convertBackStringifiedValues(this[0], state) as
-                                        | iobJS.TypedState<T>
-                                        | iobJS.AbsentState,
-                                );
-                            },
-                        );
                     }
-                } else {
+                    else {
+                        adapter.getForeignState(this[0], (err, state) => {
+                            callback(err, context.convertBackStringifiedValues(this[0], state));
+                        });
+                    }
+                }
+                else {
                     if (!this[0]) {
                         return null;
                     }
                     if (context.interimStateValues[this[0]] !== undefined) {
-                        return context.convertBackStringifiedValues(this[0], context.interimStateValues[this[0]]) as
-                            | iobJS.TypedState<T>
-                            | iobJS.AbsentState;
+                        return context.convertBackStringifiedValues(this[0], context.interimStateValues[this[0]]);
                     }
-                    return context.convertBackStringifiedValues(this[0], states[this[0]]) as
-                        | iobJS.TypedState<T>
-                        | iobJS.AbsentState;
+                    return context.convertBackStringifiedValues(this[0], states[this[0]]);
                 }
             };
-            result.getStateAsync = async function <T extends ioBroker.StateValue = any>(): Promise<
-                iobJS.TypedState<T> | iobJS.AbsentState | null | undefined
-            > {
-                if ((adapter.config as JavaScriptAdapterConfig).subscribe) {
+            result.getStateAsync = async function () {
+                if (adapter.config.subscribe) {
                     const state = await adapter.getForeignStateAsync(this[0]);
-                    return context.convertBackStringifiedValues(this[0], state) as
-                        | iobJS.TypedState<T>
-                        | iobJS.AbsentState
-                        | null;
+                    return context.convertBackStringifiedValues(this[0], state);
                 }
                 if (!this[0]) {
                     return null;
                 }
                 if (context.interimStateValues[this[0]] !== undefined) {
-                    return context.convertBackStringifiedValues(this[0], context.interimStateValues[this[0]]) as
-                        | iobJS.TypedState<T>
-                        | iobJS.AbsentState
-                        | null;
+                    return context.convertBackStringifiedValues(this[0], context.interimStateValues[this[0]]);
                 }
-                return context.convertBackStringifiedValues(this[0], states[this[0]]) as
-                    | iobJS.TypedState<T>
-                    | iobJS.AbsentState
-                    | null;
+                return context.convertBackStringifiedValues(this[0], states[this[0]]);
             };
-            result.setState = function (
-                state: ioBroker.SettableState | ioBroker.StateValue,
-                isAck?: boolean | 'false' | 'true' | null | iobJS.SetStateCallback,
-                callback?: iobJS.SetStateCallback,
-            ) {
+            result.setState = function (state, isAck, callback) {
                 if (typeof isAck === 'function') {
                     callback = isAck;
                     isAck = undefined;
                 }
                 result
-                    .setStateAsync(state, isAck as boolean | 'false' | 'true')
+                    .setStateAsync(state, isAck)
                     .then(() => typeof callback === 'function' && callback());
                 return this;
             };
-            result.setStateAsync = async function (
-                state: ioBroker.SettableState | ioBroker.StateValue,
-                isAck?: boolean,
-            ): Promise<void> {
+            result.setStateAsync = async function (state, isAck) {
                 for (let i = 0; i < this.length; i++) {
                     await sandbox.setStateAsync(this[i], state, isAck);
                 }
             };
-            result.setStateChanged = function (
-                state: ioBroker.SettableState | ioBroker.StateValue,
-                isAck?: boolean,
-                callback?: () => void,
-            ) {
+            result.setStateChanged = function (state, isAck, callback) {
                 if (typeof isAck === 'function') {
                     callback = isAck;
                     isAck = undefined;
@@ -1142,29 +999,20 @@ export function sandBox(
                 result.setStateChangedAsync(state, isAck).then(() => typeof callback === 'function' && callback());
                 return this;
             };
-            result.setStateChangedAsync = async function (
-                state: ioBroker.SettableState | ioBroker.StateValue,
-                isAck?: boolean,
-            ): Promise<void> {
+            result.setStateChangedAsync = async function (state, isAck) {
                 for (let i = 0; i < this.length; i++) {
                     await sandbox.setStateChangedAsync(this[i], state, isAck);
                 }
             };
-            result.setStateDelayed = function (
-                state: ioBroker.SettableState | ioBroker.StateValue,
-                isAck: boolean | number | undefined,
-                delay?: number | boolean,
-                clearRunning?: boolean | (() => void),
-                callback?: () => void,
-            ) {
+            result.setStateDelayed = function (state, isAck, delay, clearRunning, callback) {
                 if (typeof isAck !== 'boolean') {
-                    callback = clearRunning as () => void;
-                    clearRunning = delay as boolean;
-                    delay = isAck as number;
+                    callback = clearRunning;
+                    clearRunning = delay;
+                    delay = isAck;
                     isAck = undefined;
                 }
                 if (typeof delay !== 'number') {
-                    callback = clearRunning as () => void;
+                    callback = clearRunning;
                     clearRunning = delay;
                     delay = 0;
                 }
@@ -1174,7 +1022,7 @@ export function sandBox(
                 }
                 let count = this.length;
                 for (let i = 0; i < this.length; i++) {
-                    sandbox.setStateDelayed(this[i], state, isAck as boolean, delay, clearRunning, () => {
+                    sandbox.setStateDelayed(this[i], state, isAck, delay, clearRunning, () => {
                         if (!--count && typeof callback === 'function') {
                             callback();
                         }
@@ -1182,7 +1030,7 @@ export function sandBox(
                 }
                 return this;
             };
-            result.on = function (callbackOrId: string | ((data: any) => void), value?: any) {
+            result.on = function (callbackOrId, value) {
                 for (let i = 0; i < this.length; i++) {
                     sandbox.subscribe(this[i], callbackOrId, value);
                 }
@@ -1190,30 +1038,27 @@ export function sandBox(
             };
             return result;
         },
-        log: function (msg: string, severity?: ioBroker.LogLevel): void {
+        log: function (msg, severity) {
             severity = severity || 'info';
-
             // disable log in log handler (prevent endless loops)
             if (sandbox.logHandler && (sandbox.logHandler === severity || sandbox.logHandler === '*')) {
                 return;
             }
-
             if (!adapter.log[severity]) {
                 msg = `Unknown severity level "${severity}" by log of [${msg}]`;
                 severity = 'warn';
             }
-
             if (msg && typeof msg !== 'string') {
                 msg = mods.util.format(msg);
             }
-
             if (debugMode) {
                 console.log(`${severity}$$${name}$$${msg}`, Date.now());
-            } else {
+            }
+            else {
                 adapter.log[severity](`${name}: ${msg}`);
             }
         },
-        onLog: function (severity: ioBroker.LogLevel, callback: (info: LogMessage) => void): number {
+        onLog: function (severity, callback) {
             if (!['info', 'error', 'debug', 'silly', 'warn', '*'].includes(severity)) {
                 sandbox.log(`Unknown severity "${severity}"`, 'warn');
                 return 0;
@@ -1222,102 +1067,65 @@ export function sandBox(
                 sandbox.log(`Invalid callback for onLog`, 'warn');
                 return 0;
             }
-
             const handler = { id: Date.now() + Math.floor(Math.random() * 10000), cb: callback, sandbox, severity };
             context.logSubscriptions[sandbox.scriptName] = context.logSubscriptions[sandbox.scriptName] || [];
             context.logSubscriptions[sandbox.scriptName].push(handler);
             context.updateLogSubscriptions();
-
             sandbox.__engine.__subscriptionsLog += 1;
-
             sandbox.verbose &&
-                sandbox.log(
-                    `onLog(severity=${severity}, id=${handler.id}) - logSubscriptions=${sandbox.__engine.__subscriptionsLog}`,
-                    'info',
-                );
-
-            if (
-                sandbox.__engine.__subscriptionsLog %
-                    (adapter.config as JavaScriptAdapterConfig).maxTriggersPerScript ===
-                0
-            ) {
-                sandbox.log(
-                    `More than ${sandbox.__engine.__subscriptionsLog} log subscriptions registered. Check your script!`,
-                    'warn',
-                );
+                sandbox.log(`onLog(severity=${severity}, id=${handler.id}) - logSubscriptions=${sandbox.__engine.__subscriptionsLog}`, 'info');
+            if (sandbox.__engine.__subscriptionsLog %
+                adapter.config.maxTriggersPerScript ===
+                0) {
+                sandbox.log(`More than ${sandbox.__engine.__subscriptionsLog} log subscriptions registered. Check your script!`, 'warn');
             }
-
             return handler.id;
         },
-        onLogUnregister: function (
-            idOrCallbackOrSeverity: number | ioBroker.LogLevel | ((info: LogMessage) => void),
-        ): boolean {
+        onLogUnregister: function (idOrCallbackOrSeverity) {
             let found = false;
-
             if (context.logSubscriptions?.[sandbox.scriptName]) {
                 sandbox.verbose &&
-                    sandbox.log(
-                        `onLogUnregister(idOrCallbackOrSeverity=${JSON.stringify(idOrCallbackOrSeverity)}) - logSubscriptions=${sandbox.__engine.__subscriptionsLog}`,
-                        'info',
-                    );
-
+                    sandbox.log(`onLogUnregister(idOrCallbackOrSeverity=${JSON.stringify(idOrCallbackOrSeverity)}) - logSubscriptions=${sandbox.__engine.__subscriptionsLog}`, 'info');
                 for (let i = 0; i < context.logSubscriptions[sandbox.scriptName].length; i++) {
-                    if (
-                        context.logSubscriptions[sandbox.scriptName][i].cb === idOrCallbackOrSeverity ||
+                    if (context.logSubscriptions[sandbox.scriptName][i].cb === idOrCallbackOrSeverity ||
                         context.logSubscriptions[sandbox.scriptName][i].id === idOrCallbackOrSeverity ||
-                        context.logSubscriptions[sandbox.scriptName][i].severity === idOrCallbackOrSeverity
-                    ) {
+                        context.logSubscriptions[sandbox.scriptName][i].severity === idOrCallbackOrSeverity) {
                         sandbox.verbose &&
-                            sandbox.log(
-                                `onLogUnregister(idOrCallbackOrSeverity=${JSON.stringify(idOrCallbackOrSeverity)}, removing id=${context.logSubscriptions[sandbox.scriptName][i].id})`,
-                                'info',
-                            );
-
+                            sandbox.log(`onLogUnregister(idOrCallbackOrSeverity=${JSON.stringify(idOrCallbackOrSeverity)}, removing id=${context.logSubscriptions[sandbox.scriptName][i].id})`, 'info');
                         context.logSubscriptions[sandbox.scriptName].splice(i, 1);
                         i--;
                         sandbox.__engine.__subscriptionsLog--;
-
                         found = true;
-
                         // if deletion via ID
                         if (typeof idOrCallbackOrSeverity === 'number') {
                             break;
                         }
-                    } else {
+                    }
+                    else {
                         sandbox.verbose &&
-                            sandbox.log(
-                                `onLogUnregister(idOrCallbackOrSeverity=${JSON.stringify(idOrCallbackOrSeverity)}) NOT = ${JSON.stringify(context.logSubscriptions[sandbox.scriptName][i])}`,
-                                'info',
-                            );
+                            sandbox.log(`onLogUnregister(idOrCallbackOrSeverity=${JSON.stringify(idOrCallbackOrSeverity)}) NOT = ${JSON.stringify(context.logSubscriptions[sandbox.scriptName][i])}`, 'info');
                     }
                 }
             }
-
             context.updateLogSubscriptions();
-
             return found;
         },
-        exec: function (
-            cmd: string,
-            options?: ExecOptions | ((error: Error | null | string, stdout?: string, stderr?: string) => void),
-            callback?: (error: Error | null | string, stdout?: string, stderr?: string) => void,
-        ): undefined | ChildProcess {
+        exec: function (cmd, options, callback) {
             if (typeof options === 'function') {
-                callback = options as (error: Error | null | string, stdout?: string, stderr?: string) => void;
+                callback = options;
                 options = {};
             }
-            if (!(adapter.config as JavaScriptAdapterConfig).enableExec) {
+            if (!adapter.config.enableExec) {
                 const error = 'exec is not available. Please enable "Enable Exec" option in instance settings';
                 sandbox.log(error, 'error');
-
                 if (typeof callback === 'function') {
                     setImmediate(callback, error, undefined, undefined);
                 }
-            } else {
+            }
+            else {
                 if (sandbox.verbose) {
                     sandbox.log(`exec(cmd=${cmd})`, 'info');
                 }
-
                 if (debug) {
                     sandbox.log(words._('Command %s was not executed, while debug mode is active', cmd), 'warn');
                     if (typeof callback === 'function') {
@@ -1325,466 +1133,295 @@ export function sandBox(
                             callback(null, '', '');
                         });
                     }
-                } else {
-                    return mods.child_process.exec(
-                        cmd,
-                        options,
-                        (error: Error | null, stdout: string, stderr: string): void => {
-                            if (typeof callback === 'function') {
-                                try {
-                                    callback.call(sandbox, error, stdout, stderr);
-                                } catch (err: unknown) {
-                                    errorInCallback(err as Error);
-                                }
+                }
+                else {
+                    return mods.child_process.exec(cmd, options, (error, stdout, stderr) => {
+                        if (typeof callback === 'function') {
+                            try {
+                                callback.call(sandbox, error, stdout, stderr);
                             }
-                        },
-                    );
+                            catch (err) {
+                                errorInCallback(err);
+                            }
+                        }
+                    });
                 }
             }
         },
-        email: function (msg: string | SendMailOptions): void {
+        email: function (msg) {
             if (sandbox.verbose) {
                 sandbox.log(`email(msg=${JSON.stringify(msg)})`, 'info');
             }
             sandbox.log(`email(msg=${JSON.stringify(msg)}) is deprecated. Please use sendTo instead!`, 'warn');
             adapter.sendTo('email', msg);
         },
-        pushover: function (msg: string | PushoverOptions): void {
+        pushover: function (msg) {
             if (sandbox.verbose) {
                 sandbox.log(`pushover(msg=${JSON.stringify(msg)})`, 'info');
             }
             sandbox.log(`pushover(msg=${JSON.stringify(msg)}) is deprecated. Please use sendTo instead!`, 'warn');
             adapter.sendTo('pushover', msg);
         },
-        httpGet: function (
-            url: string,
-            options:
-                | {
-                      timeout?: number;
-                      responseType?: ResponseType;
-                      headers?: Record<string, string>;
-                      basicAuth?: { user: string; password: string } | null;
-                      bearerAuth?: string;
-                      validateCertificate?: boolean;
-                  }
-                | ((
-                      error: Error | null,
-                      result: {
-                          statusCode: number | null;
-                          data: any;
-                          headers: Record<string, string>;
-                          responseTime: number;
-                      },
-                  ) => void),
-            callback?: (
-                error: Error | null,
-                result: {
-                    statusCode: number | null;
-                    data: any;
-                    headers: Record<string, string>;
-                    responseTime: number;
-                },
-            ) => void,
-        ): void {
-            if (typeof options === 'function') {
-                callback = options as (
-                    error: Error | null,
-                    result: {
-                        statusCode: number | null;
-                        data: any;
-                        headers: Record<string, string>;
-                        responseTime: number;
-                    },
-                ) => void;
-                options = {};
-            }
-
-            const config = {
-                ...getHttpRequestConfig(url, options),
-                method: 'get',
-            };
-
-            if (sandbox.verbose) {
-                sandbox.log(`httpGet(config=${JSON.stringify(config)})`, 'info');
-            }
-
-            const startTime = Date.now();
-
-            mods.axios
-                .default(config)
-                .then((response: AxiosResponse) => {
-                    const responseTime = Date.now() - startTime;
-
-                    if (sandbox.verbose) {
-                        sandbox.log(`httpGet(url=${url}, responseTime=${responseTime}ms)`, 'info');
-                    }
-
-                    if (typeof callback === 'function') {
-                        try {
-                            callback.call(sandbox, null, {
-                                statusCode: response.status,
-                                data: response.data,
-                                headers: response.headers as Record<string, string>,
-                                responseTime,
-                            });
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
-                        }
-                    }
-                })
-                .catch((error: any) => {
-                    const responseTime = Date.now() - startTime;
-
-                    sandbox.log(`httpGet(url=${url}, error=${error.message})`, 'error');
-
-                    if (typeof callback === 'function') {
-                        let result: {
-                            statusCode: number | null;
-                            data: any;
-                            headers: Record<string, string>;
-                            responseTime: number;
-                        } = {
-                            statusCode: null,
-                            data: null,
-                            headers: {},
-                            responseTime,
-                        };
-
-                        if (error.response) {
-                            result = {
-                                statusCode: error.response.status,
-                                data: error.response.data,
-                                headers: error.response.headers,
-                                responseTime,
-                            };
-                        }
-
-                        try {
-                            callback.call(sandbox, error.message, result);
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
-                        }
-                    }
-                });
-        },
-        httpPost: function (
-            url: string,
-            data: any,
-            options:
-                | {
-                      timeout?: number;
-                      responseType?: ResponseType;
-                      headers?: Record<string, string>;
-                      basicAuth?: { user: string; password: string } | null;
-                      bearerAuth?: string;
-                      validateCertificate?: boolean;
-                  }
-                | ((
-                      error: Error | null,
-                      result: {
-                          statusCode: number | null;
-                          data: any;
-                          headers: Record<string, AxiosHeaderValue | undefined>;
-                          responseTime: number;
-                      },
-                  ) => void),
-            callback?: (
-                error: Error | null,
-                result: {
-                    statusCode: number | null;
-                    data: any;
-                    headers: Record<string, AxiosHeaderValue | undefined>;
-                    responseTime: number;
-                },
-            ) => void,
-        ): void {
+        httpGet: function (url, options, callback) {
             if (typeof options === 'function') {
                 callback = options;
                 options = {};
             }
-
             const config = {
-                ...getHttpRequestConfig(
-                    url,
-                    options as {
-                        timeout?: number;
-                        responseType?: ResponseType;
-                        headers?: Record<string, string>;
-                        basicAuth?: { user: string; password: string } | null;
-                        bearerAuth?: string;
-                        validateCertificate?: boolean;
-                    },
-                ),
+                ...(0, tools_1.getHttpRequestConfig)(url, options),
+                method: 'get',
+            };
+            if (sandbox.verbose) {
+                sandbox.log(`httpGet(config=${JSON.stringify(config)})`, 'info');
+            }
+            const startTime = Date.now();
+            mods.axios
+                .default(config)
+                .then((response) => {
+                const responseTime = Date.now() - startTime;
+                if (sandbox.verbose) {
+                    sandbox.log(`httpGet(url=${url}, responseTime=${responseTime}ms)`, 'info');
+                }
+                if (typeof callback === 'function') {
+                    try {
+                        callback.call(sandbox, null, {
+                            statusCode: response.status,
+                            data: response.data,
+                            headers: response.headers,
+                            responseTime,
+                        });
+                    }
+                    catch (err) {
+                        errorInCallback(err);
+                    }
+                }
+            })
+                .catch((error) => {
+                const responseTime = Date.now() - startTime;
+                sandbox.log(`httpGet(url=${url}, error=${error.message})`, 'error');
+                if (typeof callback === 'function') {
+                    let result = {
+                        statusCode: null,
+                        data: null,
+                        headers: {},
+                        responseTime,
+                    };
+                    if (error.response) {
+                        result = {
+                            statusCode: error.response.status,
+                            data: error.response.data,
+                            headers: error.response.headers,
+                            responseTime,
+                        };
+                    }
+                    try {
+                        callback.call(sandbox, error.message, result);
+                    }
+                    catch (err) {
+                        errorInCallback(err);
+                    }
+                }
+            });
+        },
+        httpPost: function (url, data, options, callback) {
+            if (typeof options === 'function') {
+                callback = options;
+                options = {};
+            }
+            const config = {
+                ...(0, tools_1.getHttpRequestConfig)(url, options),
                 method: 'post',
                 data,
             };
-
             if (sandbox.verbose) {
                 sandbox.log(`httpPost(config=${JSON.stringify(config)}, data=${data})`, 'info');
             }
-
             const startTime = Date.now();
-
             mods.axios
                 .default(config)
-                .then((response: AxiosResponse) => {
-                    const responseTime = Date.now() - startTime;
-
-                    if (sandbox.verbose) {
-                        sandbox.log(`httpPost(url=${url}, responseTime=${responseTime}ms)`, 'info');
+                .then((response) => {
+                const responseTime = Date.now() - startTime;
+                if (sandbox.verbose) {
+                    sandbox.log(`httpPost(url=${url}, responseTime=${responseTime}ms)`, 'info');
+                }
+                if (typeof callback === 'function') {
+                    try {
+                        callback.call(sandbox, null, {
+                            statusCode: response.status,
+                            data: response.data,
+                            headers: response.headers,
+                            responseTime,
+                        });
                     }
-
-                    if (typeof callback === 'function') {
-                        try {
-                            callback.call(sandbox, null, {
-                                statusCode: response.status,
-                                data: response.data,
-                                headers: response.headers,
-                                responseTime,
-                            });
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
-                        }
+                    catch (err) {
+                        errorInCallback(err);
                     }
-                })
-                .catch((error: unknown) => {
-                    const responseTime = Date.now() - startTime;
-
-                    sandbox.log(`httpPost(url=${url}, error=${(error as Error).message})`, 'error');
-
-                    if (typeof callback === 'function') {
-                        let result: {
-                            statusCode: number | null;
-                            data: any;
-                            headers: Record<string, AxiosHeaderValue | undefined>;
-                            responseTime: number;
-                        } = {
-                            statusCode: null,
-                            data: null,
-                            headers: {},
+                }
+            })
+                .catch((error) => {
+                const responseTime = Date.now() - startTime;
+                sandbox.log(`httpPost(url=${url}, error=${error.message})`, 'error');
+                if (typeof callback === 'function') {
+                    let result = {
+                        statusCode: null,
+                        data: null,
+                        headers: {},
+                        responseTime,
+                    };
+                    const response = error.response;
+                    if (response) {
+                        result = {
+                            statusCode: response.status,
+                            data: response.data,
+                            headers: response.headers,
                             responseTime,
                         };
-                        const response: AxiosResponse<unknown, any> | undefined = (error as AxiosError).response;
-
-                        if (response) {
-                            result = {
-                                statusCode: response.status,
-                                data: response.data,
-                                headers: response.headers,
-                                responseTime,
-                            };
-                        }
-
-                        try {
-                            callback.call(sandbox, new Error((error as AxiosError).message), result);
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
-                        }
                     }
-                });
+                    try {
+                        callback.call(sandbox, new Error(error.message), result);
+                    }
+                    catch (err) {
+                        errorInCallback(err);
+                    }
+                }
+            });
         },
-        createTempFile: function (fileName: string, data: Buffer | string): undefined | string {
+        createTempFile: function (fileName, data) {
             const os = mods.os;
             const path = mods.path;
             const fs = mods.fs;
-
             let tempDirPath = context.tempDirectories?.[sandbox.scriptName];
-
             if (!tempDirPath) {
                 // create temp directory
-                tempDirPath = fs.mkdtempSync(
-                    path.join(os.tmpdir(), `${sandbox.scriptName.substring('script.js.'.length)}-`),
-                );
+                tempDirPath = fs.mkdtempSync(path.join(os.tmpdir(), `${sandbox.scriptName.substring('script.js.'.length)}-`));
                 context.tempDirectories[sandbox.scriptName] = tempDirPath;
-
                 sandbox.verbose &&
-                    sandbox.log(
-                        `createTempFile(fileName=${fileName}, tempDirPath=${tempDirPath}) created temp directory in ${os.tmpdir()}`,
-                        'info',
-                    );
+                    sandbox.log(`createTempFile(fileName=${fileName}, tempDirPath=${tempDirPath}) created temp directory in ${os.tmpdir()}`, 'info');
             }
-
             const filePath = path.join(tempDirPath, fileName);
-
             // is sub dir?
             const fileDir = path.dirname(filePath);
             if (!fs.existsSync(fileDir)) {
                 fs.mkdirSync(fileDir, { recursive: true });
             }
-
             if (typeof data === 'undefined') {
-                sandbox.log(
-                    `createTempFile(fileName=${fileName}, fileDir=${fileDir}, filePath=${filePath}) data is undefined, file not created!`,
-                    'error',
-                );
-
+                sandbox.log(`createTempFile(fileName=${fileName}, fileDir=${fileDir}, filePath=${filePath}) data is undefined, file not created!`, 'error');
                 return undefined;
             }
-
             fs.writeFileSync(filePath, data);
             sandbox.verbose &&
                 sandbox.log(`createTempFile(fileName=${fileName}, fileDir=${fileDir}, filePath=${filePath})`, 'info');
-
             return filePath;
         },
-        subscribe: function (
-            pattern:
-                | TimeRule
-                | AstroRule
-                | Pattern
-                | SchedulerRule
-                | string
-                | (TimeRule | AstroRule | Pattern | SchedulerRule | string)[],
-            // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-            callbackOrChangeTypeOrId: string | ChangeType | ((event?: EventObj) => void),
-            value?: any,
-        ):
-            | SubscriptionResult
-            | IobSchedule
-            | string
-            | null
-            | undefined
-            | (SubscriptionResult | IobSchedule | string | null | undefined)[] {
+        subscribe: function (pattern, 
+        // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+        callbackOrChangeTypeOrId, value) {
             // If a schedule object is given
-            if (
-                (typeof pattern === 'string' && pattern[0] === '{') ||
-                (typeof pattern === 'object' && (pattern as SchedulerRule).period)
-            ) {
-                return sandbox.schedule(pattern as SchedulerRule, callbackOrChangeTypeOrId as () => void);
+            if ((typeof pattern === 'string' && pattern[0] === '{') ||
+                (typeof pattern === 'object' && pattern.period)) {
+                return sandbox.schedule(pattern, callbackOrChangeTypeOrId);
             }
             // If an array of schedules is given
             if (pattern && Array.isArray(pattern)) {
-                const result: (IobSchedule | string | null | undefined)[] = [];
+                const result = [];
                 for (const p of pattern) {
-                    result.push(
-                        sandbox.subscribe(p as SchedulerRule | string, callbackOrChangeTypeOrId, value) as
-                            | IobSchedule
-                            | string
-                            | null
-                            | undefined,
-                    );
+                    result.push(sandbox.subscribe(p, callbackOrChangeTypeOrId, value));
                 }
                 return result;
             }
-
             // detect subscribe('id', 'any', (obj) => {})
-            let oPattern: Pattern;
-            if (
-                (typeof pattern === 'string' || pattern instanceof RegExp) &&
+            let oPattern;
+            if ((typeof pattern === 'string' || pattern instanceof RegExp) &&
                 typeof callbackOrChangeTypeOrId === 'string' &&
-                typeof value === 'function'
-            ) {
-                oPattern = { id: pattern, change: callbackOrChangeTypeOrId as ChangeType };
+                typeof value === 'function') {
+                oPattern = { id: pattern, change: callbackOrChangeTypeOrId };
                 callbackOrChangeTypeOrId = value;
                 value = undefined;
-            } else {
-                oPattern = pattern as Pattern;
             }
-
+            else {
+                oPattern = pattern;
+            }
             if (oPattern?.id && Array.isArray(oPattern.id)) {
-                const result: (IobSchedule | string | null | undefined)[] = [];
+                const result = [];
                 for (let t = 0; t < oPattern.id.length; t++) {
-                    const pa: Pattern = JSON.parse(JSON.stringify(oPattern));
+                    const pa = JSON.parse(JSON.stringify(oPattern));
                     pa.id = oPattern.id[t];
-                    result.push(
-                        sandbox.subscribe(pa, callbackOrChangeTypeOrId, value) as
-                            | IobSchedule
-                            | string
-                            | null
-                            | undefined,
-                    );
+                    result.push(sandbox.subscribe(pa, callbackOrChangeTypeOrId, value));
                 }
                 return result;
             }
-
             // try to detect astro or cron (by spaces)
-            if (isObject(pattern) || (typeof pattern === 'string' && pattern.match(/[,/\d*]+\s[,/\d*]+\s[,/\d*]+/))) {
-                if ((pattern as AstroRule).astro) {
-                    return sandbox.schedule(pattern as AstroRule, callbackOrChangeTypeOrId as () => void);
-                } else if ((pattern as TimeRule).time) {
-                    return sandbox.schedule(
-                        (pattern as TimeRule).time as string,
-                        callbackOrChangeTypeOrId as () => void,
-                    );
+            if ((0, tools_1.isObject)(pattern) || (typeof pattern === 'string' && pattern.match(/[,/\d*]+\s[,/\d*]+\s[,/\d*]+/))) {
+                if (pattern.astro) {
+                    return sandbox.schedule(pattern, callbackOrChangeTypeOrId);
+                }
+                else if (pattern.time) {
+                    return sandbox.schedule(pattern.time, callbackOrChangeTypeOrId);
                 }
             }
-
-            let callback: undefined | ((obj: EventObj) => void);
-
+            let callback;
             // source is set by regexp if defined as /regexp/
-            if (!isObject(pattern) || pattern instanceof RegExp || (pattern as RegExp).source) {
-                oPattern = { id: pattern as string | RegExp, change: 'ne' };
+            if (!(0, tools_1.isObject)(pattern) || pattern instanceof RegExp || pattern.source) {
+                oPattern = { id: pattern, change: 'ne' };
             }
-
             if (oPattern.id !== undefined && !oPattern.id) {
                 sandbox.log(`Error by subscription (trigger): empty ID defined. All states matched.`, 'error');
                 return;
-            } else if (typeof oPattern.id === 'boolean' || typeof oPattern.id === 'number') {
+            }
+            else if (typeof oPattern.id === 'boolean' || typeof oPattern.id === 'number') {
                 sandbox.log(`Error by subscription (trigger): Wrong ID of type boolean or number.`, 'error');
                 return;
             }
-
             sandbox.__engine.__subscriptions += 1;
-
-            if (
-                sandbox.__engine.__subscriptions % (adapter.config as JavaScriptAdapterConfig).maxTriggersPerScript ===
-                0
-            ) {
-                sandbox.log(
-                    `More than ${sandbox.__engine.__subscriptions} subscriptions registered. Check your script!`,
-                    'warn',
-                );
+            if (sandbox.__engine.__subscriptions % adapter.config.maxTriggersPerScript ===
+                0) {
+                sandbox.log(`More than ${sandbox.__engine.__subscriptions} subscriptions registered. Check your script!`, 'warn');
             }
-
             if (oPattern.q === undefined) {
                 oPattern.q = 0;
             }
-
             // add adapter namespace if nothing given
             if (oPattern.id && typeof oPattern.id === 'string' && !oPattern.id.includes('.')) {
                 oPattern.id = `${adapter.namespace}.${oPattern.id}`;
             }
-
             if (typeof callbackOrChangeTypeOrId === 'function') {
                 callback = callbackOrChangeTypeOrId;
-            } else {
+            }
+            else {
                 if (typeof value === 'undefined') {
-                    callback = function (obj: EventObj) {
+                    callback = function (obj) {
                         sandbox.setState(callbackOrChangeTypeOrId, obj.newState.val);
                     };
-                } else {
-                    callback = function (/* obj */) {
+                }
+                else {
+                    callback = function ( /* obj */) {
                         sandbox.setState(callbackOrChangeTypeOrId, value);
                     };
                 }
             }
-
-            const subs: SubscriptionResult = {
+            const subs = {
                 pattern: oPattern,
-                callback: (obj: EventObj) => {
+                callback: (obj) => {
                     if (typeof callback === 'function') {
                         try {
                             callback.call(sandbox, obj);
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
+                        }
+                        catch (err) {
+                            errorInCallback(err);
                         }
                     }
                 },
                 name,
             };
-
             // try to extract adapter
             if (oPattern.id && typeof oPattern.id === 'string') {
                 const parts = oPattern.id.split('.');
                 const a = `${parts[0]}.${parts[1]}`;
                 const _adapter = `system.adapter.${a}`;
-
                 if (objects[_adapter] && objects[_adapter].common && objects[_adapter].common.subscribable) {
                     const alive = `system.adapter.${a}.alive`;
                     context.adapterSubs[alive] = context.adapterSubs[alive] || [];
-
                     const subExists = context.adapterSubs[alive].filter(sub => sub === oPattern.id).length > 0;
-
                     if (!subExists) {
                         context.adapterSubs[alive].push(oPattern.id);
                         adapter.sendTo(a, 'subscribe', oPattern.id);
@@ -1794,23 +1431,20 @@ export function sandBox(
             if (sandbox.verbose) {
                 sandbox.log(`subscribe: ${JSON.stringify(subs)}`, 'info');
             }
-
-            subscribePattern(script, oPattern.id as string);
-
+            subscribePattern(script, oPattern.id);
             subs.patternCompareFunctions = getPatternCompareFunctions(oPattern);
             context.subscriptions.push(subs);
-
             if (oPattern.enumName || oPattern.enumId) {
                 context.isEnums = true;
             }
             return subs;
         },
-        getSubscriptions: function (): Record<string, { name: string; pattern: Pattern }[]> {
-            const result: Record<string, { name: string; pattern: Pattern }[]> = {};
+        getSubscriptions: function () {
+            const result = {};
             for (let s = 0; s < context.subscriptions.length; s++) {
-                result[context.subscriptions[s].pattern.id as string] =
-                    result[context.subscriptions[s].pattern.id as string] || [];
-                result[context.subscriptions[s].pattern.id as string].push({
+                result[context.subscriptions[s].pattern.id] =
+                    result[context.subscriptions[s].pattern.id] || [];
+                result[context.subscriptions[s].pattern.id].push({
                     name: context.subscriptions[s].name,
                     pattern: context.subscriptions[s].pattern,
                 });
@@ -1820,8 +1454,8 @@ export function sandBox(
             }
             return result;
         },
-        getFileSubscriptions: function (): Record<string, { name: string; id: string; fileNamePattern: string }[]> {
-            const result: Record<string, { name: string; id: string; fileNamePattern: string }[]> = {};
+        getFileSubscriptions: function () {
+            const result = {};
             for (let s = 0; s < context.subscriptionsFile.length; s++) {
                 const key = `${context.subscriptionsFile[s].id}$%$${context.subscriptionsFile[s].fileNamePattern}`;
                 result[key] = result[key] || [];
@@ -1836,7 +1470,7 @@ export function sandBox(
             }
             return result;
         },
-        adapterSubscribe: function (id: string): void {
+        adapterSubscribe: function (id) {
             if (typeof id !== 'string') {
                 sandbox.log(`adapterSubscribe: invalid type of id ${typeof id}`, 'error');
                 return;
@@ -1854,31 +1488,25 @@ export function sandBox(
                 adapter.sendTo(a, 'subscribe', id);
             }
         },
-        adapterUnsubscribe: function (
-            idOrObject: string | SubscriptionResult | (string | SubscriptionResult)[],
-        ): boolean | boolean[] {
+        adapterUnsubscribe: function (idOrObject) {
             // todo: BF - it could be an error
             return sandbox.unsubscribe(idOrObject);
         },
-        unsubscribe: function (
-            idOrObject: string | SubscriptionResult | (string | SubscriptionResult)[],
-        ): boolean | boolean[] {
+        unsubscribe: function (idOrObject) {
             if (idOrObject && Array.isArray(idOrObject)) {
-                const result: boolean[] = [];
+                const result = [];
                 for (let t = 0; t < idOrObject.length; t++) {
-                    result.push(sandbox.unsubscribe(idOrObject[t]) as boolean);
+                    result.push(sandbox.unsubscribe(idOrObject[t]));
                 }
                 return result;
             }
-
             if (sandbox.verbose) {
                 sandbox.log(`adapterUnsubscribe(id=${JSON.stringify(idOrObject)})`, 'info');
             }
-
-            if (isObject(idOrObject)) {
+            if ((0, tools_1.isObject)(idOrObject)) {
                 for (let i = context.subscriptions.length - 1; i >= 0; i--) {
                     if (context.subscriptions[i] === idOrObject) {
-                        unsubscribePattern(script, context.subscriptions[i].pattern.id as string);
+                        unsubscribePattern(script, context.subscriptions[i].pattern.id);
                         context.subscriptions.splice(i, 1);
                         sandbox.__engine.__subscriptions--;
                         return true;
@@ -1890,42 +1518,25 @@ export function sandBox(
             for (let i = context.subscriptions.length - 1; i >= 0; i--) {
                 if (context.subscriptions[i].name === name && context.subscriptions[i].pattern.id === idOrObject) {
                     deleted++;
-                    unsubscribePattern(script, context.subscriptions[i].pattern.id as string);
+                    unsubscribePattern(script, context.subscriptions[i].pattern.id);
                     context.subscriptions.splice(i, 1);
                     sandbox.__engine.__subscriptions--;
                 }
             }
             return !!deleted;
         },
-        on: function (
-            pattern:
-                | TimeRule
-                | AstroRule
-                | Pattern
-                | SchedulerRule
-                | string
-                | (TimeRule | AstroRule | Pattern | SchedulerRule | string)[],
-            // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-            callbackOrChangeTypeOrId: string | ChangeType | ((event?: EventObj) => void),
-            value?: any,
-        ):
-            | SubscriptionResult
-            | IobSchedule
-            | string
-            | null
-            | undefined
-            | (SubscriptionResult | IobSchedule | string | null | undefined)[] {
+        on: function (pattern, 
+        // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+        callbackOrChangeTypeOrId, value) {
             return sandbox.subscribe(pattern, callbackOrChangeTypeOrId, value);
         },
-        onEnumMembers: function (enumId: string, callback: (event?: EventObj) => void): void {
+        onEnumMembers: function (enumId, callback) {
             if (enums.includes(enumId)) {
-                const subscriptions: Record<string, string | SubscriptionResult> = {};
-
-                const init = (): void => {
-                    const obj: ioBroker.EnumObject = objects[enumId] as ioBroker.EnumObject;
-                    const common: ioBroker.EnumCommon = obj?.common ?? {};
-                    const members: string[] = common?.members ?? [];
-
+                const subscriptions = {};
+                const init = () => {
+                    const obj = objects[enumId];
+                    const common = obj?.common ?? {};
+                    const members = common?.members ?? [];
                     // Remove old subscriptions
                     for (const [objId, subscription] of Object.entries(subscriptions)) {
                         if (!members.includes(objId)) {
@@ -1933,190 +1544,118 @@ export function sandBox(
                             delete subscriptions[objId];
                         }
                     }
-
                     // Subscribe to all members of enum
                     for (const objId of members) {
                         if (!Object.keys(subscriptions).includes(objId)) {
                             if (objects?.[objId]?.type === 'state') {
                                 // Just subscribe to states
-                                subscriptions[objId] = sandbox.subscribe(objId, callback) as
-                                    | string
-                                    | SubscriptionResult; // TODO: more features
+                                subscriptions[objId] = sandbox.subscribe(objId, callback); // TODO: more features
                             }
                         }
                     }
-
                     sandbox.verbose &&
-                        sandbox.log(
-                            `onEnumMembers(id=${enumId}, members=${JSON.stringify(Object.keys(subscriptions))})`,
-                            'info',
-                        );
+                        sandbox.log(`onEnumMembers(id=${enumId}, members=${JSON.stringify(Object.keys(subscriptions))})`, 'info');
                 };
-
                 init();
-
                 sandbox.subscribeObject(enumId, obj => obj && init());
-            } else {
+            }
+            else {
                 sandbox.log(`onEnumMembers: enum with id "${enumId}" doesn't exists`, 'error');
             }
         },
-        onFile: function (
-            id: string,
-            fileNamePattern: string | string[],
-            withFileOrCallback:
-                | boolean
-                | ((id: string, fileName: string, size: number, file?: string | Buffer, mimeType?: string) => void),
-            callback?: (
-                id: string,
-                fileName: string,
-                size: number | null,
-                file?: string | Buffer,
-                mimeType?: string,
-            ) => void,
-        ): undefined | FileSubscriptionResult | (undefined | FileSubscriptionResult)[] {
+        onFile: function (id, fileNamePattern, withFileOrCallback, callback) {
             if (typeof withFileOrCallback === 'function') {
-                callback = withFileOrCallback as (
-                    id: string,
-                    fileName: string,
-                    size: number | null,
-                    file?: string | Buffer,
-                    mimeType?: string,
-                ) => void;
+                callback = withFileOrCallback;
                 withFileOrCallback = false;
             }
-
             if (!adapter.subscribeForeignFiles) {
-                sandbox.log(
-                    'onFile: your js-controller does not support yet onFile subscribes. Please update to js-controller@4.1.x or newer',
-                    'warn',
-                );
+                sandbox.log('onFile: your js-controller does not support yet onFile subscribes. Please update to js-controller@4.1.x or newer', 'warn');
                 return;
             }
             if (!id || !fileNamePattern) {
-                sandbox.log(
-                    'onFile: invalid parameters. Usage: onFile("vis.0", "main/*", true, (id, fileName, size, file, mimeType) => {});',
-                    'error',
-                );
+                sandbox.log('onFile: invalid parameters. Usage: onFile("vis.0", "main/*", true, (id, fileName, size, file, mimeType) => {});', 'error');
                 return;
             }
             if (typeof callback !== 'function') {
                 sandbox.offFile(id, fileNamePattern);
                 return;
             }
-
             if (Array.isArray(fileNamePattern)) {
-                return fileNamePattern.map(
-                    filePattern =>
-                        sandbox.onFile(id, filePattern, withFileOrCallback, callback) as
-                            | undefined
-                            | FileSubscriptionResult,
-                );
+                return fileNamePattern.map(filePattern => sandbox.onFile(id, filePattern, withFileOrCallback, callback));
             }
-
             sandbox.__engine.__subscriptionsFile += 1;
-
             sandbox.verbose &&
-                sandbox.log(
-                    `onFile(id=${id}, fileNamePattern=${fileNamePattern}) - fileSubscriptions=${sandbox.__engine.__subscriptionsFile}`,
-                    'info',
-                );
-
-            if (
-                sandbox.__engine.__subscriptionsFile %
-                    (adapter.config as JavaScriptAdapterConfig).maxTriggersPerScript ===
-                0
-            ) {
-                sandbox.log(
-                    `More than ${sandbox.__engine.__subscriptionsFile} file subscriptions registered. Check your script!`,
-                    'warn',
-                );
+                sandbox.log(`onFile(id=${id}, fileNamePattern=${fileNamePattern}) - fileSubscriptions=${sandbox.__engine.__subscriptionsFile}`, 'info');
+            if (sandbox.__engine.__subscriptionsFile %
+                adapter.config.maxTriggersPerScript ===
+                0) {
+                sandbox.log(`More than ${sandbox.__engine.__subscriptionsFile} file subscriptions registered. Check your script!`, 'warn');
             }
-
-            let idRegEx: RegExp | undefined;
-            let fileRegEx: RegExp | undefined;
+            let idRegEx;
+            let fileRegEx;
             if (id.includes('*')) {
                 idRegEx = new RegExp(pattern2RegEx(id));
             }
             if (fileNamePattern.includes('*')) {
                 fileRegEx = new RegExp(pattern2RegEx(fileNamePattern));
             }
-
-            const subs: FileSubscriptionResult = {
+            const subs = {
                 id,
                 fileNamePattern,
                 withFile: withFileOrCallback,
                 idRegEx,
                 fileRegEx,
-                callback: (id: string, fileName: string, size: number | null, withFile: boolean): void => {
+                callback: (id, fileName, size, withFile) => {
                     try {
                         sandbox.verbose &&
                             sandbox.log(`onFile changed(id=${id}, fileName=${fileName}, size=${size})`, 'info');
-
                         if (withFile && (size || 0) > 0) {
                             adapter
                                 .readFileAsync(id, fileName)
                                 .then(data => {
-                                    try {
-                                        callback.call(sandbox, id, fileName, size, data.file, data.mimeType);
-                                    } catch (err: unknown) {
-                                        errorInCallback(err as Error);
-                                    }
-                                })
+                                try {
+                                    callback.call(sandbox, id, fileName, size, data.file, data.mimeType);
+                                }
+                                catch (err) {
+                                    errorInCallback(err);
+                                }
+                            })
                                 .catch(error => errorInCallback(error));
-                        } else {
+                        }
+                        else {
                             callback.call(sandbox, id, fileName, size);
                         }
-                    } catch (err: unknown) {
-                        errorInCallback(err as Error);
+                    }
+                    catch (err) {
+                        errorInCallback(err);
                     }
                 },
                 name,
             };
-
             context.subscriptionsFile.push(subs);
             subscribeFile(script, id, fileNamePattern);
             return subs;
         },
-        offFile: function (
-            idOrObject: FileSubscriptionResult | string | (FileSubscriptionResult | string)[],
-            fileNamePattern?: string | string[],
-        ): boolean | boolean[] {
+        offFile: function (idOrObject, fileNamePattern) {
             if (!adapter.unsubscribeForeignFiles) {
-                sandbox.log(
-                    'offFile: your js-controller does not support yet file unsubscribes. Please update to js-controller@4.1.x or newer',
-                    'warn',
-                );
+                sandbox.log('offFile: your js-controller does not support yet file unsubscribes. Please update to js-controller@4.1.x or newer', 'warn');
                 return false;
             }
-
             sandbox.verbose &&
-                sandbox.log(
-                    `offFile(idOrObject=${JSON.stringify(idOrObject)}, fileNamePattern=${JSON.stringify(fileNamePattern)}) - fileSubscriptions=${sandbox.__engine.__subscriptionsFile}`,
-                    'info',
-                );
-
+                sandbox.log(`offFile(idOrObject=${JSON.stringify(idOrObject)}, fileNamePattern=${JSON.stringify(fileNamePattern)}) - fileSubscriptions=${sandbox.__engine.__subscriptionsFile}`, 'info');
             if (idOrObject && typeof idOrObject === 'object') {
                 if (Array.isArray(idOrObject)) {
-                    const result: boolean[] = [];
+                    const result = [];
                     for (let t = 0; t < idOrObject.length; t++) {
-                        result.push(sandbox.offFile(idOrObject[t]) as boolean);
+                        result.push(sandbox.offFile(idOrObject[t]));
                     }
                     return result;
                 }
                 for (let i = context.subscriptionsFile.length - 1; i >= 0; i--) {
                     if (context.subscriptionsFile[i] === idOrObject) {
-                        unsubscribeFile(
-                            script,
-                            context.subscriptionsFile[i].id,
-                            context.subscriptionsFile[i].fileNamePattern,
-                        );
-
+                        unsubscribeFile(script, context.subscriptionsFile[i].id, context.subscriptionsFile[i].fileNamePattern);
                         sandbox.verbose &&
-                            sandbox.log(
-                                `offFile(type=object, fileNamePattern=${JSON.stringify(fileNamePattern)}, removing id=${context.subscriptionsFile[i].id})`,
-                                'info',
-                            );
-
+                            sandbox.log(`offFile(type=object, fileNamePattern=${JSON.stringify(fileNamePattern)}, removing id=${context.subscriptionsFile[i].id})`, 'info');
                         context.subscriptionsFile.splice(i, 1);
                         sandbox.__engine.__subscriptionsFile--;
                         return true;
@@ -2124,34 +1663,21 @@ export function sandBox(
                 }
                 return false;
             }
-
             if (fileNamePattern && Array.isArray(fileNamePattern)) {
-                const result: boolean[] = [];
+                const result = [];
                 for (let t = 0; t < fileNamePattern.length; t++) {
-                    result.push(sandbox.offFile(idOrObject, fileNamePattern[t]) as boolean);
+                    result.push(sandbox.offFile(idOrObject, fileNamePattern[t]));
                 }
                 return result;
             }
-
             let deleted = 0;
             for (let i = context.subscriptionsFile.length - 1; i >= 0; i--) {
-                if (
-                    context.subscriptionsFile[i].id === idOrObject &&
-                    context.subscriptionsFile[i].fileNamePattern === fileNamePattern
-                ) {
+                if (context.subscriptionsFile[i].id === idOrObject &&
+                    context.subscriptionsFile[i].fileNamePattern === fileNamePattern) {
                     deleted++;
-                    unsubscribeFile(
-                        script,
-                        context.subscriptionsFile[i].id,
-                        context.subscriptionsFile[i].fileNamePattern,
-                    );
-
+                    unsubscribeFile(script, context.subscriptionsFile[i].id, context.subscriptionsFile[i].fileNamePattern);
                     sandbox.verbose &&
-                        sandbox.log(
-                            `offFile(type=string, fileNamePattern=${fileNamePattern}, removing id=${context.subscriptionsFile[i].id})`,
-                            'info',
-                        );
-
+                        sandbox.log(`offFile(type=string, fileNamePattern=${fileNamePattern}, removing id=${context.subscriptionsFile[i].id})`, 'info');
                     context.subscriptionsFile.splice(i, 1);
                     sandbox.__engine.__subscriptionsFile--;
                 }
@@ -2159,145 +1685,91 @@ export function sandBox(
             return !!deleted;
         },
         /** Registers a one-time subscription which automatically unsubscribes after the first invocation */
-        once: function (
-            pattern:
-                | TimeRule
-                | AstroRule
-                | Pattern
-                | SchedulerRule
-                | string
-                | (TimeRule | AstroRule | Pattern | SchedulerRule | string)[],
-            callback?: (event?: EventObj) => void,
-        ): string | SubscriptionResult | Promise<EventObj | undefined> {
-            function _once(cb: (obj?: EventObj) => void): string | SubscriptionResult {
+        once: function (pattern, callback) {
+            function _once(cb) {
                 // eslint-disable-next-line prefer-const
-                let subscription: string | SubscriptionResult;
-                const handler = (obj?: EventObj): void => {
+                let subscription;
+                const handler = (obj) => {
                     subscription && sandbox.unsubscribe(subscription);
                     typeof cb === 'function' && cb(obj);
                 };
-                subscription = sandbox.subscribe(pattern, handler) as string | SubscriptionResult;
+                subscription = sandbox.subscribe(pattern, handler);
                 return subscription;
             }
             if (typeof callback === 'function') {
                 // Callback-style: once("id", (obj) => { ... })
                 return _once(callback);
             }
-
             // Promise-style: once("id").then(obj => { ... })
             return new Promise(resolve => _once(resolve));
         },
-        schedule: function (
-            pattern: SchedulerRule | AstroRule | Date | string,
-            callback: () => void,
-        ): IobSchedule | string | null | undefined {
+        schedule: function (pattern, callback) {
             if (typeof callback !== 'function') {
                 sandbox.log(`schedule callback missing`, 'error');
                 return null;
             }
-
-            if (
-                (typeof pattern === 'string' && pattern[0] === '{') ||
-                (typeof pattern === 'object' && (pattern as SchedulerRule).period)
-            ) {
+            if ((typeof pattern === 'string' && pattern[0] === '{') ||
+                (typeof pattern === 'object' && pattern.period)) {
                 sandbox.verbose &&
-                    sandbox.log(
-                        `schedule(wizard=${typeof pattern === 'object' ? JSON.stringify(pattern) : pattern})`,
-                        'info',
-                    );
-
+                    sandbox.log(`schedule(wizard=${typeof pattern === 'object' ? JSON.stringify(pattern) : pattern})`, 'info');
                 if (!context.scheduler) {
-                    sandbox.log(
-                        `Cannot schedule "${typeof pattern === 'object' ? JSON.stringify(pattern) : pattern}" because scheduler is not available`,
-                        'error',
-                    );
+                    sandbox.log(`Cannot schedule "${typeof pattern === 'object' ? JSON.stringify(pattern) : pattern}" because scheduler is not available`, 'error');
                     return null;
                 }
-
-                const schedule: string | null = context.scheduler.add(
-                    pattern as SchedulerRule | string,
-                    sandbox.scriptName,
-                    callback,
-                );
+                const schedule = context.scheduler.add(pattern, sandbox.scriptName, callback);
                 if (schedule) {
                     script.wizards.push(schedule);
                     sandbox.__engine.__schedules += 1;
-
-                    if (
-                        sandbox.__engine.__schedules %
-                            (adapter.config as JavaScriptAdapterConfig).maxTriggersPerScript ===
-                        0
-                    ) {
-                        sandbox.log(
-                            `More than ${sandbox.__engine.__schedules} schedules registered. Check your script!`,
-                            'warn',
-                        );
+                    if (sandbox.__engine.__schedules %
+                        adapter.config.maxTriggersPerScript ===
+                        0) {
+                        sandbox.log(`More than ${sandbox.__engine.__schedules} schedules registered. Check your script!`, 'warn');
                     }
                 }
-
                 return schedule;
             }
-
-            const adapterConfig: JavaScriptAdapterConfig = adapter.config as JavaScriptAdapterConfig;
-
-            if (typeof pattern === 'object' && (pattern as AstroRule).astro) {
-                const astroPattern = pattern as AstroRule;
+            const adapterConfig = adapter.config;
+            if (typeof pattern === 'object' && pattern.astro) {
+                const astroPattern = pattern;
                 const nowDate = new Date();
-
-                if (
-                    adapterConfig.latitude === undefined ||
+                if (adapterConfig.latitude === undefined ||
                     adapterConfig.longitude === undefined ||
                     adapterConfig.latitude === null ||
-                    adapterConfig.longitude === null
-                ) {
+                    adapterConfig.longitude === null) {
                     sandbox.log('Longitude or latitude does not set. Cannot use astro.', 'error');
                     return null;
                 }
-
                 // ensure events are calculated independent of current time
                 // TODO: use getAstroStartOfDay of adapter?
                 const todayNoon = new Date(nowDate);
                 todayNoon.setHours(12, 0, 0, 0);
-                let ts = mods.suncalc.getTimes(todayNoon, adapterConfig.latitude, adapterConfig.longitude)[
-                    astroPattern.astro
-                ];
-
+                let ts = mods.suncalc.getTimes(todayNoon, adapterConfig.latitude, adapterConfig.longitude)[astroPattern.astro];
                 // event on the next day, correct or force recalculation at midnight
                 if (todayNoon.getDate() !== ts.getDate()) {
                     todayNoon.setDate(todayNoon.getDate() - 1);
-                    ts = mods.suncalc.getTimes(todayNoon, adapterConfig.latitude, adapterConfig.longitude)[
-                        astroPattern.astro
-                    ];
+                    ts = mods.suncalc.getTimes(todayNoon, adapterConfig.latitude, adapterConfig.longitude)[astroPattern.astro];
                 }
-
                 if (ts.getTime().toString() === 'NaN') {
-                    sandbox.log(
-                        `Cannot calculate "${astroPattern.astro}" for ${adapterConfig.latitude}, ${adapterConfig.longitude}`,
-                        'warn',
-                    );
+                    sandbox.log(`Cannot calculate "${astroPattern.astro}" for ${adapterConfig.latitude}, ${adapterConfig.longitude}`, 'warn');
                     ts = new Date(nowDate.getTime());
-
-                    if (
-                        astroPattern.astro === 'sunriseEnd' ||
+                    if (astroPattern.astro === 'sunriseEnd' ||
                         astroPattern.astro === 'goldenHourEnd' ||
                         astroPattern.astro === 'sunset' ||
                         astroPattern.astro === 'nightEnd' ||
-                        astroPattern.astro === 'nauticalDusk'
-                    ) {
+                        astroPattern.astro === 'nauticalDusk') {
                         ts.setHours(23);
                         ts.setMinutes(59);
                         ts.setSeconds(59);
-                    } else {
+                    }
+                    else {
                         ts.setHours(23);
                         ts.setMinutes(59);
                         ts.setSeconds(58);
                     }
                 }
-
                 if (ts && astroPattern.shift) {
                     ts = new Date(ts.getTime() + astroPattern.shift * 60000);
                 }
-
                 if (!ts || ts < nowDate) {
                     const date = new Date(nowDate);
                     // Event doesn't occur today - try again tomorrow
@@ -2307,22 +1779,12 @@ export function sandBox(
                     date.setHours(0);
                     date.setSeconds(1);
                     date.setMilliseconds(0);
-
                     sandbox.__engine.__schedules += 1;
-
                     if (sandbox.__engine.__schedules % adapterConfig.maxTriggersPerScript === 0) {
-                        sandbox.log(
-                            `More than ${sandbox.__engine.__schedules} schedules registered. Check your script!`,
-                            'warn',
-                        );
+                        sandbox.log(`More than ${sandbox.__engine.__schedules} schedules registered. Check your script!`, 'warn');
                     }
-
                     sandbox.verbose &&
-                        sandbox.log(
-                            `schedule(astro=${astroPattern.astro}, offset=${astroPattern.shift}) is tomorrow, waiting until ${date.toISOString()}`,
-                            'info',
-                        );
-
+                        sandbox.log(`schedule(astro=${astroPattern.astro}, offset=${astroPattern.shift}) is tomorrow, waiting until ${date.toISOString()}`, 'info');
                     // Calculate new schedule in the next day
                     sandbox.setTimeout(() => {
                         if (sandbox.__engine.__schedules > 0) {
@@ -2330,24 +1792,18 @@ export function sandBox(
                         }
                         sandbox.schedule(astroPattern, callback);
                     }, date.getTime() - Date.now());
-
                     return;
                 }
-
                 sandbox.__engine.__schedules += 1;
-
                 if (sandbox.__engine.__schedules % adapterConfig.maxTriggersPerScript === 0) {
-                    sandbox.log(
-                        `More than ${sandbox.__engine.__schedules} schedules registered. Check your script!`,
-                        'warn',
-                    );
+                    sandbox.log(`More than ${sandbox.__engine.__schedules} schedules registered. Check your script!`, 'warn');
                 }
-
                 sandbox.setTimeout(() => {
                     try {
                         callback.call(sandbox);
-                    } catch (err: unknown) {
-                        errorInCallback(err as Error);
+                    }
+                    catch (err) {
+                        errorInCallback(err);
                     }
                     // Reschedule in 2 seconds
                     sandbox.setTimeout(() => {
@@ -2357,13 +1813,10 @@ export function sandBox(
                         sandbox.schedule(astroPattern, callback);
                     }, 2000);
                 }, ts.getTime() - Date.now());
-
                 sandbox.verbose &&
-                    sandbox.log(
-                        `schedule(astro=${astroPattern.astro}, offset=${astroPattern.shift}) is today, waiting until ${ts.toISOString()}`,
-                        'info',
-                    );
-            } else {
+                    sandbox.log(`schedule(astro=${astroPattern.astro}, offset=${astroPattern.shift}) is today, waiting until ${ts.toISOString()}`, 'info');
+            }
+            else {
                 // fix a problem with sunday and 7
                 if (typeof pattern === 'string') {
                     // this could be a CRON
@@ -2375,122 +1828,98 @@ export function sandBox(
                 }
                 // created in VM the date object: pattern instanceof Date => false
                 // so fix it
-                if (typeof pattern === 'object' && (pattern as Date).getDate) {
-                    pattern = new Date(pattern as Date);
+                if (typeof pattern === 'object' && pattern.getDate) {
+                    pattern = new Date(pattern);
                 }
-
-                const schedule: IobSchedule = mods.nodeSchedule.scheduleJob(pattern, (): void => {
+                const schedule = mods.nodeSchedule.scheduleJob(pattern, () => {
                     try {
                         callback.call(sandbox);
-                    } catch (err: unknown) {
-                        errorInCallback(err as Error);
+                    }
+                    catch (err) {
+                        errorInCallback(err);
                     }
                 });
                 if (schedule) {
                     sandbox.__engine.__schedules += 1;
-
-                    if (
-                        sandbox.__engine.__schedules %
-                            (adapter.config as JavaScriptAdapterConfig).maxTriggersPerScript ===
-                        0
-                    ) {
-                        sandbox.log(
-                            `More than ${sandbox.__engine.__schedules} schedules registered. Check your script!`,
-                            'warn',
-                        );
+                    if (sandbox.__engine.__schedules %
+                        adapter.config.maxTriggersPerScript ===
+                        0) {
+                        sandbox.log(`More than ${sandbox.__engine.__schedules} schedules registered. Check your script!`, 'warn');
                     }
-
                     schedule._ioBroker = {
                         type: 'cron',
-                        pattern: pattern as string | Date,
+                        pattern: pattern,
                         scriptName: sandbox.scriptName,
                         id: `cron_${Date.now()}_${Math.round(Math.random() * 100000)}`,
                     };
-
                     script.schedules.push(schedule);
-                } else {
+                }
+                else {
                     sandbox.log(`schedule(cron=${JSON.stringify(pattern)}): cannot create schedule`, 'error');
                 }
-
                 if (sandbox.verbose) {
                     sandbox.log(`schedule(cron=${JSON.stringify(pattern)})`, 'info');
                 }
-
                 return schedule;
             }
         },
-        scheduleById: function (id: string, ack: boolean | (() => void) | undefined, callback?: () => void): void {
-            let scheduleId: IobSchedule | string | null | undefined = null;
-            let currentExp: string | null = null; // current cron expression
-
+        scheduleById: function (id, ack, callback) {
+            let scheduleId = null;
+            let currentExp = null; // current cron expression
             if (typeof ack === 'function') {
                 callback = ack;
                 ack = undefined;
             }
-
             const rhms = /^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$/; // hh:mm:ss
             const rhm = /^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$/; // hh:mm
-
-            const init = (time: string): void => {
+            const init = (time) => {
                 if (typeof time === 'string') {
-                    let h: number | undefined = undefined;
-                    let m: number | undefined = undefined;
-                    let s: number | undefined = undefined;
-
+                    let h = undefined;
+                    let m = undefined;
+                    let s = undefined;
                     let isValid = false;
-
                     let result = time.match(rhms);
                     if (result) {
                         [, h, m, s] = result.map(v => parseInt(v));
                         isValid = true;
-                    } else {
+                    }
+                    else {
                         result = time.match(rhm);
                         if (result) {
                             [, h, m] = result.map(v => parseInt(v));
                             isValid = true;
                         }
                     }
-
                     if (isValid) {
                         const cronExp = `${s ?? '0'} ${m ?? '0'} ${h ?? '0'} * * *`;
-
                         if (cronExp !== currentExp) {
                             sandbox.verbose &&
-                                sandbox.log(
-                                    `scheduleById(id=${id}): Init with expression ${cronExp} from ${time}`,
-                                    'info',
-                                );
+                                sandbox.log(`scheduleById(id=${id}): Init with expression ${cronExp} from ${time}`, 'info');
                             currentExp = cronExp;
-
                             if (scheduleId) {
                                 sandbox.clearSchedule(scheduleId);
                                 scheduleId = null;
                             }
-
                             scheduleId = sandbox.schedule(cronExp, () => {
                                 if (typeof callback === 'function') {
                                     try {
                                         callback.call(sandbox);
-                                    } catch (err: unknown) {
-                                        errorInCallback(err as Error);
+                                    }
+                                    catch (err) {
+                                        errorInCallback(err);
                                     }
                                 }
                             });
                         }
-                    } else {
-                        sandbox.log(
-                            `scheduleById(id=${id},time=${time}): cannot create schedule - invalid format (HH:MM:SS or H:M:S required)`,
-                            'error',
-                        );
                     }
-                } else {
-                    sandbox.log(
-                        `scheduleById(id=${id}): cannot create schedule - invalid var type (no string)`,
-                        'error',
-                    );
+                    else {
+                        sandbox.log(`scheduleById(id=${id},time=${time}): cannot create schedule - invalid format (HH:MM:SS or H:M:S required)`, 'error');
+                    }
+                }
+                else {
+                    sandbox.log(`scheduleById(id=${id}): cannot create schedule - invalid var type (no string)`, 'error');
                 }
             };
-
             sandbox.getState(id, (err, state) => {
                 if (!err && state?.val) {
                     if (sandbox.verbose) {
@@ -2499,12 +1928,10 @@ export function sandBox(
                     init(state.val.toString());
                 }
             });
-
-            const triggerDef: Pattern = { id, change: 'any' };
+            const triggerDef = { id, change: 'any' };
             if (ack !== undefined) {
                 triggerDef.ack = ack;
             }
-
             sandbox.on(triggerDef, obj => {
                 if (obj?.state?.val) {
                     sandbox.verbose &&
@@ -2513,90 +1940,73 @@ export function sandBox(
                 }
             });
         },
-        getAstroDate: function (pattern: AstroEvent, date?: Date | number, offsetMinutes?: number): Date | undefined {
+        getAstroDate: function (pattern, date, offsetMinutes) {
             if (date === undefined) {
                 date = new Date();
             }
             if (typeof date === 'number') {
                 date = new Date(date);
-            } else {
+            }
+            else {
                 date = new Date(date.getTime());
             }
-
             if (!consts.astroList.includes(pattern)) {
                 const pos = consts.astroListLow.indexOf(pattern.toLowerCase());
                 if (pos !== -1) {
                     pattern = consts.astroList[pos];
                 }
             }
-
-            if (
-                (!(adapter.config as JavaScriptAdapterConfig).latitude &&
-                    ((adapter.config as JavaScriptAdapterConfig).latitude as unknown as number) !== 0) ||
-                (!(adapter.config as JavaScriptAdapterConfig).longitude &&
-                    ((adapter.config as JavaScriptAdapterConfig).longitude as unknown as number) !== 0)
-            ) {
+            if ((!adapter.config.latitude &&
+                adapter.config.latitude !== 0) ||
+                (!adapter.config.longitude &&
+                    adapter.config.longitude !== 0)) {
                 sandbox.log('Longitude or latitude does not set. Cannot use astro.', 'error');
                 return;
             }
-
             // ensure events are calculated independent of current time
             date.setHours(12, 0, 0, 0);
-            let ts = mods.suncalc.getTimes(
-                date,
-                (adapter.config as JavaScriptAdapterConfig).latitude,
-                (adapter.config as JavaScriptAdapterConfig).longitude,
-            )[pattern];
-
+            let ts = mods.suncalc.getTimes(date, adapter.config.latitude, adapter.config.longitude)[pattern];
             if (ts === undefined || ts.getTime().toString() === 'NaN') {
-                sandbox.log(
-                    `Cannot calculate astro date "${pattern}" for ${(adapter.config as JavaScriptAdapterConfig).latitude}, ${(adapter.config as JavaScriptAdapterConfig).longitude}`,
-                    'warn',
-                );
+                sandbox.log(`Cannot calculate astro date "${pattern}" for ${adapter.config.latitude}, ${adapter.config.longitude}`, 'warn');
             }
-
             if (sandbox.verbose) {
                 sandbox.log(`getAstroDate(pattern=${pattern}, date=${date.toString()}) => ${ts}`, 'info');
             }
-
             if (offsetMinutes !== undefined) {
                 ts = new Date(ts.getTime() + offsetMinutes * 60000);
             }
             return ts;
         },
-        isAstroDay: function (): boolean | undefined {
+        isAstroDay: function () {
             const nowDate = new Date();
             const dayBegin = sandbox.getAstroDate('sunrise');
             const dayEnd = sandbox.getAstroDate('sunset');
-
             if (dayBegin === undefined || dayEnd === undefined) {
                 return;
             }
-
             if (sandbox.verbose) {
                 sandbox.log(`isAstroDay() => ${nowDate >= dayBegin && nowDate <= dayEnd}`, 'info');
             }
-
             return nowDate >= dayBegin && nowDate <= dayEnd;
         },
-        clearSchedule: function (schedule: IobSchedule | ScheduleName | string): boolean {
-            if (context.scheduler?.get(schedule as string | ScheduleName)) {
+        clearSchedule: function (schedule) {
+            if (context.scheduler?.get(schedule)) {
                 if (sandbox.verbose) {
                     sandbox.log('clearSchedule() => wizard cleared', 'info');
                 }
-                const pos = script.wizards.indexOf(schedule as string);
+                const pos = script.wizards.indexOf(schedule);
                 if (pos !== -1) {
                     script.wizards.splice(pos, 1);
                     if (sandbox.__engine.__schedules > 0) {
                         sandbox.__engine.__schedules--;
                     }
                 }
-                context.scheduler.remove(schedule as string | ScheduleName);
+                context.scheduler.remove(schedule);
                 return true;
             }
             for (let i = 0; i < script.schedules.length; i++) {
-                if (schedule && typeof schedule === 'object' && (schedule as IobSchedule)._ioBroker?.type === 'cron') {
-                    if (script.schedules[i]._ioBroker.id === (schedule as IobSchedule)._ioBroker.id) {
+                if (schedule && typeof schedule === 'object' && schedule._ioBroker?.type === 'cron') {
+                    if (script.schedules[i]._ioBroker.id === schedule._ioBroker.id) {
                         if (!mods.nodeSchedule.cancelJob(script.schedules[i])) {
                             sandbox.log('Error by canceling scheduled job', 'error');
                         }
@@ -2604,13 +2014,13 @@ export function sandBox(
                         if (sandbox.__engine.__schedules > 0) {
                             sandbox.__engine.__schedules--;
                         }
-
                         if (sandbox.verbose) {
                             sandbox.log('clearSchedule() => cleared', 'info');
                         }
                         return true;
                     }
-                } else if (script.schedules[i] === schedule) {
+                }
+                else if (script.schedules[i] === schedule) {
                     if (!mods.nodeSchedule.cancelJob(script.schedules[i])) {
                         sandbox.log('Error by canceling scheduled job', 'error');
                     }
@@ -2618,97 +2028,68 @@ export function sandBox(
                     if (sandbox.__engine.__schedules > 0) {
                         sandbox.__engine.__schedules--;
                     }
-
                     if (sandbox.verbose) {
                         sandbox.log('clearSchedule() => cleared', 'info');
                     }
                     return true;
                 }
             }
-
             if (sandbox.verbose) {
                 sandbox.log('clearSchedule() => invalid handler', 'warn');
             }
             return false;
         },
-        getSchedules: function (allScripts?: boolean): ScheduleName[] {
+        getSchedules: function (allScripts) {
             const schedules = context.scheduler?.getList() || [];
             if (allScripts) {
-                Object.keys(context.scripts).forEach(
-                    name =>
-                        context.scripts[name].schedules &&
-                        context.scripts[name].schedules.forEach(s =>
-                            schedules.push(JSON.parse(JSON.stringify(s._ioBroker))),
-                        ),
-                );
-            } else {
+                Object.keys(context.scripts).forEach(name => context.scripts[name].schedules &&
+                    context.scripts[name].schedules.forEach(s => schedules.push(JSON.parse(JSON.stringify(s._ioBroker)))));
+            }
+            else {
                 script.schedules &&
                     script.schedules.forEach(s => schedules.push(JSON.parse(JSON.stringify(s._ioBroker))));
             }
             return schedules;
         },
-        setState: function (
-            id: string,
-            state: ioBroker.SettableState | ioBroker.StateValue,
-            isAck?: boolean | 'true' | 'false' | ((err?: Error | null) => void),
-            callback?: (err?: Error | null) => void,
-        ): void {
+        setState: function (id, state, isAck, callback) {
             return setStateHelper(sandbox, false, false, id, state, isAck, callback);
         },
-        setStateChanged: function (
-            id: string,
-            state: ioBroker.SettableState | ioBroker.StateValue,
-            isAck?: boolean | ((err?: Error | null) => void),
-            callback?: (err?: Error | null) => void,
-        ): void {
+        setStateChanged: function (id, state, isAck, callback) {
             return setStateHelper(sandbox, false, true, id, state, isAck, callback);
         },
-        setStateDelayed: function (
-            id: string,
-            state: ioBroker.SettableState | ioBroker.StateValue,
-            isAck: boolean | number | undefined,
-            delay?: number | boolean,
-            clearRunning?: boolean | ((err?: Error | null) => void),
-            callback?: (err?: Error | null) => void,
-        ): number | null {
+        setStateDelayed: function (id, state, isAck, delay, clearRunning, callback) {
             // find arguments
             if (typeof isAck !== 'boolean') {
-                callback = clearRunning as (err?: Error | null) => void;
-                clearRunning = delay as boolean;
-                delay = isAck as number;
+                callback = clearRunning;
+                clearRunning = delay;
+                delay = isAck;
                 isAck = undefined;
             }
             if (typeof delay !== 'number') {
-                callback = clearRunning as (err?: Error | null) => void;
-                clearRunning = delay as boolean;
+                callback = clearRunning;
+                clearRunning = delay;
                 delay = 0;
             }
             if (typeof clearRunning !== 'boolean') {
                 callback = clearRunning;
                 clearRunning = true;
             }
-
             // Check a type of state
             if (!objects[id] && objects[`${adapter.namespace}.${id}`]) {
                 id = `${adapter.namespace}.${id}`;
             }
-
             sandbox.verbose &&
-                sandbox.log(
-                    `setStateDelayed(id=${id}, state=${JSON.stringify(state)}, isAck=${isAck}, delay=${delay}, clearRunning=${clearRunning})`,
-                    'info',
-                );
-
+                sandbox.log(`setStateDelayed(id=${id}, state=${JSON.stringify(state)}, isAck=${isAck}, delay=${delay}, clearRunning=${clearRunning})`, 'info');
             if (clearRunning) {
                 if (timers[id]) {
                     sandbox.verbose &&
                         sandbox.log(`setStateDelayed: clear ${timers[id].length} running timers`, 'info');
-
                     for (let i = 0; i < timers[id].length; i++) {
                         clearTimeout(timers[id][i].t);
                     }
                     delete timers[id];
-                } else {
+                }
+                else {
                     if (sandbox.verbose) {
                         sandbox.log('setStateDelayed: no running timers', 'info');
                     }
@@ -2721,72 +2102,58 @@ export function sandBox(
             }
             // If delay
             timers[id] = timers[id] || [];
-
             // calculate timerId
             context.timerId++;
             if (context.timerId > 0xfffffffe) {
                 context.timerId = 0;
             }
-
             // Start timeout
-            const timer = setTimeout(
-                function (_timerId, _id, _state, _isAck) {
-                    sandbox.setState(_id, _state, _isAck, callback);
-                    // delete timer handler
-                    if (timers[_id]) {
-                        // optimisation
-                        if (timers[_id].length === 1) {
-                            delete timers[_id];
-                        } else {
-                            for (let t = 0; t < timers[_id].length; t++) {
-                                if (timers[_id][t].id === _timerId) {
-                                    timers[_id].splice(t, 1);
-                                    break;
-                                }
-                            }
-                            if (!timers[_id].length) {
-                                delete timers[_id];
+            const timer = setTimeout(function (_timerId, _id, _state, _isAck) {
+                sandbox.setState(_id, _state, _isAck, callback);
+                // delete timer handler
+                if (timers[_id]) {
+                    // optimisation
+                    if (timers[_id].length === 1) {
+                        delete timers[_id];
+                    }
+                    else {
+                        for (let t = 0; t < timers[_id].length; t++) {
+                            if (timers[_id][t].id === _timerId) {
+                                timers[_id].splice(t, 1);
+                                break;
                             }
                         }
+                        if (!timers[_id].length) {
+                            delete timers[_id];
+                        }
                     }
-                },
-                delay,
-                context.timerId,
-                id,
-                state,
-                isAck,
-            );
-
+                }
+            }, delay, context.timerId, id, state, isAck);
             // add timer handler
             timers[id].push({
                 t: timer,
                 id: context.timerId,
                 ts: Date.now(),
                 delay: delay,
-                val:
-                    isObject(state) && (state as ioBroker.SettableState).val !== undefined
-                        ? ((state as ioBroker.SettableState).val as ioBroker.StateValue)
-                        : (state as ioBroker.StateValue),
-                ack:
-                    isObject(state) &&
-                    (state as ioBroker.SettableState).val !== undefined &&
-                    (state as ioBroker.SettableState).ack !== undefined
-                        ? (state as ioBroker.SettableState).ack
-                        : isAck,
+                val: (0, tools_1.isObject)(state) && state.val !== undefined
+                    ? state.val
+                    : state,
+                ack: (0, tools_1.isObject)(state) &&
+                    state.val !== undefined &&
+                    state.ack !== undefined
+                    ? state.ack
+                    : isAck,
             });
-
             return context.timerId;
         },
-        clearStateDelayed: function (id: string, timerId: number): boolean {
+        clearStateDelayed: function (id, timerId) {
             // Check a type of state
             if (!objects[id] && objects[`${adapter.namespace}.${id}`]) {
                 id = `${adapter.namespace}.${id}`;
             }
-
             if (sandbox.verbose) {
                 sandbox.log(`clearStateDelayed(id=${id}, timerId=${timerId})`, 'info');
             }
-
             if (timers[id]) {
                 for (let i = timers[id].length - 1; i >= 0; i--) {
                     if (timerId === undefined || timers[id][i].id === timerId) {
@@ -2801,7 +2168,8 @@ export function sandBox(
                 }
                 if (timerId === undefined) {
                     delete timers[id];
-                } else {
+                }
+                else {
                     if (!timers[id].length) {
                         delete timers[id];
                     }
@@ -2810,16 +2178,7 @@ export function sandBox(
             }
             return false;
         },
-        getStateDelayed: function (
-            id: string | number,
-        ):
-            | null
-            | { timerId: number; left: number; delay: number; val: ioBroker.StateValue; ack?: boolean }
-            | { timerId: number; left: number; delay: number; val: ioBroker.StateValue; ack?: boolean }[]
-            | Record<
-                  string,
-                  { timerId: number; left: number; delay: number; val: ioBroker.StateValue; ack?: boolean }[]
-              > {
+        getStateDelayed: function (id) {
             const now = Date.now();
             if (id) {
                 // Check a type of state
@@ -2845,14 +2204,7 @@ export function sandBox(
                     }
                     return null;
                 }
-
-                const result: {
-                    timerId: number;
-                    left: number;
-                    delay: number;
-                    val: ioBroker.StateValue;
-                    ack?: boolean;
-                }[] = [];
+                const result = [];
                 if (Object.prototype.hasOwnProperty.call(timers, id) && timers[id] && timers[id].length) {
                     for (let tt = 0; tt < timers[id].length; tt++) {
                         result.push({
@@ -2866,10 +2218,7 @@ export function sandBox(
                 }
                 return result;
             }
-            const result: Record<
-                string,
-                { timerId: number; left: number; delay: number; val: ioBroker.StateValue; ack?: boolean }[]
-            > = {};
+            const result = {};
             for (const _id in timers) {
                 if (Object.prototype.hasOwnProperty.call(timers, _id) && timers[_id] && timers[_id].length) {
                     result[_id] = [];
@@ -2886,162 +2235,111 @@ export function sandBox(
             }
             return result;
         },
-        getStateAsync: async function (id: string): Promise<ioBroker.State | null | undefined> {
-            let state: ioBroker.State | null | undefined;
+        getStateAsync: async function (id) {
+            let state;
             if (id.includes('.')) {
                 state = await adapter.getForeignStateAsync(id);
-            } else {
+            }
+            else {
                 state = await adapter.getStateAsync(id);
             }
             return context.convertBackStringifiedValues(id, state);
         },
-        setStateAsync: function (
-            id: string,
-            state: ioBroker.SettableState | ioBroker.StateValue,
-            isAck?: boolean,
-        ): Promise<void> {
-            return new Promise((resolve, reject) =>
-                setStateHelper(sandbox, false, false, id, state, isAck, err => (err ? reject(err) : resolve())),
-            );
+        setStateAsync: function (id, state, isAck) {
+            return new Promise((resolve, reject) => setStateHelper(sandbox, false, false, id, state, isAck, err => (err ? reject(err) : resolve())));
         },
-        setStateChangedAsync: function (
-            id: string,
-            state: ioBroker.SettableState | ioBroker.StateValue,
-            isAck?: boolean,
-        ): Promise<void> {
-            return new Promise((resolve, reject) =>
-                setStateHelper(sandbox, false, true, id, state, isAck, err => (err ? reject(err) : resolve())),
-            );
+        setStateChangedAsync: function (id, state, isAck) {
+            return new Promise((resolve, reject) => setStateHelper(sandbox, false, true, id, state, isAck, err => (err ? reject(err) : resolve())));
         },
-        getState: function (
-            id: string,
-            callback?: (err: Error | null | undefined, state?: ioBroker.State | null) => void,
-        ): undefined | void | (ioBroker.State & { notExist?: true }) | null {
+        getState: function (id, callback) {
             if (typeof id !== 'string') {
                 sandbox.log(`getState has been called with id of type "${typeof id}" but expects a string`, 'error');
                 return undefined;
             }
-
             if (typeof callback === 'function') {
                 if (!id.includes('.')) {
-                    adapter.getState(id, (err, state) =>
-                        callback(err, context.convertBackStringifiedValues(id, state)),
-                    );
-                } else {
-                    adapter.getForeignState(id, (err, state) =>
-                        callback(err, context.convertBackStringifiedValues(id, state)),
-                    );
+                    adapter.getState(id, (err, state) => callback(err, context.convertBackStringifiedValues(id, state)));
                 }
-            } else {
-                if ((adapter.config as JavaScriptAdapterConfig).subscribe) {
-                    sandbox.log(
-                        'The "getState" method cannot be used synchronously, because the adapter setting "Do not subscribe to all states on start" is enabled.',
-                        'error',
-                    );
-                    sandbox.log(
-                        `Please disable that setting or use "getState" with a callback, e.g.: getState('${id}', (err, state) => { ... });`,
-                        'error',
-                    );
-                } else {
+                else {
+                    adapter.getForeignState(id, (err, state) => callback(err, context.convertBackStringifiedValues(id, state)));
+                }
+            }
+            else {
+                if (adapter.config.subscribe) {
+                    sandbox.log('The "getState" method cannot be used synchronously, because the adapter setting "Do not subscribe to all states on start" is enabled.', 'error');
+                    sandbox.log(`Please disable that setting or use "getState" with a callback, e.g.: getState('${id}', (err, state) => { ... });`, 'error');
+                }
+                else {
                     if (states[id]) {
                         sandbox.verbose &&
-                            sandbox.log(
-                                `getState(id=${id}, timerId=${JSON.stringify(timers[id])}) => ${JSON.stringify(states[id])}`,
-                                'info',
-                            );
+                            sandbox.log(`getState(id=${id}, timerId=${JSON.stringify(timers[id])}) => ${JSON.stringify(states[id])}`, 'info');
                         if (context.interimStateValues[id] !== undefined) {
                             return context.convertBackStringifiedValues(id, context.interimStateValues[id]);
                         }
                         return context.convertBackStringifiedValues(id, states[id]);
-                    } else if (states[`${adapter.namespace}.${id}`]) {
+                    }
+                    else if (states[`${adapter.namespace}.${id}`]) {
                         sandbox.verbose &&
-                            sandbox.log(
-                                `getState(id=${id}, timerId=${JSON.stringify(timers[id])}) => ${JSON.stringify(states[`${adapter.namespace}.${id}`])}`,
-                                'info',
-                            );
+                            sandbox.log(`getState(id=${id}, timerId=${JSON.stringify(timers[id])}) => ${JSON.stringify(states[`${adapter.namespace}.${id}`])}`, 'info');
                         if (context.interimStateValues[`${adapter.namespace}.${id}`] !== undefined) {
-                            return context.convertBackStringifiedValues(
-                                id,
-                                context.interimStateValues[`${adapter.namespace}.${id}`],
-                            );
+                            return context.convertBackStringifiedValues(id, context.interimStateValues[`${adapter.namespace}.${id}`]);
                         }
                         return context.convertBackStringifiedValues(id, states[`${adapter.namespace}.${id}`]);
                     }
-
                     if (sandbox.verbose) {
                         sandbox.log(`getState(id=${id}, timerId=${JSON.stringify(timers[id])}) => not found`, 'info');
                     }
-
-                    context.logWithLineInfo(
-                        `getState "${id}" not found (3)${states[id] !== undefined ? ` states[id]=${JSON.stringify(states[id])}` : ''}`,
-                    ); ///xxx
-                    return { val: null, notExist: true } as ioBroker.State & { notExist?: true };
+                    context.logWithLineInfo(`getState "${id}" not found (3)${states[id] !== undefined ? ` states[id]=${JSON.stringify(states[id])}` : ''}`); ///xxx
+                    return { val: null, notExist: true };
                 }
             }
         },
-        existsState: function (
-            id: string,
-            callback?: (err: Error | null | undefined, stateExists?: boolean) => void,
-        ): void | boolean {
+        existsState: function (id, callback) {
             if (typeof id !== 'string') {
                 sandbox.log(`existsState has been called with id of type "${typeof id}" but expects a string`, 'error');
                 return false;
             }
-
             if (typeof callback === 'function') {
                 adapter.getForeignObject(id, (err, obj) => {
                     if (!obj || obj.type !== 'state') {
                         callback(err, false);
                         return;
                     }
-
-                    if ((adapter.config as JavaScriptAdapterConfig).subscribe) {
+                    if (adapter.config.subscribe) {
                         adapter.getForeignState(id, (err, state) => {
                             callback(err, !!state);
                         });
-                    } else {
+                    }
+                    else {
                         callback(err, !!states[id]);
                     }
                 });
-            } else {
-                if ((adapter.config as JavaScriptAdapterConfig).subscribe) {
-                    sandbox.log(
-                        'The "existsState" method cannot be used synchronously, because the adapter setting "Do not subscribe to all states on start" is enabled.',
-                        'error',
-                    );
-                    sandbox.log(
-                        `Please disable that setting or use "existsState" with a callback, e.g.: existsState('${id}', (err, stateExists) => { ... });`,
-                        'error',
-                    );
-                } else {
+            }
+            else {
+                if (adapter.config.subscribe) {
+                    sandbox.log('The "existsState" method cannot be used synchronously, because the adapter setting "Do not subscribe to all states on start" is enabled.', 'error');
+                    sandbox.log(`Please disable that setting or use "existsState" with a callback, e.g.: existsState('${id}', (err, stateExists) => { ... });`, 'error');
+                }
+                else {
                     return !!states[id];
                 }
             }
         },
-        existsObject: function (
-            id: string,
-            callback?: (err: Error | null | undefined, objectExists?: boolean) => void,
-        ): void | boolean {
+        existsObject: function (id, callback) {
             if (typeof id !== 'string') {
-                sandbox.log(
-                    `existsObject has been called with id of type "${typeof id}" but expects a string`,
-                    'error',
-                );
+                sandbox.log(`existsObject has been called with id of type "${typeof id}" but expects a string`, 'error');
                 return false;
             }
-
             if (typeof callback === 'function') {
                 adapter.getForeignObject(id, (err, obj) => callback(err, !!obj));
-            } else {
+            }
+            else {
                 return !!objects[id];
             }
         },
-        getIdByName: function (name: string, alwaysArray?: boolean): string | string[] | null {
+        getIdByName: function (name, alwaysArray) {
             sandbox.verbose &&
-                sandbox.log(
-                    `getIdByName(name=${name}, alwaysArray=${alwaysArray}) => ${JSON.stringify(context.names[name])}`,
-                    'info',
-                );
+                sandbox.log(`getIdByName(name=${name}, alwaysArray=${alwaysArray}) => ${JSON.stringify(context.names[name])}`, 'info');
             if (Object.prototype.hasOwnProperty.call(context.names, name)) {
                 if (alwaysArray) {
                     return !Array.isArray(context.names[name]) ? [context.names[name]] : context.names[name];
@@ -3053,16 +2351,11 @@ export function sandBox(
             }
             return null;
         },
-        getObject: function (
-            id: string,
-            enumName: null | string | ((err: Error | null | undefined, obj?: ioBroker.Object | null) => void),
-            cb?: (err: Error | null | undefined, obj?: ioBroker.Object | null) => void,
-        ): void | ioBroker.Object | null {
+        getObject: function (id, enumName, cb) {
             if (typeof id !== 'string') {
                 sandbox.log(`getObject has been called with id of type "${typeof id}" but expects a string`, 'error');
                 return null;
             }
-
             if (typeof enumName === 'function') {
                 cb = enumName;
                 enumName = null;
@@ -3072,13 +2365,15 @@ export function sandBox(
                 adapter.getForeignObject(id, (err, obj) => {
                     if (obj) {
                         objects[id] = obj;
-                    } else if (objects[id]) {
+                    }
+                    else if (objects[id]) {
                         delete objects[id];
                     }
-                    let result: ioBroker.Object | null | undefined;
+                    let result;
                     try {
                         result = JSON.parse(JSON.stringify(objects[id]));
-                    } catch (err: unknown) {
+                    }
+                    catch (err) {
                         adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, {
                             val: true,
                             ack: true,
@@ -3091,7 +2386,8 @@ export function sandBox(
                         sandbox.log(`getObject(id=${id}, enumName=${enumName}) => ${JSON.stringify(result)}`, 'info');
                     cb(err, result);
                 });
-            } else {
+            }
+            else {
                 if (!objects[id]) {
                     sandbox.verbose &&
                         sandbox.log(`getObject(id=${id}, enumName=${enumName}) => does not exist`, 'info');
@@ -3114,13 +2410,13 @@ export function sandBox(
                     }
                     sandbox.verbose &&
                         sandbox.log(`getObject(id=${id}, enumName=${enumName}) => ${JSON.stringify(obj)}`, 'info');
-
                     return obj;
                 }
-                let result: ioBroker.Object | null | undefined;
+                let result;
                 try {
                     result = JSON.parse(JSON.stringify(objects[id]));
-                } catch (err: unknown) {
+                }
+                catch (err) {
                     adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, {
                         val: true,
                         ack: true,
@@ -3135,69 +2431,50 @@ export function sandBox(
             }
         },
         // This function will be overloaded later if the modification of objects is allowed
-        setObject: function (
-            _id: string,
-            _obj: ioBroker.Object,
-            callback?: (err?: Error | null, res?: { id: string }) => void,
-        ): void {
+        setObject: function (_id, _obj, callback) {
             sandbox.log('Function "setObject" is not allowed. Use adapter settings to allow it.', 'error');
             if (typeof callback === 'function') {
                 try {
-                    callback.call(
-                        sandbox,
-                        new Error('Function "setObject" is not allowed. Use adapter settings to allow it.'),
-                    );
-                } catch (err: unknown) {
-                    errorInCallback(err as Error);
+                    callback.call(sandbox, new Error('Function "setObject" is not allowed. Use adapter settings to allow it.'));
+                }
+                catch (err) {
+                    errorInCallback(err);
                 }
             }
         },
         // This function will be overloaded later if the modification of objects is allowed
-        extendObject: function (
-            _id: string,
-            _obj: Partial<ioBroker.Object>,
-            callback?: (err?: Error | null, res?: { id: string }) => void,
-        ): void {
+        extendObject: function (_id, _obj, callback) {
             sandbox.log('Function "extendObject" is not allowed. Use adapter settings to allow it.', 'error');
             if (typeof callback === 'function') {
                 try {
-                    callback.call(
-                        sandbox,
-                        new Error('Function "extendObject" is not allowed. Use adapter settings to allow it.'),
-                    );
-                } catch (err: unknown) {
-                    errorInCallback(err as Error);
+                    callback.call(sandbox, new Error('Function "extendObject" is not allowed. Use adapter settings to allow it.'));
+                }
+                catch (err) {
+                    errorInCallback(err);
                 }
             }
         },
         // This function will be overloaded later if the modification of objects is allowed
-        deleteObject: function (
-            _id: string,
-            _isRecursive?: boolean | ioBroker.ErrorCallback,
-            callback?: ioBroker.ErrorCallback,
-        ): void {
+        deleteObject: function (_id, _isRecursive, callback) {
             if (typeof _isRecursive === 'function') {
                 callback = _isRecursive;
             }
             sandbox.log('Function "deleteObject" is not allowed. Use adapter settings to allow it.', 'error');
             if (typeof callback === 'function') {
                 try {
-                    callback.call(
-                        sandbox,
-                        new Error('Function "deleteObject" is not allowed. Use adapter settings to allow it.'),
-                    );
-                } catch (err: unknown) {
-                    errorInCallback(err as Error);
+                    callback.call(sandbox, new Error('Function "deleteObject" is not allowed. Use adapter settings to allow it.'));
+                }
+                catch (err) {
+                    errorInCallback(err);
                 }
             }
         },
-        getEnums: function (enumName?: string): { id: string; members: string[]; name: ioBroker.StringOrTranslated }[] {
-            const result: { id: string; members: string[]; name: ioBroker.StringOrTranslated }[] = [];
+        getEnums: function (enumName) {
+            const result = [];
             const r = enumName ? new RegExp(`^enum\\.${enumName}\\.`) : false;
             for (let i = 0; i < enums.length; i++) {
                 if (!r || r.test(enums[i])) {
-                    const common: ioBroker.EnumCommon =
-                        (objects[enums[i]] as ioBroker.EnumObject).common || ({} as ioBroker.EnumCommon);
+                    const common = objects[enums[i]].common || {};
                     result.push({
                         id: enums[i],
                         members: common.members || [],
@@ -3210,106 +2487,97 @@ export function sandBox(
             }
             return JSON.parse(JSON.stringify(result));
         },
-        createAlias: function (
-            name: string,
-            alias: string | CommonAlias,
-            forceCreation: boolean | Partial<ioBroker.StateCommon> | ((err: Error | null) => void) | undefined,
-            common?: Partial<ioBroker.StateCommon> | Record<string, any> | ((err: Error | null) => void),
-            native?: Record<string, any> | ((err: Error | null) => void),
-            callback?: (err: Error | null) => void,
-        ) {
+        createAlias: function (name, alias, forceCreation, common, native, callback) {
             if (typeof native === 'function') {
-                callback = native as (err: Error | null) => void;
+                callback = native;
                 native = {};
             }
             if (typeof common === 'function') {
-                callback = common as (err: Error | null) => void;
+                callback = common;
                 common = undefined;
             }
             if (typeof forceCreation === 'function') {
-                callback = forceCreation as (err: Error | null) => void;
+                callback = forceCreation;
                 forceCreation = undefined;
             }
-            if (isObject(forceCreation)) {
+            if ((0, tools_1.isObject)(forceCreation)) {
                 native = common;
-                common = forceCreation as Partial<ioBroker.ObjectCommon>;
+                common = forceCreation;
                 forceCreation = undefined;
             }
-
             if (typeof name !== 'string') {
                 const err = `Wrong type of name "${typeof name}". Expected "string".`;
                 sandbox.log(err, 'error');
                 if (typeof callback === 'function') {
                     try {
                         callback.call(sandbox, new Error(err));
-                    } catch (err: unknown) {
-                        errorInCallback(err as Error);
+                    }
+                    catch (err) {
+                        errorInCallback(err);
                     }
                 }
                 return;
             }
-
             if (!name) {
                 const err = 'Empty ID is not allowed.';
                 sandbox.log(err, 'error');
                 if (typeof callback === 'function') {
                     try {
                         callback.call(sandbox, new Error(err));
-                    } catch (err: unknown) {
-                        errorInCallback(err as Error);
+                    }
+                    catch (err) {
+                        errorInCallback(err);
                     }
                 }
                 return;
             }
-
             if (!name.startsWith('alias.0.')) {
                 name = `alias.0.${name}`;
             }
-
-            const _common: Partial<ioBroker.StateCommon> = (common as Partial<ioBroker.StateCommon>) || {};
-            if (isObject(_common.alias)) {
+            const _common = common || {};
+            if ((0, tools_1.isObject)(_common.alias)) {
                 // alias already in common, use this
-            } else if (
-                isObject(alias) &&
-                (typeof (alias as CommonAlias).id === 'string' || isObject((alias as CommonAlias).id))
-            ) {
-                _common.alias = alias as CommonAlias;
-            } else if (typeof alias === 'string') {
+            }
+            else if ((0, tools_1.isObject)(alias) &&
+                (typeof alias.id === 'string' || (0, tools_1.isObject)(alias.id))) {
+                _common.alias = alias;
+            }
+            else if (typeof alias === 'string') {
                 _common.alias = { id: alias };
-            } else {
+            }
+            else {
                 const err = 'Source ID needs to be provided as string or object with id property.';
                 sandbox.log(err, 'error');
                 if (typeof callback === 'function') {
                     try {
                         callback.call(sandbox, new Error(err));
-                    } catch (err: unknown) {
-                        errorInCallback(err as Error);
+                    }
+                    catch (err) {
+                        errorInCallback(err);
                     }
                 }
                 return;
             }
-
             let aliasSourceId = '';
             if (_common.alias) {
-                aliasSourceId = isObject(_common.alias.id)
-                    ? (_common.alias.id as { read: string; write: string }).read
-                    : (_common.alias.id as string);
+                aliasSourceId = (0, tools_1.isObject)(_common.alias.id)
+                    ? _common.alias.id.read
+                    : _common.alias.id;
                 if (!objects[aliasSourceId] && objects[`${adapter.namespace}.${aliasSourceId}`]) {
                     aliasSourceId = `${adapter.namespace}.${aliasSourceId}`;
-                    if (isObject(_common.alias.id)) {
-                        (_common.alias.id as { read: string; write: string }).read = aliasSourceId;
-                    } else {
+                    if ((0, tools_1.isObject)(_common.alias.id)) {
+                        _common.alias.id.read = aliasSourceId;
+                    }
+                    else {
                         _common.alias.id = aliasSourceId;
                     }
                 }
-                if (
-                    isObject(_common.alias.id) &&
-                    (_common.alias.id as { read: string; write: string }).write &&
-                    !objects[(_common.alias.id as { read: string; write: string }).write] &&
-                    objects[`${adapter.namespace}.${(_common.alias.id as { read: string; write: string }).write}`]
-                ) {
-                    (_common.alias.id as { read: string; write: string }).write =
-                        `${adapter.namespace}.${(_common.alias.id as { read: string; write: string }).write}`;
+                if ((0, tools_1.isObject)(_common.alias.id) &&
+                    _common.alias.id.write &&
+                    !objects[_common.alias.id.write] &&
+                    objects[`${adapter.namespace}.${_common.alias.id.write}`]) {
+                    _common.alias.id.write =
+                        `${adapter.namespace}.${_common.alias.id.write}`;
                 }
             }
             const obj = objects[aliasSourceId];
@@ -3319,8 +2587,9 @@ export function sandBox(
                 if (typeof callback === 'function') {
                     try {
                         callback.call(sandbox, new Error(err));
-                    } catch (err: unknown) {
-                        errorInCallback(err as Error);
+                    }
+                    catch (err) {
+                        errorInCallback(err);
                     }
                 }
                 return;
@@ -3331,8 +2600,9 @@ export function sandBox(
                 if (typeof callback === 'function') {
                     try {
                         callback.call(sandbox, new Error(err));
-                    } catch (err: unknown) {
-                        errorInCallback(err as Error);
+                    }
+                    catch (err) {
+                        errorInCallback(err);
                     }
                 }
                 return;
@@ -3361,101 +2631,77 @@ export function sandBox(
             if (_common.desc === undefined && obj.common.desc !== undefined) {
                 _common.desc = obj.common.desc;
             }
-
-            return sandbox.createState(
-                name,
-                undefined,
-                forceCreation as boolean,
-                _common,
-                native,
-                callback as (err?: Error | null) => void,
-            );
+            return sandbox.createState(name, undefined, forceCreation, _common, native, callback);
         },
-        createState: async function (
-            name: string,
-            initValue: undefined | ioBroker.StateValue | ioBroker.State,
-            forceCreation:
-                | boolean
-                | undefined
-                | Record<string, any>
-                | Partial<ioBroker.StateCommon>
-                | ((err: Error | null) => void),
-            common?: Partial<ioBroker.StateCommon> | ((err: Error | null) => void),
-            native?: Record<string, any> | ((err: Error | null) => void),
-            callback?: (error: Error | null | undefined, id?: string) => void,
-        ) {
+        createState: async function (name, initValue, forceCreation, common, native, callback) {
             if (typeof native === 'function') {
-                callback = native as (err?: Error | null) => void;
+                callback = native;
                 native = {};
             }
             if (typeof common === 'function') {
-                callback = common as (err?: Error | null) => void;
+                callback = common;
                 common = undefined;
             }
             if (typeof initValue === 'function') {
-                callback = initValue as (err?: Error | null) => void;
+                callback = initValue;
                 initValue = undefined;
             }
             if (typeof forceCreation === 'function') {
-                callback = forceCreation as (err?: Error | null) => void;
+                callback = forceCreation;
                 forceCreation = undefined;
             }
-            if (isObject(initValue)) {
-                common = initValue as Partial<ioBroker.StateCommon>;
-                native = forceCreation as Record<string, any>;
+            if ((0, tools_1.isObject)(initValue)) {
+                common = initValue;
+                native = forceCreation;
                 forceCreation = undefined;
                 initValue = undefined;
             }
-            if (isObject(forceCreation)) {
-                native = common as Record<string, any>;
-                common = forceCreation as Partial<ioBroker.StateCommon>;
+            if ((0, tools_1.isObject)(forceCreation)) {
+                native = common;
+                common = forceCreation;
                 forceCreation = undefined;
             }
-
             if (typeof name !== 'string') {
                 const err = `Wrong type of name "${typeof name}". Expected "string".`;
                 sandbox.log(err, 'error');
                 if (typeof callback === 'function') {
                     try {
                         callback.call(sandbox, new Error(err));
-                    } catch (err: unknown) {
-                        errorInCallback(err as Error);
+                    }
+                    catch (err) {
+                        errorInCallback(err);
                     }
                 }
                 return;
             }
-
             if (!name) {
                 const err = 'Empty ID is not allowed.';
                 sandbox.log(err, 'error');
                 if (typeof callback === 'function') {
                     try {
                         callback.call(sandbox, new Error(err));
-                    } catch (err: unknown) {
-                        errorInCallback(err as Error);
+                    }
+                    catch (err) {
+                        errorInCallback(err);
                     }
                 }
                 return;
             }
-
             const isAlias = name.startsWith('alias.0.');
-
-            const _common: ioBroker.StateCommon = (common || {}) as ioBroker.StateCommon;
+            const _common = (common || {});
             _common.name = _common.name || name;
             _common.role = _common.role || 'state';
             _common.type = _common.type || 'mixed';
             if (!isAlias && initValue === undefined) {
                 initValue = _common.def;
             }
-
             native = native || {};
-
             // Check min, max and def values for number
             if (_common.type !== undefined && _common.type === 'number') {
                 let min = 0;
                 let max = 0;
                 let def = 0;
-                let err: string | undefined;
+                let err;
                 if (_common.min !== undefined) {
                     min = _common.min;
                     if (typeof min !== 'number') {
@@ -3466,8 +2712,9 @@ export function sandBox(
                             if (typeof callback === 'function') {
                                 try {
                                     callback.call(sandbox, new Error(err));
-                                } catch (err: unknown) {
-                                    errorInCallback(err as Error);
+                                }
+                                catch (err) {
+                                    errorInCallback(err);
                                 }
                             }
                             return;
@@ -3485,8 +2732,9 @@ export function sandBox(
                             if (typeof callback === 'function') {
                                 try {
                                     callback.call(sandbox, new Error(err));
-                                } catch (err: unknown) {
-                                    errorInCallback(err as Error);
+                                }
+                                catch (err) {
+                                    errorInCallback(err);
                                 }
                             }
                             return;
@@ -3494,11 +2742,11 @@ export function sandBox(
                         _common.max = max;
                     }
                 }
-
                 if (_common.def !== undefined) {
                     if (isAlias) {
                         delete _common.def;
-                    } else {
+                    }
+                    else {
                         def = _common.def;
                         if (typeof def !== 'number') {
                             def = parseFloat(def);
@@ -3508,8 +2756,9 @@ export function sandBox(
                                 if (typeof callback === 'function') {
                                     try {
                                         callback.call(sandbox, new Error(err));
-                                    } catch (err: unknown) {
-                                        errorInCallback(err as Error);
+                                    }
+                                    catch (err) {
+                                        errorInCallback(err);
                                     }
                                 }
                                 return;
@@ -3518,7 +2767,6 @@ export function sandBox(
                         }
                     }
                 }
-
                 if (_common.min !== undefined && _common.max !== undefined && min > max) {
                     _common.max = min;
                     _common.min = max;
@@ -3530,70 +2778,56 @@ export function sandBox(
                     _common.def = max;
                 }
             }
-
             if (sandbox.verbose) {
-                sandbox.log(
-                    `createState(name=${name}, initValue=${JSON.stringify(initValue)}, forceCreation=${JSON.stringify(forceCreation)}, common=${JSON.stringify(common)}, native=${JSON.stringify(native)}, isAlias=${isAlias})`,
-                    'debug',
-                );
+                sandbox.log(`createState(name=${name}, initValue=${JSON.stringify(initValue)}, forceCreation=${JSON.stringify(forceCreation)}, common=${JSON.stringify(common)}, native=${JSON.stringify(native)}, isAlias=${isAlias})`, 'debug');
             }
-
             let id = `${adapter.namespace}.${name}`;
             if (name.match(/^javascript\.\d+\./) || name.startsWith('0_userdata.0.') || isAlias) {
                 id = name;
             }
             if (id.match(/^javascript\.\d+\.scriptEnabled/)) {
-                sandbox.log(
-                    `Own states (${id}) should not be created in javascript.X.scriptEnabled.*! Please move the states to 0_userdata.0.*`,
-                    'info',
-                );
-            } else if (id.match(/^javascript\.\d+\.scriptProblem/)) {
-                sandbox.log(
-                    `Own states (${id}) should not be created in javascript.X.scriptProblem.*! Please move the states to 0_userdata.0.*`,
-                    'info',
-                );
+                sandbox.log(`Own states (${id}) should not be created in javascript.X.scriptEnabled.*! Please move the states to 0_userdata.0.*`, 'info');
             }
-
+            else if (id.match(/^javascript\.\d+\.scriptProblem/)) {
+                sandbox.log(`Own states (${id}) should not be created in javascript.X.scriptProblem.*! Please move the states to 0_userdata.0.*`, 'info');
+            }
             // User can create aliases by two ways:
             // - id is starting with "alias.0." and common.alias.id is set, so the state defined in common.alias.id will be created automatically if not exists
             // - id is not starting with "alias.0.", but common.alias is set, so the state defined in common.alias will be created automatically if not exists
             if (!isAlias && _common.alias) {
                 // check and create if not exists the alias
-                let alias: CommonAlias;
+                let alias;
                 if (typeof _common.alias === 'string') {
                     alias = {
                         id: _common.alias,
                     };
-                } else if (typeof _common.alias === 'boolean') {
+                }
+                else if (typeof _common.alias === 'boolean') {
                     const parts = id.split('.');
                     parts[0] = 'alias';
                     parts[1] = '0';
-
                     alias = {
                         id: parts.join('.'),
                     };
-                } else {
+                }
+                else {
                     alias = _common.alias;
                 }
                 delete _common.alias;
-
-                if (!(alias.id as string).startsWith('alias.0.')) {
-                    alias.id = `alias.0.${alias.id as string}`;
+                if (!alias.id.startsWith('alias.0.')) {
+                    alias.id = `alias.0.${alias.id}`;
                 }
-
-                let aObj: ioBroker.StateObject | null | undefined;
+                let aObj;
                 try {
-                    aObj = (await adapter.getForeignObjectAsync(alias.id as string)) as
-                        | ioBroker.StateObject
-                        | null
-                        | undefined;
-                } catch {
+                    aObj = (await adapter.getForeignObjectAsync(alias.id));
+                }
+                catch {
                     // ignore
                 }
                 if (!aObj) {
                     try {
-                        const _obj: ioBroker.StateObject = {
-                            _id: alias.id as string,
+                        const _obj = {
+                            _id: alias.id,
                             type: 'state',
                             common: {
                                 name: `Alias to ${id}`,
@@ -3610,29 +2844,30 @@ export function sandBox(
                             },
                             native: {},
                         };
-
-                        await adapter.setForeignObjectAsync(alias.id as string, _obj);
-                    } catch (err: unknown) {
-                        sandbox.log(`Cannot create alias "${alias.id as string}": ${err as Error}`, 'error');
+                        await adapter.setForeignObjectAsync(alias.id, _obj);
+                    }
+                    catch (err) {
+                        sandbox.log(`Cannot create alias "${alias.id}": ${err}`, 'error');
                     }
                 }
-            } else if (isAlias && _common.alias) {
+            }
+            else if (isAlias && _common.alias) {
                 if (typeof _common.alias === 'string') {
                     _common.alias = {
                         id: _common.alias,
                     };
                 }
                 const readId = typeof _common.alias.id === 'string' ? _common.alias.id : _common.alias.id.read;
-                let writeId: string | undefined =
-                    typeof _common.alias.id === 'string' ? _common.alias.id : _common.alias.id.write;
+                let writeId = typeof _common.alias.id === 'string' ? _common.alias.id : _common.alias.id.write;
                 if (writeId === readId) {
                     writeId = undefined;
                 }
                 // try to create the linked states
-                let aObj: ioBroker.StateObject | null | undefined;
+                let aObj;
                 try {
-                    aObj = (await adapter.getForeignObjectAsync(readId)) as ioBroker.StateObject | null | undefined;
-                } catch {
+                    aObj = (await adapter.getForeignObjectAsync(readId));
+                }
+                catch {
                     // ignore
                 }
                 if (!aObj) {
@@ -3649,17 +2884,16 @@ export function sandBox(
                             },
                             native: {},
                         });
-                    } catch (err: unknown) {
-                        sandbox.log(`Cannot create alias "${readId}": ${err as Error}`, 'error');
+                    }
+                    catch (err) {
+                        sandbox.log(`Cannot create alias "${readId}": ${err}`, 'error');
                     }
                 }
                 if (writeId && _common.write !== false) {
                     try {
-                        aObj = (await adapter.getForeignObjectAsync(writeId)) as
-                            | ioBroker.StateObject
-                            | null
-                            | undefined;
-                    } catch {
+                        aObj = (await adapter.getForeignObjectAsync(writeId));
+                    }
+                    catch {
                         // ignore
                     }
                     if (!aObj) {
@@ -3676,34 +2910,31 @@ export function sandBox(
                                 },
                                 native: {},
                             });
-                        } catch (err: unknown) {
-                            sandbox.log(`Cannot create alias "${writeId}": ${err as Error}`, 'error');
+                        }
+                        catch (err) {
+                            sandbox.log(`Cannot create alias "${writeId}": ${err}`, 'error');
                         }
                     }
                 }
             }
-
-            let obj: ioBroker.Object | null | undefined;
+            let obj;
             try {
                 obj = await adapter.getForeignObjectAsync(id);
-            } catch {
+            }
+            catch {
                 // ignore
             }
-
-            if (
-                obj?._id &&
+            if (obj?._id &&
                 validIdForAutomaticFolderCreation(obj._id) &&
                 obj.type === 'folder' &&
                 obj.native &&
-                obj.native.autocreated === 'by automatic ensure logic'
-            ) {
+                obj.native.autocreated === 'by automatic ensure logic') {
                 // ignore a default created object because we now have a better defined one
                 obj = null;
             }
-
             if (!obj || forceCreation) {
                 // create new one
-                const newObj: ioBroker.StateObject = {
+                const newObj = {
                     _id: id,
                     common: _common,
                     native,
@@ -3711,60 +2942,66 @@ export function sandBox(
                 };
                 try {
                     await adapter.setForeignObjectAsync(id, newObj);
-                } catch (err: unknown) {
-                    sandbox.log(`Cannot set object "${id}": ${err as Error}`, 'warn');
+                }
+                catch (err) {
+                    sandbox.log(`Cannot set object "${id}": ${err}`, 'warn');
                     if (typeof callback === 'function') {
                         try {
-                            callback.call(sandbox, err as Error);
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
+                            callback.call(sandbox, err);
+                        }
+                        catch (err) {
+                            errorInCallback(err);
                         }
                     }
                     return;
                 }
-
                 // Update meta objects
                 context.updateObjectContext(id, newObj);
-
                 if (!isAlias && initValue !== undefined) {
-                    if (isObject(initValue) && (initValue as ioBroker.State).ack !== undefined) {
+                    if ((0, tools_1.isObject)(initValue) && initValue.ack !== undefined) {
                         setStateHelper(sandbox, true, false, id, initValue, callback);
-                    } else {
+                    }
+                    else {
                         setStateHelper(sandbox, true, false, id, initValue, true, callback);
                     }
-                } else if (!isAlias && !forceCreation) {
+                }
+                else if (!isAlias && !forceCreation) {
                     setStateHelper(sandbox, true, false, id, null, callback);
-                } else if (isAlias) {
+                }
+                else if (isAlias) {
                     try {
                         const state = await adapter.getForeignStateAsync(id);
                         if (state) {
                             states[id] = state;
                         }
-                    } catch {
+                    }
+                    catch {
                         // ignore
                     }
                     if (typeof callback === 'function') {
                         try {
                             callback.call(sandbox, null, id);
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
+                        }
+                        catch (err) {
+                            errorInCallback(err);
                         }
                     }
-                } else if (typeof callback === 'function') {
+                }
+                else if (typeof callback === 'function') {
                     try {
                         callback.call(sandbox, null, id);
-                    } catch (err: unknown) {
-                        errorInCallback(err as Error);
+                    }
+                    catch (err) {
+                        errorInCallback(err);
                     }
                 }
                 await ensureObjectStructure(id);
-            } else {
+            }
+            else {
                 // state yet exists
-                if (
-                    !(adapter.config as JavaScriptAdapterConfig).subscribe &&
+                if (!adapter.config.subscribe &&
                     !states[id] &&
-                    states[`${adapter.namespace}.${id}`] === undefined
-                ) {
+                    states[`${adapter.namespace}.${id}`] === undefined) {
                     states[id] = {
                         val: null,
                         ack: true,
@@ -3777,22 +3014,20 @@ export function sandBox(
                 if (typeof callback === 'function') {
                     try {
                         callback.call(sandbox, null, id);
-                    } catch (err: unknown) {
-                        errorInCallback(err as Error);
+                    }
+                    catch (err) {
+                        errorInCallback(err);
                     }
                 }
-
                 await ensureObjectStructure(id);
             }
         },
-        deleteState: function (id: string, callback?: (err: Error | null | undefined, found?: boolean) => void): void {
+        deleteState: function (id, callback) {
             // todo: check rights
             // todo: also remove from "names"
-
             if (sandbox.verbose) {
                 sandbox.log(`deleteState(id=${id})`, 'debug');
             }
-
             let found = false;
             if ((id.startsWith('0_userdata.0.') || id.startsWith(adapter.namespace)) && objects[id]) {
                 found = true;
@@ -3800,217 +3035,185 @@ export function sandBox(
                 if (states[id]) {
                     delete states[id];
                 }
-
                 adapter.delForeignObject(id, function (err) {
                     err && sandbox.log(`Object for state "${id}" does not exist: ${err}`, 'warn');
-
                     adapter.delForeignState(id, function (err) {
                         err && sandbox.log(`Cannot delete state "${id}": ${err}`, 'error');
                         if (typeof callback === 'function') {
                             try {
                                 callback.call(sandbox, err, found);
-                            } catch (err: unknown) {
-                                errorInCallback(err as Error);
+                            }
+                            catch (err) {
+                                errorInCallback(err);
                             }
                         }
                     });
                 });
-            } else if (objects[`${adapter.namespace}.${id}`]) {
+            }
+            else if (objects[`${adapter.namespace}.${id}`]) {
                 delete objects[`${adapter.namespace}.${id}`];
                 found = true;
                 if (states[`${adapter.namespace}.${id}`]) {
                     delete states[`${adapter.namespace}.${id}`];
                 }
-
                 adapter.delObject(id, function (err) {
                     err && sandbox.log(`Object for state "${id}" does not exist: ${err}`, 'warn');
-
                     adapter.delState(id, function (err) {
                         err && sandbox.log(`Cannot delete state "${id}": ${err}`, 'error');
                         if (typeof callback === 'function') {
                             try {
                                 callback.call(sandbox, err, found);
-                            } catch (err: unknown) {
-                                errorInCallback(err as Error);
+                            }
+                            catch (err) {
+                                errorInCallback(err);
                             }
                         }
                     });
                 });
-            } else {
+            }
+            else {
                 const err = 'Not found';
                 sandbox.log(`Cannot delete state "${id}": ${err}`, 'error');
                 if (typeof callback === 'function') {
                     try {
                         callback.call(sandbox, new Error(err), found);
-                    } catch (err: unknown) {
-                        errorInCallback(err as Error);
+                    }
+                    catch (err) {
+                        errorInCallback(err);
                     }
                 }
             }
         },
-        sendTo: function (
-            _adapter: string,
-            cmd: string,
-            msg?: any,
-            options?: Record<string, any> | ((result: any, options: Record<string, any>, _adapter: string) => void),
-            callback?: (result: any, options: Record<string, any>, _adapter: string) => void,
-        ): void {
+        sendTo: function (_adapter, cmd, msg, options, callback) {
             const defaultTimeout = 20000;
-
             if (typeof options === 'function') {
-                callback = options as (result: any, options: Record<string, any>, _adapter: string) => void;
+                callback = options;
                 options = { timeout: defaultTimeout };
             }
-
-            let timeout: NodeJS.Timeout | null = null;
+            let timeout = null;
             if (typeof callback === 'function') {
                 const timeoutDuration = parseInt(options?.timeout, 10) || defaultTimeout;
-
                 timeout = setTimeout(() => {
                     timeout = null;
-
                     if (sandbox.verbose) {
                         sandbox.log(`sendTo => timeout: ${timeoutDuration}`, 'debug');
                     }
-
                     if (typeof callback === 'function') {
                         try {
-                            callback.call(sandbox, { error: 'timeout' }, options as Record<string, any>, _adapter);
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
+                            callback.call(sandbox, { error: 'timeout' }, options, _adapter);
+                        }
+                        catch (err) {
+                            errorInCallback(err);
                         }
                         callback = undefined;
                     }
                 }, timeoutDuration);
             }
-
-            let cbFunc: undefined | ((result: any) => void);
+            let cbFunc;
             if (timeout) {
-                cbFunc = function (result: any): void {
+                cbFunc = function (result) {
                     if (timeout) {
                         clearTimeout(timeout);
                         timeout = null;
                     }
-
                     if (sandbox.verbose && result) {
                         sandbox.log(`sendTo => ${JSON.stringify(result)}`, 'debug');
                     }
-
                     if (typeof callback === 'function') {
                         try {
-                            callback.call(sandbox, result, options as Record<string, any>, _adapter);
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
+                            callback.call(sandbox, result, options, _adapter);
+                        }
+                        catch (err) {
+                            errorInCallback(err);
                         }
                         callback = undefined;
                     }
                 };
             }
-
             // If specific instance
             if (_adapter.match(/\.[0-9]+$/)) {
                 sandbox.verbose &&
-                    sandbox.log(
-                        `sendTo(instance=${_adapter}, cmd=${cmd}, msg=${JSON.stringify(msg)}, hasCallback=${typeof callback === 'function'})`,
-                        'info',
-                    );
-
+                    sandbox.log(`sendTo(instance=${_adapter}, cmd=${cmd}, msg=${JSON.stringify(msg)}, hasCallback=${typeof callback === 'function'})`, 'info');
                 adapter.sendTo(_adapter, cmd, msg, cbFunc, options);
-            } else {
+            }
+            else {
                 // Send it to all instances
-                context.adapter.getObjectView(
-                    'system',
-                    'instance',
-                    { startkey: `system.adapter.${_adapter}.`, endkey: `system.adapter.${_adapter}.\u9999` },
-                    options,
-                    (err, res) => {
-                        if (err || !res) {
-                            sandbox.log(`sendTo failed: ${err?.message}`, 'error');
-                            return;
-                        }
-
-                        const instances = res.rows.map(item => item.id.substring('system.adapter.'.length));
-
-                        instances.forEach(instance => {
-                            sandbox.verbose &&
-                                sandbox.log(
-                                    `sendTo(instance=${instance}, cmd=${cmd}, msg=${JSON.stringify(msg)}, hasCallback=${typeof callback === 'function'})`,
-                                    'info',
-                                );
-                            adapter.sendTo(instance, cmd, msg, cbFunc, options);
-                        });
-                    },
-                );
+                context.adapter.getObjectView('system', 'instance', { startkey: `system.adapter.${_adapter}.`, endkey: `system.adapter.${_adapter}.\u9999` }, options, (err, res) => {
+                    if (err || !res) {
+                        sandbox.log(`sendTo failed: ${err?.message}`, 'error');
+                        return;
+                    }
+                    const instances = res.rows.map(item => item.id.substring('system.adapter.'.length));
+                    instances.forEach(instance => {
+                        sandbox.verbose &&
+                            sandbox.log(`sendTo(instance=${instance}, cmd=${cmd}, msg=${JSON.stringify(msg)}, hasCallback=${typeof callback === 'function'})`, 'info');
+                        adapter.sendTo(instance, cmd, msg, cbFunc, options);
+                    });
+                });
             }
         },
-        sendto: function (
-            _adapter: string,
-            cmd: string,
-            msg: any,
-            callback?: (result: any, options: Record<string, any>, _adapter: string) => void,
-        ): void {
+        sendto: function (_adapter, cmd, msg, callback) {
             return sandbox.sendTo(_adapter, cmd, msg, callback);
         },
-        sendToAsync: function (_adapter: string, cmd: string, msg?: any, options?: Record<string, any>): Promise<any> {
+        sendToAsync: function (_adapter, cmd, msg, options) {
             return new Promise((resolve, reject) => {
                 sandbox.sendTo(_adapter, cmd, msg, options, res => {
                     if (!res || res.error) {
                         reject(res ? new Error(res.error) : new Error('Unknown error'));
-                    } else {
+                    }
+                    else {
                         resolve(res);
                     }
                 });
             });
         },
-        sendToHost: function (host: string, cmd: string, msg?: any, callback?: (result: any) => void): void {
-            if (!(adapter.config as JavaScriptAdapterConfig).enableSendToHost) {
-                const error =
-                    'sendToHost is not available. Please enable "Enable SendToHost" option in instance settings';
+        sendToHost: function (host, cmd, msg, callback) {
+            if (!adapter.config.enableSendToHost) {
+                const error = 'sendToHost is not available. Please enable "Enable SendToHost" option in instance settings';
                 sandbox.log(error, 'error');
-
                 if (typeof callback === 'function') {
                     // leave it as a normal function and not as a lambda, to hide the "this" object
                     setImmediate(function () {
                         callback(error);
                     });
                 }
-            } else {
+            }
+            else {
                 sandbox.verbose &&
                     sandbox.log(`sendToHost(adapter=${host}, cmd=${cmd}, msg=${JSON.stringify(msg)})`, 'info');
                 adapter.sendToHost(host, cmd, msg, callback);
             }
         },
-        sendToHostAsync: function (host: string, cmd: string, msg?: any): Promise<any> {
+        sendToHostAsync: function (host, cmd, msg) {
             return new Promise((resolve, reject) => {
                 sandbox.sendToHost(host, cmd, msg, res => {
                     if (!res || res.error) {
                         reject(res ? new Error(res.error) : new Error('Unknown error'));
-                    } else {
+                    }
+                    else {
                         resolve(res);
                     }
                 });
             });
         },
-        registerNotification: function (msg: string, isAlert?: boolean): void {
+        registerNotification: function (msg, isAlert) {
             const category = !isAlert ? 'scriptMessage' : 'scriptAlert';
-
             if (sandbox.verbose) {
                 sandbox.log(`registerNotification(msg=${msg}, category=${category})`, 'info');
             }
-
             adapter.registerNotification('javascript', category, msg);
         },
-        setInterval: function (callback: (...args: any[]) => void, ms: number, ...args: any[]): NodeJS.Timeout | null {
+        setInterval: function (callback, ms, ...args) {
             if (typeof callback === 'function') {
-                const int: NodeJS.Timeout = setInterval(() => {
+                const int = setInterval(() => {
                     try {
                         callback.call(sandbox, ...args);
-                    } catch (err: unknown) {
-                        errorInCallback(err as Error);
+                    }
+                    catch (err) {
+                        errorInCallback(err);
                     }
                 }, ms);
                 script.intervals.push(int);
-
                 if (sandbox.verbose) {
                     sandbox.log(`setInterval(ms=${ms})`, 'info');
                 }
@@ -4019,7 +3222,7 @@ export function sandBox(
             sandbox.log(`Invalid callback for setInterval! - ${typeof callback}`, 'error');
             return null;
         },
-        clearInterval: function (id: NodeJS.Timeout): void {
+        clearInterval: function (id) {
             const pos = script.intervals.indexOf(id);
             if (pos !== -1) {
                 if (sandbox.verbose) {
@@ -4027,13 +3230,14 @@ export function sandBox(
                 }
                 clearInterval(id);
                 script.intervals.splice(pos, 1);
-            } else {
+            }
+            else {
                 if (sandbox.verbose) {
                     sandbox.log('clearInterval() => not found', 'warn');
                 }
             }
         },
-        setTimeout: function (callback: (args?: any[]) => void, ms: number, ...args: any[]): NodeJS.Timeout | null {
+        setTimeout: function (callback, ms, ...args) {
             if (typeof callback === 'function') {
                 const to = setTimeout(() => {
                     // Remove timeout from the list
@@ -4041,24 +3245,23 @@ export function sandBox(
                     if (pos !== -1) {
                         script.timeouts.splice(pos, 1);
                     }
-
                     try {
                         callback.call(sandbox, ...args);
-                    } catch (err: unknown) {
-                        errorInCallback(err as Error);
+                    }
+                    catch (err) {
+                        errorInCallback(err);
                     }
                 }, ms);
                 if (sandbox.verbose) {
                     sandbox.log(`setTimeout(ms=${ms})`, 'info');
                 }
-
                 script.timeouts.push(to);
                 return to;
             }
             sandbox.log(`Invalid callback for setTimeout! - ${typeof callback}`, 'error');
             return null;
         },
-        clearTimeout: function (id: NodeJS.Timeout): void {
+        clearTimeout: function (id) {
             const pos = script.timeouts.indexOf(id);
             if (pos !== -1) {
                 if (sandbox.verbose) {
@@ -4066,49 +3269,49 @@ export function sandBox(
                 }
                 clearTimeout(id);
                 script.timeouts.splice(pos, 1);
-            } else {
+            }
+            else {
                 if (sandbox.verbose) {
                     sandbox.log('clearTimeout() => not found', 'warn');
                 }
             }
         },
-        setImmediate: function (callback: (..._args: any[]) => void, ...args: any[]): void {
+        setImmediate: function (callback, ...args) {
             if (typeof callback === 'function') {
                 setImmediate(() => {
                     try {
                         callback.apply(sandbox, args);
-                    } catch (err: unknown) {
-                        errorInCallback(err as Error);
+                    }
+                    catch (err) {
+                        errorInCallback(err);
                     }
                 });
                 if (sandbox.verbose) {
                     sandbox.log('setImmediate()', 'info');
                 }
-            } else {
+            }
+            else {
                 sandbox.log(`Invalid callback for setImmediate! - ${typeof callback}`, 'error');
             }
         },
-        cb: function (callback: (..._args: any[]) => void): (...args: any[]) => void {
-            return function (args: any[]) {
+        cb: function (callback) {
+            return function (args) {
                 if (context.scripts[name]?._id === sandbox._id) {
                     if (typeof callback === 'function') {
                         try {
                             callback.apply(sandbox, args);
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
+                        }
+                        catch (err) {
+                            errorInCallback(err);
                         }
                     }
-                } else {
+                }
+                else {
                     sandbox.log(`Callback for old version of script: ${name}`, 'warn');
                 }
             };
         },
-        compareTime: function (
-            startTime: iobJS.AstroDate | string | Date | number,
-            endTime: iobJS.AstroDate | string | Date | number | null,
-            operation: 'between' | 'not between' | '<' | '<=' | '>' | '>=' | '==' | '<>' | '!=',
-            time?: iobJS.AstroDate | string | Date | number,
-        ): boolean {
+        compareTime: function (startTime, endTime, operation, time) {
             if (startTime && typeof startTime === 'string') {
                 const pos = consts.astroListLow.indexOf(startTime.toLowerCase());
                 if (pos !== -1) {
@@ -4119,27 +3322,25 @@ export function sandBox(
                             minute: '2-digit',
                             hour12: false,
                         });
-                    } else {
+                    }
+                    else {
                         startTime = 0;
                     }
                 }
-            } else if (startTime && isObject(startTime) && (startTime as iobJS.AstroDate).astro) {
-                const aTime = sandbox.getAstroDate(
-                    (startTime as iobJS.AstroDate).astro,
-                    (startTime as iobJS.AstroDate).date || new Date(),
-                    (startTime as iobJS.AstroDate).offset || 0,
-                );
+            }
+            else if (startTime && (0, tools_1.isObject)(startTime) && startTime.astro) {
+                const aTime = sandbox.getAstroDate(startTime.astro, startTime.date || new Date(), startTime.offset || 0);
                 if (aTime) {
                     startTime = aTime.toLocaleTimeString([], {
                         hour: '2-digit',
                         minute: '2-digit',
                         hour12: false,
                     });
-                } else {
+                }
+                else {
                     startTime = 0;
                 }
             }
-
             if (endTime && typeof endTime === 'string') {
                 const pos = consts.astroListLow.indexOf(endTime.toLowerCase());
                 if (pos !== -1) {
@@ -4151,12 +3352,9 @@ export function sandBox(
                             hour12: false,
                         }) || 0;
                 }
-            } else if (endTime && isObject(endTime) && (endTime as iobJS.AstroDate).astro) {
-                const aTime = sandbox.getAstroDate(
-                    (endTime as iobJS.AstroDate).astro,
-                    (endTime as iobJS.AstroDate).date || new Date(),
-                    (endTime as iobJS.AstroDate).offset || 0,
-                );
+            }
+            else if (endTime && (0, tools_1.isObject)(endTime) && endTime.astro) {
+                const aTime = sandbox.getAstroDate(endTime.astro, endTime.date || new Date(), endTime.offset || 0);
                 endTime =
                     aTime?.toLocaleTimeString([], {
                         hour: '2-digit',
@@ -4164,56 +3362,54 @@ export function sandBox(
                         hour12: false,
                     }) || 0;
             }
-
             // --- Convert "time" to number
-            let nTime: number | undefined;
+            let nTime;
             // maybe it is astro date like 'sunrise' or 'sunset'
             if (time && typeof time === 'string') {
                 const pos = consts.astroListLow.indexOf(time.toLowerCase());
                 if (pos !== -1) {
                     nTime = sandbox.getAstroDate(consts.astroList[pos])?.getTime() || 0;
                 }
-            } else if (time && isObject(time) && (time as iobJS.AstroDate).astro) {
+            }
+            else if (time && (0, tools_1.isObject)(time) && time.astro) {
                 nTime =
                     sandbox
-                        .getAstroDate(
-                            (time as iobJS.AstroDate).astro,
-                            (time as iobJS.AstroDate).date || new Date(),
-                            (time as iobJS.AstroDate).offset || 0,
-                        )
+                        .getAstroDate(time.astro, time.date || new Date(), time.offset || 0)
                         ?.getTime() || 0;
             }
-
             let daily = true;
             if (time) {
                 daily = false;
             }
             // if not astro date
             if (!nTime) {
-                if (time && !isObject(time)) {
+                if (time && !(0, tools_1.isObject)(time)) {
                     if (typeof time === 'string' && !time.includes(' ') && !time.includes('T')) {
                         const parts = time.split(':');
                         const oTime = new Date();
                         oTime.setHours(parseInt(parts[0], 10));
                         oTime.setMinutes(parseInt(parts[1], 10));
                         oTime.setMilliseconds(0);
-
                         if (parts.length === 3) {
                             oTime.setSeconds(parseInt(parts[2], 10));
-                        } else {
+                        }
+                        else {
                             oTime.setSeconds(0);
                         }
                         nTime = oTime.getTime();
-                    } else {
-                        nTime = new Date(time as string | number).getTime();
                     }
-                } else if (!time) {
+                    else {
+                        nTime = new Date(time).getTime();
+                    }
+                }
+                else if (!time) {
                     const oTime = new Date();
                     oTime.setMilliseconds(0);
                     nTime = oTime.getTime();
-                } else {
+                }
+                else {
                     // If Date
-                    nTime = (time as Date).getTime();
+                    nTime = time.getTime();
                 }
             }
             // --- End of conversion "time" to number
@@ -4224,23 +3420,24 @@ export function sandBox(
                     startTime.setHours(parseInt(parts[0], 10));
                     startTime.setMinutes(parseInt(parts[1], 10));
                     startTime.setMilliseconds(0);
-
                     if (parts.length === 3) {
                         startTime.setSeconds(parseInt(parts[2], 10));
-                    } else {
+                    }
+                    else {
                         startTime.setSeconds(0);
                     }
-                } else {
+                }
+                else {
                     daily = false;
                     startTime = new Date(startTime);
                 }
-            } else {
+            }
+            else {
                 daily = false;
-                startTime = new Date(startTime as number | Date);
+                startTime = new Date(startTime);
             }
             const nStartTime = startTime.getTime();
-
-            let nEndTime: number | null;
+            let nEndTime;
             if (endTime && typeof endTime === 'string') {
                 if (!endTime.includes(' ') && !endTime.includes('T')) {
                     const parts = endTime.split(':');
@@ -4248,29 +3445,31 @@ export function sandBox(
                     endTime.setHours(parseInt(parts[0], 10));
                     endTime.setMinutes(parseInt(parts[1], 10));
                     endTime.setMilliseconds(0);
-
                     if (parts.length === 3) {
                         endTime.setSeconds(parseInt(parts[2], 10));
-                    } else {
+                    }
+                    else {
                         endTime.setSeconds(0);
                     }
-                } else {
+                }
+                else {
                     daily = false;
                     endTime = new Date(endTime);
                 }
-            } else if (endTime) {
+            }
+            else if (endTime) {
                 daily = false;
-                endTime = new Date(endTime as number | Date);
-            } else {
+                endTime = new Date(endTime);
+            }
+            else {
                 endTime = null;
             }
-
             if (endTime) {
                 nEndTime = endTime.getTime();
-            } else {
+            }
+            else {
                 nEndTime = null;
             }
-
             if (operation === 'between') {
                 if (nEndTime) {
                     if (nStartTime > nEndTime && daily) {
@@ -4281,7 +3480,6 @@ export function sandBox(
                 sandbox.log(`missing or unrecognized endTime expression: ${JSON.stringify(endTime)}`, 'warn');
                 return false;
             }
-
             if (operation === 'not between') {
                 if (nEndTime) {
                     if (nStartTime > nEndTime && daily) {
@@ -4292,7 +3490,6 @@ export function sandBox(
                 sandbox.log(`missing or unrecognized endTime expression: ${JSON.stringify(endTime)}`, 'warn');
                 return false;
             }
-
             if (operation === '>') {
                 return nTime > nStartTime;
             }
@@ -4311,18 +3508,17 @@ export function sandBox(
             if (operation === '<>' || operation === '!=') {
                 return nTime !== nStartTime;
             }
-            sandbox.log(`Invalid operator: ${operation as string}`, 'warn');
+            sandbox.log(`Invalid operator: ${operation}`, 'warn');
             return false;
         },
-        onStop: function (cb: () => void, timeout?: number): void {
+        onStop: function (cb, timeout) {
             if (sandbox.verbose) {
                 sandbox.log(`onStop(timeout=${timeout})`, 'info');
             }
-
             script.onStopCb = cb;
             script.onStopTimeout = timeout || 1000;
         },
-        formatValue: function (value: number | string, decimals: number | string, format?: string): string {
+        formatValue: function (value, decimals, format) {
             if (typeof decimals === 'string') {
                 format = decimals;
                 decimals = 0;
@@ -4330,21 +3526,19 @@ export function sandBox(
             if (!format) {
                 if (adapter.isFloatComma !== undefined) {
                     format = adapter.isFloatComma ? '.,' : ',.';
-                } else if (objects['system.config'] && objects['system.config'].common) {
+                }
+                else if (objects['system.config'] && objects['system.config'].common) {
                     format = objects['system.config'].common.isFloatComma ? '.,' : ',.';
                 }
             }
             return adapter.formatValue(value, decimals, format);
         },
-        formatDate: function (
-            date: Date | string | number | iobJS.AstroDate,
-            format?: string,
-            language?: ioBroker.Languages,
-        ): string {
+        formatDate: function (date, format, language) {
             if (!format) {
                 if (adapter.dateFormat) {
                     format = adapter.dateFormat;
-                } else {
+                }
+                else {
                     format =
                         objects['system.config'] && objects['system.config'].common
                             ? objects['system.config'].common.dateFormat || 'DD.MM.YYYY'
@@ -4358,136 +3552,110 @@ export function sandBox(
                 if (pos !== -1) {
                     date = sandbox.getAstroDate(consts.astroList[pos])?.getTime() || 0;
                 }
-            } else if (date && isObject(date) && (date as iobJS.AstroDate).astro) {
+            }
+            else if (date && (0, tools_1.isObject)(date) && date.astro) {
                 date =
                     sandbox
-                        .getAstroDate(
-                            (date as iobJS.AstroDate).astro,
-                            (date as iobJS.AstroDate).date || new Date(),
-                            (date as iobJS.AstroDate).offset || 0,
-                        )
+                        .getAstroDate(date.astro, date.date || new Date(), date.offset || 0)
                         ?.getTime() || 0;
             }
-
             if (format.match(/[WНOО]+/)) {
-                let text: string = adapter.formatDate(date as Date | string | number, format);
+                let text = adapter.formatDate(date, format);
                 if (!language || !consts.dayOfWeeksFull[language]) {
                     language =
                         adapter.language ||
-                        (objects['system.config'] &&
-                            objects['system.config'].common &&
-                            objects['system.config'].common.language) ||
-                        'en';
-                    if (!consts.dayOfWeeksFull[language as ioBroker.Languages]) {
+                            (objects['system.config'] &&
+                                objects['system.config'].common &&
+                                objects['system.config'].common.language) ||
+                            'en';
+                    if (!consts.dayOfWeeksFull[language]) {
                         language = 'en';
                     }
                 }
                 if (typeof date === 'number' || typeof date === 'string') {
                     date = new Date(date);
-                } else if (typeof (date as Date).getMonth !== 'function') {
+                }
+                else if (typeof date.getMonth !== 'function') {
                     sandbox.log(`Invalid date object provided: ${JSON.stringify(date)}`, 'error');
                     return 'Invalid date';
                 }
-                const d: number = (date as Date).getDay();
-                text = text.replace('НН', consts.dayOfWeeksFull[language as ioBroker.Languages][d]);
+                const d = date.getDay();
+                text = text.replace('НН', consts.dayOfWeeksFull[language][d]);
                 let initialText = text;
-                text = text.replace('WW', consts.dayOfWeeksFull[language as ioBroker.Languages][d]);
-
+                text = text.replace('WW', consts.dayOfWeeksFull[language][d]);
                 if (initialText === text) {
-                    text = text.replace('W', consts.dayOfWeeksShort[language as ioBroker.Languages][d]);
+                    text = text.replace('W', consts.dayOfWeeksShort[language][d]);
                 }
-
-                text = text.replace('Н', consts.dayOfWeeksShort[language as ioBroker.Languages][d]);
-                text = text.replace('Н', consts.dayOfWeeksShort[language as ioBroker.Languages][d]);
-                const m: number = (date as Date).getMonth();
+                text = text.replace('Н', consts.dayOfWeeksShort[language][d]);
+                text = text.replace('Н', consts.dayOfWeeksShort[language][d]);
+                const m = date.getMonth();
                 initialText = text;
-                text = text.replace('OOO', consts.monthFullGen[language as ioBroker.Languages][m]);
-                text = text.replace('ООО', consts.monthFullGen[language as ioBroker.Languages][m]);
-                text = text.replace('OO', consts.monthFull[language as ioBroker.Languages][m]);
-                text = text.replace('ОО', consts.monthFull[language as ioBroker.Languages][m]);
-
+                text = text.replace('OOO', consts.monthFullGen[language][m]);
+                text = text.replace('ООО', consts.monthFullGen[language][m]);
+                text = text.replace('OO', consts.monthFull[language][m]);
+                text = text.replace('ОО', consts.monthFull[language][m]);
                 if (initialText === text) {
-                    text = text.replace('O', consts.monthShort[language as ioBroker.Languages][m]);
+                    text = text.replace('O', consts.monthShort[language][m]);
                 }
                 return text;
             }
-            return adapter.formatDate(date as string | number | Date, format);
+            return adapter.formatDate(date, format);
         },
-        formatTimeDiff: function (diff: number, format?: string): string {
+        formatTimeDiff: function (diff, format) {
             if (!format) {
                 format = 'hh:mm:ss';
             }
-
             let text = format;
-
             if (sandbox.verbose) {
                 sandbox.log(`formatTimeDiff(format=${format}, diff=${diff})`, 'debug');
             }
-
             const second = 1000;
             const minute = 60 * second;
             const hour = 60 * minute;
             const day = 24 * hour;
             const neg = diff < 0;
             diff = Math.abs(diff);
-
             if (/DD|TT|ДД|D|T|Д/.test(text)) {
                 const days = Math.floor(diff / day);
-
                 text = text.replace(/DD|TT|ДД/, days < 10 ? `0${days}` : days.toString());
                 text = text.replace(/[DTД]/, days.toString());
-
                 if (sandbox.verbose) {
                     sandbox.log(`formatTimeDiff(format=${format}, text=${text}, days=${days})`, 'debug');
                 }
-
                 diff -= days * day;
             }
-
             if (/hh|SS|чч|h|S|ч/.test(text)) {
                 const hours = Math.floor(diff / hour);
-
                 text = text.replace(/hh|SS|чч/, hours < 10 ? `0${hours}` : hours.toString());
                 text = text.replace(/[hSч]/, hours.toString());
-
                 sandbox.verbose &&
                     sandbox.log(`formatTimeDiff(format=${format}, text=${text}, hours=${hours})`, 'debug');
-
                 diff -= hours * hour;
             }
-
             if (/mm|мм|m|м/.test(text)) {
                 const minutes = Math.floor(diff / minute);
-
                 text = text.replace(/mm|мм/, minutes < 10 ? `0${minutes}` : minutes.toString());
                 text = text.replace(/[mм]/, minutes.toString());
-
                 sandbox.verbose &&
                     sandbox.log(`formatTimeDiff(format=${format}, text=${text}, minutes=${minutes})`, 'debug');
-
                 diff -= minutes * minute;
             }
-
             if (/ss|сс|мм|s|с/.test(text)) {
                 const seconds = Math.floor(diff / second);
-
                 text = text.replace(/ss|сс/, seconds < 10 ? `0${seconds}` : seconds.toString());
                 text = text.replace(/[sс]/, seconds.toString());
-
                 sandbox.verbose &&
                     sandbox.log(`formatTimeDiff(format=${format}, text=${text}, seconds=${seconds})`, 'debug');
                 // diff -= seconds * second; // no milliseconds
             }
-
             if (sandbox.verbose) {
                 sandbox.log(`formatTimeDiff(format=${format}, text=${text})`, 'debug');
             }
-
             return neg ? `-${text}` : text;
         },
-        getDateObject: function (date: Date | number | string): Date {
-            if (isObject(date)) {
-                return date as Date;
+        getDateObject: function (date) {
+            if ((0, tools_1.isObject)(date)) {
+                return date;
             }
             if (typeof date === 'undefined') {
                 return new Date();
@@ -4495,70 +3663,55 @@ export function sandBox(
             if (typeof date !== 'string') {
                 return new Date(date);
             }
-
             // If only hours: 20, 2
             if (date.match(/^\d?\d$/)) {
                 const _now = new Date();
                 date = `${_now.getFullYear()}-${_now.getMonth() + 1}-${_now.getDate()} ${date}:00`;
-            } else if (date.match(/^\d?\d:\d\d(:\d\d)?$/)) {
+            }
+            else if (date.match(/^\d?\d:\d\d(:\d\d)?$/)) {
                 // 20:00, 2:00, 20:00:00, 2:00:00
                 const now = new Date();
                 date = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${date}`;
             }
-
             return new Date(date);
         },
-        writeFile: function (
-            _adapter: string,
-            fileName: string,
-            data: string | Buffer | ((err: Error) => void),
-            callback?: (err?: Error | null) => void,
-        ): void {
+        writeFile: function (_adapter, fileName, data, callback) {
             if (typeof data === 'function' || !data) {
-                callback = data as (err?: Error | null) => void;
+                callback = data;
                 data = fileName;
                 fileName = _adapter;
                 _adapter = '0_userdata.0';
             }
             _adapter = _adapter || '0_userdata.0';
-
             if (debug) {
-                sandbox.log(
-                    `writeFile(adapter=${_adapter}, fileName=${fileName}) - ${words._('was not executed, while debug mode is active')}`,
-                    'warn',
-                );
+                sandbox.log(`writeFile(adapter=${_adapter}, fileName=${fileName}) - ${words._('was not executed, while debug mode is active')}`, 'warn');
                 if (typeof callback === 'function') {
-                    setTimeout(function (): void {
+                    setTimeout(function () {
                         try {
                             callback.call(sandbox);
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
+                        }
+                        catch (err) {
+                            errorInCallback(err);
                         }
                     }, 0);
                 }
-            } else {
+            }
+            else {
                 if (sandbox.verbose) {
                     sandbox.log(`writeFile(adapter=${_adapter}, fileName=${fileName})`, 'info');
                 }
                 if (callback) {
                     adapter.writeFile(_adapter, fileName, data, callback);
-                } else {
+                }
+                else {
                     // @ts-expect-error should be fixed in js-controller
                     adapter.writeFile(_adapter, fileName, data);
                 }
             }
         },
-        readFile: function (
-            _adapter: string,
-            fileName: string | ((err: Error | null | undefined, data?: Buffer | string, mimeType?: string) => void),
-            callback?: (err: Error | null | undefined, data?: Buffer | string, mimeType?: string) => void,
-        ): void {
+        readFile: function (_adapter, fileName, callback) {
             if (typeof fileName === 'function') {
-                callback = fileName as (
-                    err: Error | null | undefined,
-                    data?: Buffer | string,
-                    mimeType?: string,
-                ) => void;
+                callback = fileName;
                 fileName = _adapter;
                 _adapter = '0_userdata.0';
             }
@@ -4570,245 +3723,179 @@ export function sandBox(
             if (sandbox.verbose) {
                 sandbox.log(`readFile(adapter=${_adapter}, fileName=${fileName})`, 'info');
             }
-
-            adapter.fileExists(_adapter, fileName, (error: Error | null | undefined, result?: boolean): void => {
+            adapter.fileExists(_adapter, fileName, (error, result) => {
                 if (error) {
                     callback(error);
-                } else if (!result) {
+                }
+                else if (!result) {
                     callback(new Error('Not exists'));
-                } else {
+                }
+                else {
                     adapter.readFile(_adapter, fileName, callback);
                 }
             });
         },
-        unlink: function (
-            _adapter: string,
-            fileName: string | ((err?: Error | null) => void),
-            callback?: (err?: Error | null) => void,
-        ): void {
+        unlink: function (_adapter, fileName, callback) {
             if (typeof fileName === 'function') {
                 callback = fileName;
                 fileName = _adapter;
                 _adapter = '0_userdata.0';
             }
             _adapter = _adapter || '0_userdata.0';
-
             if (debug) {
-                sandbox.log(
-                    `unlink(adapter=${_adapter}, fileName=${fileName}) - ${words._('was not executed, while debug mode is active')}`,
-                    'warn',
-                );
+                sandbox.log(`unlink(adapter=${_adapter}, fileName=${fileName}) - ${words._('was not executed, while debug mode is active')}`, 'warn');
                 if (typeof callback === 'function') {
-                    setTimeout(function (): void {
+                    setTimeout(function () {
                         try {
                             callback.call(sandbox);
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
+                        }
+                        catch (err) {
+                            errorInCallback(err);
                         }
                     }, 0);
                 }
-            } else {
+            }
+            else {
                 if (sandbox.verbose) {
                     sandbox.log(`unlink(adapter=${_adapter}, fileName=${fileName})`, 'info');
                 }
                 if (callback) {
                     adapter.unlink(_adapter, fileName, callback);
-                } else {
+                }
+                else {
                     // @ts-expect-error should be fixed in js-controller
                     adapter.unlink(_adapter, fileName);
                 }
             }
         },
-        delFile: function (
-            _adapter: string,
-            fileName: string | ((err?: Error | null) => void),
-            callback?: (err?: Error | null) => void,
-        ): void {
-            return sandbox.unlink(_adapter, fileName as string, callback);
+        delFile: function (_adapter, fileName, callback) {
+            return sandbox.unlink(_adapter, fileName, callback);
         },
-        rename: function (_adapter: string, oldName: string, newName: string, callback?: (err?: Error | null) => void) {
+        rename: function (_adapter, oldName, newName, callback) {
             _adapter = _adapter || '0_userdata.0';
-
             if (debug) {
-                sandbox.log(
-                    `rename(adapter=${_adapter}, oldName=${oldName}, newName=${newName}) - ${words._('was not executed, while debug mode is active')}`,
-                    'warn',
-                );
+                sandbox.log(`rename(adapter=${_adapter}, oldName=${oldName}, newName=${newName}) - ${words._('was not executed, while debug mode is active')}`, 'warn');
                 if (typeof callback === 'function') {
                     setTimeout(function () {
                         try {
                             callback.call(sandbox);
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
+                        }
+                        catch (err) {
+                            errorInCallback(err);
                         }
                     }, 0);
                 }
-            } else {
+            }
+            else {
                 sandbox.verbose &&
                     sandbox.log(`rename(adapter=${_adapter}, oldName=${oldName}, newName=${newName})`, 'info');
                 if (callback) {
                     adapter.rename(_adapter, oldName, newName, callback);
-                } else {
+                }
+                else {
                     // @ts-expect-error should be fixed in js-controller
                     adapter.rename(_adapter, oldName, newName);
                 }
             }
         },
-        renameFile: function (
-            _adapter: string,
-            oldName: string,
-            newName: string,
-            callback?: (err?: Error | null) => void,
-        ): void {
+        renameFile: function (_adapter, oldName, newName, callback) {
             return sandbox.rename(_adapter, oldName, newName, callback);
         },
-        getHistory: function (
-            instance: string | (ioBroker.GetHistoryOptions & { id: string; timeout?: number | string }),
-            options:
-                | (ioBroker.GetHistoryOptions & { id?: string; timeout?: number | string })
-                | ((
-                      error: Error | null,
-                      result?: ioBroker.GetHistoryResult | null,
-                      options?: ioBroker.GetHistoryOptions & { id: string; timeout?: number | string },
-                      instance?: string,
-                  ) => void),
-            callback?: (
-                error: Error | null,
-                result?: ioBroker.GetHistoryResult | null,
-                options?: ioBroker.GetHistoryOptions & { id: string; timeout?: number | string },
-                instance?: string,
-            ) => void,
-        ): void {
-            if (isObject(instance)) {
-                callback = options as (
-                    error: Error | null,
-                    result?: ioBroker.GetHistoryResult | null,
-                    options?: ioBroker.GetHistoryOptions & { id: string; timeout?: number | string },
-                    instance?: string,
-                ) => void;
-                options = instance as ioBroker.GetHistoryOptions & { id?: string; timeout?: number | string };
+        getHistory: function (instance, options, callback) {
+            if ((0, tools_1.isObject)(instance)) {
+                callback = options;
+                options = instance;
                 instance = '';
             }
-
             if (typeof callback !== 'function') {
                 return sandbox.log('No callback found!', 'error');
             }
-            if (!isObject(options)) {
+            if (!(0, tools_1.isObject)(options)) {
                 return sandbox.log('No options found!', 'error');
             }
-            if (!(options as ioBroker.GetHistoryOptions & { id?: string; timeout?: number | string }).id) {
+            if (!options.id) {
                 return sandbox.log('No ID found!', 'error');
             }
-            const timeoutMs =
-                parseInt(
-                    (options as ioBroker.GetHistoryOptions & { id?: string; timeout?: number })
-                        ?.timeout as unknown as string,
-                    10,
-                ) || 20000;
-
+            const timeoutMs = parseInt(options
+                ?.timeout, 10) || 20000;
             if (!instance) {
                 // @ts-expect-error defaultHistory is private attribute of adapter. Fix later
                 if (adapter.defaultHistory) {
                     // @ts-expect-error defaultHistory is private attribute of adapter. Fix later
                     instance = adapter.defaultHistory;
-                } else {
+                }
+                else {
                     instance = objects['system.config']?.common?.defaultHistory || null;
                 }
             }
-
             if (sandbox.verbose) {
-                sandbox.log(`getHistory(instance=${instance as string}, options=${JSON.stringify(options)})`, 'info');
+                sandbox.log(`getHistory(instance=${instance}, options=${JSON.stringify(options)})`, 'info');
             }
-
             if (!instance) {
                 sandbox.log('No default history instance found!', 'error');
                 try {
                     callback.call(sandbox, new Error('No default history instance found!'));
-                } catch (err: unknown) {
-                    errorInCallback(err as Error);
+                }
+                catch (err) {
+                    errorInCallback(err);
                 }
                 return;
             }
-            if ((instance as string).startsWith('system.adapter.')) {
-                instance = (instance as string).substring('system.adapter.'.length);
+            if (instance.startsWith('system.adapter.')) {
+                instance = instance.substring('system.adapter.'.length);
             }
-
-            if (!objects[`system.adapter.${instance as string}`]) {
-                sandbox.log(`Instance "${instance as string}" not found!`, 'error');
+            if (!objects[`system.adapter.${instance}`]) {
+                sandbox.log(`Instance "${instance}" not found!`, 'error');
                 try {
-                    callback.call(sandbox, new Error(`Instance "${instance as string}" not found!`));
-                } catch (err: unknown) {
-                    errorInCallback(err as Error);
+                    callback.call(sandbox, new Error(`Instance "${instance}" not found!`));
+                }
+                catch (err) {
+                    errorInCallback(err);
                 }
                 return;
             }
-
-            let _timeout: NodeJS.Timeout | null = setTimeout(() => {
+            let _timeout = setTimeout(() => {
                 _timeout = null;
                 if (sandbox.verbose) {
                     sandbox.log('getHistory => timeout', 'debug');
                 }
-
                 if (typeof callback === 'function') {
                     try {
-                        callback.call(
-                            sandbox,
-                            new Error('Timeout'),
-                            null,
-                            options as ioBroker.GetHistoryOptions & { id: string; timeout?: number | string },
-                            instance as string,
-                        );
-                    } catch (err: unknown) {
-                        errorInCallback(err as Error);
+                        callback.call(sandbox, new Error('Timeout'), null, options, instance);
+                    }
+                    catch (err) {
+                        errorInCallback(err);
                     }
                     callback = undefined;
                 }
             }, timeoutMs);
-
-            adapter.sendTo(
-                instance as string,
-                'getHistory',
-                {
-                    id: (options as ioBroker.GetHistoryOptions & { id: string; timeout?: number | string }).id,
-                    options,
-                },
-                (res: any): void => {
-                    if (_timeout) {
-                        clearTimeout(_timeout);
-                        _timeout = null;
+            adapter.sendTo(instance, 'getHistory', {
+                id: options.id,
+                options,
+            }, (res) => {
+                if (_timeout) {
+                    clearTimeout(_timeout);
+                    _timeout = null;
+                }
+                const result = res;
+                if (sandbox.verbose && result?.error) {
+                    sandbox.log(`getHistory => ${result.error}`, 'error');
+                }
+                if (sandbox.verbose && result?.result) {
+                    sandbox.log(`getHistory => ${result.result.length} items`, 'debug');
+                }
+                if (typeof callback === 'function') {
+                    try {
+                        callback.call(sandbox, result.error ? new Error(result.error) : null, result.result, options, instance);
                     }
-                    const result: {
-                        error?: string;
-                        result?: ioBroker.GetHistoryResult;
-                        step?: number;
-                        sessionId?: string;
-                    } = res;
-
-                    if (sandbox.verbose && result?.error) {
-                        sandbox.log(`getHistory => ${result.error}`, 'error');
+                    catch (err) {
+                        errorInCallback(err);
                     }
-                    if (sandbox.verbose && result?.result) {
-                        sandbox.log(`getHistory => ${result.result.length} items`, 'debug');
-                    }
-
-                    if (typeof callback === 'function') {
-                        try {
-                            callback.call(
-                                sandbox,
-                                result.error ? new Error(result.error) : null,
-                                result.result,
-                                options as ioBroker.GetHistoryOptions & { id: string; timeout?: number | string },
-                                instance as string,
-                            );
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
-                        }
-                        callback = undefined;
-                    }
-                },
-            );
+                    callback = undefined;
+                }
+            });
         },
-        runScript: function (scriptName: string, callback?: (err?: Error | null) => void): boolean {
+        runScript: function (scriptName, callback) {
             scriptName = scriptName || name;
             if (!scriptName.match(/^script\.js\./)) {
                 scriptName = `script.js.${scriptName}`;
@@ -4819,39 +3906,29 @@ export function sandBox(
                 return false;
             }
             if (debug) {
-                sandbox.log(
-                    `runScript(scriptName=${scriptName}) - ${words._('was not executed, while debug mode is active')}`,
-                    'warn',
-                );
+                sandbox.log(`runScript(scriptName=${scriptName}) - ${words._('was not executed, while debug mode is active')}`, 'warn');
                 typeof callback === 'function' && callback();
                 return true;
             }
             if (objects[scriptName].common.enabled) {
                 objects[scriptName].common.enabled = false;
-                adapter.extendForeignObject(scriptName, { common: { enabled: false } }, (/* err, obj */) => {
-                    adapter.extendForeignObject(
-                        scriptName,
-                        { common: { enabled: true } },
-                        err => typeof callback === 'function' && callback(err),
-                    );
+                adapter.extendForeignObject(scriptName, { common: { enabled: false } }, ( /* err, obj */) => {
+                    adapter.extendForeignObject(scriptName, { common: { enabled: true } }, err => typeof callback === 'function' && callback(err));
                 });
                 return true;
             }
-            adapter.extendForeignObject(
-                scriptName,
-                { common: { enabled: true } },
-                err => typeof callback === 'function' && callback(err),
-            );
+            adapter.extendForeignObject(scriptName, { common: { enabled: true } }, err => typeof callback === 'function' && callback(err));
             return true;
         },
-        runScriptAsync: function (scriptName: string): Promise<void> {
+        runScriptAsync: function (scriptName) {
             let done = false;
             return new Promise((resolve, reject) => {
                 const result = sandbox.runScript(scriptName, err => {
                     if (err) {
                         reject(err);
                         done = true;
-                    } else {
+                    }
+                    else {
                         resolve();
                     }
                 });
@@ -4860,13 +3937,9 @@ export function sandBox(
                 }
             });
         },
-        startScript: function (
-            scriptName: string,
-            ignoreIfStarted?: boolean | ((err: Error | null | undefined, started: boolean) => void),
-            callback?: (err: Error | null | undefined, started: boolean) => void,
-        ): boolean {
+        startScript: function (scriptName, ignoreIfStarted, callback) {
             if (typeof ignoreIfStarted === 'function') {
-                callback = ignoreIfStarted as (err: Error | null | undefined, started: boolean) => void;
+                callback = ignoreIfStarted;
                 ignoreIfStarted = false;
             }
             scriptName = scriptName || name;
@@ -4879,10 +3952,7 @@ export function sandBox(
                 return false;
             }
             if (debug) {
-                sandbox.log(
-                    `startScript(scriptName=${scriptName}) - ${words._('was not executed, while debug mode is active')}`,
-                    'warn',
-                );
+                sandbox.log(`startScript(scriptName=${scriptName}) - ${words._('was not executed, while debug mode is active')}`, 'warn');
                 typeof callback === 'function' && callback(null, false);
                 return true;
             }
@@ -4890,13 +3960,10 @@ export function sandBox(
                 if (!ignoreIfStarted) {
                     objects[scriptName].common.enabled = false;
                     adapter.extendForeignObject(scriptName, { common: { enabled: false } }, () => {
-                        adapter.extendForeignObject(
-                            scriptName,
-                            { common: { enabled: true } },
-                            err => typeof callback === 'function' && callback(err, true),
-                        );
+                        adapter.extendForeignObject(scriptName, { common: { enabled: true } }, err => typeof callback === 'function' && callback(err, true));
                     });
-                } else if (typeof callback === 'function') {
+                }
+                else if (typeof callback === 'function') {
                     callback(null, false);
                 }
                 return true;
@@ -4906,44 +3973,33 @@ export function sandBox(
             });
             return true;
         },
-        startScriptAsync: function (scriptName: string, ignoreIfStarted?: boolean): Promise<boolean> {
+        startScriptAsync: function (scriptName, ignoreIfStarted) {
             return new Promise((resolve, reject) => {
-                const result = sandbox.startScript(
-                    scriptName,
-                    !!ignoreIfStarted,
-                    (err: Error | null | undefined, started: boolean): void => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve(started);
-                        }
-                    },
-                );
+                const result = sandbox.startScript(scriptName, !!ignoreIfStarted, (err, started) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve(started);
+                    }
+                });
                 if (result === false) {
                     reject(new Error(`Script ${scriptName} was not found!`));
                 }
             });
         },
-        stopScript: function (
-            scriptName: string,
-            callback?: (err: Error | null | undefined, stopped: boolean) => void,
-        ): boolean {
+        stopScript: function (scriptName, callback) {
             scriptName = scriptName || name;
-
             if (!scriptName.match(/^script\.js\./)) {
                 scriptName = `script.js.${scriptName}`;
             }
-
             // stop another script
             if (!objects[scriptName] || !objects[scriptName].common) {
                 sandbox.log(`Cannot stop "${scriptName}", because not found`, 'error');
                 return false;
             }
             if (debug) {
-                sandbox.log(
-                    `stopScript(scriptName=${scriptName}) - ${words._('was not executed, while debug mode is active')}`,
-                    'warn',
-                );
+                sandbox.log(`stopScript(scriptName=${scriptName}) - ${words._('was not executed, while debug mode is active')}`, 'warn');
                 if (typeof callback === 'function') {
                     callback(null, false);
                 }
@@ -4956,29 +4012,28 @@ export function sandBox(
                         callback(err, true);
                     }
                 });
-            } else if (typeof callback === 'function') {
+            }
+            else if (typeof callback === 'function') {
                 callback(null, false);
             }
             return true;
         },
-        stopScriptAsync: function (scriptName: string): Promise<boolean> {
+        stopScriptAsync: function (scriptName) {
             return new Promise((resolve, reject) => {
-                const result = sandbox.stopScript(
-                    scriptName,
-                    (err: Error | null | undefined, stopped: boolean): void => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve(stopped);
-                        }
-                    },
-                );
+                const result = sandbox.stopScript(scriptName, (err, stopped) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve(stopped);
+                    }
+                });
                 if (result === false) {
                     reject(new Error(`Script ${scriptName} was not found!`));
                 }
             });
         },
-        isScriptActive: function (scriptName: string): boolean {
+        isScriptActive: function (scriptName) {
             if (!scriptName.match(/^script\.js\./)) {
                 scriptName = `script.js.${scriptName}`;
             }
@@ -4988,99 +4043,87 @@ export function sandBox(
             }
             return objects[scriptName].common.enabled;
         },
-        startInstanceAsync: async function (instanceName: string): Promise<boolean> {
+        startInstanceAsync: async function (instanceName) {
             const objInstanceId = `system.adapter.${instanceName}`;
             const exists = await adapter.foreignObjectExists(objInstanceId);
-
             if (exists) {
                 const instanceObj = await adapter.getForeignObjectAsync(objInstanceId);
-
                 if (instanceObj?.type === 'instance' && !instanceObj.common.enabled) {
                     await adapter.extendForeignObjectAsync(objInstanceId, { common: { enabled: true } });
-
                     if (sandbox.verbose) {
                         sandbox.log(`startInstanceAsync (instanceName=${instanceName})`, 'info');
                     }
-
                     return true;
                 }
                 sandbox.log(`Cannot start instance "${instanceName}", because already running`, 'warn');
-            } else {
+            }
+            else {
                 sandbox.log(`Cannot start instance "${instanceName}", because not found`, 'error');
             }
-
             return false;
         },
-        restartInstanceAsync: async function (instanceName: string): Promise<boolean> {
+        restartInstanceAsync: async function (instanceName) {
             const objInstanceId = `system.adapter.${instanceName}`;
             const exists = await adapter.foreignObjectExists(objInstanceId);
-
             if (exists) {
                 const instanceObj = await adapter.getForeignObjectAsync(objInstanceId);
-
                 if (instanceObj?.type === 'instance' && instanceObj.common.enabled) {
                     await adapter.extendForeignObjectAsync(objInstanceId, {});
-
                     if (sandbox.verbose) {
                         sandbox.log(`restartInstanceAsync (instanceName=${instanceName})`, 'info');
                     }
-
                     return true;
                 }
                 sandbox.log(`Cannot restart instance "${instanceName}", because not running`, 'warn');
-            } else {
+            }
+            else {
                 sandbox.log(`Cannot restart instance "${instanceName}", because not found`, 'error');
             }
-
             return false;
         },
-        stopInstanceAsync: async function (instanceName: string): Promise<boolean> {
+        stopInstanceAsync: async function (instanceName) {
             const objInstanceId = `system.adapter.${instanceName}`;
             const exists = await adapter.foreignObjectExists(objInstanceId);
-
             if (exists) {
                 const instanceObj = await adapter.getForeignObjectAsync(objInstanceId);
-
                 if (instanceObj?.type === 'instance' && instanceObj.common.enabled) {
                     await adapter.extendForeignObjectAsync(objInstanceId, { common: { enabled: false } });
-
                     if (sandbox.verbose) {
                         sandbox.log(`stopInstanceAsync (instanceName=${instanceName})`, 'info');
                     }
-
                     return true;
                 }
                 sandbox.log(`Cannot stop instance "${instanceName}", because not running`, 'warn');
-            } else {
+            }
+            else {
                 sandbox.log(`Cannot stop instance "${instanceName}", because not found`, 'error');
             }
-
             return false;
         },
         // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-        toInt: function (val: boolean | string | number | 'true' | 'false'): number {
+        toInt: function (val) {
             if (val === true || val === 'true') {
                 val = 1;
             }
             if (val === false || val === 'false') {
                 val = 0;
             }
-            val = parseInt(val as unknown as string) || 0;
+            val = parseInt(val) || 0;
             return val;
         },
         // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-        toFloat: function (val: boolean | string | number | 'true' | 'false'): number {
+        toFloat: function (val) {
             if (val === true || val === 'true') {
                 val = 1;
             }
             if (val === false || val === 'false') {
                 val = 0;
             }
-            val = parseFloat(val as unknown as string) || 0;
+            val = parseFloat(val) || 0;
             return val;
         },
         // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-        toBoolean: function (val: boolean | string | number | 'true' | 'false'): boolean {
+        toBoolean: function (val) {
             if (val === '1' || val === 'true') {
                 val = true;
             }
@@ -5089,39 +4132,37 @@ export function sandBox(
             }
             return !!val;
         },
-        getAttr: function (obj: string | Record<string, any>, path: string | string[]): any {
+        getAttr: function (obj, path) {
             if (typeof path === 'string') {
                 path = path.split('.');
             }
             if (typeof obj === 'string') {
                 try {
                     obj = JSON.parse(obj);
-                } catch (err: unknown) {
+                }
+                catch (err) {
                     adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, {
                         val: true,
                         ack: true,
                         c: 'getAttr',
                     });
-                    sandbox.log(`Cannot parse "${obj.substring(0, 30)}": ${err as Error}`, 'error');
-
+                    sandbox.log(`Cannot parse "${obj.substring(0, 30)}": ${err}`, 'error');
                     return null;
                 }
             }
-
-            const attr: string = path.shift() || '';
+            const attr = path.shift() || '';
             try {
-                obj = (obj as Record<string, any>)[attr];
-            } catch (err: unknown) {
+                obj = obj[attr];
+            }
+            catch (err) {
                 adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, {
                     val: true,
                     ack: true,
                     c: 'getAttr',
                 });
-                sandbox.log(`Cannot get ${attr} of "${JSON.stringify(obj)}": ${err as Error}`, 'error');
-
+                sandbox.log(`Cannot get ${attr} of "${JSON.stringify(obj)}": ${err}`, 'error');
                 return null;
             }
-
             if (!path.length) {
                 return obj;
             }
@@ -5131,14 +4172,8 @@ export function sandBox(
             }
             return sandbox.getAttr(obj, path);
         },
-        messageTo: function (
-            target: string | { instance: string | null | number; script: string | null; message: string },
-            data: any,
-            options: { timeout?: number | string } | ((result: any, options: { timeout?: number | string }) => void),
-            callback?: (result: any, options: { timeout?: number | string }, instance: string | number | null) => void,
-        ) {
+        messageTo: function (target, data, options, callback) {
             const defaultTimeout = 5000;
-
             if (typeof target !== 'object') {
                 target = { instance: null, script: null, message: target };
             }
@@ -5146,147 +4181,108 @@ export function sandBox(
                 callback = options;
                 options = { timeout: defaultTimeout };
             }
-
-            let timeout: NodeJS.Timeout | null = null;
+            let timeout = null;
             if (typeof callback === 'function') {
-                const timeoutDuration = parseInt(options?.timeout as unknown as string, 10) || defaultTimeout;
-
+                const timeoutDuration = parseInt(options?.timeout, 10) || defaultTimeout;
                 timeout = setTimeout(() => {
                     timeout = null;
-
                     if (sandbox.verbose) {
                         sandbox.log(`messageTo => timeout: ${timeoutDuration}`, 'debug');
                     }
-
                     if (typeof callback === 'function') {
                         try {
                             callback.call(sandbox, { error: 'timeout' }, options, target.instance);
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
+                        }
+                        catch (err) {
+                            errorInCallback(err);
                         }
                         callback = undefined;
                     }
                 }, timeoutDuration);
             }
-            let cbFunc: undefined | ((result: any) => void);
+            let cbFunc;
             if (timeout) {
-                cbFunc = function (res: any) {
+                cbFunc = function (res) {
                     timeout && clearTimeout(timeout);
-                    const result: { result?: any; error?: string | null } = res;
-
+                    const result = res;
                     if (sandbox.verbose && result?.result) {
                         sandbox.log(`messageTo => ${JSON.stringify(result)}`, 'debug');
                     }
                     if (sandbox.verbose && result?.error) {
                         sandbox.log(`messageTo => ${result.error}`, 'error');
                     }
-
                     if (typeof callback === 'function') {
                         try {
                             callback.call(sandbox, result, options, target.instance);
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
+                        }
+                        catch (err) {
+                            errorInCallback(err);
                         }
                         callback = undefined;
                     }
                 };
             }
-
             if (target.instance || target.instance === 0) {
-                if (
-                    typeof target.instance === 'string' &&
+                if (typeof target.instance === 'string' &&
                     target.instance &&
-                    target.instance.startsWith('system.adapter.')
-                ) {
+                    target.instance.startsWith('system.adapter.')) {
                     target.instance = target.instance.substring('system.adapter.'.length);
-                } else if (typeof target.instance === 'number') {
+                }
+                else if (typeof target.instance === 'number') {
                     target.instance = `javascript.${target.instance}`;
                 }
-
-                adapter.sendTo(
-                    target.instance,
-                    'jsMessageBus',
-                    { message: target.message, script: target.script, data },
-                    cbFunc,
-                );
-            } else {
+                adapter.sendTo(target.instance, 'jsMessageBus', { message: target.message, script: target.script, data }, cbFunc);
+            }
+            else {
                 // Send it to all instances
-                context.adapter.getObjectView(
-                    'system',
-                    'instance',
-                    { startkey: 'system.adapter.javascript.', endkey: 'system.adapter.javascript.\u9999' },
-                    options,
-                    (err: Error | null | undefined, res): void => {
-                        if (err || !res) {
-                            sandbox.log(`messageTo failed: ${err?.message}`, 'error');
-                            return;
-                        }
-                        const len = 'system.adapter.'.length;
-                        const instances = res.rows.map(item => item.id.substring(len));
-
-                        instances.forEach(instance => {
-                            adapter.sendTo(
-                                instance,
-                                'jsMessageBus',
-                                { message: target.message, script: target.script, data },
-                                cbFunc,
-                            );
-                        });
-                    },
-                );
+                context.adapter.getObjectView('system', 'instance', { startkey: 'system.adapter.javascript.', endkey: 'system.adapter.javascript.\u9999' }, options, (err, res) => {
+                    if (err || !res) {
+                        sandbox.log(`messageTo failed: ${err?.message}`, 'error');
+                        return;
+                    }
+                    const len = 'system.adapter.'.length;
+                    const instances = res.rows.map(item => item.id.substring(len));
+                    instances.forEach(instance => {
+                        adapter.sendTo(instance, 'jsMessageBus', { message: target.message, script: target.script, data }, cbFunc);
+                    });
+                });
             }
         },
-        messageToAsync: function (
-            target: string | { instance: string | null | number; script: string | null; message: string },
-            data: any,
-            options?: { timeout?: number | string },
-        ): Promise<any> {
+        messageToAsync: function (target, data, options) {
             return new Promise((resolve, reject) => {
-                sandbox.messageTo(target, data, options, (res: any): void => {
-                    const result: { error?: string } = res;
+                sandbox.messageTo(target, data, options, (res) => {
+                    const result = res;
                     if (sandbox.verbose) {
                         sandbox.log(`messageTo result => ${JSON.stringify(res)}`, 'debug');
                     }
                     if (!res || result.error) {
                         reject(result ? new Error(result.error) : new Error('Unknown error'));
-                    } else {
+                    }
+                    else {
                         resolve(result);
                     }
                 });
             });
         },
-        onMessage: function (
-            messageName: string,
-            callback: (data: any, cb: (result: any) => void) => void,
-        ): null | number {
+        onMessage: function (messageName, callback) {
             if (typeof callback !== 'function') {
                 sandbox.log('onMessage callback is not a function', 'error');
-
                 return null;
             }
             context.messageBusHandlers[sandbox.scriptName] = context.messageBusHandlers[sandbox.scriptName] || {};
             context.messageBusHandlers[sandbox.scriptName][messageName] =
                 context.messageBusHandlers[sandbox.scriptName][messageName] || [];
-
             const handler = { id: Date.now() + Math.floor(Math.random() * 10000), cb: callback, sandbox };
             context.messageBusHandlers[sandbox.scriptName][messageName].push(handler);
-
             sandbox.__engine.__subscriptionsMessage += 1;
-
-            if (
-                sandbox.__engine.__subscriptionsMessage %
-                    (adapter.config as JavaScriptAdapterConfig).maxTriggersPerScript ===
-                0
-            ) {
-                sandbox.log(
-                    `More than ${sandbox.__engine.__subscriptionsMessage} message subscriptions registered. Check your script!`,
-                    'warn',
-                );
+            if (sandbox.__engine.__subscriptionsMessage %
+                adapter.config.maxTriggersPerScript ===
+                0) {
+                sandbox.log(`More than ${sandbox.__engine.__subscriptionsMessage} message subscriptions registered. Check your script!`, 'warn');
             }
-
             return handler.id;
         },
-        onMessageUnregister: function (idOrName: number | string): boolean {
+        onMessageUnregister: function (idOrName) {
             const ctx = context.messageBusHandlers[sandbox.scriptName];
             let found = false;
             if (ctx) {
@@ -5309,7 +4305,8 @@ export function sandBox(
                             break;
                         }
                     }
-                } else if (idOrName && ctx[idOrName]) {
+                }
+                else if (idOrName && ctx[idOrName]) {
                     delete ctx[idOrName];
                     sandbox.__engine.__subscriptionsMessage--;
                     found = true;
@@ -5318,109 +4315,78 @@ export function sandBox(
             return found;
         },
         console: {
-            log: function (msg: string): void {
+            log: function (msg) {
                 sandbox.log(msg, 'info');
             },
-            error: function (msg: string): void {
+            error: function (msg) {
                 sandbox.log(msg, 'error');
             },
-            warn: function (msg: string): void {
+            warn: function (msg) {
                 sandbox.log(msg, 'warn');
             },
-            info: function (msg: string): void {
+            info: function (msg) {
                 sandbox.log(msg, 'info');
             },
-            debug: function (msg: string): void {
+            debug: function (msg) {
                 sandbox.log(msg, 'debug');
             },
         },
-        jsonataExpression: function (data: any, expression: string): Promise<any> {
+        jsonataExpression: function (data, expression) {
             return jsonata(expression).evaluate(data);
         },
-        wait: function (ms: number): Promise<void> {
-            return new Promise((resolve: () => void): void => {
+        wait: function (ms) {
+            return new Promise((resolve) => {
                 sandbox.setTimeout(resolve, ms);
             });
         },
-        sleep: function (ms: number): Promise<void> {
+        sleep: function (ms) {
             return sandbox.wait(ms);
         },
-        onObject: function (
-            pattern: string | string[],
-            callback: (id: string, obj?: ioBroker.Object | null) => void,
-        ): SubscribeObject | SubscribeObject[] | null {
+        onObject: function (pattern, callback) {
             return sandbox.subscribeObject(pattern, callback);
         },
-        subscribeObject: function (
-            pattern: string | string[],
-            callback: (id: string, obj?: ioBroker.Object | null) => void,
-        ): SubscribeObject | SubscribeObject[] | null {
+        subscribeObject: function (pattern, callback) {
             if (Array.isArray(pattern)) {
-                const result: {
-                    name: string;
-                    pattern: string;
-                    callback: (id: string, obj?: ioBroker.Object | null) => void;
-                }[] = [];
+                const result = [];
                 for (let p = 0; p < pattern.length; p++) {
-                    result.push(
-                        sandbox.subscribeObject(pattern[p], callback) as {
-                            name: string;
-                            pattern: string;
-                            callback: (id: string, obj?: ioBroker.Object | null) => void;
-                        },
-                    );
+                    result.push(sandbox.subscribeObject(pattern[p], callback));
                 }
                 return result;
             }
-
             sandbox.__engine.__subscriptionsObject += 1;
-
-            if (
-                sandbox.__engine.__subscriptionsObject %
-                    (adapter.config as JavaScriptAdapterConfig).maxTriggersPerScript ===
-                0
-            ) {
-                sandbox.log(
-                    `More than ${sandbox.__engine.__subscriptionsObject} object subscriptions registered. Check your script!`,
-                    'warn',
-                );
+            if (sandbox.__engine.__subscriptionsObject %
+                adapter.config.maxTriggersPerScript ===
+                0) {
+                sandbox.log(`More than ${sandbox.__engine.__subscriptionsObject} object subscriptions registered. Check your script!`, 'warn');
             }
-
             // source is set by regexp if defined as /regexp/
             if (!pattern || typeof pattern !== 'string') {
                 sandbox.log('Error by subscribeObject: pattern can be only string or array of strings.', 'error');
                 return null;
             }
-
             if (typeof callback !== 'function') {
                 sandbox.log('Error by subscribeObject: callback is not a function', 'error');
                 return null;
             }
-
-            const subs: SubscribeObject = { pattern, callback, name };
+            const subs = { pattern, callback, name };
             if (sandbox.verbose) {
                 sandbox.log(`subscribeObject: ${JSON.stringify(subs)}`, 'info');
             }
-
             adapter.subscribeForeignObjects(pattern);
-
             context.subscriptionsObject.push(subs);
-
             return subs;
         },
-        unsubscribeObject: function (subObject: SubscribeObject | SubscribeObject[]): boolean | boolean[] {
+        unsubscribeObject: function (subObject) {
             if (subObject && Array.isArray(subObject)) {
-                const result: boolean[] = [];
+                const result = [];
                 for (let t = 0; t < subObject.length; t++) {
-                    result.push(sandbox.unsubscribeObject(subObject[t]) as boolean);
+                    result.push(sandbox.unsubscribeObject(subObject[t]));
                 }
                 return result;
             }
-
             if (sandbox.verbose) {
                 sandbox.log(`adapterUnsubscribeObject(id=${JSON.stringify(subObject)})`, 'info');
             }
-
             for (let i = context.subscriptionsObject.length - 1; i >= 0; i--) {
                 if (context.subscriptionsObject[i] === subObject) {
                     adapter.unsubscribeForeignObjects(subObject.pattern);
@@ -5431,10 +4397,8 @@ export function sandBox(
             }
             let deleted = 0;
             for (let i = context.subscriptionsObject.length - 1; i >= 0; i--) {
-                if (
-                    context.subscriptionsObject[i].name &&
-                    context.subscriptionsObject[i].pattern === subObject.pattern
-                ) {
+                if (context.subscriptionsObject[i].name &&
+                    context.subscriptionsObject[i].pattern === subObject.pattern) {
                     deleted++;
                     adapter.unsubscribeForeignObjects(subObject.pattern);
                     context.subscriptionsObject.splice(i, 1);
@@ -5444,154 +4408,86 @@ export function sandBox(
             return !!deleted;
         },
         // internal function to send the block debugging info to the front-end
-        _sendToFrontEnd: function (blockId: string, data: any): void {
+        _sendToFrontEnd: function (blockId, data) {
             if (context.rulesOpened === sandbox.scriptName) {
-                adapter.setState(
-                    'debug.rules',
-                    JSON.stringify({ ruleId: sandbox.scriptName, blockId, data, ts: Date.now() }),
-                    true,
-                );
+                adapter.setState('debug.rules', JSON.stringify({ ruleId: sandbox.scriptName, blockId, data, ts: Date.now() }), true);
             }
         },
-        existsStateAsync: function (_id: string): Promise<boolean> {
+        existsStateAsync: function (_id) {
             return Promise.reject(new Error('Not implemented'));
         },
-        existsObjectAsync: function (_id: string): Promise<boolean> {
+        existsObjectAsync: function (_id) {
             return Promise.reject(new Error('Not implemented'));
         },
-        getObjectAsync: function (_id: string, _enumName: null | string): Promise<ioBroker.Object | null | undefined> {
+        getObjectAsync: function (_id, _enumName) {
             return Promise.reject(new Error('Not implemented'));
         },
-        setObjectAsync: function (_id: string, _obj: ioBroker.Object): Promise<{ id: string }> {
+        setObjectAsync: function (_id, _obj) {
             return Promise.reject(new Error('Not implemented'));
         },
-        extendObjectAsync: function (_id: string, _obj: Partial<ioBroker.Object>): Promise<{ id: string }> {
+        extendObjectAsync: function (_id, _obj) {
             return Promise.reject(new Error('Not implemented'));
         },
-        deleteObjectAsync: function (_id: string, _isRecursive?: boolean): Promise<void> {
+        deleteObjectAsync: function (_id, _isRecursive) {
             return Promise.reject(new Error('Not implemented'));
         },
-        createStateAsync: function (
-            _name: string,
-            _initValue: undefined | ioBroker.StateValue | ioBroker.State,
-            _forceCreation:
-                | boolean
-                | undefined
-                | Record<string, any>
-                | Partial<ioBroker.StateCommon>
-                | ((err: Error | null) => void),
-            _common?: Partial<ioBroker.StateCommon> | ((err: Error | null) => void),
-            _native?: Record<string, any> | ((err: Error | null) => void),
-        ): Promise<string> {
+        createStateAsync: function (_name, _initValue, _forceCreation, _common, _native) {
             return Promise.reject(new Error('Not implemented'));
         },
-        createAliasAsync: function (
-            _name: string,
-            _alias: string | CommonAlias,
-            _forceCreation: boolean | Partial<ioBroker.StateCommon> | undefined,
-            _common?: Partial<ioBroker.StateCommon> | Record<string, any>,
-            _native?: Record<string, any>,
-        ): Promise<void> {
+        createAliasAsync: function (_name, _alias, _forceCreation, _common, _native) {
             return Promise.reject(new Error('Not implemented'));
         },
-        deleteStateAsync: function (_id: string): Promise<boolean> {
+        deleteStateAsync: function (_id) {
             return Promise.reject(new Error('Not implemented'));
         },
-        writeFileAsync: function (
-            _adapter: string,
-            _fileName: string | Buffer,
-            _data?: string | Buffer,
-        ): Promise<void> {
+        writeFileAsync: function (_adapter, _fileName, _data) {
             return Promise.reject(new Error('Not implemented'));
         },
-        readFileAsync: function (_adapter: string, _fileName?: string): Promise<Buffer | string> {
+        readFileAsync: function (_adapter, _fileName) {
             return Promise.reject(new Error('Not implemented'));
         },
-        unlinkAsync: function (_adapter: string, _fileName?: string): Promise<void> {
+        unlinkAsync: function (_adapter, _fileName) {
             return Promise.reject(new Error('Not implemented'));
         },
-        delFileAsync: function (_adapter: string, _fileName?: string): Promise<void> {
+        delFileAsync: function (_adapter, _fileName) {
             return Promise.reject(new Error('Not implemented'));
         },
-        renameAsync: function (_adapter: string, _oldName: string, _newName?: string): Promise<void> {
+        renameAsync: function (_adapter, _oldName, _newName) {
             return Promise.reject(new Error('Not implemented'));
         },
-        renameFileAsync: function (_adapter: string, _oldName: string, _newName?: string): Promise<void> {
+        renameFileAsync: function (_adapter, _oldName, _newName) {
             return Promise.reject(new Error('Not implemented'));
         },
-        getHistoryAsync: function (
-            _instance: string | (ioBroker.GetHistoryOptions & { id: string; timeout?: number | string }),
-            _options?: ioBroker.GetHistoryOptions & { id?: string; timeout?: number | string },
-        ): Promise<ioBroker.GetHistoryResult> {
+        getHistoryAsync: function (_instance, _options) {
             return Promise.reject(new Error('Not implemented'));
         },
-        httpGetAsync: function (
-            _url: string,
-            _options?: {
-                timeout?: number;
-                responseType?: ResponseType;
-                headers?: Record<string, string>;
-                basicAuth?: { user: string; password: string } | null;
-                bearerAuth?: string;
-                validateCertificate?: boolean;
-            },
-        ): Promise<{
-            statusCode: number | null;
-            data: any;
-            headers: Record<string, string>;
-            responseTime: number;
-        }> {
+        httpGetAsync: function (_url, _options) {
             return Promise.reject(new Error('Not implemented'));
         },
-        httpPostAsync: function (
-            _url: string,
-            _data: any,
-            _options: {
-                timeout?: number;
-                responseType?: ResponseType;
-                headers?: Record<string, string>;
-                basicAuth?: { user: string; password: string } | null;
-                bearerAuth?: string;
-                validateCertificate?: boolean;
-            },
-        ): Promise<{
-            statusCode: number | null;
-            data: any;
-            headers: Record<string, AxiosHeaderValue | undefined>;
-            responseTime: number;
-        }> {
+        httpPostAsync: function (_url, _data, _options) {
             return Promise.reject(new Error('Not implemented'));
         },
     };
-
     // Create advanced functions that can modify objects
-    if ((adapter.config as JavaScriptAdapterConfig).enableSetObject) {
-        sandbox.setObject = function (
-            id: string,
-            obj: ioBroker.Object,
-            callback?: (err?: Error | null, res?: { id: string }) => void,
-        ): void {
+    if (adapter.config.enableSetObject) {
+        sandbox.setObject = function (id, obj, callback) {
             if (id && typeof id === 'string' && id.startsWith('system.adapter.')) {
-                sandbox.log(
-                    `Using setObject on system object ${id} can be dangerous (protected instance attributes may be lost)`,
-                    'info',
-                );
+                sandbox.log(`Using setObject on system object ${id} can be dangerous (protected instance attributes may be lost)`, 'info');
             }
             if (debug) {
-                sandbox.log(
-                    `setObject(id=${id}, obj=${JSON.stringify(obj)}) - ${words._('was not executed, while debug mode is active')}`,
-                    'warn',
-                );
+                sandbox.log(`setObject(id=${id}, obj=${JSON.stringify(obj)}) - ${words._('was not executed, while debug mode is active')}`, 'warn');
                 if (typeof callback === 'function') {
                     setImmediate(function () {
                         try {
                             callback.call(sandbox, null, { id });
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
+                        }
+                        catch (err) {
+                            errorInCallback(err);
                         }
                     });
                 }
-            } else {
+            }
+            else {
                 if (sandbox.verbose) {
                     sandbox.log(`setObject(id=${id}, obj=${JSON.stringify(obj)})`, 'info');
                 }
@@ -5603,59 +4499,54 @@ export function sandBox(
                     if (typeof callback === 'function') {
                         try {
                             callback.call(sandbox, err, res);
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
+                        }
+                        catch (err) {
+                            errorInCallback(err);
                         }
                     }
                 });
             }
         };
-        sandbox.extendObject = function (
-            id: string,
-            obj: Partial<ioBroker.Object>,
-            callback?: (err: Error | undefined | null, res?: { id: string }) => void,
-        ): void {
+        sandbox.extendObject = function (id, obj, callback) {
             if (debug) {
-                sandbox.log(
-                    `extendObject(id=${id}, obj=${JSON.stringify(obj)}) - ${words._('was not executed, while debug mode is active')}`,
-                    'warn',
-                );
+                sandbox.log(`extendObject(id=${id}, obj=${JSON.stringify(obj)}) - ${words._('was not executed, while debug mode is active')}`, 'warn');
                 if (typeof callback === 'function') {
                     setTimeout(function () {
                         try {
                             callback.call(sandbox, null, { id });
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
+                        }
+                        catch (err) {
+                            errorInCallback(err);
                         }
                     }, 0);
                 }
-            } else {
+            }
+            else {
                 if (sandbox.verbose) {
                     sandbox.log(`extendObject(id=${id}, obj=${JSON.stringify(obj)})`, 'info');
                 }
                 adapter.extendForeignObject(id, JSON.parse(JSON.stringify(obj)), callback);
             }
         };
-        sandbox.deleteObject = function (id: string, isRecursive?: boolean, callback?: ioBroker.ErrorCallback): void {
+        sandbox.deleteObject = function (id, isRecursive, callback) {
             if (typeof isRecursive === 'function') {
                 callback = isRecursive;
                 isRecursive = false;
             }
             if (debug) {
-                sandbox.log(
-                    `deleteObject(id=${id}) - ${words._('was not executed, while debug mode is active')}`,
-                    'warn',
-                );
+                sandbox.log(`deleteObject(id=${id}) - ${words._('was not executed, while debug mode is active')}`, 'warn');
                 if (typeof callback === 'function') {
                     setTimeout(function () {
                         try {
                             callback.call(sandbox);
-                        } catch (err: unknown) {
-                            errorInCallback(err as Error);
+                        }
+                        catch (err) {
+                            errorInCallback(err);
                         }
                     }, 0);
                 }
-            } else {
+            }
+            else {
                 if (sandbox.verbose) {
                     sandbox.log(`deleteObject(id=${id})`, 'info');
                 }
@@ -5663,27 +4554,25 @@ export function sandBox(
             }
         };
     }
-
     // promisify methods on the sandbox
-    sandbox.existsStateAsync = promisify(sandbox.existsState);
-    sandbox.existsObjectAsync = promisify(sandbox.existsObject);
-    sandbox.getObjectAsync = promisify(sandbox.getObject);
-    sandbox.setObjectAsync = promisify(sandbox.setObject);
-    sandbox.extendObjectAsync = promisify(sandbox.extendObject);
-    sandbox.deleteObjectAsync = promisify(sandbox.deleteObject);
-    sandbox.createStateAsync = promisify(sandbox.createState);
-    sandbox.createAliasAsync = promisify(sandbox.createAlias);
-    sandbox.deleteStateAsync = promisify(sandbox.deleteState);
-    sandbox.writeFileAsync = promisify(sandbox.writeFile);
-    sandbox.readFileAsync = promisify(sandbox.readFile);
-    sandbox.unlinkAsync = promisify(sandbox.unlink);
-    sandbox.delFileAsync = promisify(sandbox.delFile);
-    sandbox.renameAsync = promisify(sandbox.rename);
-    sandbox.renameFileAsync = promisify(sandbox.renameFile);
-    sandbox.getHistoryAsync = promisify(sandbox.getHistory);
-    sandbox.httpGetAsync = promisify(sandbox.httpGet);
-    sandbox.httpPostAsync = promisify(sandbox.httpPost);
-
+    sandbox.existsStateAsync = (0, tools_1.promisify)(sandbox.existsState);
+    sandbox.existsObjectAsync = (0, tools_1.promisify)(sandbox.existsObject);
+    sandbox.getObjectAsync = (0, tools_1.promisify)(sandbox.getObject);
+    sandbox.setObjectAsync = (0, tools_1.promisify)(sandbox.setObject);
+    sandbox.extendObjectAsync = (0, tools_1.promisify)(sandbox.extendObject);
+    sandbox.deleteObjectAsync = (0, tools_1.promisify)(sandbox.deleteObject);
+    sandbox.createStateAsync = (0, tools_1.promisify)(sandbox.createState);
+    sandbox.createAliasAsync = (0, tools_1.promisify)(sandbox.createAlias);
+    sandbox.deleteStateAsync = (0, tools_1.promisify)(sandbox.deleteState);
+    sandbox.writeFileAsync = (0, tools_1.promisify)(sandbox.writeFile);
+    sandbox.readFileAsync = (0, tools_1.promisify)(sandbox.readFile);
+    sandbox.unlinkAsync = (0, tools_1.promisify)(sandbox.unlink);
+    sandbox.delFileAsync = (0, tools_1.promisify)(sandbox.delFile);
+    sandbox.renameAsync = (0, tools_1.promisify)(sandbox.rename);
+    sandbox.renameFileAsync = (0, tools_1.promisify)(sandbox.renameFile);
+    sandbox.getHistoryAsync = (0, tools_1.promisify)(sandbox.getHistory);
+    sandbox.httpGetAsync = (0, tools_1.promisify)(sandbox.httpGet);
+    sandbox.httpPostAsync = (0, tools_1.promisify)(sandbox.httpPost);
     // Make all predefined properties and methods readonly so scripts cannot overwrite them
     for (const prop of Object.keys(sandbox)) {
         Object.defineProperty(sandbox, prop, {
@@ -5691,6 +4580,6 @@ export function sandBox(
             writable: false,
         });
     }
-
     return sandbox;
 }
+//# sourceMappingURL=sandbox.js.map

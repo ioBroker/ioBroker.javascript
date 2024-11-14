@@ -19,12 +19,14 @@ function stringOrRegExpCompare(
     eventPropertyExtractor?: (event: EventObj) => any,
     invert?: boolean,
 ): PatternEventCompareFunction {
-    const field: RegExp | string | string[] = pattern[propName];
+    const field: RegExp | string | string[] = (pattern as Record<string, RegExp | string | string[]>)[propName];
     const hasExtractor = typeof eventPropertyExtractor === 'function';
 
     if (isRegExp(field)) {
         return function (event: EventObj): boolean {
-            const eventValue = hasExtractor ? eventPropertyExtractor(event) : event[propName];
+            const eventValue: any = hasExtractor
+                ? eventPropertyExtractor(event)
+                : (event as Record<string, any>)[propName];
             const ret = eventValue != null && (field as RegExp).test(eventValue);
             return invert ? !ret : ret;
         };
@@ -32,7 +34,7 @@ function stringOrRegExpCompare(
 
     if (Array.isArray(field)) {
         return function (event: EventObj): boolean {
-            const eventValue = hasExtractor ? eventPropertyExtractor(event) : event[propName];
+            const eventValue = hasExtractor ? eventPropertyExtractor(event) : (event as Record<string, any>)[propName];
             // An array matches when any element is found that satisfies the constraint
             const ret = eventValue != null && field.find(f => f === eventValue) != null;
             return invert ? !ret : ret;
@@ -40,7 +42,7 @@ function stringOrRegExpCompare(
     }
 
     return function (event: EventObj): boolean {
-        const eventValue = hasExtractor ? eventPropertyExtractor(event) : event[propName];
+        const eventValue = hasExtractor ? eventPropertyExtractor(event) : (event as Record<string, any>)[propName];
         const ret = eventValue != null && field === eventValue;
         return invert ? !ret : ret;
     };
@@ -76,6 +78,7 @@ export const patternCompareFunctions = {
             // on any other logic, just signal about a message
         }
     },
+
     ack: (pattern: Pattern): PatternEventCompareFunction => {
         if (pattern.ack === true || pattern.ack === 'true') {
             return (event: EventObj): boolean => event.newState.ack === true;

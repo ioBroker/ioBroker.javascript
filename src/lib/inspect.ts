@@ -19,19 +19,19 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import { spawn } from 'node:child_process';
+import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
 import { EventEmitter } from 'node:events';
 import { connect } from 'node:net';
-import { debuglog as utilDebugLog, inspect } from 'node:util';
+import { debuglog as utilDebugLog, inspect, type InspectOptionsStylized } from 'node:util';
 import { normalize, join } from 'node:path';
 import { existsSync } from 'node:fs';
 import type { WriteStream, ReadStream } from 'node:tty';
 
+// @ts-expect-error no types available
 import InspectClient from 'node-inspect/lib/internal/inspect_client';
-import createRepl from './debugger';
 import type { Debugger, Runtime } from 'node:inspector';
 import type { REPLServer } from 'repl';
-import type { ChildProcessWithoutNullStreams } from 'child_process';
+import createRepl from './debugger';
 // const runAsStandalone = typeof __dirname !== 'undefined';
 
 const breakOnStart = process.argv.includes('--breakOnStart');
@@ -117,9 +117,10 @@ function runScript(
             let output = '';
             function waitForListenHint(text: string): void {
                 output += text;
-                if (/Debugger listening on ws:\/\/\[?(.+?)]?:(\d+)\//.test(output)) {
-                    const host = RegExp.$1;
-                    const port = Number.parseInt(RegExp.$2);
+                const res = /Debugger listening on ws:\/\/\[?(.+?)]?:(\d+)\//.exec(output);
+                if (res) {
+                    const host = res[1];
+                    const port = Number.parseInt(res[2]);
                     child.stderr.removeListener('data', waitForListenHint);
                     resolve([child, port, host]);
                 }
@@ -132,10 +133,11 @@ function runScript(
 
 function createAgentProxy(domain: string, client: InspectClient): ProxyConstructor {
     const agent: any = new EventEmitter();
-    agent.then = (...args) => {
+
+    agent.then = (...args: any[]) => {
         // TODO: potentially fetch the protocol and pretty-print it here.
         const descriptor = {
-            [inspect.custom](_depth: number, { stylize }) {
+            [inspect.custom](_depth: number, { stylize }: InspectOptionsStylized): string {
                 return stylize(`[Agent ${domain}]`, 'special');
             },
         };
@@ -615,7 +617,6 @@ function startInspect(
     }
 
     process.on('uncaughtException', handleUnexpectedError);
-    /* eslint-enable no-console */
 }
 
 function extractErrorMessage(stack: string | undefined): string {
@@ -634,10 +635,10 @@ function convertResultToError(result: Runtime.RemoteObject): Error {
     return err;
 }
 
-process.on('message', (message: DebugCommand): void => {
+process.on('message', (message: DebugCommand | string): void => {
     if (typeof message === 'string') {
         try {
-            message = JSON.parse(message);
+            message = JSON.parse(message) as DebugCommand;
         } catch {
             return console.error(`Cannot parse: ${JSON.stringify(message)}`);
         }
@@ -753,15 +754,15 @@ function processCommand(data: DebugCommand): void {
                 sendToHost({ cmd: 'script', scriptId: data.scriptId, text: script.scriptSource }),
         );
     } else if (data.cmd === 'cont') {
-        inspector.Debugger.resume().catch(e => sendToHost({ cmd: 'error', error: e }));
+        inspector.Debugger.resume().catch((e: any) => sendToHost({ cmd: 'error', error: e }));
     } else if (data.cmd === 'next') {
-        inspector.Debugger.stepOver().catch(e => sendToHost({ cmd: 'error', error: e }));
+        inspector.Debugger.stepOver().catch((e: any) => sendToHost({ cmd: 'error', error: e }));
     } else if (data.cmd === 'pause') {
-        inspector.Debugger.pause().catch(e => sendToHost({ cmd: 'error', error: e }));
+        inspector.Debugger.pause().catch((e: any) => sendToHost({ cmd: 'error', error: e }));
     } else if (data.cmd === 'step') {
-        inspector.Debugger.stepInto().catch(e => sendToHost({ cmd: 'error', error: e }));
+        inspector.Debugger.stepInto().catch((e: any) => sendToHost({ cmd: 'error', error: e }));
     } else if (data.cmd === 'out') {
-        inspector.Debugger.stepOut().catch(e => sendToHost({ cmd: 'error', error: e }));
+        inspector.Debugger.stepOut().catch((e: any) => sendToHost({ cmd: 'error', error: e }));
     } else if (data.cmd === 'sb') {
         console.log(JSON.stringify(data));
 
@@ -778,7 +779,7 @@ function processCommand(data: DebugCommand): void {
                         id: result.breakpointId,
                         location: result.actualLocation,
                     }))
-                    .catch(e =>
+                    .catch((e: any) =>
                         sendToHost({ cmd: 'error', error: `Cannot set breakpoint: ${e}`, errorContext: e, bp }),
                     ),
             ) || [],
@@ -788,7 +789,7 @@ function processCommand(data: DebugCommand): void {
             (data.breakpoints as Debugger.BreakpointId[])?.map(breakpointId =>
                 inspector.Debugger.removeBreakpoint({ breakpointId } as Debugger.RemoveBreakpointParameterType)
                     .then(() => breakpointId)
-                    .catch(e =>
+                    .catch((e: any) =>
                         sendToHost({
                             cmd: 'error',
                             error: `Cannot clear breakpoint: ${e}`,
@@ -801,7 +802,7 @@ function processCommand(data: DebugCommand): void {
     } else if (data.cmd === 'watch') {
         Promise.all(
             data.expressions?.map(expr =>
-                inspector.Debugger.watch(expr).catch(e =>
+                inspector.Debugger.watch(expr).catch((e: any) =>
                     sendToHost({ cmd: 'error', error: `Cannot watch expr: ${e}`, errorContext: e, expr }),
                 ),
             ) || [],
@@ -809,7 +810,7 @@ function processCommand(data: DebugCommand): void {
     } else if (data.cmd === 'unwatch') {
         Promise.all(
             data.expressions?.map(expr =>
-                inspector.Debugger.unwatch(expr).catch(e =>
+                inspector.Debugger.unwatch(expr).catch((e: any) =>
                     sendToHost({ cmd: 'error', error: `Cannot unwatch expr: ${e}`, errorContext: e, expr }),
                 ),
             ) || [],
@@ -823,8 +824,8 @@ function processCommand(data: DebugCommand): void {
                         objectId: scope.object.objectId,
                         generatePreview: true,
                     } as Runtime.GetPropertiesParameterType)
-                        .then(result => ({ type: scope.type, properties: result }))
-                        .catch(e =>
+                        .then((result: any) => ({ type: scope.type, properties: result }))
+                        .catch((e: any) =>
                             sendToHost({ cmd: 'error', error: `Cannot get scopes expr: ${e}`, errorContext: e }),
                         ),
                 ) || [],
@@ -836,7 +837,7 @@ function processCommand(data: DebugCommand): void {
             newValue: data.newValue,
             callFrameId: data.callFrameId,
         } as Debugger.SetVariableValueParameterType)
-            .catch(e => sendToHost({ cmd: 'setValue', variableName: `Cannot setValue: ${e}`, errorContext: e }))
+            .catch((e: any) => sendToHost({ cmd: 'setValue', variableName: `Cannot setValue: ${e}`, errorContext: e }))
             .then(() =>
                 sendToHost({
                     cmd: 'setValue',
@@ -863,7 +864,7 @@ function processCommand(data: DebugCommand): void {
                         }
                         return { name: item.name, result };
                     })
-                    .catch(e =>
+                    .catch((e: any) =>
                         sendToHost({ cmd: 'expressions', variableName: `Cannot setValue: ${e}`, errorContext: e }),
                     ),
             ) || [],
@@ -871,7 +872,7 @@ function processCommand(data: DebugCommand): void {
     } else if (data.cmd === 'stopOnException') {
         inspector.Debugger.setPauseOnExceptions({
             state: data.state ? 'all' : 'none',
-        } as Debugger.SetPauseOnExceptionsParameterType).catch(e =>
+        } as Debugger.SetPauseOnExceptionsParameterType).catch((e: any) =>
             sendToHost({ cmd: 'stopOnException', variableName: `Cannot stopOnException: ${e}`, errorContext: e }),
         );
     } else if (data.cmd === 'getPossibleBreakpoints') {
@@ -879,7 +880,7 @@ function processCommand(data: DebugCommand): void {
             .then((breakpoints: Debugger.GetPossibleBreakpointsReturnType) =>
                 sendToHost({ cmd: 'getPossibleBreakpoints', breakpoints: breakpoints.locations }),
             )
-            .catch(e =>
+            .catch((e: any) =>
                 sendToHost({
                     cmd: 'getPossibleBreakpoints',
                     variableName: `Cannot getPossibleBreakpoints: ${e}`,

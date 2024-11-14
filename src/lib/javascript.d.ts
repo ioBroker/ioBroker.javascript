@@ -1111,15 +1111,10 @@ declare global {
     /**
      * The name of the current script
      */
-    // @ts-expect-error We need this variable, although it conflicts with lib.es6
-    const name: string;
-    /**
-     * The name of the current script
-     */
     const scriptName: string;
 
     /**
-     * Absolute path to iobroker-data directory in file system
+     * Absolute path to iobroker-data directory in a file system
      */
     const defaultDataDir: string;
 

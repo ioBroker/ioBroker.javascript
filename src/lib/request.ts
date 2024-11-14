@@ -35,25 +35,28 @@ function requestSafe(method: (..._args: any[]) => any, ...args: any[]): any {
     return method(...args).on('error', requestError);
 }
 
-// Wrap all methods that accept a callback
-const methodsWithCallback = ['get', 'post', 'put', 'head', 'patch', 'del', 'delete', 'initParams'];
 // and request itself
 // @ts-expect-error fix later
-const request = (...args: any[]): any => requestSafe(_request, ...args);
+export const request = (...args: any[]): any => requestSafe(_request, ...args);
 
-for (const methodName of methodsWithCallback) {
-    request[methodName] = (...args: any[]) => requestSafe(_request[methodName], ...args);
-}
+request.get = (...args: any[]): any => requestSafe(_request.get, ...args);
+request.post = (...args: any[]): any => requestSafe(_request.post, ...args);
+request.put = (...args: any[]): any => requestSafe(_request.put, ...args);
+request.head = (...args: any[]): any => requestSafe(_request.head, ...args);
+request.patch = (...args: any[]): any => requestSafe(_request.patch, ...args);
+request.del = (...args: any[]): any => requestSafe(_request.del, ...args);
+request.delete = (...args: any[]): any => requestSafe(_request.delete, ...args);
+request.initParams = (...args: any[]): any => requestSafe(_request.initParams, ...args);
 
 // And copy all other properties and methods
-const otherPropsAndMethods = ['defaults', 'forever', 'jar', 'cookie', 'debug'];
-for (const propName of otherPropsAndMethods) {
-    request[propName] = _request[propName];
-}
+request.defaults = _request.defaults;
+request.forever = _request.forever;
+request.jar = _request.jar;
+request.cookie = _request.cookie;
+request.debug = _request.debug;
 
 request.setLogger = function (_logger: { error: (e: string) => void }): void {
     logger = _logger;
 };
 
 // end of monkeypatching
-module.exports = request;

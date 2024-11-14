@@ -205,6 +205,22 @@ export type SandboxType = {
             },
         ) => void,
     ) => void;
+    httpGetAsync: (
+        url: string,
+        options?: {
+            timeout?: number;
+            responseType?: ResponseType;
+            headers?: Record<string, string>;
+            basicAuth?: { user: string; password: string } | null;
+            bearerAuth?: string;
+            validateCertificate?: boolean;
+        },
+    ) => Promise<{
+        statusCode: number | null;
+        data: any;
+        headers: Record<string, string>;
+        responseTime: number;
+    }>;
     httpPost: (
         url: string,
         data: any,
@@ -236,6 +252,23 @@ export type SandboxType = {
             },
         ) => void,
     ) => void;
+    httpPostAsync: (
+        url: string,
+        data: any,
+        options: {
+            timeout?: number;
+            responseType?: ResponseType;
+            headers?: Record<string, string>;
+            basicAuth?: { user: string; password: string } | null;
+            bearerAuth?: string;
+            validateCertificate?: boolean;
+        },
+    ) => Promise<{
+        statusCode: number | null;
+        data: any;
+        headers: Record<string, AxiosHeaderValue | undefined>;
+        responseTime: number;
+    }>;
     createTempFile: (fileName: string, data: Buffer | string) => string | undefined;
     subscribe: (
         pattern:
@@ -352,36 +385,49 @@ export type SandboxType = {
         id: string,
         callback?: (err: Error | null | undefined, stateExists?: boolean) => void,
     ) => void | boolean;
+    existsStateAsync: (id: string) => Promise<boolean>;
     existsObject: (
         id: string,
         callback?: (err: Error | null | undefined, objectExists?: boolean) => void,
     ) => void | boolean;
+    existsObjectAsync: (id: string) => Promise<boolean>;
     getIdByName: (name: string, alwaysArray?: boolean) => string | string[] | null;
     getObject: (
         id: string,
         enumName: null | string | ((err: Error | null | undefined, obj?: ioBroker.Object | null) => void),
         cb: (err: Error | null | undefined, obj?: ioBroker.Object | null) => void,
     ) => void;
+    getObjectAsync: (id: string, enumName: null | string) => Promise<ioBroker.Object | null | undefined>;
     setObject: (
         id: string,
         obj: ioBroker.Object,
         callback?: (err?: Error | null | string, res?: { id: string }) => void,
     ) => void;
+    setObjectAsync: (id: string, obj: ioBroker.Object) => Promise<{ id: string }>;
     extendObject: (
         id: string,
         obj: Partial<ioBroker.Object>,
         callback?: (err?: Error | null | string, res?: { id: string }) => void,
     ) => void;
+    extendObjectAsync: (id: string, obj: Partial<ioBroker.Object>) => Promise<{ id: string }>;
     deleteObject: (id: string, isRecursive?: boolean, callback?: ioBroker.ErrorCallback) => void;
+    deleteObjectAsync: (id: string, isRecursive?: boolean) => Promise<void>;
     getEnums: (enumName: string) => { id: string; members: string[]; name: ioBroker.StringOrTranslated }[];
     createAlias: (
         name: string,
-        alias: string,
-        forceCreation: boolean,
-        common: Partial<ioBroker.ObjectCommon>,
-        native: Record<string, any>,
-        callback: (err: Error | null) => void,
+        alias: string | CommonAlias,
+        forceCreation: boolean | Partial<ioBroker.StateCommon> | ((err: Error | null) => void) | undefined,
+        common?: Partial<ioBroker.StateCommon> | Record<string, any> | ((err: Error | null) => void),
+        native?: Record<string, any> | ((err: Error | null) => void),
+        callback?: (err: Error | null) => void,
     ) => void;
+    createAliasAsync: (
+        name: string,
+        alias: string | CommonAlias,
+        forceCreation: boolean | Partial<ioBroker.StateCommon> | undefined,
+        common?: Partial<ioBroker.StateCommon> | Record<string, any>,
+        native?: Record<string, any>,
+    ) => Promise<void>;
     createState: (
         name: string,
         initValue: undefined | ioBroker.StateValue | ioBroker.State,
@@ -395,7 +441,20 @@ export type SandboxType = {
         native?: Record<string, any> | ((err: Error | null) => void),
         callback?: (error: Error | null | undefined, id?: string) => void,
     ) => void;
+    createStateAsync: (
+        name: string,
+        initValue: undefined | ioBroker.StateValue | ioBroker.State,
+        forceCreation:
+            | boolean
+            | undefined
+            | Record<string, any>
+            | Partial<ioBroker.StateCommon>
+            | ((err: Error | null) => void),
+        common?: Partial<ioBroker.StateCommon> | ((err: Error | null) => void),
+        native?: Record<string, any> | ((err: Error | null) => void),
+    ) => Promise<string>;
     deleteState: (id: string, callback: (err: Error | null | undefined, found?: boolean) => void) => void;
+    deleteStateAsync: (id: string) => Promise<boolean>;
     sendTo: (
         adapter: string,
         cmd: string,
@@ -434,17 +493,48 @@ export type SandboxType = {
     ) => string;
     formatTimeDiff: (diff: number, format?: string) => string;
     getDateObject: (date: any) => Date;
-    writeFile: (adapter: string, fileName: string, data: any, callback?: (err?: Error | null) => void) => void;
+    writeFile: (
+        adapter: string,
+        fileName: string,
+        data: string | Buffer | ((err?: Error | null) => void),
+        callback?: (err?: Error | null) => void,
+    ) => void;
+    writeFileAsync: (adapter: string, fileName: string | Buffer, data?: string | Buffer) => Promise<void>;
     readFile: (
         adapter: string,
         fileName: string | ((err: Error | null | undefined, data?: Buffer | string, mimeType?: string) => void),
-        callback: (err: Error | null | undefined, data?: Buffer | string, mimeType?: string) => void,
+        callback?: (err: Error | null | undefined, data?: Buffer | string, mimeType?: string) => void,
     ) => void;
+    readFileAsync: (adapter: string, fileName?: string) => Promise<Buffer | string>;
     unlink: (adapter: string, fileName: string, callback?: (err?: Error | null) => void) => void;
+    unlinkAsync: (adapter: string, fileName?: string) => Promise<void>;
     delFile: (adapter: string, fileName: string, callback?: (err?: Error | null) => void) => void;
+    delFileAsync: (adapter: string, fileName?: string) => Promise<void>;
     rename: (adapter: string, oldName: string, newName: string, callback?: (err?: Error | null) => void) => void;
+    renameAsync: (adapter: string, oldName: string, newName?: string) => Promise<void>;
     renameFile: (adapter: string, oldName: string, newName: string, callback?: (err?: Error | null) => void) => void;
-    getHistory: (instance: string, options: any, callback: (err: Error | null, result: any) => void) => void;
+    renameFileAsync: (adapter: string, oldName: string, newName?: string) => Promise<void>;
+    getHistory: (
+        instance: string | (ioBroker.GetHistoryOptions & { id: string; timeout?: number | string }),
+        options:
+            | (ioBroker.GetHistoryOptions & { id?: string; timeout?: number | string })
+            | ((
+                  error: Error | null,
+                  result?: ioBroker.GetHistoryResult | null,
+                  options?: ioBroker.GetHistoryOptions & { id: string; timeout?: number | string },
+                  instance?: string,
+              ) => void),
+        callback?: (
+            error: Error | null,
+            result?: ioBroker.GetHistoryResult | null,
+            options?: ioBroker.GetHistoryOptions & { id: string; timeout?: number | string },
+            instance?: string,
+        ) => void,
+    ) => void;
+    getHistoryAsync: (
+        instance: string | (ioBroker.GetHistoryOptions & { id: string; timeout?: number | string }),
+        options?: ioBroker.GetHistoryOptions & { id?: string; timeout?: number | string },
+    ) => Promise<ioBroker.GetHistoryResult>;
     runScript: (scriptName: string, callback?: (err?: Error | null) => void) => boolean;
     runScriptAsync: (scriptName: string) => Promise<void>;
     startScript: (

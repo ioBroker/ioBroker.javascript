@@ -1,3 +1,6 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = createRepl;
 /*
  * Copyright Node.js contributors. All rights reserved.
  *
@@ -19,42 +22,13 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import { join, resolve } from 'node:path';
-import { type ReplOptions, type REPLServer, start } from 'repl';
-import {
-    debuglog as debuglogUtil,
-    inspect as inspectUtil,
-    type InspectOptions,
-    type InspectOptionsStylized,
-    type Style,
-} from 'node:util';
-import { type Context, runInContext } from 'node:vm';
-import { fileURLToPath } from 'node:url';
-import { builtinModules as PUBLIC_BUILTINS } from 'node:module';
-import type { Debugger, Runtime } from 'node:inspector';
-
-import type { NodeInspector } from './inspect';
-
-const debuglog = debuglogUtil('inspect');
-
-interface PropertyPreview {
-    /**
-     * Property name.
-     */
-    name: string;
-    /**
-     * Object type. Accessor means that the property itself is an accessor property.
-     */
-    type: string;
-    /**
-     * User-friendly property value string.
-     */
-    value?: string | undefined;
-    /**
-     * Object subtype hint. Specified for <code>object</code> type values only.
-     */
-    subtype?: string | undefined;
-}
+const node_path_1 = require("node:path");
+const repl_1 = require("repl");
+const node_util_1 = require("node:util");
+const node_vm_1 = require("node:vm");
+const node_url_1 = require("node:url");
+const node_module_1 = require("node:module");
+const debuglog = (0, node_util_1.debuglog)('inspect');
 /*const SHORTCUTS = {
     cont: 'c',
     next: 'n',
@@ -104,169 +78,138 @@ profiles[n].save(filepath = 'node.cpuprofile')
 takeHeapSnapshot(filepath = 'node.heapsnapshot')
                       Take a heap snapshot and save to disk as JSON.
 `.trim();*/
-
 const FUNCTION_NAME_PATTERN = /^(?:function\*? )?([^(\s]+)\(/;
-function extractFunctionName(description: string | undefined): string {
+function extractFunctionName(description) {
     const fnNameMatch = description?.match(FUNCTION_NAME_PATTERN);
     return fnNameMatch ? `: ${fnNameMatch[1]}` : '';
 }
-
 // process.binding is a method available on the process object, which allows you to load internal modules written in C++
 // @ts-expect-error binding is internal function
-const NATIVES = PUBLIC_BUILTINS ? process.binding('natives') : {};
-
-function isNativeUrl(url: string): boolean {
+const NATIVES = node_module_1.builtinModules ? process.binding('natives') : {};
+function isNativeUrl(url) {
     url = url.replace(/\.js$/, '');
-    if (PUBLIC_BUILTINS) {
-        if (url.startsWith('internal/') || PUBLIC_BUILTINS.includes(url)) {
+    if (node_module_1.builtinModules) {
+        if (url.startsWith('internal/') || node_module_1.builtinModules.includes(url)) {
             return true;
         }
     }
-
     return url in NATIVES || url === 'bootstrap_node';
 }
-
-function getRelativePath(filenameOrURL: string): string {
-    const dir = join(resolve(), 'x').slice(0, -1);
-
-    const filename = filenameOrURL.startsWith('file://') ? fileURLToPath(filenameOrURL) : filenameOrURL;
-
+function getRelativePath(filenameOrURL) {
+    const dir = (0, node_path_1.join)((0, node_path_1.resolve)(), 'x').slice(0, -1);
+    const filename = filenameOrURL.startsWith('file://') ? (0, node_url_1.fileURLToPath)(filenameOrURL) : filenameOrURL;
     // Change a path to relative, if possible
     if (filename.indexOf(dir) === 0) {
         return filename.slice(dir.length);
     }
     return filename;
 }
-
-function toCallback(promise: Promise<any>, callback: (...args: any[]) => void): void {
-    function forward(...args: any[]): void {
+function toCallback(promise, callback) {
+    function forward(...args) {
         process.nextTick(() => callback(...args));
     }
-
     promise.then(forward.bind(null, null), forward);
 }
-
 // Adds spaces and prefix to number
 // maxN is a maximum number we should have space for
-function leftPad(n: number, prefix: string, maxN: number): string {
+function leftPad(n, prefix, maxN) {
     const s = n.toString();
     const nchars = Math.max(2, String(maxN).length) + 1;
     const nspaces = nchars - s.length - 1;
-
     return prefix + ' '.repeat(nspaces) + s;
 }
-
-function markSourceColumn(sourceText: string, position: number, useColors?: boolean): string {
+function markSourceColumn(sourceText, position, useColors) {
     if (!sourceText) {
         return '';
     }
-
     const head = sourceText.slice(0, position);
     let tail = sourceText.slice(position);
-
     // Colorize char if stdout supports colours
     if (useColors) {
         tail = tail.replace(/(.+?)([^\w]|$)/, '\u001b[32m$1\u001b[39m$2');
     }
-
     // Return source line with coloured char at `position`
     return [head, tail].join('');
 }
-
-function extractErrorMessage(stack: string | undefined): string {
+function extractErrorMessage(stack) {
     if (!stack) {
         return '<unknown>';
     }
     const m = stack.match(/^\w+: ([^\n]+)/);
     return m ? m[1] : stack;
 }
-
-function convertResultToError(result: Runtime.RemoteObject): Error {
+function convertResultToError(result) {
     const { className, description } = result;
     const err = new Error(extractErrorMessage(description));
     err.stack = description;
     Object.defineProperty(err, 'name', { value: className });
     return err;
 }
-
-class RemoteObject implements Runtime.RemoteObject {
-    type: string;
-    subtype?: string | undefined;
-    className?: string | undefined;
-
-    value: any;
-    unserializableValue?: Runtime.UnserializableValue | undefined;
-    description: string | undefined;
-    objectId?: Runtime.RemoteObjectId | undefined;
-    preview?: Runtime.ObjectPreview | undefined;
-    customPreview?: Runtime.CustomPreview | undefined;
-
-    constructor(attributes: Runtime.RemoteObject | undefined) {
+class RemoteObject {
+    type;
+    subtype;
+    className;
+    value;
+    unserializableValue;
+    description;
+    objectId;
+    preview;
+    customPreview;
+    constructor(attributes) {
         this.type = 'undefined';
         Object.assign(this, attributes);
         if (this.type === 'number') {
             this.value = this.unserializableValue ? +this.unserializableValue : +this.value;
         }
     }
-
-    [inspectUtil.custom](_depth: number, opts: InspectOptionsStylized): string {
-        function formatProperty(prop: PropertyPreview): any {
+    [node_util_1.inspect.custom](_depth, opts) {
+        function formatProperty(prop) {
             switch (prop.type) {
                 case 'string':
                 case 'undefined':
-                    return inspectUtil(prop.value, opts);
-
+                    return (0, node_util_1.inspect)(prop.value, opts);
                 case 'number':
                 case 'boolean':
-                    return opts.stylize(prop.value as string, prop.type);
-
+                    return opts.stylize(prop.value, prop.type);
                 case 'object':
                 case 'symbol':
                     if (prop.subtype === 'date') {
-                        return inspectUtil(new Date(prop.value as string), opts);
+                        return (0, node_util_1.inspect)(new Date(prop.value), opts);
                     }
                     if (prop.subtype === 'array') {
-                        return opts.stylize(prop.value as string, 'special');
+                        return opts.stylize(prop.value, 'special');
                     }
-                    return opts.stylize(prop.value as string, (prop.subtype as Style) || 'special');
-
+                    return opts.stylize(prop.value, prop.subtype || 'special');
                 default:
                     return prop.value;
             }
         }
-
         switch (this.type) {
             case 'boolean':
             case 'number':
             case 'string':
             case 'undefined':
-                return inspectUtil(this.value, opts);
-
+                return (0, node_util_1.inspect)(this.value, opts);
             case 'symbol':
-                return opts.stylize(this.description as string, 'special');
-
+                return opts.stylize(this.description, 'special');
             case 'function': {
                 const fnName = extractFunctionName(this.description);
                 const formatted = `[${this.className}${fnName}]`;
                 return opts.stylize(formatted, 'special');
             }
-
             case 'object':
                 switch (this.subtype) {
                     case 'date':
-                        return inspectUtil(new Date(this.description as string), opts);
-
+                        return (0, node_util_1.inspect)(new Date(this.description), opts);
                     case 'null':
-                        return inspectUtil(null, opts);
-
+                        return (0, node_util_1.inspect)(null, opts);
                     case 'regexp':
-                        return opts.stylize(this.description as string, 'regexp');
-
+                        return opts.stylize(this.description, 'regexp');
                     default:
                         break;
                 }
                 if (this.preview) {
-                    const props: any[] = this.preview.properties.map((prop, idx) => {
+                    const props = this.preview.properties.map((prop, idx) => {
                         const value = formatProperty(prop);
                         if (prop.name === `${idx}`) {
                             return value;
@@ -278,69 +221,55 @@ class RemoteObject implements Runtime.RemoteObject {
                     }
                     const singleLine = props.join(', ');
                     const propString = singleLine.length > 60 ? props.join(',\n  ') : singleLine;
-
                     return this.subtype === 'array' ? `[ ${propString} ]` : `{ ${propString} }`;
                 }
                 return this.description || '';
-
             default:
                 return this.description || '';
         }
     }
-
-    static fromEvalResult({ result, wasThrown }: { result: RemoteObject; wasThrown?: boolean }): RemoteObject | Error {
+    static fromEvalResult({ result, wasThrown }) {
         if (wasThrown) {
             return convertResultToError(result);
         }
         return new RemoteObject(result);
     }
 }
-
-class ScopeSnapshot implements Debugger.Scope {
+class ScopeSnapshot {
     /**
      * Scope type.
      */
-    type: string;
+    type;
     /**
      * Object representing the scope. For <code>global</code> and <code>with</code> scopes it represents the actual object; for the rest of the scopes, it is artificial transient object enumerating scope variables as its properties.
      */
-    object: Runtime.RemoteObject;
-
-    name?: string | undefined;
+    object;
+    name;
     /**
      * Location in the source code where scope starts
      */
-    startLocation?: Debugger.Location | undefined;
+    startLocation;
     /**
      * Location in the source code where scope ends
      */
-    endLocation?: Debugger.Location | undefined;
-
-    properties: Map<string, RemoteObject>;
-
-    completionGroup: string[];
-
-    constructor(scope: Debugger.Scope, properties: Runtime.PropertyDescriptor[]) {
+    endLocation;
+    properties;
+    completionGroup;
+    constructor(scope, properties) {
         this.type = scope.type;
         this.object = scope.object;
-
         Object.assign(this, scope);
-
-        this.properties = new Map(
-            properties.map(prop => {
-                const value = new RemoteObject(prop.value);
-                return [prop.name, value];
-            }),
-        );
-
+        this.properties = new Map(properties.map(prop => {
+            const value = new RemoteObject(prop.value);
+            return [prop.name, value];
+        }));
         this.completionGroup = properties.map(prop => prop.name);
     }
-
-    [inspectUtil.custom](_depth: number, opts: InspectOptions): string {
+    [node_util_1.inspect.custom](_depth, opts) {
         const type = `${this.type[0].toUpperCase()}${this.type.slice(1)}`;
         const name = this.name ? `<${this.name}>` : '';
         const prefix = `${type}${name} `;
-        return inspectUtil(this.properties, opts).replace(/^Map /, prefix);
+        return (0, node_util_1.inspect)(this.properties, opts).replace(/^Map /, prefix);
     }
 }
 /*
@@ -360,82 +289,70 @@ function aliasProperties(target, mapping) {
     });
 }
 */
-export default function createRepl(inspector: NodeInspector): () => REPLServer {
+function createRepl(inspector) {
     const { Debugger, /*HeapProfiler, Profiler,*/ Runtime } = inspector;
-
-    let repl: REPLServer;
-
+    let repl;
     // Things we want to keep around
     // const history = { control: [], debug: [] };
     // const watchedExpressions = [];
     // const knownBreakpoints = [];
     // let pauseOnExceptionState = 'none';
-    let lastCommand: string;
-
+    let lastCommand;
     // Things we need to reset when the app restarts
-    let knownScripts: Record<string, Debugger.ScriptParsedEventDataType & { isNative: boolean }> = {};
-    let currentBacktrace: CallFrame[] | undefined;
-    let selectedFrame: CallFrame | undefined;
-    let exitDebugRepl: undefined | (() => void);
-
-    function resetOnStart(): void {
+    let knownScripts = {};
+    let currentBacktrace;
+    let selectedFrame;
+    let exitDebugRepl;
+    function resetOnStart() {
         knownScripts = {};
         currentBacktrace = undefined;
         selectedFrame = undefined;
-
         if (exitDebugRepl) {
             exitDebugRepl();
         }
         exitDebugRepl = undefined;
     }
-
     resetOnStart();
-
-    const INSPECT_OPTIONS: InspectOptions = { colors: inspector.stdout.isTTY };
-    function inspect(value: any): string {
-        return inspectUtil(value, INSPECT_OPTIONS);
+    const INSPECT_OPTIONS = { colors: inspector.stdout.isTTY };
+    function inspect(value) {
+        return (0, node_util_1.inspect)(value, INSPECT_OPTIONS);
     }
-
-    function print(value: any, oneline = false): void {
+    function print(value, oneline = false) {
         const text = typeof value === 'string' ? value : inspect(value);
         return inspector.print(text, oneline);
     }
-
-    function getCurrentLocation(): Debugger.Location {
+    function getCurrentLocation() {
         if (!selectedFrame) {
             throw new Error('Requires execution to be paused');
         }
         return selectedFrame.location;
     }
-
-    function isCurrentScript(script: Debugger.ScriptParsedEventDataType & { isNative: boolean }): boolean {
+    function isCurrentScript(script) {
         return !!selectedFrame && getCurrentLocation().scriptId === script.scriptId;
     }
-
-    function formatScripts(displayNatives = false): string {
-        function isVisible(script: Debugger.ScriptParsedEventDataType & { isNative: boolean }): boolean {
+    function formatScripts(displayNatives = false) {
+        function isVisible(script) {
             if (displayNatives) {
                 return true;
             }
             return !script.isNative || isCurrentScript(script);
         }
-
         return Object.keys(knownScripts)
             .map(scriptId => knownScripts[scriptId])
             .filter(isVisible)
             .map(script => {
-                const isCurrent = isCurrentScript(script);
-                const { isNative, url } = script;
-                const name = `${getRelativePath(url)}${isNative ? ' <native>' : ''}`;
-                return `${isCurrent ? '*' : ' '} ${script.scriptId}: ${name}`;
-            })
+            const isCurrent = isCurrentScript(script);
+            const { isNative, url } = script;
+            const name = `${getRelativePath(url)}${isNative ? ' <native>' : ''}`;
+            return `${isCurrent ? '*' : ' '} ${script.scriptId}: ${name}`;
+        })
             .join('\n');
     }
-    function listScripts(displayNatives = false): void {
+    function listScripts(displayNatives = false) {
         print(formatScripts(displayNatives));
     }
     // @ts-expect-error no idea what this is
-    listScripts[inspectUtil.custom] = function listWithoutInternal(): string {
+    listScripts[node_util_1.inspect.custom] = function listWithoutInternal() {
         return formatScripts();
     };
     /*
@@ -465,21 +382,21 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
     }
 */
     class SourceSnippet {
-        scriptSource: string;
+        scriptSource;
         /**
          * Script identifier as reported in the <code>Debugger.scriptParsed</code>.
          */
-        scriptId: Runtime.ScriptId;
+        scriptId;
         /**
          * Line number in the script (0-based).
          */
-        lineNumber: number;
+        lineNumber;
         /**
          * Column number in the script (0-based).
          */
-        columnNumber: number;
-        delta: number;
-        constructor(location: Debugger.Location, delta: number, scriptSource: string) {
+        columnNumber;
+        delta;
+        constructor(location, delta, scriptSource) {
             this.lineNumber = location.lineNumber;
             this.columnNumber = location.columnNumber || 0;
             this.scriptId = location.scriptId;
@@ -487,86 +404,76 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
             this.delta = delta;
             Object.assign(this, location);
         }
-
-        [inspectUtil.custom](_depth: number, options: InspectOptions): string {
+        [node_util_1.inspect.custom](_depth, options) {
             const { /* scriptId, */ lineNumber, columnNumber, delta, scriptSource } = this;
             const start = Math.max(1, lineNumber - delta + 1);
             const end = lineNumber + delta + 1;
-
             const lines = scriptSource.split('\n');
             return lines
                 .slice(start - 1, end)
                 .map((lineText, offset) => {
-                    const i = start + offset;
-                    const isCurrent = i === lineNumber + 1;
-
-                    const markedLine = isCurrent ? markSourceColumn(lineText, columnNumber, options.colors) : lineText;
-
-                    /*
-                let isBreakpoint = false;
-                knownBreakpoints.forEach(({ location }) => {
-                    if (!location) return;
-                    if (scriptId === location.scriptId &&
-                        i === (location.lineNumber + 1)) {
-                        isBreakpoint = true;
-                    }
-                });
-                */
-
-                    let prefixChar = ' ';
-                    if (isCurrent) {
-                        prefixChar = '>';
-                    } /*else if (isBreakpoint) {
-                    prefixChar = '*';
-                }*/
-                    return `${leftPad(i, prefixChar, end)} ${markedLine}`;
-                })
+                const i = start + offset;
+                const isCurrent = i === lineNumber + 1;
+                const markedLine = isCurrent ? markSourceColumn(lineText, columnNumber, options.colors) : lineText;
+                /*
+            let isBreakpoint = false;
+            knownBreakpoints.forEach(({ location }) => {
+                if (!location) return;
+                if (scriptId === location.scriptId &&
+                    i === (location.lineNumber + 1)) {
+                    isBreakpoint = true;
+                }
+            });
+            */
+                let prefixChar = ' ';
+                if (isCurrent) {
+                    prefixChar = '>';
+                } /*else if (isBreakpoint) {
+                prefixChar = '*';
+            }*/
+                return `${leftPad(i, prefixChar, end)} ${markedLine}`;
+            })
                 .join('\n');
         }
     }
-
-    function getSourceSnippet(location: Debugger.Location, delta: number = 5): SourceSnippet {
+    function getSourceSnippet(location, delta = 5) {
         const { scriptId } = location;
-        return Debugger.getScriptSource({ scriptId }).then(
-            ({ scriptSource }: Debugger.GetScriptSourceReturnType) => new SourceSnippet(location, delta, scriptSource),
-        );
+        return Debugger.getScriptSource({ scriptId }).then(({ scriptSource }) => new SourceSnippet(location, delta, scriptSource));
     }
-
-    class CallFrame implements Debugger.CallFrame {
+    class CallFrame {
         /**
          * Call frame identifier. This identifier is only valid while the virtual machine is paused.
          */
-        callFrameId: Debugger.CallFrameId;
+        callFrameId;
         /**
          * Name of the JavaScript function called on this call frame.
          */
-        functionName: string;
+        functionName;
         /**
          * Location in the source code.
          */
-        functionLocation?: Debugger.Location | undefined;
+        functionLocation;
         /**
          * Location in the source code.
          */
-        location: Debugger.Location;
+        location;
         /**
          * JavaScript script name or url.
          */
-        url: string;
+        url;
         /**
          * Scope chain for this call frame.
          */
-        scopeChain: Debugger.Scope[];
+        scopeChain;
         /**
          * <code>this</code> object for this call frame.
          */
-        this: Runtime.RemoteObject;
+        this;
         /**
          * The value being returned if the function is at return point.
          */
-        returnValue?: Runtime.RemoteObject | undefined;
-
-        constructor(callFrame: Debugger.CallFrame) {
+        returnValue;
+        constructor(callFrame) {
             this.functionName = callFrame.functionName;
             this.url = callFrame.url;
             this.scopeChain = callFrame.scopeChain;
@@ -574,61 +481,46 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
             this.returnValue = callFrame.returnValue;
             this.location = callFrame.location;
             this.callFrameId = callFrame.callFrameId;
-
             Object.assign(this, callFrame);
         }
-
-        loadScopes(): Promise<ScopeSnapshot[]> {
-            return Promise.all(
-                this.scopeChain
-                    .filter(scope => scope.type !== 'global')
-                    .map(scope => {
-                        const { objectId } = scope.object;
-                        return Runtime.getProperties({
-                            objectId,
-                            generatePreview: true,
-                        } as Runtime.GetPropertiesParameterType).then(({ result }: Runtime.GetPropertiesReturnType) => {
-                            return new ScopeSnapshot(scope, result);
-                        });
-                    }),
-            );
+        loadScopes() {
+            return Promise.all(this.scopeChain
+                .filter(scope => scope.type !== 'global')
+                .map(scope => {
+                const { objectId } = scope.object;
+                return Runtime.getProperties({
+                    objectId,
+                    generatePreview: true,
+                }).then(({ result }) => {
+                    return new ScopeSnapshot(scope, result);
+                });
+            }));
         }
-
-        list(delta: number = 5): SourceSnippet {
+        list(delta = 5) {
             return getSourceSnippet(this.location, delta);
         }
     }
-
     class Backtrace extends Array {
-        [inspectUtil.custom](): string {
+        [node_util_1.inspect.custom]() {
             return this.map((callFrame, idx) => {
-                const {
-                    location: { scriptId, lineNumber, columnNumber },
-                    functionName,
-                } = callFrame;
+                const { location: { scriptId, lineNumber, columnNumber }, functionName, } = callFrame;
                 const name = functionName || '(anonymous)';
-
                 const script = knownScripts[scriptId];
                 const relativeUrl = (script && getRelativePath(script.url)) || '<unknown>';
                 const frameLocation = `${relativeUrl}:${lineNumber + 1}:${columnNumber}`;
-
                 return `#${idx} ${name} ${frameLocation}`;
             }).join('\n');
         }
-
-        static from(callFrames: CallFrame[]): CallFrame[] {
-            return super.from(
-                Array.from(callFrames).map(callFrame => {
-                    if (callFrame instanceof CallFrame) {
-                        return callFrame;
-                    }
-                    return new CallFrame(callFrame);
-                }),
-            );
+        static from(callFrames) {
+            return super.from(Array.from(callFrames).map(callFrame => {
+                if (callFrame instanceof CallFrame) {
+                    return callFrame;
+                }
+                return new CallFrame(callFrame);
+            }));
         }
     }
-
-    function prepareControlCode(input: string): string {
+    function prepareControlCode(input) {
         if (input === '\n') {
             return lastCommand;
         }
@@ -636,12 +528,12 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
         const match = input.match(/^\s*exec\s+([^\n]*)/);
         if (match) {
             lastCommand = `exec(${JSON.stringify(match[1])})`;
-        } else {
+        }
+        else {
             lastCommand = input;
         }
         return lastCommand;
     }
-
     // function evalInCurrentContext(code) {
     //     // Repl asked for scope variables
     //     if (code === '.scope') {
@@ -667,33 +559,25 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
     //         generatePreview: true,
     //     }).then(RemoteObject.fromEvalResult);
     // }
-
-    function controlEval(
-        input: string,
-        context: Context,
-        filename: string,
-        callback: (error: Error | null, result?: any) => void,
-    ): void {
+    function controlEval(input, context, filename, callback) {
         debuglog('eval:', input);
-        function returnToCallback(error: Error | null, result?: any): void {
+        function returnToCallback(error, result) {
             debuglog('end-eval:', input, error);
             callback(error, result);
         }
-
         try {
             const code = prepareControlCode(input);
-            const result = runInContext(code, context, filename);
-
+            const result = (0, node_vm_1.runInContext)(code, context, filename);
             if (result && typeof result.then === 'function') {
                 toCallback(result, returnToCallback);
                 return;
             }
             returnToCallback(null, result);
-        } catch (e: any) {
-            returnToCallback(e as Error);
+        }
+        catch (e) {
+            returnToCallback(e);
         }
     }
-
     // function debugEval(input, context, filename, callback) {
     //     debuglog('eval:', input);
     //     function returnToCallback(error, result) {
@@ -713,7 +597,6 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
     //         returnToCallback(e);
     //     }
     // }
-
     /*function formatWatchers(verbose = false) {
         if (!watchedExpressions.length) {
             return Promise.resolve('');
@@ -742,11 +625,9 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
                 return verbose ? `Watchers:\n${valueList}\n` : valueList;
             });
     }*/
-
     //function watchers(verbose = false) {
     //    return formatWatchers(verbose).then(print);
     //}
-
     // List source code
     // function list(delta = 5) {
     //     return selectedFrame.list(delta)
@@ -755,7 +636,6 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
     //             throw error;
     //         });
     // }
-
     //function handleBreakpointResolved({ breakpointId, location }) {
     //     const script = knownScripts[location.scriptId];
     //     const scriptUrl = script && script.url;
@@ -773,7 +653,6 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
     //         knownBreakpoints.push({ breakpointId, location });
     //     }
     //}
-
     // function listBreakpoints() {
     //     if (!knownBreakpoints.length) {
     //         print('No breakpoints yet');
@@ -791,7 +670,6 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
     //         .join('\n');
     //     print(breaklist);
     // }
-
     // function setBreakpoint(script, line, condition, silent) {
     //     function registerBreakpoint({ breakpointId, actualLocation }) {
     //         handleBreakpointResolved({ breakpointId, location: actualLocation });
@@ -926,70 +804,53 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
     //         print(`${results.length} breakpoints restored.`);
     //     });
     // }
-
     // function setPauseOnExceptions(state) {
     //     return Debugger.setPauseOnExceptions({ state })
     //         .then(() => {
     //             pauseOnExceptionState = state;
     //         });
     // }
-
-    Debugger.on('paused', (data: Debugger.PausedEventDataType): void => {
-        const callFrames: CallFrame[] = data.callFrames as CallFrame[];
-        const reason: string = data.reason;
-
+    Debugger.on('paused', (data) => {
+        const callFrames = data.callFrames;
+        const reason = data.reason;
         if (process.env.NODE_INSPECT_RESUME_ON_START === '1' && reason === 'Break on start') {
             debuglog('Paused on start, but NODE_INSPECT_RESUME_ON_START environment variable is set to 1, resuming');
             inspector.client.callMethod('Debugger.resume');
             return;
         }
-
         // Save execution context's data
         currentBacktrace = Backtrace.from(callFrames);
         selectedFrame = currentBacktrace[0];
         const { scriptId, lineNumber } = selectedFrame.location;
-
         const breakType = reason === 'other' ? 'break' : reason;
         const script = knownScripts[scriptId];
         const scriptUrl = script ? getRelativePath(script.url) : '[unknown]';
-
         const header = `${breakType} in ${scriptUrl}:${lineNumber + 1}`;
-
-        inspector.suspendReplWhile(() =>
-            Promise.all([/*formatWatchers(true), */ selectedFrame?.list(3)])
-                .then(([/*watcherList, */ context]) => {
-                    /*if (watcherList) {
-                        return `${watcherList}\n${inspect(context)}`;
-                    }*/
-                    return inspect(context);
-                })
-                .then(breakContext => {
-                    print(`${header}\n${breakContext}`);
-                }),
-        );
+        inspector.suspendReplWhile(() => Promise.all([/*formatWatchers(true), */ selectedFrame?.list(3)])
+            .then(([/*watcherList, */ context]) => {
+            /*if (watcherList) {
+                return `${watcherList}\n${inspect(context)}`;
+            }*/
+            return inspect(context);
+        })
+            .then(breakContext => {
+            print(`${header}\n${breakContext}`);
+        }));
     });
-
-    function handleResumed(): void {
+    function handleResumed() {
         currentBacktrace = undefined;
         selectedFrame = undefined;
     }
-
     Debugger.on('resumed', handleResumed);
-
     //Debugger.on('breakpointResolved', handleBreakpointResolved);
-
-    Debugger.on('scriptParsed', (script: Debugger.ScriptParsedEventDataType) => {
+    Debugger.on('scriptParsed', (script) => {
         const { scriptId, url } = script;
         if (url) {
-            knownScripts[scriptId] = Object.assign(
-                {
-                    isNative: isNativeUrl(url),
-                },
-                script,
-            );
+            knownScripts[scriptId] = Object.assign({
+                isNative: isNativeUrl(url),
+            }, script);
         }
     });
-
     /*Profiler.on('consoleProfileFinished', ({ profile }) => {
         Profile.createAndRegister({ profile });
         print([
@@ -997,8 +858,7 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
             `Access it with profiles[${profiles.length - 1}]`
         ].join('\n'));
     });*/
-
-    function initializeContext(context: Context): void {
+    function initializeContext(context) {
         Object.defineProperty(context, 'Debugger', {
             value: inspector.Debugger,
             enumerable: true,
@@ -1027,7 +887,6 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
             // @ts-expect-error fix later
             writeable: false,
         });
-
         /*copyOwnProperties(context, {
             get help() {
                 print(HELP);
@@ -1235,8 +1094,7 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
         });*/
         //aliasProperties(context, SHORTCUTS);
     }
-
-    function initAfterStart(): Promise<void> {
+    function initAfterStart() {
         const setupTasks = [
             Runtime.enable(),
             //Profiler.enable(),
@@ -1251,16 +1109,14 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
         ];
         return Promise.all(setupTasks);
     }
-
-    return function startRepl(): REPLServer {
+    return function startRepl() {
         inspector.client.on('close', () => resetOnStart());
         inspector.client.on('ready', () => {
             initAfterStart().catch(err => {
                 print(`Error starting inspector: ${err.message}`);
             });
         });
-
-        const replOptions: ReplOptions = {
+        const replOptions = {
             prompt: 'debug> ',
             input: inspector.stdin,
             output: inspector.stdout,
@@ -1268,21 +1124,18 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
             useGlobal: false,
             ignoreUndefined: true,
         };
-
-        repl = start(replOptions);
+        repl = (0, repl_1.start)(replOptions);
         initializeContext(repl.context);
         repl.on('reset', initializeContext);
-
         repl.defineCommand('interrupt', () => {
             // We want this for testing purposes where sending CTRL-C can be tricky.
             repl.emit('SIGINT');
         });
-
         // Init once for the initial connection
         initAfterStart().catch(err => {
             print(`Error starting inspector: ${err.message}`);
         });
-
         return repl;
     };
 }
+//# sourceMappingURL=debugger.js.map
