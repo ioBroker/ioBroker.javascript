@@ -16,20 +16,20 @@ import {
 import { Check as IconOk, Cancel as IconCancel } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
+import type { ScriptType } from '@/types';
 
 interface DialogNewProps {
     onClose: () => void;
-    onAdd: (id: string, name: string, instance: number, type: string) => void;
+    onAdd: (id: string, name: string, instance?: number, type?: ScriptType) => void;
     name: string;
     title: string;
     parent: string;
-    instance: number;
-    instances: number[];
+    instance?: number;
+    instances?: number[];
     parents: { id: string; name: string }[];
-    existingItems: string[];
-    folder: boolean;
-    type: string;
-    source: string;
+    existingItems?: string[];
+    folder?: boolean;
+    type?: ScriptType;
 }
 
 interface DialogNewState {
@@ -189,7 +189,7 @@ class DialogNew extends React.Component<DialogNewProps, DialogNewState> {
                                     onChange={e => this.setState({ instance: parseInt(e.target.value as string, 10) })}
                                     inputProps={{ name: 'instance', id: 'instance' }}
                                 >
-                                    {this.props.instances.map(instance => (
+                                    {this.props.instances?.map(instance => (
                                         <MenuItem
                                             key={`instance${instance}`}
                                             value={instance}

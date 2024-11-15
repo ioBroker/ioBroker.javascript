@@ -19,10 +19,10 @@ import { I18n } from '@iobroker/adapter-react-v5';
 
 interface DialogRenameProps {
     onClose: () => void;
-    onRename: (oldId: string, newId: string, newName: string, instance: number) => void;
+    onRename: (oldId: string, newId: string, newName: string, instance: number | null) => void;
     name: string;
     id: string;
-    instance: number;
+    instance: number | null;
     instances: number[];
     folder: boolean;
 }
@@ -30,7 +30,7 @@ interface DialogRenameProps {
 interface DialogRenameState {
     name: string;
     id: string;
-    instance: number;
+    instance: number | null;
     prefix: string;
 }
 

@@ -21,6 +21,7 @@ import ImgJS from '../assets/tileJS.png';
 import ImgTS from '../assets/tileTS.png';
 import ImgBlockly from '../assets/tileBlockly.png';
 import ImgRules from '../assets/tileRules.png';
+import {ScriptType} from "@/types";
 
 const styles: Record<string, React.CSSProperties> = {
     card: {
@@ -44,7 +45,7 @@ const styles: Record<string, React.CSSProperties> = {
 };
 
 interface DialogAddNewProps {
-    onClose: (type?: 'TypeScript/ts' | 'Javascript/js' | 'Blockly' | 'Rules') => void;
+    onClose: (type?: ScriptType) => void;
 }
 
 class DialogAddNew extends React.Component<DialogAddNewProps> {

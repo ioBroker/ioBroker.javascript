@@ -13,7 +13,6 @@ import {
     Menu,
     MenuItem,
     Input,
-    ListItemSecondaryAction,
     Box,
 } from '@mui/material';
 
@@ -60,6 +59,7 @@ import DialogAddNewScript from './Dialogs/AddNewScript';
 import DialogNew from './Dialogs/New';
 import DialogError from './Dialogs/Error';
 import DialogAdapterDebug from './Dialogs/AdapterDebug';
+import type { ScriptType } from '@/types';
 
 const MENU_ITEM_HEIGHT = 48;
 const COLOR_RUN = green[400];
@@ -238,7 +238,7 @@ const styles: Record<string, any> = {
     },
 };
 
-const images: Record<string, React.JSX.Element> = {
+const images: Record<ScriptType | 'def', string> = {
     Blockly: ImgBlockly,
     'Javascript/js': ImgJS,
     def: ImgJS,
@@ -259,19 +259,33 @@ function getObjectName(id: string, obj: ioBroker.Object, lang?: ioBroker.Languag
     return id.replace(/^script\.js./, '');
 }
 
-interface ListElement {
+type ListElementFolder = {
     id: string;
     depth: number;
-    index?: number;
+    index: number;
+    parent: string | null;
+    parentIndex: number | null;
+    title: string;
+    type: 'folder';
+    filteredPartly?: boolean;
+    filtered?: boolean;
+};
+
+type ListElementScript = {
+    id: string;
+    depth: number;
+    index: number;
     parent: string | null;
     title: string;
     enabled: boolean;
-    type: 'folder' | 'Javascript/js' | 'TypeScript/ts' | 'Blockly' | 'Rules';
-    instance?: number | null;
-    parentIndex?: number;
+    type: ScriptType;
+    instance: number | null;
+    parentIndex: number;
     filteredPartly?: boolean;
     filtered?: boolean;
-}
+};
+
+type ListElement = ListElementFolder | ListElementScript;
 
 function prepareList(data: Record<string, ioBroker.ScriptObject>): ListElement[] {
     const result: ListElement[] = [
@@ -280,9 +294,9 @@ function prepareList(data: Record<string, ioBroker.ScriptObject>): ListElement[]
             depth: 0,
             index: 0,
             parent: null,
-            enabled: false,
             title: 'root',
             type: 'folder',
+            parentIndex: null,
         },
     ];
     const ids: string[] = Object.keys(data);
@@ -301,18 +315,29 @@ function prepareList(data: Record<string, ioBroker.ScriptObject>): ListElement[]
         const obj = data[ids[i]];
         const parts = ids[i].split('.');
         parts.pop();
-        result.push({
-            id: ids[i],
-            title: getObjectName(ids[i], obj),
-            enabled: !!obj?.common?.enabled,
-            depth: parts.length - 1,
-            type:
-                obj.type === 'script'
-                    ? (obj.common.engineType as 'folder' | 'Javascript/js' | 'TypeScript/ts' | 'Blockly' | 'Rules')
-                    : 'folder',
-            parent: parts.length > 1 ? parts.join('.') : null,
-            instance: obj.common.engine ? parseInt(obj.common.engine.split('.').pop() as string, 10) || 0 : null,
-        });
+        if (obj.type === 'script') {
+            result.push({
+                id: ids[i],
+                title: getObjectName(ids[i], obj),
+                enabled: !!obj?.common?.enabled,
+                depth: parts.length - 1,
+                type: obj.common.engineType as 'Javascript/js' | 'TypeScript/ts' | 'Blockly' | 'Rules',
+                parent: parts.length > 1 ? parts.join('.') : null,
+                instance: obj.common.engine ? parseInt(obj.common.engine.split('.').pop() as string, 10) || 0 : null,
+                index: 0, // temporary. It will be filled below
+                parentIndex: 0, // temporary. It will be filled below
+            });
+        } else {
+            result.push({
+                id: ids[i],
+                title: getObjectName(ids[i], obj),
+                depth: parts.length - 1,
+                type: 'folder',
+                parent: parts.length > 1 ? parts.join('.') : null,
+                index: 0, // temporary. It will be filled below
+                parentIndex: null, // temporary. It will be filled below
+            });
+        }
     }
 
     // Place all folder-less scripts at start
@@ -368,7 +393,8 @@ function prepareList(data: Record<string, ioBroker.ScriptObject>): ListElement[]
                         depth: parts.length - 1,
                         type: 'folder',
                         parent: parts.length > 1 ? parts.join('.') : null,
-                        enabled: false,
+                        index: 0, // temporary. It will be filled below
+                        parentIndex: null, // temporary. It will be filled below
                     });
                     modified = true;
                 }
@@ -439,7 +465,7 @@ export function Droppable(props: {
 
 interface DraggableProps {
     name: string;
-    children: React.JSX.Element | (React.JSX.Element | null)[] | null;
+    children: React.JSX.Element | (React.JSX.Element | React.JSX.Element[] | null)[] | null;
 }
 
 export function Draggable(props: DraggableProps): React.JSX.Element {
@@ -471,7 +497,7 @@ interface SideDrawerProps {
     onImport: () => void;
     onAdd: (type: string) => void;
     onAddFolder: () => void;
-    onRename: (id: string, newName: string) => void;
+    onRename: (id: string, newName: string, newId?: string, newInstance?: number | null) => void;
     instances: number[];
     scripts: Record<string, ioBroker.ScriptObject>;
     runningInstances: Record<string, boolean>;
@@ -479,9 +505,22 @@ interface SideDrawerProps {
     themeName: ThemeName;
     width: number;
     debugMode: boolean;
+    version: string;
     searchText: string;
     selectId: string;
     scriptsHash: string;
+    onExpertModeChange?: (expertMode: boolean) => void;
+    onThemeChange?: (theme: ThemeName) => void;
+    onSearch?: (searchText: string) => void;
+    onAddNew?: (
+        id: string,
+        name: string,
+        enabled: boolean,
+        instance?: number,
+        type?: ScriptType | 'folder',
+        text?: string,
+    ) => void;
+    onDebugInstance: (data: { instance: string; adapter: string }) => void;
 }
 
 interface SideDrawerState {
@@ -491,16 +530,17 @@ interface SideDrawerState {
     reorder: boolean;
     themeName: ThemeName;
     selected: string | null;
-    creatingScript: boolean;
+    creatingScript: null | ScriptType;
     creatingFolder: boolean;
     copingScript: string;
     renaming: string | null;
     deleting: string | null;
-    choosingType: string | null;
+    choosingType: boolean;
     errorText: string;
     instances: number[];
     menuOpened: boolean;
     menuAnchorEl: null | HTMLElement;
+    menuAnchorFilterEl: null | HTMLElement;
     searchMode: boolean;
     expertMode: boolean;
     searchText: string;
@@ -524,6 +564,8 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
 
     private readonly onProblemUpdatedBound: (id: string, state: ioBroker.State | null | undefined) => void;
 
+    private parent: string | null = null;
+
     constructor(props: SideDrawerProps) {
         super(props);
 
@@ -535,7 +577,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
             expanded = [];
         }
 
-        this.inputRef = new React.createRef<HTMLInputElement>();
+        this.inputRef = React.createRef<HTMLInputElement>();
 
         this.state = {
             listItems: prepareList(props.scripts || {}),
@@ -544,16 +586,17 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
             reorder: false,
             themeName: this.props.themeName,
             selected: window.localStorage ? window.localStorage.getItem('SideMenu.selected') || null : null,
-            creatingScript: false,
+            creatingScript: null,
             creatingFolder: false,
             copingScript: '',
             renaming: null,
             deleting: null,
-            choosingType: null,
+            choosingType: false,
             errorText: '',
             instances: props.instances || [],
             menuOpened: false,
             menuAnchorEl: null,
+            menuAnchorFilterEl: null,
             searchMode: false,
             expertMode: this.props.expertMode,
             searchText: '',
@@ -598,7 +641,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                 const that = this; // sometimes lambda does not work
                 const _id = `javascript.${instance}.scriptProblem.${id.substring(ROOT_ID.length + 1)}`;
 
-                this.props.socket.getState(_id).then((state: ioBroker.State | null | undefined) => {
+                void this.props.socket.getState(_id).then((state: ioBroker.State | null | undefined) => {
                     that.onProblemUpdated(_id, state);
                     setTimeout(() => that.readProblems(cb, tasks), 0);
                 });
@@ -611,7 +654,10 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
     componentDidMount(): void {
         this.readProblems(() => {
             this.props.instances.forEach(instance => {
-                this.props.socket.subscribeState(`javascript.${instance}.scriptProblem.*`, this.onProblemUpdatedBound);
+                void this.props.socket.subscribeState(
+                    `javascript.${instance}.scriptProblem.*`,
+                    this.onProblemUpdatedBound,
+                );
             });
         });
     }
@@ -665,7 +711,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
         listItems = JSON.parse(JSON.stringify(listItems));
         let changed = false;
         const newState: Partial<SideDrawerState> = { listItems };
-        if (isSearchEnabled !== false && searchMode && searchText) {
+        if (isSearchEnabled && searchMode && searchText) {
             const text = searchText.toLowerCase();
             listItems.forEach(item => {
                 const id = item.title.toLowerCase();
@@ -717,7 +763,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                     changed = true;
                 }
             });
-            if (isSearchEnabled === false) {
+            if (!isSearchEnabled) {
                 newState.searchText = '';
                 newState.searchMode = false;
                 changed = true;
@@ -773,7 +819,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
         return changed ? expanded : null;
     }
 
-    ensureSelectedIsVisible(selected?: string, expanded?: string[]): string[] | null {
+    ensureSelectedIsVisible(selected?: string | ListElement, expanded?: string[]): string[] | null {
         return SideDrawer.ensureSelectedIsVisibleStatic(
             selected || this.state.selected,
             expanded || this.state.expanded,
@@ -970,9 +1016,13 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
         return null;
     }
 
-    onDelete(item: ListElement, e?: React.MouseEvent): Promise<void> {
+    onDelete(item: string | ListElement | null, e?: React.MouseEvent): Promise<void> {
         e?.stopPropagation();
         return new Promise(resolve => {
+            if (!item) {
+                resolve();
+                return;
+            }
             if (typeof item !== 'object') {
                 this.setState({ deleting: item }, () => resolve());
             } else {
@@ -1008,11 +1058,11 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
         e?.stopPropagation();
         if (!this.state.reorder && item) {
             const expanded = this.ensureSelectedIsVisible(item);
-            const newState = { selected: item.id };
+            const newState: Partial<SideDrawerState> = { selected: item.id };
             if (expanded) {
                 newState.expanded = expanded;
             }
-            this.setState(newState);
+            this.setState(newState as SideDrawerState);
             window.localStorage && window.localStorage.setItem('SideMenu.selected', item.id);
         }
     }
@@ -1164,6 +1214,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                 )}
                 onClick={e => this.onClick(item, e)}
                 onDoubleClick={e => this.onDblClick(item, e)}
+                secondaryAction={this.renderItemButtonsOnEnd(item, children)}
             >
                 <ListItemIcon style={styles.listItemIcon}>
                     {item.type === 'folder' ? (
@@ -1199,7 +1250,6 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                         </span>
                     }
                 />
-                <ListItemSecondaryAction>{this.renderItemButtonsOnEnd(item, children)}</ListItemSecondaryAction>
             </ListItem>
         );
     }
@@ -1217,7 +1267,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
         return undefined;
     }
 
-    renderOneItem(items: ListElement[], item: ListElement /* , dragging */): React.JSX.Element[] | null {
+    renderOneItem(items: ListElement[], item: ListElement /* , dragging */): (React.JSX.Element | null)[] | null {
         const childrenFiltered: ListElement[] =
             this.state.statusFilter || this.state.typeFilter
                 ? items.filter(i => (i.parent === item.id ? !this.isFilteredOut(i) : false))
@@ -1236,9 +1286,9 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
 
         const element = this.renderListItem(item, children, childrenFiltered);
         const result: (React.JSX.Element | null)[] = [];
-        let reactChildren: (React.JSX.Element[] | null)[] | undefined;
+        let reactChildren: React.JSX.Element[] | undefined;
         if (children && (reorder || this.state.expanded.includes(item.id) || item.id === ROOT_ID)) {
-            reactChildren = children.map(it => this.renderOneItem(items, it));
+            reactChildren = children.map(it => this.renderOneItem(items, it) as unknown as React.JSX.Element);
         }
 
         if (reorder) {
@@ -1264,7 +1314,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                         name={item.id}
                     >
                         {element}
-                        {reactChildren || null}
+                        {(reactChildren as unknown as React.JSX.Element) || null}
                     </Draggable>,
                 );
             }
@@ -1290,8 +1340,8 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
         );
     }
 
-    onAddNew(e) {
-        e && e.stopPropagation();
+    onAddNew(e?: React.MouseEvent<any>): void {
+        e?.stopPropagation();
         let item = this.state.listItems.find(i => i.id === this.state.selected);
         let parent = ROOT_ID;
         while (item && item.type !== 'folder') {
@@ -1305,8 +1355,8 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
         this.setState({ choosingType: true });
     }
 
-    onCopy(e, id) {
-        e && e.stopPropagation();
+    onCopy(e: React.MouseEvent<any>, id: string | null): void {
+        e?.stopPropagation();
         let item = this.state.listItems.find(i => i.id === id);
         let parent = ROOT_ID;
         while (item && item.type !== 'folder') {
@@ -1317,30 +1367,15 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
         }
 
         this.parent = parent;
-        this.setState({ copingScript: id });
+        this.setState({ copingScript: id || '' });
     }
 
-    onAddNewFolder(e) {
-        e && e.stopPropagation();
-        let item = this.state.listItems.find(i => i.id === this.state.selected);
-        let parent = ROOT_ID;
-        while (item && item.type !== 'folder') {
-            item = this.state.listItems[item.parentIndex];
-        }
-        if (item) {
-            parent = item.id;
-        }
-
-        this.parent = parent;
-        this.setState({ creatingFolder: true });
-    }
-
-    onRename(e) {
-        e && e.stopPropagation();
+    onRename(e: React.MouseEvent): void {
+        e?.stopPropagation();
         this.setState({ renaming: this.state.selected });
     }
 
-    getUniqueName(copyId) {
+    getUniqueName(copyId?: string): string {
         let i = 1;
         let word = `${I18n.t('Script')} `;
         if (copyId) {
@@ -1362,7 +1397,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
         return word + i;
     }
 
-    getUniqueFolderName() {
+    getUniqueFolderName(): string {
         let i = 1;
         // eslint-disable-next-line
         while (this.state.listItems.find(it => it.id === `${this.parent}.${I18n.t('Folder')}_${i}`)) {
@@ -1371,10 +1406,11 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
         return `${I18n.t('Folder')} ${i}`;
     }
 
-    onCloseMenu(cb) {
+    onCloseMenu(cb: () => void): void {
         this.setState({ menuOpened: false, menuAnchorEl: null, menuAnchorFilterEl: null }, cb);
     }
 
+    /*
     getFilterBadge() {
         return [
             this.state.statusFilter === true && <IconPlay style={{ ...styles.filterIcon, color: COLOR_RUN }} />,
@@ -1384,8 +1420,9 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
             this.state.typeFilter === 'TypeScript/ts' && 'TS',
         ];
     }
+    */
 
-    getMainMenu(children, selectedItem) {
+    getMainMenu(children: ListElement[] | undefined, selectedItem: ListElement | undefined): React.JSX.Element {
         return (
             <Menu
                 key="menu"
@@ -1393,10 +1430,12 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                 anchorEl={this.state.menuAnchorEl}
                 open={this.state.menuOpened}
                 onClose={() => this.setState({ menuOpened: false, menuAnchorEl: null })}
-                PaperProps={{
-                    style: {
-                        maxHeight: MENU_ITEM_HEIGHT * 7.5,
-                        // width: 200,
+                slotProps={{
+                    paper: {
+                        style: {
+                            maxHeight: MENU_ITEM_HEIGHT * 7.5,
+                            // width: 200,
+                        },
                     },
                 }}
             >
@@ -1408,7 +1447,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                             !this.state.selected ||
                             this.state.selected === GLOBAL_ID ||
                             this.state.selected === COMMON_ID ||
-                            (children && children.length)
+                            !!children?.length
                         }
                         onClick={event => {
                             event.stopPropagation();
@@ -1477,19 +1516,9 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                         key="dark"
                         onClick={() =>
                             this.onCloseMenu(() => {
-                                // TODO: use Utils.toggleTheme(themeName)
-                                // newThemeName = Utils.toggleTheme(themeName);
-                                const newThemeName =
-                                    this.state.themeName === 'dark'
-                                        ? 'blue'
-                                        : this.state.themeName === 'blue'
-                                          ? 'colored'
-                                          : this.state.themeName === 'colored'
-                                            ? 'light'
-                                            : this.state.themeName === 'light'
-                                              ? 'dark'
-                                              : 'colored';
-                                this.props.onThemeChange(newThemeName);
+                                if (this.props.onThemeChange) {
+                                    this.props.onThemeChange(Utils.toggleTheme(this.state.themeName));
+                                }
                             })
                         }
                     >
@@ -1529,8 +1558,8 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
     }
 
     // render menu and toolbar
-    getToolbarButtons() {
-        const result = [];
+    getToolbarButtons(): React.JSX.Element[] {
+        const result: React.JSX.Element[] = [];
         const reorder = this.state.reorder && !this.props.debugMode;
         if (this.state.searchMode && !this.props.debugMode) {
             result.push(
@@ -1573,7 +1602,6 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                 result.push(
                     <IconButton
                         key="cleanSearch"
-                        mini="true"
                         title={I18n.t('Clear search input')}
                         sx={styles.toolbarButtons}
                         style={{ marginTop: 7, float: 'right' }}
@@ -1612,8 +1640,10 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                     </IconButton>,
                 );
 
-                const selectedItem = this.state.listItems.find(it => it.id === this.state.selected);
-                let children;
+                const selectedItem: ListElement | undefined = this.state.listItems.find(
+                    it => it.id === this.state.selected,
+                );
+                let children: ListElement[] | undefined;
                 if (selectedItem && this.state.width <= NARROW_WIDTH && selectedItem.type === 'folder') {
                     children = this.state.listItems.filter(i => i.parent === this.state.selected);
                 }
@@ -1650,7 +1680,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                             ...(this.props.debugMode ? styles.iconButtonsDisabled : undefined),
                         }}
                         style={{ color: reorder ? 'red' : 'inherit' }}
-                        onClick={() => this.onAddNewFolder()}
+                        onClick={e => this.onAddNew(e)}
                         size="medium"
                     >
                         <IconAddFolder />
@@ -1747,8 +1777,8 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
         return result;
     }
 
-    getFolders() {
-        const folders = [{ id: ROOT_ID, name: I18n.t('Root folder') }];
+    getFolders(): { id: string; name: string }[] {
+        const folders: { id: string; name: string }[] = [{ id: ROOT_ID, name: I18n.t('Root folder') }];
         this.state.listItems.forEach(item => {
             if (item.type === 'folder' && item.id !== ROOT_ID) {
                 // root has been added above
@@ -1760,13 +1790,13 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
         return folders;
     }
 
-    onCollapseAll() {
+    onCollapseAll(): void {
         this.setState({ expanded: [] });
         this.saveExpanded([]);
     }
 
-    onExpandAll() {
-        const expanded = [];
+    onExpandAll(): void {
+        const expanded: string[] = [];
         this.state.listItems.forEach(
             item => this.state.listItems.find(it => it.parent === item.id) && expanded.push(item.id),
         );
@@ -1774,7 +1804,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
         this.saveExpanded(expanded);
     }
 
-    getBottomButtons() {
+    getBottomButtons(): React.JSX.Element[] | null {
         if (this.state.reorder || this.props.debugMode) {
             return null;
         }
@@ -1900,7 +1930,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                         opacity: this.state.typeFilter === 'Rules' ? 1 : 0.3,
                         background: this.state.typeFilter === 'Rules' ? 'gray' : 'inherit',
                     }}
-                    src={images['Rules'] || images.def}
+                    src={images.Rules || images.def}
                     onClick={() => {
                         const typeFilter = this.state.typeFilter === 'Rules' ? '' : 'Rules';
                         window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
@@ -1939,7 +1969,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
         ];
     }
 
-    getAdapterDebugDialog() {
+    getAdapterDebugDialog(): React.JSX.Element | null {
         if (this.state.showAdapterDebug) {
             return (
                 <DialogAdapterDebug
@@ -1954,11 +1984,14 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                 />
             );
         }
+        return null;
     }
 
-    render() {
-        const renamingItem = this.state.renaming && this.state.listItems.find(i => i.id === this.state.renaming);
-        const copingItem = this.state.copingScript && this.props.scripts[this.state.copingScript];
+    render(): (React.JSX.Element | null)[] {
+        const renamingItem: ListElement | undefined = this.state.renaming
+            ? this.state.listItems.find(i => i.id === this.state.renaming)
+            : undefined;
+        const copingItem = this.state.copingScript ? this.props.scripts[this.state.copingScript] : undefined;
 
         return [
             <Drawer
@@ -1967,7 +2000,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                 style={styles.menu}
                 sx={{ '& .MuiDrawer-paper': styles.drawerPaper }}
                 anchor="left"
-                onClick={() => this.onClick({ id: '' })}
+                onClick={() => this.onClick({ id: '' } as ListElement)}
             >
                 <Box sx={styles.toolbar}>{this.getToolbarButtons()}</Box>
 
@@ -1986,12 +2019,11 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                 <DialogRename
                     key="dialog-rename"
                     name={renamingItem.title}
-                    title={I18n.t('Rename')}
-                    id={this.state.renaming}
+                    id={this.state.renaming || ''}
                     folder={renamingItem.type === 'folder'}
-                    instance={renamingItem.instance}
+                    instance={(renamingItem as ListElementScript).instance}
                     instances={this.props.instances}
-                    onClose={() => this.setState({ renaming: false })}
+                    onClose={() => this.setState({ renaming: null })}
                     onRename={(oldId, newName, newId, newInstance) =>
                         this.props.onRename && this.props.onRename(oldId, newName, newId, newInstance)
                     }
@@ -2001,9 +2033,9 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
             this.state.deleting ? (
                 <DialogDelete
                     key="dialog-delete"
-                    name={this.state.listItems.find(i => i.id === this.state.deleting).title}
+                    name={(this.state.listItems.find(i => i.id === this.state.deleting) as ListElement).title}
                     id={this.state.deleting}
-                    onClose={() => this.setState({ deleting: false })}
+                    onClose={() => this.setState({ deleting: null })}
                     onDelete={id => this.props.onDelete && this.props.onDelete(id)}
                 />
             ) : null,
@@ -2012,11 +2044,11 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                 <DialogAddNewScript
                     key="dialog-script-type"
                     onClose={type => {
-                        const newState = { choosingType: false };
+                        const newState: Partial<SideDrawerState> = { choosingType: false };
                         if (type) {
                             newState.creatingScript = type;
                         }
-                        this.setState(newState);
+                        this.setState(newState as SideDrawerState);
                     }}
                 />
             ) : null,
@@ -2024,7 +2056,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
             this.state.creatingScript ? (
                 <DialogNew
                     key="dialog-new-script"
-                    onClose={() => this.setState({ creatingScript: false })}
+                    onClose={() => this.setState({ creatingScript: null })}
                     title={I18n.t('Create new script')}
                     name={this.getUniqueName()}
                     parents={this.getFolders()}
@@ -2033,7 +2065,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                     instance={this.props.instances[0] || 0}
                     instances={this.props.instances}
                     type={this.state.creatingScript}
-                    parent={this.parent}
+                    parent={this.parent as string}
                     onAdd={(id, name, instance, type) =>
                         this.props.onAddNew && this.props.onAddNew(id, name, false, instance, type)
                     }
@@ -2048,17 +2080,10 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                     name={this.getUniqueName(this.state.copingScript)}
                     parents={this.getFolders()}
                     folder={false}
-                    instance={parseInt(
-                        (copingItem &&
-                            copingItem.common &&
-                            copingItem.common.engine &&
-                            copingItem.common.engine.split('.').pop()) ||
-                            0,
-                        10,
-                    )}
+                    instance={parseInt(copingItem?.common?.engine?.split('.').pop() as string, 10) || 0}
                     instances={this.props.instances}
-                    type={(copingItem && copingItem.common && copingItem.common.engineType) || 'Javascript/js'}
-                    parent={this.parent}
+                    type={(copingItem?.common?.engineType as ScriptType) || 'Javascript/js'}
+                    parent={this.parent as string}
                     onAdd={(id, name, instance, type) => {
                         const copingItem = this.state.copingScript && this.props.scripts[this.state.copingScript];
                         if (copingItem && copingItem.common) {
@@ -2085,7 +2110,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                     title={I18n.t('Create new folder')}
                     parents={this.getFolders()}
                     name={this.getUniqueFolderName()}
-                    parent={this.parent}
+                    parent={this.parent as string}
                     onAdd={(id, name) => this.props.onAddNew && this.props.onAddNew(id, name, true)}
                 />
             ) : null,
