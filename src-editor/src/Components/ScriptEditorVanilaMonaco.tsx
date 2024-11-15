@@ -1,18 +1,80 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import type * as monacoEditor from 'monaco-editor';
 
 import { Fab } from '@mui/material';
 
 import { MdGTranslate as IconNoCheck } from 'react-icons/md';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
 
-function isIdOfGlobalScript(id) {
+function isIdOfGlobalScript(id: string): boolean {
     return /^script\.js\.global\./.test(id);
 }
+
 let index = 0;
-class ScriptEditor extends React.Component {
-    constructor(props) {
+
+interface ScriptEditorProps {
+    adapterName: string;
+    socket: AdminConnection;
+    runningInstances: Record<string, ioBroker.InstanceObject>;
+    name: string;
+    onChange?: (code: string) => void;
+    onForceSave?: () => void;
+    onInserted?: () => void;
+    isDark?: boolean;
+    readOnly?: boolean;
+    code?: string;
+    language?: 'javascript' | 'typescript';
+    onRegisterSelect?: (cb: (() => void) | null) => void;
+    searchText?: string;
+    checkJs?: boolean;
+    changed?: boolean;
+    insert?: string;
+    style?: React.CSSProperties;
+
+    breakpoints?: Record<string, any>[];
+    location?: Record<string, any>;
+    onToggleBreakpoint?: (lineNumber: number) => void;
+}
+
+interface ScriptEditorState {
+    name: string;
+    isDark: boolean;
+    language: 'javascript' | 'typescript';
+    readOnly: boolean;
+    alive: boolean;
+    check: boolean;
+    searchText: string;
+    typingsLoaded: boolean;
+}
+
+class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState> {
+    private readonly monacoDiv: React.RefObject<HTMLDivElement> | null = null;
+
+    private editor: monacoEditor.editor.IStandaloneCodeEditor | null = null;
+
+    private monaco: typeof monacoEditor | null = (window as any).monaco as typeof monacoEditor | null;
+
+    private insert: string = '';
+
+    private originalCode: string;
+
+    private runningInstancesStr: string;
+
+    private monacoCounter: number = 0;
+
+    private location: Record<string, any> | undefined;
+
+    private breakpoints: Record<string, any>[] | undefined;
+
+    private lastSearch: string = '';
+
+    // TypeScript declarations
+    private typings: Record<string, any> = {};
+
+    private decorations: monacoEditor.editor.IEditorDecorationsCollection | null = null;
+
+    constructor(props: ScriptEditorProps) {
         super(props);
         this.state = {
             name: 'current',
@@ -25,21 +87,15 @@ class ScriptEditor extends React.Component {
             typingsLoaded: false,
         };
         this.runningInstancesStr = JSON.stringify(this.props.runningInstances);
-        this.monacoDiv = null; //ref
-        this.editor = null;
-        this.monaco = window.monaco;
-        this.insert = '';
         this.originalCode = props.code || '';
-        this.typings = {}; // TypeScript declarations
-        this.lastSearch = '';
+        this.monacoDiv = React.createRef<HTMLDivElement>();
     }
 
-    waitForMonaco(cb) {
-        let monacoLoaded = this.monaco?.languages?.typescript?.typescriptDefaults?.getCompilerOptions;
+    waitForMonaco(cb: () => void): void {
+        let monacoLoaded = !!this.monaco?.languages?.typescript?.typescriptDefaults?.getCompilerOptions;
         if (!monacoLoaded || !this.props.runningInstances) {
-            this.monaco = window.monaco;
-            monacoLoaded = this.monaco?.languages?.typescript?.typescriptDefaults?.getCompilerOptions;
-            this.monacoCounter = this.monacoCounter || 0;
+            this.monaco = (window as any).monaco as typeof monacoEditor | null;
+            monacoLoaded = !!this.monaco?.languages?.typescript?.typescriptDefaults?.getCompilerOptions;
             this.monacoCounter++;
             if (!monacoLoaded && this.monacoCounter < 20) {
                 console.log('wait for monaco loaded');
@@ -54,16 +110,17 @@ class ScriptEditor extends React.Component {
         }
     }
 
-    loadTypings(runningInstances) {
+    loadTypings(runningInstances?: Record<string, ioBroker.InstanceObject>): void {
         if (!this.editor) {
             return;
         }
         runningInstances = runningInstances || this.props.runningInstances;
 
         const scriptAdapterInstance =
-            runningInstances && Object.keys(runningInstances).find(id => runningInstances[id]);
+            runningInstances && Object.keys(runningInstances).find(id => runningInstances && runningInstances[id]);
+
         if (scriptAdapterInstance) {
-            this.props.socket
+            void this.props.socket
                 .sendTo(scriptAdapterInstance.replace('system.adapter.', ''), 'loadTypings', null)
                 .then(result => {
                     this.setState({ alive: true, check: true, typingsLoaded: true });
@@ -78,10 +135,11 @@ class ScriptEditor extends React.Component {
         }
     }
 
-    componentDidMount() {
-        const monacoLoaded = this.monaco?.languages?.typescript?.typescriptDefaults?.getCompilerOptions;
+    componentDidMount(): void {
+        let monacoLoaded = !!this.monaco?.languages?.typescript?.typescriptDefaults?.getCompilerOptions;
         if (!monacoLoaded || !this.props.runningInstances) {
-            this.monaco = window.monaco;
+            this.monaco = (window as any).monaco as typeof monacoEditor | null;
+            monacoLoaded = !!this.monaco?.languages?.typescript?.typescriptDefaults?.getCompilerOptions;
             if (!monacoLoaded) {
                 console.log('wait for monaco loaded...');
                 this.waitForMonaco(() => this.componentDidMount());
@@ -89,13 +147,21 @@ class ScriptEditor extends React.Component {
                 return;
             }
         }
-        if (!this.editor && monacoLoaded) {
+        if (!this.editor && monacoLoaded && this.monaco) {
             console.log('Init editor');
-            this.props.onRegisterSelect &&
-                this.props.onRegisterSelect(() => this.editor.getModel().getValueInRange(this.editor.getSelection()));
+            if (this.props.onRegisterSelect) {
+                this.props.onRegisterSelect(() => {
+                    if (this.editor) {
+                        const selection = this.editor.getSelection();
+                        if (selection) {
+                            this.editor.getModel()?.getValueInRange(selection);
+                        }
+                    }
+                });
+            }
             // For some reason, we have to get the original compiler options
             // and assign new properties one by one
-            const compilerOptions = this.monaco.languages.typescript.typescriptDefaults['getCompilerOptions']();
+            const compilerOptions = this.monaco.languages.typescript.typescriptDefaults.getCompilerOptions();
             compilerOptions.target = this.monaco.languages.typescript.ScriptTarget.ES2015;
             compilerOptions.allowJs = true;
             compilerOptions.checkJs = this.props.checkJs !== false;
@@ -107,29 +173,36 @@ class ScriptEditor extends React.Component {
 
             this.setTypeCheck(false);
 
-            // Create the editor instances
-            this.editor = this.monaco.editor.create(this.monacoDiv, {
-                lineNumbers: 'on',
-                scrollBeyondLastLine: false,
-                automaticLayout: true,
-                glyphMargin: !!this.props.breakpoints,
-            });
+            if (this.monacoDiv?.current) {
+                // Create the editor instances
+                this.editor = this.monaco.editor.create(this.monacoDiv?.current, {
+                    lineNumbers: 'on',
+                    scrollBeyondLastLine: false,
+                    automaticLayout: true,
+                    glyphMargin: !!this.props.breakpoints,
+                });
 
-            this.editor.onDidChangeModelContent(() => this.onChange(this.editor.getValue()));
+                this.editor.onDidChangeModelContent(() => this.onChange());
 
-            // Load typings for the JS editor
-            /** @type {string} */
-            this.loadTypings();
+                // Load typings for the JS editor
+                this.loadTypings();
 
-            this.editor.addCommand(this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.KEY_S, () => this.onForceSave());
+                if (this.props.onForceSave) {
+                    this.editor.addCommand(
+                        this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.KeyS,
+                        () => this.props.onForceSave && this.props.onForceSave(),
+                    );
+                }
 
-            setTimeout(() => {
-                this.highlightText(this.state.searchText);
-                this.location = this.props.location;
-                this.breakpoints = this.props.breakpoints;
-                this.showDecorators();
-            });
+                setTimeout(() => {
+                    this.highlightText(this.state.searchText);
+                    this.location = this.props.location;
+                    this.breakpoints = this.props.breakpoints;
+                    this.showDecorators();
+                });
+            }
         }
+
         const options = {
             selectOnLineNumbers: true,
             scrollBeyondLastLine: false,
@@ -140,50 +213,68 @@ class ScriptEditor extends React.Component {
         };
 
         this.setEditorOptions(options);
-        this.editor.focus();
-        this.editor.setValue(this.originalCode);
+        if (this.editor) {
+            this.editor.focus();
+            this.editor.setValue(this.originalCode);
 
-        if (this.props.onToggleBreakpoint) {
-            // add onMouseDown listener to toggle breakpoints
-            this.editor.onMouseDown(e => {
-                if (e.target.detail && e.target.detail.glyphMarginLeft !== undefined) {
-                    this.props.onToggleBreakpoint(e.target.position.lineNumber - 1);
-                }
-            });
-        } else {
-            // remove onMouseDown listener
-            this.editor.onMouseDown(() => {
-                /* nop */
-            });
+            if (this.props.onToggleBreakpoint) {
+                // add onMouseDown listener to toggle breakpoints
+                this.editor.onMouseDown((e: monacoEditor.editor.IEditorMouseEvent) => {
+                    const target: monacoEditor.editor.IMouseTargetMargin =
+                        e.target as monacoEditor.editor.IMouseTargetMargin;
+                    if (
+                        this.props.onToggleBreakpoint &&
+                        target.detail?.glyphMarginLeft !== undefined &&
+                        target.position
+                    ) {
+                        this.props.onToggleBreakpoint(target.position.lineNumber - 1);
+                    }
+                });
+            } else {
+                // remove onMouseDown listener
+                this.editor.onMouseDown(() => {
+                    /* nop */
+                });
+            }
         }
     }
 
     /**
      * Sets some options of the code editor
-     * @param {object} options The editor options to change
-     * @param {Partial<{readOnly: boolean, lineWrap: boolean, language: EditorLanguage, typeCheck: boolean}>} options
+     *
+     * @param options The editor options to change
      */
-    setEditorOptions(options) {
+    setEditorOptions(
+        options: Partial<{
+            readOnly: boolean;
+            lineWrap: boolean;
+            language: 'javascript' | 'typescript';
+            typeCheck: boolean;
+            isDark: boolean;
+        }>,
+    ): void {
         if (options) {
             if (options.language) {
                 this.setEditorLanguage(options.language);
             }
-            if (options.readOnly !== undefined) {
-                this.editor.updateOptions({ readOnly: options.readOnly });
-            }
-            if (options.lineWrap !== undefined) {
-                this.editor.updateOptions({ wordWrap: options.lineWrap ? 'on' : 'off' });
+            if (this.editor) {
+                if (options.readOnly !== undefined) {
+                    this.editor.updateOptions({ readOnly: options.readOnly });
+                }
+                if (options.lineWrap !== undefined) {
+                    this.editor.updateOptions({ wordWrap: options.lineWrap ? 'on' : 'off' });
+                }
             }
             if (options.typeCheck !== undefined) {
                 this.setTypeCheck(options.typeCheck);
             }
             if (options.isDark !== undefined) {
-                this.monaco.editor.setTheme(options.isDark ? 'vs-dark' : 'vs');
+                this.monaco?.editor.setTheme(options.isDark ? 'vs-dark' : 'vs');
             }
         }
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         if (this.editor) {
             this.props.onRegisterSelect && this.props.onRegisterSelect(null);
             this.editor.dispose();
@@ -191,56 +282,64 @@ class ScriptEditor extends React.Component {
         }
     }
 
-    /** @typedef {"javascript" | "typescript"} EditorLanguage */
-
     /**
      * Sets the language of the code editor
-     * @param {EditorLanguage} language
      */
-    setEditorLanguage(language) {
+    setEditorLanguage(language: 'javascript' | 'typescript'): void {
         // we need to recreate the model when changing languages,
         // so remember its settings
+        if (!this.editor) {
+            return;
+        }
         const model = this.editor.getModel();
-        const code = model.getValue();
-        const uri = model.uri.path;
+        if (model) {
+            const code = model.getValue();
+            const uri = model.uri.path;
 
-        const filenameWithoutExtension =
-            typeof uri === 'string' && uri.includes('.') ? uri.substr(0, uri.lastIndexOf('.')) : 'index';
+            const filenameWithoutExtension =
+                typeof uri === 'string' && uri.includes('.') ? uri.substring(0, uri.lastIndexOf('.')) : 'index';
 
-        const extension = language === 'javascript' ? 'js' : language === 'typescript' ? 'ts' : language;
+            const extension = language === 'javascript' ? 'js' : language === 'typescript' ? 'ts' : language;
 
-        // get rid of the original model
-        model.dispose();
+            // get rid of the original model
+            model.dispose();
 
-        // Both JS and TS need the model to work in TypeScript as the script type
-        // is inferred from the file extension
-        const newLanguage = language === 'javascript' || language === 'typescript' ? 'typescript' : language;
+            // Both JS and TS need the model to work in TypeScript as the script type
+            // is inferred from the file extension
+            const newLanguage = language === 'javascript' || language === 'typescript' ? 'typescript' : language;
 
-        const newModel = this.monaco.editor.createModel(
-            code,
-            newLanguage,
-            this.monaco.Uri.from({ path: `${filenameWithoutExtension}${index++}.${extension}` }),
-        );
+            const newModel = this.monaco?.editor.createModel(
+                code,
+                newLanguage,
+                this.monaco.Uri.from({
+                    scheme: window.location.protocol.replace(':', ''),
+                    path: `${filenameWithoutExtension}${index++}.${extension}`,
+                }),
+            );
 
-        this.editor.setModel(newModel);
+            if (newModel) {
+                this.editor.setModel(newModel);
+            }
+        }
     }
 
     /**
      * Enables or disables the type checking in the editor
-     * @param {boolean} enabled - Whether type checking is enabled or not
+     *
+     * @param enabled - Whether type checking is enabled or not
      */
-    setTypeCheck(enabled) {
+    setTypeCheck(enabled: boolean): void {
         const options = {
             noSemanticValidation: !this.state.alive || !enabled, // toggle the type checking
             noSyntaxValidation: !this.state.alive, // always check the syntax
         };
-        this.monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions(options);
+        this.monaco?.languages.typescript.typescriptDefaults.setDiagnosticsOptions(options);
     }
 
     /**
-     * @param {string} [currentScriptName] The name of the current script
+     * @param currentScriptName The name of the current script
      */
-    setEditorTypings(currentScriptName = '') {
+    setEditorTypings(currentScriptName = ''): void {
         const isGlobalScript = isIdOfGlobalScript(currentScriptName);
         // The filename of the declarations this script can see if it is a global script
         const partialDeclarationsPath = `${currentScriptName}.d.ts`;
@@ -270,8 +369,8 @@ class ScriptEditor extends React.Component {
         } else if (this.monaco?.languages?.typescript?.typescriptDefaults?.addExtraLib) {
             const existingLibs = this.monaco.languages.typescript.typescriptDefaults.getExtraLibs();
             wantedTypings.forEach(lib => {
-                if (!existingLibs[lib.filePath]) {
-                    this.monaco.languages.typescript.typescriptDefaults.addExtraLib(lib, lib.filePath);
+                if (!existingLibs[lib.filePath] && this.monaco) {
+                    this.monaco.languages.typescript.typescriptDefaults.addExtraLib(lib.content, lib.filePath);
                 }
             });
         }
@@ -279,36 +378,50 @@ class ScriptEditor extends React.Component {
 
     /**
      * Inserts some text into the given editor
-     * @param {string} text The text to add
+     *
+     * @param text The text to add
      */
-    insertTextIntoEditor(text) {
+    insertTextIntoEditor(text: string): void {
+        if (!this.editor || !this.monaco) {
+            return;
+        }
         const selection = this.editor.getSelection();
-        const range = new this.monaco.Range(
-            selection.startLineNumber,
-            selection.startColumn,
-            selection.endLineNumber,
-            selection.endColumn,
-        );
-        this.editor.executeEdits('', [{ range, text, forceMoveMarkers: true }]);
+        if (selection) {
+            const range = new this.monaco.Range(
+                selection.startLineNumber,
+                selection.startColumn,
+                selection.endLineNumber,
+                selection.endColumn,
+            );
+            this.editor.executeEdits('', [{ range, text, forceMoveMarkers: true }]);
+        }
         this.editor.focus();
     }
 
-    highlightText(text) {
-        const range = text && this.editor.getModel().findMatches(text);
-        if (range && range.length) {
-            range.forEach(r => this.editor.setSelection(r.range));
+    highlightText(text: string): void {
+        if (!this.editor || !this.monaco) {
+            return;
+        }
+
+        const range: monacoEditor.editor.FindMatch[] | undefined = text
+            ? this.editor.getModel()?.findMatches(text, true, false, false, null, true)
+            : undefined;
+        if (range?.length) {
+            range.forEach(r => this.editor?.setSelection(r.range));
             this.editor.revealLine(range[0].range.startLineNumber);
-        } else if (this.editor) {
-            const row = this.editor.getPosition().lineNumber;
-            const col = this.editor.getPosition().column;
-            this.editor.setSelection(new this.monaco.Range(row, col, row, col));
+        } else {
+            const pos = this.editor.getPosition();
+            if (pos) {
+                const row = pos.lineNumber;
+                const col = pos.column;
+                this.editor.setSelection(new this.monaco.Range(row, col, row, col));
+            }
         }
     }
 
-    showDecorators() {
-        this.decorations = this.decorations || [];
+    showDecorators(): void {
         const decorations = [];
-        if (this.location) {
+        if (this.location && this.monaco) {
             decorations.push({
                 range: new this.monaco.Range(
                     this.location.lineNumber + 1,
@@ -332,22 +445,26 @@ class ScriptEditor extends React.Component {
 
         if (this.breakpoints) {
             this.breakpoints.forEach(bp => {
-                decorations.push({
-                    range: new this.monaco.Range(bp.location.lineNumber + 1, 0, bp.location.lineNumber + 1, 100),
-                    options: {
-                        isWholeLine: true,
-                        glyphMarginClassName: this.props.isDark ? 'monacoBreakPointDark' : 'monacoBreakPoint',
-                    },
-                });
+                if (this.monaco) {
+                    decorations.push({
+                        range: new this.monaco.Range(bp.location.lineNumber + 1, 0, bp.location.lineNumber + 1, 100),
+                        options: {
+                            isWholeLine: true,
+                            glyphMarginClassName: this.props.isDark ? 'monacoBreakPointDark' : 'monacoBreakPoint',
+                        },
+                    });
+                }
             });
         }
-        this.editor && (this.decorations = this.editor.deltaDecorations(this.decorations, decorations));
+        if (this.editor) {
+            this.decorations = this.editor.createDecorationsCollection(decorations);
+        }
     }
 
-    initNewScript(name, code) {
+    initNewScript(name: string, code: string | undefined): void {
         this.setState({ name });
         this.originalCode = code || '';
-        this.editor && this.editor.setValue(code);
+        this.editor?.setValue(code || '');
         this.highlightText(this.lastSearch);
         this.showDecorators();
         // this.setEditorLanguage();
@@ -356,7 +473,7 @@ class ScriptEditor extends React.Component {
         this.setEditorTypings(name);
     }
 
-    scrollToLineIfNeeded(lineNumber) {
+    scrollToLineIfNeeded(lineNumber: number): void {
         if (this.editor) {
             const ranges = this.editor.getVisibleRanges();
             if (
@@ -370,8 +487,15 @@ class ScriptEditor extends React.Component {
         }
     }
 
-    UNSAFE_componentWillReceiveProps(nextProps) {
-        const options = {};
+    // TODO
+    UNSAFE_componentWillReceiveProps(nextProps: ScriptEditorProps): void {
+        const options: Partial<{
+            readOnly: boolean;
+            lineWrap: boolean;
+            language: 'javascript' | 'typescript';
+            typeCheck: boolean;
+            isDark: boolean;
+        }> = {};
         if (this.state.name !== nextProps.name) {
             // A different script was selected
             this.initNewScript(nextProps.name, nextProps.code);
@@ -391,14 +515,14 @@ class ScriptEditor extends React.Component {
             !nextProps.changed &&
             (nextProps.code !== this.originalCode || nextProps.code !== this.editor.getValue())
         ) {
-            this.originalCode = nextProps.code;
+            this.originalCode = nextProps.code || '';
             this.editor.setValue(this.originalCode);
             this.showDecorators();
             this.location && this.scrollToLineIfNeeded(this.location.lineNumber + 1);
         }
 
         if (nextProps.searchText !== this.lastSearch) {
-            this.lastSearch = nextProps.searchText;
+            this.lastSearch = nextProps.searchText || '';
             this.highlightText(this.lastSearch);
         }
 
@@ -435,7 +559,7 @@ class ScriptEditor extends React.Component {
         this.setEditorOptions(options);
 
         if (this.insert !== nextProps.insert) {
-            this.insert = nextProps.insert;
+            this.insert = nextProps.insert || '';
             if (this.insert) {
                 console.log(`Insert text: ${this.insert}`);
                 setTimeout(
@@ -450,16 +574,16 @@ class ScriptEditor extends React.Component {
         }
     }
 
-    onChange(newValue, e) {
-        if (!this.props.readOnly) {
+    onChange(): void {
+        if (!this.props.readOnly && this.editor) {
             this.props.onChange && this.props.onChange(this.editor.getValue());
         }
     }
 
-    render() {
+    render(): React.JSX.Element | null {
         if (!this.monaco?.languages?.typescript?.typescriptDefaults || !this.props.runningInstances) {
             setTimeout(() => {
-                this.monaco = window.monaco;
+                this.monaco = (window as any).monaco as typeof monacoEditor | null;
                 this.forceUpdate();
             }, 200);
             return null;
@@ -467,8 +591,8 @@ class ScriptEditor extends React.Component {
 
         return (
             <div
-                ref={el => (this.monacoDiv = el)}
-                style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative' }}
+                ref={this.monacoDiv}
+                style={{ ...this.props.style, width: '100%', height: '100%', overflow: 'hidden', position: 'relative' }}
             >
                 {!this.state.check && (
                     <Fab
@@ -492,27 +616,5 @@ class ScriptEditor extends React.Component {
         );
     }
 }
-
-ScriptEditor.propTypes = {
-    adapterName: PropTypes.string.isRequired,
-    socket: PropTypes.object,
-    runningInstances: PropTypes.object,
-    name: PropTypes.string,
-    onChange: PropTypes.func,
-    onForceSave: PropTypes.func,
-    onInserted: PropTypes.func,
-    isDark: PropTypes.bool,
-    readOnly: PropTypes.bool,
-    code: PropTypes.string,
-    language: PropTypes.string,
-    onRegisterSelect: PropTypes.func,
-    searchText: PropTypes.string,
-    checkJs: PropTypes.bool,
-    changed: PropTypes.bool,
-
-    breakpoints: PropTypes.array,
-    location: PropTypes.object,
-    onToggleBreakpoint: PropTypes.func,
-};
 
 export default ScriptEditor;

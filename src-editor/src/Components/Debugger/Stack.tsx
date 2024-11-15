@@ -8,9 +8,9 @@ import { ListItemButton, ListItemText, Input, InputAdornment, IconButton, List, 
 
 import { MdCheck as CheckIcon, MdAdd as IconAdd, MdDelete as IconDelete } from 'react-icons/md';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import {I18n, type IobTheme} from '@iobroker/adapter-react-v5';
 
-const styles = {
+const styles: Record<string, any> = {
     frameRoot: {
         paddingTop: 0,
         paddingBottom: 0,
@@ -18,7 +18,7 @@ const styles = {
     frameTextRoot: {
         m: 0,
     },
-    frameTextPrimary: theme => ({
+    frameTextPrimary: (theme: IobTheme): React.CSSProperties => ({
         color: theme.palette.mode === 'dark' ? '#CCC' : '#333',
     }),
     frameTextSecondary: {
@@ -70,7 +70,7 @@ const styles = {
         fontSize: 12,
     },
 
-    toolbarScopes: theme => ({
+    toolbarScopes: (theme: IobTheme): React.CSSProperties => ({
         width: 24,
         display: 'inline-block',
         height: '100%',
@@ -89,7 +89,7 @@ const styles = {
         display: 'inline-block',
         verticalAlign: 'top',
     },
-    scopeNameEqual: theme => ({
+    scopeNameEqual: (theme: IobTheme): React.CSSProperties => ({
         display: 'inline-block',
         color: theme.palette.mode === 'dark' ? '#EEE' : '#222',
         verticalAlign: 'top',
@@ -130,6 +130,10 @@ const styles = {
         color: '#ac4343',
     },
 };
+
+interface StackProps {
+
+}
 
 class Stack extends React.Component {
     constructor(props) {

@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import { Box, IconButton } from '@mui/material';
 
@@ -9,18 +8,18 @@ import {
     MdVerticalAlignBottom as IconBottom,
 } from 'react-icons/md';
 
-import { I18n, Utils } from '@iobroker/adapter-react-v5';
+import { I18n, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
 
 const TOOLBOX_WIDTH = 34;
 
-const styles = {
+const styles: Record<string, any> = {
     logBox: {
         width: '100%',
         height: '100%',
         position: 'relative',
         overflow: 'hidden',
     },
-    logBoxInner: theme => ({
+    logBoxInner: (theme: IobTheme): React.CSSProperties => ({
         display: 'inline-block',
         color: theme.palette.mode === 'dark' ? 'white' : 'black',
         width: `calc(100% - ${TOOLBOX_WIDTH}px)`,
@@ -30,24 +29,24 @@ const styles = {
         position: 'relative',
         verticalAlign: 'top',
     }),
-    info: theme => ({
+    info: (theme: IobTheme): React.CSSProperties => ({
         background: theme.palette.mode === 'dark' ? 'darkgrey' : 'lightgrey',
         color: theme.palette.mode === 'dark' ? 'black' : 'black',
     }),
-    error: theme => ({
+    error: (theme: IobTheme): React.CSSProperties => ({
         background: '#FF0000',
         color: theme.palette.mode === 'dark' ? 'black' : 'white',
     }),
-    warn: theme => ({
+    warn: (theme: IobTheme): React.CSSProperties => ({
         background: '#FF8000',
         color: theme.palette.mode === 'dark' ? 'black' : 'white',
     }),
-    debug: theme => ({
+    debug: (theme: IobTheme): React.CSSProperties => ({
         background: 'gray',
         opacity: 0.8,
         color: theme.palette.mode === 'dark' ? 'black' : 'white',
     }),
-    silly: theme => ({
+    silly: (theme: IobTheme): React.CSSProperties => ({
         background: 'gray',
         opacity: 0.6,
         color: theme.palette.mode === 'dark' ? 'black' : 'white',
@@ -83,9 +82,9 @@ const styles = {
     },
 };
 
-function getTimeString(d) {
+function getTimeString(d: Date): string {
     let text;
-    let i = d.getHours();
+    let i: string | number = d.getHours();
     if (i < 10) {
         i = `0${i.toString()}`;
     }
@@ -95,7 +94,7 @@ function getTimeString(d) {
     if (i < 10) {
         i = `0${i.toString()}`;
     }
-    text += i + ':';
+    text += `${i}:`;
     i = d.getSeconds();
     if (i < 10) {
         i = `0${i.toString()}`;
@@ -111,20 +110,32 @@ function getTimeString(d) {
     return text;
 }
 
-class Console extends React.Component {
-    constructor(props) {
+interface ConsoleProps {
+    theme: IobTheme;
+    onClearAllLogs: () => void;
+    console: { ts: number; text: string; severity: ioBroker.LogLevel }[];
+}
+
+interface ConsoleState {
+    goBottom: boolean;
+}
+
+class Console extends React.Component<ConsoleProps, ConsoleState> {
+    private readonly messagesEnd: React.RefObject<HTMLDivElement>;
+
+    constructor(props: ConsoleProps) {
         super(props);
         this.state = {
-            lines: {},
             goBottom: true,
         };
         this.messagesEnd = React.createRef();
     }
-    generateLine(message) {
+
+    static generateLine(message: { ts: number; text: string; severity: ioBroker.LogLevel }): React.JSX.Element {
         return (
             <Box
                 component="tr"
-                key={`tr_${message.ts}_${message.text.substr(-10)}`}
+                key={`tr_${message.ts}_${message.text.substring(message.text.length - 10, message.text.length)}`}
                 sx={styles[message.severity]}
             >
                 <td style={styles.trTime}>{getTimeString(new Date(message.ts))}</td>
@@ -133,8 +144,9 @@ class Console extends React.Component {
             </Box>
         );
     }
-    renderLogList(lines) {
-        if (lines && lines.length) {
+
+    renderLogList(lines: { ts: number; text: string; severity: ioBroker.LogLevel }[]): React.JSX.Element {
+        if (lines?.length) {
             return (
                 <Box
                     sx={styles.logBoxInner}
@@ -144,7 +156,7 @@ class Console extends React.Component {
                         key="logTable"
                         style={styles.table}
                     >
-                        <tbody>{lines.map(line => this.generateLine(line))}</tbody>
+                        <tbody>{lines.map(line => Console.generateLine(line))}</tbody>
                     </table>
                     <div
                         key="logScrollPoint"
@@ -165,19 +177,19 @@ class Console extends React.Component {
         );
     }
 
-    onCopy() {
+    onCopy(): void {
         Utils.copyToClipboard(this.props.console.join('\n'));
     }
 
-    scrollToBottom() {
-        this.messagesEnd && this.messagesEnd.current && this.messagesEnd.current.scrollIntoView({ behavior: 'smooth' });
+    scrollToBottom(): void {
+        this.messagesEnd?.current?.scrollIntoView({ behavior: 'smooth' });
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(): void {
         this.state.goBottom && this.scrollToBottom();
     }
 
-    render() {
+    render(): React.JSX.Element {
         const lines = this.props.console;
         return (
             <div style={styles.logBox}>
@@ -188,12 +200,12 @@ class Console extends React.Component {
                     <IconButton
                         style={styles.iconButtons}
                         onClick={() => this.setState({ goBottom: !this.state.goBottom })}
-                        color={this.state.goBottom ? 'secondary' : ''}
+                        color={this.state.goBottom ? 'secondary' : undefined}
                         size="medium"
                     >
                         <IconBottom />
                     </IconButton>
-                    {lines && lines.length ? (
+                    {lines?.length ? (
                         <IconButton
                             style={styles.iconButtons}
                             onClick={() => this.props.onClearAllLogs()}
@@ -202,7 +214,7 @@ class Console extends React.Component {
                             <IconDelete />
                         </IconButton>
                     ) : null}
-                    {lines && lines.length ? (
+                    {lines?.length ? (
                         <IconButton
                             style={styles.iconButtons}
                             onClick={() => this.onCopy()}
@@ -217,11 +229,5 @@ class Console extends React.Component {
         );
     }
 }
-
-Console.propTypes = {
-    theme: PropTypes.object,
-    onClearAllLogs: PropTypes.func,
-    console: PropTypes.array,
-};
 
 export default Console;

@@ -4,7 +4,7 @@ import { Button, DialogTitle, DialogContent, DialogActions, Dialog, Box } from '
 
 import { Save as IconSave, Cancel as IconCancel } from '@mui/icons-material';
 
-import { I18n, type IobTheme, type ThemeType } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n, type IobTheme, type ThemeType } from '@iobroker/adapter-react-v5';
 
 import ScriptEditorComponent from '../Components/ScriptEditorVanilaMonaco';
 
@@ -39,8 +39,8 @@ interface DialogScriptEditorProps {
     isReturn: boolean;
     themeType: ThemeType;
     adapterName: string;
-    runningInstances: Record<string, any>;
-    socket: Record<string, any>;
+    runningInstances: Record<string, ioBroker.InstanceObject>;
+    socket: AdminConnection;
 }
 
 interface DialogScriptEditorState {
@@ -119,7 +119,7 @@ class DialogScriptEditor extends React.Component<DialogScriptEditorProps, Dialog
                         runningInstances={this.props.runningInstances}
                         style={{ ...styles.textArea, height: this.props.args ? 'calc(100% - 30px)' : '100%' }}
                         key="scriptEditor"
-                        name={'blockly'}
+                        name="blockly"
                         socket={this.props.socket}
                         readOnly={false}
                         checkJs={false}

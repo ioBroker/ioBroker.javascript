@@ -72,7 +72,7 @@ interface OpenAiDialogProps {
     socket: AdminConnection;
     runningInstances: Record<string, any>;
     themeType: ThemeType;
-    language: ioBroker.Languages;
+    language: 'javascript' | 'typescript';
     onAddCode: (answer: string) => void;
 }
 
@@ -330,7 +330,7 @@ Do not import any libraries as all functions are already imported.`,
                                     checkJs
                                     code={answer}
                                     isDark={props.themeType === 'dark'}
-                                    language={props.language}
+                                    language={props.language || 'javascript'}
                                 />
                             )}
                         </div>
