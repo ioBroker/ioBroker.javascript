@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
 import ReactJson from 'react-json-view';
@@ -8,7 +7,8 @@ import { ListItemButton, ListItemText, Input, InputAdornment, IconButton, List, 
 
 import { MdCheck as CheckIcon, MdAdd as IconAdd, MdDelete as IconDelete } from 'react-icons/md';
 
-import {I18n, type IobTheme} from '@iobroker/adapter-react-v5';
+import { I18n, type IobTheme, type ThemeType } from '@iobroker/adapter-react-v5';
+import type { CallFrame } from '@/types';
 
 const styles: Record<string, any> = {
     frameRoot: {
@@ -131,12 +131,78 @@ const styles: Record<string, any> = {
     },
 };
 
-interface StackProps {
-
+interface DebugValue {
+    type: 'function' | 'string' | 'boolean' | 'number' | 'object' | 'undefined' | 'null' | 'bigint' | 'symbol';
+    description: string;
+    value: any;
+}
+interface DebugVariable {
+    name: string;
+    value: DebugValue;
 }
 
-class Stack extends React.Component {
-    constructor(props) {
+interface StackProps {
+    currentScriptId: string;
+    mainScriptId: string;
+    scopes: {
+        local: {
+            properties: {
+                result: DebugVariable[];
+            };
+        };
+        closure: {
+            properties: {
+                result: DebugVariable[];
+            };
+        };
+    };
+    expressions: DebugVariable[];
+    callFrames: CallFrame[];
+    currentFrame: number;
+    onExpressionDelete: (index: number) => void;
+    onChangeCurrentFrame: (index: number) => void;
+    onWriteScopeValue: (options: {
+        variableName: string;
+        scopeNumber: 0;
+        newValue: {
+            value: any;
+            valueType:
+                | 'string'
+                | 'number'
+                | 'object'
+                | 'boolean'
+                | 'undefined'
+                | 'null'
+                | 'bigint'
+                | 'symbol'
+                | 'function';
+        };
+        callFrameId: string;
+    }) => void;
+    onExpressionAdd: (cb: (index: number, item: DebugVariable) => void) => void;
+    onExpressionNameUpdate: (index: number, scopeValue: string, cb: () => void) => void;
+    themeType: ThemeType;
+}
+
+interface StackState {
+    editValue: {
+        type: 'expression' | 'local' | 'closure';
+        valueType: 'function' | 'string' | 'boolean' | 'number' | 'object' | 'undefined' | 'null' | 'bigint' | 'symbol';
+        index: number;
+        name: string;
+        value: string;
+        scopeId?: string;
+    } | null;
+    callFrames: CallFrame[];
+    framesSizes: number[];
+}
+
+class Stack extends React.Component<StackProps, StackState> {
+    private readonly editRef: React.RefObject<HTMLInputElement>;
+
+    private scopeValue: boolean | undefined | number | string | null = null;
+
+    constructor(props: StackProps) {
         super(props);
 
         const framesSizesStr = window.localStorage.getItem('JS.framesSizes');
@@ -144,7 +210,7 @@ class Stack extends React.Component {
         if (framesSizesStr) {
             try {
                 framesSizes = JSON.parse(framesSizesStr);
-            } catch (e) {
+            } catch {
                 // ignore
             }
         }
@@ -158,14 +224,16 @@ class Stack extends React.Component {
         this.editRef = React.createRef();
     }
 
-    onExpressionNameUpdate() {
-        this.props.onExpressionNameUpdate(this.state.editValue.index, this.scopeValue, () => {
-            this.setState({ editValue: null });
-            this.scopeValue = null;
-        });
+    onExpressionNameUpdate(): void {
+        if (this.state.editValue) {
+            this.props.onExpressionNameUpdate(this.state.editValue.index, this.scopeValue as string, () => {
+                this.setState({ editValue: null });
+                this.scopeValue = null;
+            });
+        }
     }
 
-    renderExpression(item, i) {
+    renderExpression(item: DebugVariable, i: number): React.JSX.Element {
         const name =
             this.state.editValue && this.state.editValue.type === 'expression' && this.state.editValue.index === i ? (
                 <Input
@@ -175,9 +243,9 @@ class Stack extends React.Component {
                     onBlur={() => this.state.editValue && this.setState({ editValue: null })}
                     defaultValue={item.name}
                     onKeyUp={e => {
-                        if (e.keyCode === 13) {
+                        if (e.key === 'Enter') {
                             this.onExpressionNameUpdate();
-                        } else if (e.keyCode === 27) {
+                        } else if (e.key === 'Escape') {
                             this.setState({ editValue: null });
                         }
                     }}
@@ -250,24 +318,21 @@ class Stack extends React.Component {
         );
     }
 
-    renderExpressions() {
+    renderExpressions(): React.JSX.Element[] {
         return this.props.expressions.map((item, i) => this.renderExpression(item, i));
     }
 
-    renderOneFrameTitle(frame, i) {
+    renderOneFrameTitle(frame: CallFrame, i: number): React.JSX.Element | null {
         if (
             this.props.mainScriptId === this.props.currentScriptId &&
             frame.location.scriptId !== this.props.mainScriptId
         ) {
             return null;
         }
-        const fileName = frame.url
-            .split('/')
-            .pop()
-            .replace(/^script\.js\./, '');
+        const fileName = (frame.url.split('/').pop() || '').replace(/^script\.js\./, '');
         return (
             <ListItemButton
-                key={frame.id}
+                key={frame.callFrameId}
                 onClick={() => this.props.onChangeCurrentFrame(i)}
                 dense
                 selected={this.props.currentFrame === i}
@@ -287,16 +352,17 @@ class Stack extends React.Component {
         );
     }
 
-    formatValue(value, forEdit) {
+    formatValue(value: DebugValue | null, forEdit?: boolean): React.JSX.Element | string {
         if (!value) {
             if (forEdit) {
                 return 'none';
             }
             return <span style={styles.valueNone}>none</span>;
-        } else if (value.type === 'function') {
+        }
+        if (value.type === 'function') {
             const text = value.description
                 ? value.description.length > 100
-                    ? value.description.substring(0, 100) + '...'
+                    ? `${value.description.substring(0, 100)}...`
                     : value.description
                 : 'function';
             if (forEdit) {
@@ -310,39 +376,42 @@ class Stack extends React.Component {
                     {text}
                 </span>
             );
-        } else if (value.value === undefined) {
+        }
+        if (value.value === undefined) {
             if (forEdit) {
                 return 'undefined';
             }
             return <span style={styles.valueUndefined}>undefined</span>;
-        } else if (value.value === null) {
+        }
+        if (value.value === null) {
             if (forEdit) {
                 return 'null';
             }
             return <span style={styles.valueNull}>null</span>;
-        } else if (value.type === 'string') {
+        }
+        if (value.type === 'string') {
             if (forEdit) {
                 return value.value;
             }
-            const text = value.value
-                ? value.value.length > 100
-                    ? value.value.substring(0, 100) + '...'
-                    : value.value
-                : '';
+            const text = `"${
+                value.value ? (value.value.length > 100 ? `${value.value.substring(0, 100)}...` : value.value) : ''
+            }"`;
             return (
                 <span
                     style={styles.valueString}
                     title={text}
                 >
-                    "{text}"
+                    {text}
                 </span>
             );
-        } else if (value.type === 'boolean') {
+        }
+        if (value.type === 'boolean') {
             if (forEdit) {
                 return value.value.toString();
             }
             return <span style={styles.valueBoolean}>{value.value.toString()}</span>;
-        } else if (value.type === 'object') {
+        }
+        if (value.type === 'object') {
             if (forEdit) {
                 return JSON.stringify(value.value);
             }
@@ -361,7 +430,7 @@ class Stack extends React.Component {
         return value.value.toString();
     }
 
-    onWriteScopeValue() {
+    onWriteScopeValue(): void {
         if (this.scopeValue === 'true') {
             this.scopeValue = true;
         } else if (this.scopeValue === 'false') {
@@ -370,12 +439,12 @@ class Stack extends React.Component {
             this.scopeValue = null;
         } else if (this.scopeValue === 'undefined') {
             this.scopeValue = undefined;
-        } else if (parseFloat(this.scopeValue).toString() === this.scopeValue) {
+        } else if (parseFloat(this.scopeValue as string).toString() === this.scopeValue) {
             this.scopeValue = parseFloat(this.scopeValue);
         }
 
         this.props.onWriteScopeValue({
-            variableName: this.state.editValue.name,
+            variableName: this.state.editValue?.name || '',
             scopeNumber: 0,
             newValue: {
                 value: this.scopeValue,
@@ -388,12 +457,12 @@ class Stack extends React.Component {
         this.scopeValue = null;
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(): void {
         //this.editRef.current?.select();
         this.editRef.current?.focus();
     }
 
-    renderScope(scopeId, item, type) {
+    renderScope(scopeId: string, item: DebugVariable, type: 'local' | 'closure'): React.JSX.Element {
         const editable =
             !this.props.currentFrame &&
             item.value &&
@@ -405,7 +474,7 @@ class Stack extends React.Component {
                 item.value?.value === undefined);
 
         const el =
-            this.state.editValue && this.state.editValue.type === type && this.state.editValue.name === item.name
+            this.state.editValue?.type === type && this.state.editValue?.name === item.name
                 ? [
                       <div
                           key="name"
@@ -421,14 +490,15 @@ class Stack extends React.Component {
                           ={' '}
                       </Box>,
                       <Input
+                          key="input"
                           inputRef={this.editRef}
                           margin="dense"
                           onBlur={() => this.state.editValue && this.setState({ editValue: null })}
                           defaultValue={this.formatValue(item.value, true)}
                           onKeyUp={e => {
-                              if (e.keyCode === 13) {
+                              if (e.key === 'Enter') {
                                   this.onWriteScopeValue();
-                              } else if (e.keyCode === 27) {
+                              } else if (e.key === 'Escape') {
                                   this.setState({ editValue: null });
                               }
                           }}
@@ -483,6 +553,7 @@ class Stack extends React.Component {
                                 editValue: {
                                     scopeId,
                                     type,
+                                    index: 0,
                                     valueType: item.value.type,
                                     name: item.name,
                                     value: item.value.value,
@@ -497,19 +568,21 @@ class Stack extends React.Component {
         );
     }
 
-    renderScopes(frame) {
+    renderScopes(frame: CallFrame): React.JSX.Element | null {
         if (!frame) {
             return null;
         }
         // first local
-        let result = this.renderExpressions();
+        const result: React.JSX.Element[] = this.renderExpressions();
 
         let items = this.props.scopes?.local?.properties?.result.map(item =>
+            // @ts-expect-error fix later
             this.renderScope(this.props.scopes.id, item, 'local'),
         );
         items && items.forEach(item => result.push(item));
 
         items = this.props.scopes?.closure?.properties?.result.map(item =>
+            // @ts-expect-error fix later
             this.renderScope(this.props.scopes.id, item, 'closure'),
         );
         items && items.forEach(item => result.push(item));
@@ -521,7 +594,7 @@ class Stack extends React.Component {
         );
     }
 
-    render() {
+    render(): React.JSX.Element {
         return (
             <ReactSplit
                 direction={SplitDirection.Horizontal}
@@ -545,7 +618,7 @@ class Stack extends React.Component {
                         <IconButton
                             size="small"
                             onClick={() =>
-                                this.props.onExpressionAdd((i, item) => {
+                                this.props.onExpressionAdd((i: number, item: DebugVariable): void => {
                                     this.scopeValue = item.name || '';
                                     this.setState({
                                         editValue: {
@@ -572,20 +645,5 @@ class Stack extends React.Component {
         );
     }
 }
-
-Stack.propTypes = {
-    currentScriptId: PropTypes.string,
-    mainScriptId: PropTypes.string,
-    scopes: PropTypes.object,
-    expressions: PropTypes.array,
-    callFrames: PropTypes.array,
-    currentFrame: PropTypes.number,
-    onChangeCurrentFrame: PropTypes.func,
-    onWriteScopeValue: PropTypes.func,
-    onExpressionDelete: PropTypes.func,
-    onExpressionAdd: PropTypes.func,
-    onExpressionNameUpdate: PropTypes.func,
-    themeType: PropTypes.string,
-};
 
 export default Stack;

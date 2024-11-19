@@ -1,8 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import ScriptEditorComponent from '../ScriptEditorVanilaMonaco';
+import type { AdminConnection, ThemeName, ThemeType } from '@iobroker/adapter-react-v5';
 
-const styles = {
+import type { DebuggerLocation, SetBreakpointParameterType } from '@/types';
+
+const styles: Record<string, React.CSSProperties> = {
     editorDiv: {
         height: '100%',
         width: '100%',
@@ -11,8 +13,27 @@ const styles = {
     },
 };
 
-class Editor extends React.Component {
-    constructor(props) {
+interface EditorProps {
+    runningInstances: Record<string, ioBroker.InstanceObject>;
+    socket: AdminConnection;
+    sourceId: string;
+    script: string;
+    scriptName: string;
+    adapterName: string;
+    paused: boolean;
+    breakpoints: SetBreakpointParameterType[];
+    location: DebuggerLocation;
+    themeType: ThemeType;
+    themeName: ThemeName;
+    onToggleBreakpoint: (i: number) => void;
+}
+
+interface EditorState {
+    lines: string[];
+}
+
+class Editor extends React.Component<EditorProps, EditorState> {
+    constructor(props: EditorProps) {
         super(props);
 
         this.state = {
@@ -20,13 +41,7 @@ class Editor extends React.Component {
         };
     }
 
-    editorDidMount(editor, monaco) {
-        this.monaco = monaco;
-        this.editor = editor;
-        editor.focus();
-    }
-
-    render() {
+    render(): React.JSX.Element {
         return (
             <div
                 style={styles.editorDiv}
@@ -50,20 +65,5 @@ class Editor extends React.Component {
         );
     }
 }
-
-Editor.propTypes = {
-    runningInstances: PropTypes.object,
-    socket: PropTypes.object,
-    sourceId: PropTypes.string,
-    script: PropTypes.string,
-    scriptName: PropTypes.string,
-    adapterName: PropTypes.string,
-    paused: PropTypes.bool,
-    breakpoints: PropTypes.array,
-    location: PropTypes.object,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    onToggleBreakpoint: PropTypes.func,
-};
 
 export default Editor;

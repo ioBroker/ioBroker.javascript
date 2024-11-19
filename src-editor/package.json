@@ -13,6 +13,7 @@
         "@mui/material": "^6.1.7",
         "@mui/x-date-pickers": "^7.22.2",
         "@sentry/browser": "^8.38.0",
+        "blockly": "^11.1.1",
         "craco-module-federation": "^1.1.0",
         "lodash": "^4.17.21",
         "monaco-editor": "~0.52.0",

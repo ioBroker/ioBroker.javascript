@@ -6,6 +6,7 @@ import { Fab } from '@mui/material';
 import { MdGTranslate as IconNoCheck } from 'react-icons/md';
 
 import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
+import type { DebuggerLocation, SetBreakpointParameterType } from '@/types';
 
 function isIdOfGlobalScript(id: string): boolean {
     return /^script\.js\.global\./.test(id);
@@ -32,8 +33,8 @@ interface ScriptEditorProps {
     insert?: string;
     style?: React.CSSProperties;
 
-    breakpoints?: Record<string, any>[];
-    location?: Record<string, any>;
+    breakpoints?: SetBreakpointParameterType[];
+    location?: DebuggerLocation | null;
     onToggleBreakpoint?: (lineNumber: number) => void;
 }
 
@@ -63,14 +64,14 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
 
     private monacoCounter: number = 0;
 
-    private location: Record<string, any> | undefined;
+    private location: DebuggerLocation | undefined;
 
-    private breakpoints: Record<string, any>[] | undefined;
+    private breakpoints: SetBreakpointParameterType[] | undefined;
 
     private lastSearch: string = '';
 
     // TypeScript declarations
-    private typings: Record<string, any> = {};
+    private typings: Record<string, string> = {};
 
     private decorations: monacoEditor.editor.IEditorDecorationsCollection | null = null;
 
@@ -196,7 +197,7 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
 
                 setTimeout(() => {
                     this.highlightText(this.state.searchText);
-                    this.location = this.props.location;
+                    this.location = this.props.location || undefined;
                     this.breakpoints = this.props.breakpoints;
                     this.showDecorators();
                 });
@@ -425,7 +426,7 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
             decorations.push({
                 range: new this.monaco.Range(
                     this.location.lineNumber + 1,
-                    this.location.columnNumber + 1,
+                    (this.location.columnNumber || 0) + 1,
                     this.location.lineNumber + 1,
                     1000,
                 ),
@@ -443,19 +444,17 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
             });
         }
 
-        if (this.breakpoints) {
-            this.breakpoints.forEach(bp => {
-                if (this.monaco) {
-                    decorations.push({
-                        range: new this.monaco.Range(bp.location.lineNumber + 1, 0, bp.location.lineNumber + 1, 100),
-                        options: {
-                            isWholeLine: true,
-                            glyphMarginClassName: this.props.isDark ? 'monacoBreakPointDark' : 'monacoBreakPoint',
-                        },
-                    });
-                }
-            });
-        }
+        this.breakpoints?.forEach(bp => {
+            if (this.monaco) {
+                decorations.push({
+                    range: new this.monaco.Range(bp.location.lineNumber + 1, 0, bp.location.lineNumber + 1, 100),
+                    options: {
+                        isWholeLine: true,
+                        glyphMarginClassName: this.props.isDark ? 'monacoBreakPointDark' : 'monacoBreakPoint',
+                    },
+                });
+            }
+        });
         if (this.editor) {
             this.decorations = this.editor.createDecorationsCollection(decorations);
         }
@@ -530,7 +529,7 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
             JSON.stringify(nextProps.location) !== JSON.stringify(this.location) &&
             JSON.stringify(nextProps.breakpoints) !== JSON.stringify(this.breakpoints)
         ) {
-            this.location = nextProps.location;
+            this.location = nextProps.location || undefined;
             this.breakpoints = nextProps.breakpoints;
             this.showDecorators();
             this.editor && this.location && this.scrollToLineIfNeeded(this.location.lineNumber + 1);
@@ -539,7 +538,7 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
             this.breakpoints = nextProps.breakpoints;
             this.showDecorators();
         } else if (JSON.stringify(nextProps.location) !== JSON.stringify(this.location)) {
-            this.location = nextProps.location;
+            this.location = nextProps.location || undefined;
             this.showDecorators();
             this.editor && this.location && this.scrollToLineIfNeeded(this.location.lineNumber + 1);
             // this.editor && this.location && this.editor.setPosition(this.location.lineNumber + 1, this.location.columnNumber + 1);

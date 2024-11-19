@@ -404,7 +404,7 @@ class Debugger extends React.Component {
                         }
                     });
                 changed &&
-                    window.localStorage.setItem('javascript.tools.bp.' + this.props.src, JSON.stringify(breakpoints));
+                    window.localStorage.setItem(`javascript.tools.bp.${this.props.src}`, JSON.stringify(breakpoints));
                 changed && this.setState({ breakpoints });
             } else if (data.cmd === 'cb') {
                 const breakpoints = JSON.parse(JSON.stringify(this.state.breakpoints));
