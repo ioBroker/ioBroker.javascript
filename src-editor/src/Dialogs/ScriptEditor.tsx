@@ -39,7 +39,7 @@ interface DialogScriptEditorProps {
     isReturn: boolean;
     themeType: ThemeType;
     adapterName: string;
-    runningInstances: Record<string, ioBroker.InstanceObject>;
+    runningInstances: Record<string, boolean>;
     socket: AdminConnection;
 }
 

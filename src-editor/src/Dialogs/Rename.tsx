@@ -19,7 +19,7 @@ import { I18n } from '@iobroker/adapter-react-v5';
 
 interface DialogRenameProps {
     onClose: () => void;
-    onRename: (oldId: string, newId: string, newName: string, instance: number | null) => void;
+    onRename: (oldId: string, newId: string, newName?: string, newInstance?: number) => void;
     name: string;
     id: string;
     instance: number | null;
@@ -86,7 +86,12 @@ class DialogRename extends React.Component<DialogRenameProps, DialogRenameState>
     };
 
     handleOk = (): void => {
-        this.props.onRename(this.oldId, this.state.id, this.state.name, this.state.instance);
+        this.props.onRename(
+            this.oldId,
+            this.state.id,
+            this.state.name,
+            this.state.instance === 0 ? 0 : this.state.instance || undefined,
+        );
         this.props.onClose();
     };
 

@@ -17,11 +17,11 @@ import { Cancel as IconCancel } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
+import type { ScriptType } from '@/types';
 import ImgJS from '../assets/tileJS.png';
 import ImgTS from '../assets/tileTS.png';
 import ImgBlockly from '../assets/tileBlockly.png';
 import ImgRules from '../assets/tileRules.png';
-import {ScriptType} from "@/types";
 
 const styles: Record<string, React.CSSProperties> = {
     card: {

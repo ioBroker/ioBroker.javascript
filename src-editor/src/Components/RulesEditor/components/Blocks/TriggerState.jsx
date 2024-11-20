@@ -20,7 +20,7 @@ import {
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-import GenericBlock from '../GenericBlock';
+import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
 import Compile from '../../helpers/Compile';
 
 const styles = {
@@ -159,7 +159,7 @@ class TriggerState extends GenericBlock {
         </>;
     }
 
-    onTagChange(tagCard) {
+    onTagChange(tagCard: RuleTagCardTitle) {
         this.setState({
             inputs: [
                 {

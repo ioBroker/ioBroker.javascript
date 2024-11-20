@@ -18,7 +18,7 @@ const styles: Record<string, any> = {
 interface DialogErrorProps {
     onClose: () => void;
     title?: string;
-    text: string;
+    text: string | React.JSX.Element;
 }
 
 class DialogError extends React.Component<DialogErrorProps> {

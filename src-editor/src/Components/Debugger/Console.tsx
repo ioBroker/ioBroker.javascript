@@ -111,7 +111,6 @@ function getTimeString(d: Date): string {
 }
 
 interface ConsoleProps {
-    theme: IobTheme;
     onClearAllLogs: () => void;
     console: { ts: number; text: string; severity: ioBroker.LogLevel }[];
 }

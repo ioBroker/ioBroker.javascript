@@ -137,7 +137,7 @@ function paddingMs(ms: number): string {
 const gText: Record<string, string[]> = {};
 
 interface LogProps {
-    selected: string;
+    selected: string | null;
     socket: AdminConnection;
     onLayoutChange?: () => void;
     verticalLayout: boolean;
@@ -260,8 +260,10 @@ class Log extends React.Component<LogProps, LogState> {
         if (props.selected !== state.selected) {
             const selected = props.selected;
             const allLines = state.lines;
-            allLines[selected] = allLines[selected] || [];
-            gText[selected] = gText[selected] || [];
+            if (selected) {
+                allLines[selected] = allLines[selected] || [];
+                gText[selected] = gText[selected] || [];
+            }
             newState.selected = selected;
             changed = true;
         }

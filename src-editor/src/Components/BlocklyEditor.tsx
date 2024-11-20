@@ -160,7 +160,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         }
     }
 
-    static loadCustomBlockly(adapters: ioBroker.AdapterObject[], callback: () => void): void {
+    static loadCustomBlockly(adapters: Record<string, ioBroker.AdapterObject>, callback: () => void): void {
         // get all adapters, that can have blockly
         const toLoad: string[] = [];
         for (const id in adapters) {

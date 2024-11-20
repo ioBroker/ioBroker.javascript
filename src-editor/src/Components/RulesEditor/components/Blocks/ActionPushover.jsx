@@ -1,4 +1,4 @@
-import GenericBlock from '../GenericBlock';
+import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
 
 class ActionPushover extends GenericBlock {
     constructor(props) {
@@ -28,7 +28,7 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
         return `Sent: ${debugMessage.data.text}`;
     }
 
-    onTagChange(tagCard) {
+    onTagChange(tagCard: RuleTagCardTitle) {
         this.setState({
             inputs: [
                 {

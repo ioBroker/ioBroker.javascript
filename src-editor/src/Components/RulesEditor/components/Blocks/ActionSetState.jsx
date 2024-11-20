@@ -1,5 +1,5 @@
 import { I18n } from '@iobroker/adapter-react-v5';
-import GenericBlock from '../GenericBlock';
+import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
 
 const styles = {
     valueAck: {
@@ -241,7 +241,7 @@ class ActionSetState extends GenericBlock {
         return { inputs, newSettings: settings };
     }
 
-    onTagChange(tagCard, cb, ignore, toggle, useTrigger) {
+    onTagChange(tagCard: RuleTagCardTitle, cb, ignore, toggle, useTrigger) {
         useTrigger = useTrigger === undefined ? this.state.settings.useTrigger : useTrigger;
         const { inputs, newSettings } = this._setInputs(useTrigger, toggle);
         inputs.unshift({

@@ -1,5 +1,5 @@
 import { I18n } from '@iobroker/adapter-react-v5';
-import GenericBlock from '../GenericBlock';
+import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
 
 class ActionPause extends GenericBlock {
     constructor(props) {
@@ -63,7 +63,7 @@ class ActionPause extends GenericBlock {
         }
     }
 
-    onTagChange(tagCard) {
+    onTagChange(tagCard: RuleTagCardTitle) {
         this._setInputs();
     }
 

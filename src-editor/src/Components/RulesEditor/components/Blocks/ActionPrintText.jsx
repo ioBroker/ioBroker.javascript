@@ -1,5 +1,5 @@
 import { I18n } from '@iobroker/adapter-react-v5';
-import GenericBlock from '../GenericBlock';
+import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
 
 class ActionPrintText extends GenericBlock {
     constructor(props) {
@@ -17,7 +17,7 @@ class ActionPrintText extends GenericBlock {
         return I18n.t('Log: %s', debugMessage.data.text);
     }
 
-    onTagChange(tagCard) {
+    onTagChange(tagCard: RuleTagCardTitle) {
         this.setState({
             inputs: [
                 {

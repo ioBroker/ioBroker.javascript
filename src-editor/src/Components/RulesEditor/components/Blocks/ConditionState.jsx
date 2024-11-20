@@ -10,7 +10,7 @@ import {
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-import GenericBlock from '../GenericBlock';
+import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
 
 import HysteresisImage from '../../../assets/hysteresis.png';
 
@@ -426,7 +426,7 @@ class ConditionState extends GenericBlock {
         this._setInputs(this.state.settings.useTrigger);
     }
 
-    onTagChange(tagCard) {
+    onTagChange(tagCard: RuleTagCardTitle) {
         this._setInputs(this.state.settings.useTrigger, tagCard);
     }
 

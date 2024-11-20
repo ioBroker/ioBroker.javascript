@@ -287,7 +287,7 @@ type ListElementScript = {
 
 type ListElement = ListElementFolder | ListElementScript;
 
-function prepareList(data: Record<string, ioBroker.ScriptObject>): ListElement[] {
+function prepareList(data: Record<string, ioBroker.ScriptObject | ioBroker.ChannelObject>): ListElement[] {
     const result: ListElement[] = [
         {
             id: ROOT_ID,
@@ -490,35 +490,30 @@ interface SideDrawerProps {
     socket: AdminConnection;
     onEdit: (id: string) => void;
     onEnableDisable: (id: string, enabled: boolean) => void;
-    onReorder: (oldIndex: number, newIndex: number) => void;
-    onCopy: (id: string) => void;
     onDelete: (id: string) => void;
     onExport: () => void;
     onImport: () => void;
-    onAdd: (type: string) => void;
-    onAddFolder: () => void;
-    onRename: (id: string, newName: string, newId?: string, newInstance?: number | null) => void;
+    onRename: (oldId: string, newId: string, newName?: string, newInstance?: number) => void;
     instances: number[];
-    scripts: Record<string, ioBroker.ScriptObject>;
+    scripts: Record<string, ioBroker.ScriptObject | ioBroker.ChannelObject>;
     runningInstances: Record<string, boolean>;
     expertMode: boolean;
     themeName: ThemeName;
     width: number;
     debugMode: boolean;
     version: string;
-    searchText: string;
     selectId: string;
-    scriptsHash: string;
+    scriptsHash: number;
     onExpertModeChange?: (expertMode: boolean) => void;
     onThemeChange?: (theme: ThemeName) => void;
     onSearch?: (searchText: string) => void;
     onAddNew?: (
         id: string,
         name: string,
-        enabled: boolean,
+        isFolder: boolean,
         instance?: number,
         type?: ScriptType | 'folder',
-        text?: string,
+        source?: string,
     ) => void;
     onDebugInstance: (data: { instance: string; adapter: string }) => void;
 }
@@ -548,7 +543,7 @@ interface SideDrawerState {
     typeFilter: string;
     statusFilter: string;
     runningInstances: Record<string, boolean>;
-    scriptsHash: string;
+    scriptsHash: number;
     showAdapterDebug: boolean;
     isAllZeroInstances: boolean;
 }
@@ -706,7 +701,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
         listItems: ListElement[],
         searchMode: boolean,
         searchText: string,
-        objects: Record<string, ioBroker.ScriptObject>,
+        objects: Record<string, ioBroker.ScriptObject | ioBroker.ChannelObject>,
     ): Partial<SideDrawerState> | null {
         listItems = JSON.parse(JSON.stringify(listItems));
         let changed = false;
@@ -717,12 +712,13 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                 const id = item.title.toLowerCase();
                 item.filteredPartly = false;
                 let found = id.includes(text);
-                if (!found && objects?.[item.id]?.common?.source) {
-                    if (objects[item.id].common.engineType === 'Blockly') {
-                        const pos = objects[item.id].common.source.lastIndexOf('//');
-                        found = objects[item.id].common.source.substring(0, pos).toLowerCase().includes(text);
+                const common: ioBroker.ScriptCommon | undefined = objects?.[item.id]?.common as ioBroker.ScriptCommon;
+                if (!found && common?.source) {
+                    if (common.engineType === 'Blockly') {
+                        const pos = common.source.lastIndexOf('//');
+                        found = common.source.substring(0, pos).toLowerCase().includes(text);
                     } else {
-                        found = objects[item.id].common.source.toLowerCase().includes(text);
+                        found = common.source.toLowerCase().includes(text);
                     }
                 }
                 if (found) {
@@ -1254,15 +1250,15 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
         );
     }
 
-    onDragFinish(source: string, target: string): undefined {
-        let newId = `${target}.${source.split('.').pop()}`;
-        if (newId !== source) {
+    onDragFinish(oldId: string, target: string): undefined {
+        let newId = `${target}.${oldId.split('.').pop()}`;
+        if (newId !== oldId) {
             // If target yet exists => add Copy to
             if (this.state.listItems.find(item => item.id === newId)) {
                 newId += `_${I18n.t('copy')}`;
             }
 
-            this.props.onRename && this.props.onRename(source, newId);
+            this.props.onRename && this.props.onRename(oldId, newId);
         }
         return undefined;
     }
@@ -1991,7 +1987,10 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
         const renamingItem: ListElement | undefined = this.state.renaming
             ? this.state.listItems.find(i => i.id === this.state.renaming)
             : undefined;
-        const copingItem = this.state.copingScript ? this.props.scripts[this.state.copingScript] : undefined;
+        const copingItem: ioBroker.ScriptObject | undefined =
+            this.state.copingScript && this.props.scripts[this.state.copingScript].type === 'script'
+                ? (this.props.scripts[this.state.copingScript] as ioBroker.ScriptObject)
+                : undefined;
 
         return [
             <Drawer
@@ -2024,8 +2023,8 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                     instance={(renamingItem as ListElementScript).instance}
                     instances={this.props.instances}
                     onClose={() => this.setState({ renaming: null })}
-                    onRename={(oldId, newName, newId, newInstance) =>
-                        this.props.onRename && this.props.onRename(oldId, newName, newId, newInstance)
+                    onRename={(oldId, newId, newName, newInstance) =>
+                        this.props.onRename && this.props.onRename(oldId, newId, newName, newInstance)
                     }
                 />
             ) : null,
@@ -2085,20 +2084,16 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                     type={(copingItem?.common?.engineType as ScriptType) || 'Javascript/js'}
                     parent={this.parent as string}
                     onAdd={(id, name, instance, type) => {
-                        const copingItem = this.state.copingScript && this.props.scripts[this.state.copingScript];
-                        if (copingItem && copingItem.common) {
+                        const copingItem: ioBroker.ScriptObject | undefined =
+                            this.state.copingScript && this.props.scripts[this.state.copingScript].type === 'script'
+                                ? (this.props.scripts[this.state.copingScript] as ioBroker.ScriptObject)
+                                : undefined;
+                        if (copingItem?.common) {
                             // disable script by coping
                             copingItem.common.enabled = false;
                         }
                         this.props.onAddNew &&
-                            this.props.onAddNew(
-                                id,
-                                name,
-                                false,
-                                instance,
-                                type,
-                                copingItem && copingItem.common && copingItem.common.source,
-                            );
+                            this.props.onAddNew(id, name, false, instance, type, copingItem?.common?.source);
                     }}
                 />
             ) : null,

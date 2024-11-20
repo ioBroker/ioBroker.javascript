@@ -17,7 +17,7 @@ let index = 0;
 interface ScriptEditorProps {
     adapterName: string;
     socket: AdminConnection;
-    runningInstances: Record<string, ioBroker.InstanceObject>;
+    runningInstances: Record<string, boolean>;
     name: string;
     onChange?: (code: string) => void;
     onForceSave?: () => void;
@@ -26,7 +26,7 @@ interface ScriptEditorProps {
     readOnly?: boolean;
     code?: string;
     language?: 'javascript' | 'typescript';
-    onRegisterSelect?: (cb: (() => void) | null) => void;
+    onRegisterSelect?: (cb: (() => string | undefined) | null) => void;
     searchText?: string;
     checkJs?: boolean;
     changed?: boolean;
@@ -111,7 +111,7 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         }
     }
 
-    loadTypings(runningInstances?: Record<string, ioBroker.InstanceObject>): void {
+    loadTypings(runningInstances?: Record<string, boolean>): void {
         if (!this.editor) {
             return;
         }
@@ -151,13 +151,14 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         if (!this.editor && monacoLoaded && this.monaco) {
             console.log('Init editor');
             if (this.props.onRegisterSelect) {
-                this.props.onRegisterSelect(() => {
+                this.props.onRegisterSelect((): string | undefined => {
                     if (this.editor) {
                         const selection = this.editor.getSelection();
                         if (selection) {
-                            this.editor.getModel()?.getValueInRange(selection);
+                            return this.editor.getModel()?.getValueInRange(selection);
                         }
                     }
+                    return undefined;
                 });
             }
             // For some reason, we have to get the original compiler options

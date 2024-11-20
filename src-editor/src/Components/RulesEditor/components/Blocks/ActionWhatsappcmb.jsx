@@ -1,5 +1,5 @@
 import { I18n } from '@iobroker/adapter-react-v5';
-import GenericBlock from '../GenericBlock';
+import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
 
 class ActionWhatsappcmb extends GenericBlock {
     constructor(props) {
@@ -24,7 +24,7 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
         return `${I18n.t('Sent:')} ${debugMessage.data.text}`;
     }
 
-    onTagChange(tagCard) {
+    onTagChange(tagCard: RuleTagCardTitle) {
         this.setState({
             inputs: [
                 {

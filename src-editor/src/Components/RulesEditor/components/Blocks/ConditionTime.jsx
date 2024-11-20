@@ -1,4 +1,4 @@
-import GenericBlock from '../GenericBlock';
+import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
 
 const DAYS = [
     31, // 1
@@ -99,7 +99,7 @@ class ConditionTime extends GenericBlock {
         }
     }
 
-    onTagChange(tagCard) {
+    onTagChange(tagCard: RuleTagCardTitle) {
         this._setInputs(tagCard);
     }
 

@@ -1,6 +1,6 @@
 import SunCalc from 'suncalc2';
 import { I18n } from '@iobroker/adapter-react-v5';
-import GenericBlock from '../GenericBlock';
+import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
 
 class ConditionAstronomical extends GenericBlock {
     constructor(props) {
@@ -155,7 +155,7 @@ class ConditionAstronomical extends GenericBlock {
         this.setState({ inputs }, () => super.onTagChange());
     }
 
-    onTagChange(tagCard) {
+    onTagChange(tagCard: RuleTagCardTitle) {
         this._setAstro();
     }
 

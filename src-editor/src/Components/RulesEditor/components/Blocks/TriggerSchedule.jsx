@@ -8,7 +8,7 @@ import {
 } from '@iobroker/adapter-react-v5';
 import convertCronToText from '@iobroker/adapter-react-v5/build/Components/SimpleCron/cronText';
 
-import GenericBlock from '../GenericBlock';
+import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
 import Compile from '../../helpers/Compile';
 import CustomInput from '../CustomInput';
 import CustomButton from '../CustomButton';
@@ -335,7 +335,7 @@ class TriggerScheduleBlock extends GenericBlock {
         </div>;
     }
 
-    onTagChange(tagCard) {
+    onTagChange(tagCard: RuleTagCardTitle) {
         tagCard = tagCard || this.state.settings.tagCard;
         switch (tagCard) {
             case 'interval':

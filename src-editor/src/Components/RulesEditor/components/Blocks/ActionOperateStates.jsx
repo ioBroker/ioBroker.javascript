@@ -1,5 +1,5 @@
 import { I18n } from '@iobroker/adapter-react-v5';
-import GenericBlock from '../GenericBlock';
+import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
 
 class ActionOperateStates extends GenericBlock {
     constructor(props) {
@@ -40,7 +40,7 @@ class ActionOperateStates extends GenericBlock {
         return <span>{I18n.t('Set:')} <span className={debugMessage.data.ack ? this.props.classes.valueAck : this.props.classes.valueNotAck}>{ActionOperateStates.renderValue(debugMessage.data.val)}</span></span>;
     }
 
-    onTagChange(tagCard, cb, ignore, toggle, useTrigger) {
+    onTagChange(tagCard: RuleTagCardTitle, cb, ignore, toggle, useTrigger) {
         const inputs = [];
 
         inputs.push({

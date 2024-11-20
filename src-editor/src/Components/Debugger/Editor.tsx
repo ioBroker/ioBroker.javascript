@@ -2,7 +2,7 @@ import React from 'react';
 import ScriptEditorComponent from '../ScriptEditorVanilaMonaco';
 import type { AdminConnection, ThemeName, ThemeType } from '@iobroker/adapter-react-v5';
 
-import type { DebuggerLocation, SetBreakpointParameterType } from '@/types';
+import type { DebuggerLocation, SetBreakpointParameterType } from './types';
 
 const styles: Record<string, React.CSSProperties> = {
     editorDiv: {
@@ -14,15 +14,15 @@ const styles: Record<string, React.CSSProperties> = {
 };
 
 interface EditorProps {
-    runningInstances: Record<string, ioBroker.InstanceObject>;
+    runningInstances: Record<string, boolean>;
     socket: AdminConnection;
-    sourceId: string;
+    sourceId: string | null;
     script: string;
     scriptName: string;
     adapterName: string;
     paused: boolean;
     breakpoints: SetBreakpointParameterType[];
-    location: DebuggerLocation;
+    location: DebuggerLocation | null;
     themeType: ThemeType;
     themeName: ThemeName;
     onToggleBreakpoint: (i: number) => void;

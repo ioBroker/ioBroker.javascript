@@ -1,5 +1,5 @@
 import { I18n } from '@iobroker/adapter-react-v5';
-import GenericBlock from '../GenericBlock';
+import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
 
 // copied from https://github.com/ioBroker/ioBroker.sayit/blob/master/admin/blockly.js#L37
 const sayitEngines = {
@@ -146,7 +146,7 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
         return `${I18n.t('Say:')} ${debugMessage.data.text}`;
     }
 
-    onTagChange(tagCard) {
+    onTagChange(tagCard: RuleTagCardTitle) {
         const lang = I18n.getLanguage();
         const languages = Object.keys(sayitEngines).filter(l => l.startsWith(lang));
         const options = languages.map(lang => ({ title: sayitEngines[lang].name, value: lang }));

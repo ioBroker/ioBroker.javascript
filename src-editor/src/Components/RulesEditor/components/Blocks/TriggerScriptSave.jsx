@@ -1,5 +1,5 @@
 import { I18n } from '@iobroker/adapter-react-v5';
-import GenericBlock from '../GenericBlock';
+import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
 import Compile from '../../helpers/Compile';
 
 class TriggerScriptSave extends GenericBlock {
@@ -15,7 +15,7 @@ class TriggerScriptSave extends GenericBlock {
         return I18n.t('Triggered');
     }
 
-    onTagChange(tagCard) {
+    onTagChange(tagCard: RuleTagCardTitle) {
         this.setState({
             inputs: [
                 {

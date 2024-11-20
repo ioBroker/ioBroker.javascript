@@ -8,7 +8,7 @@ import { ListItemButton, ListItemText, Input, InputAdornment, IconButton, List, 
 import { MdCheck as CheckIcon, MdAdd as IconAdd, MdDelete as IconDelete } from 'react-icons/md';
 
 import { I18n, type IobTheme, type ThemeType } from '@iobroker/adapter-react-v5';
-import type { CallFrame } from '@/types';
+import type { DebugScopes, CallFrame, DebugValue, DebugVariable } from '@/Components/Debugger/types';
 
 const styles: Record<string, any> = {
     frameRoot: {
@@ -131,33 +131,12 @@ const styles: Record<string, any> = {
     },
 };
 
-interface DebugValue {
-    type: 'function' | 'string' | 'boolean' | 'number' | 'object' | 'undefined' | 'null' | 'bigint' | 'symbol';
-    description: string;
-    value: any;
-}
-interface DebugVariable {
-    name: string;
-    value: DebugValue;
-}
-
 interface StackProps {
-    currentScriptId: string;
-    mainScriptId: string;
-    scopes: {
-        local: {
-            properties: {
-                result: DebugVariable[];
-            };
-        };
-        closure: {
-            properties: {
-                result: DebugVariable[];
-            };
-        };
-    };
+    currentScriptId: string | null;
+    mainScriptId?: string;
+    scopes: DebugScopes | null;
     expressions: DebugVariable[];
-    callFrames: CallFrame[];
+    callFrames: CallFrame[] | undefined;
     currentFrame: number;
     onExpressionDelete: (index: number) => void;
     onChangeCurrentFrame: (index: number) => void;
@@ -177,7 +156,7 @@ interface StackProps {
                 | 'symbol'
                 | 'function';
         };
-        callFrameId: string;
+        callFrameId: string | undefined;
     }) => void;
     onExpressionAdd: (cb: (index: number, item: DebugVariable) => void) => void;
     onExpressionNameUpdate: (index: number, scopeValue: string, cb: () => void) => void;
@@ -186,14 +165,14 @@ interface StackProps {
 
 interface StackState {
     editValue: {
-        type: 'expression' | 'local' | 'closure';
+        type: 'expression' | 'local' | 'closure' | 'global';
         valueType: 'function' | 'string' | 'boolean' | 'number' | 'object' | 'undefined' | 'null' | 'bigint' | 'symbol';
         index: number;
         name: string;
         value: string;
         scopeId?: string;
     } | null;
-    callFrames: CallFrame[];
+    callFrames: CallFrame[] | undefined;
     framesSizes: number[];
 }
 
@@ -450,7 +429,7 @@ class Stack extends React.Component<StackProps, StackState> {
                 value: this.scopeValue,
                 valueType: typeof this.scopeValue,
             },
-            callFrameId: this.props.callFrames[this.props.currentFrame].callFrameId,
+            callFrameId: this.props.callFrames?.[this.props.currentFrame].callFrameId,
         });
 
         this.setState({ editValue: null });
@@ -462,7 +441,7 @@ class Stack extends React.Component<StackProps, StackState> {
         this.editRef.current?.focus();
     }
 
-    renderScope(scopeId: string, item: DebugVariable, type: 'local' | 'closure'): React.JSX.Element {
+    renderScope(scopeId: string, item: DebugVariable, type: 'global' | 'local' | 'closure'): React.JSX.Element {
         const editable =
             !this.props.currentFrame &&
             item.value &&
@@ -575,17 +554,17 @@ class Stack extends React.Component<StackProps, StackState> {
         // first local
         const result: React.JSX.Element[] = this.renderExpressions();
 
-        let items = this.props.scopes?.local?.properties?.result.map(item =>
+        let items = this.props.scopes?.local?.properties?.result.map(
             // @ts-expect-error fix later
-            this.renderScope(this.props.scopes.id, item, 'local'),
+            item => this.props.scopes && this.renderScope(this.props.scopes.id, item, 'local'),
         );
-        items && items.forEach(item => result.push(item));
+        items?.forEach(item => item && result.push(item));
 
-        items = this.props.scopes?.closure?.properties?.result.map(item =>
+        items = this.props.scopes?.closure?.properties?.result.map(
             // @ts-expect-error fix later
-            this.renderScope(this.props.scopes.id, item, 'closure'),
+            item => this.props.scopes && this.renderScope(this.props.scopes.id, item, 'closure'),
         );
-        items && items.forEach(item => result.push(item));
+        items?.forEach(item => item && result.push(item));
 
         return (
             <table style={{ width: '100%', fontSize: 'small' }}>

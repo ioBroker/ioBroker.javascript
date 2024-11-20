@@ -1,5 +1,5 @@
 import { I18n } from '@iobroker/adapter-react-v5';
-import GenericBlock from '../GenericBlock';
+import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
 
 class ActionTelegram extends GenericBlock {
     constructor(props) {
@@ -99,7 +99,7 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
             });
     }
 
-    onTagChange(tagCard) {
+    onTagChange(tagCard: RuleTagCardTitle) {
         this._setUsers();
     }
 
