@@ -270,6 +270,12 @@ class JavaScript extends Adapter {
         info: (msg: string) => void;
         debug: (msg: string) => void;
         silly: (msg: string) => void;
+    } = {
+        error: (msg: string) => console.error(msg),
+        warn: (msg: string) => console.warn(msg),
+        info: (msg: string) => console.log(msg),
+        debug: (msg: string) => console.debug(msg),
+        silly: (msg: string) => console.debug(msg),
     };
 
     private readonly mods: MODULES;
@@ -443,8 +449,6 @@ class JavaScript extends Adapter {
                 }
             }
         }
-
-        this.errorLogFunction = this.log;
 
         this.context = {
             mods: this.mods,
@@ -778,6 +782,9 @@ class JavaScript extends Adapter {
     }
 
     async onReady(): Promise<void> {
+        this.errorLogFunction = this.log;
+        this.context.errorLogFunction = this.log;
+
         this.config.maxSetStatePerMinute = parseInt(this.config.maxSetStatePerMinute as unknown as string, 10) || 1000;
         this.config.maxTriggersPerScript = parseInt(this.config.maxTriggersPerScript as unknown as string, 10) || 100;
 

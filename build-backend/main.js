@@ -215,7 +215,13 @@ const jsDeclarationServer = new virtual_tsc_1.Server(typescriptSettings_1.jsDecl
  */
 class JavaScript extends adapter_core_1.Adapter {
     context;
-    errorLogFunction;
+    errorLogFunction = {
+        error: (msg) => console.error(msg),
+        warn: (msg) => console.warn(msg),
+        info: (msg) => console.log(msg),
+        debug: (msg) => console.debug(msg),
+        silly: (msg) => console.debug(msg),
+    };
     mods;
     objectsInitDone = false;
     statesInitDone = false;
@@ -351,7 +357,6 @@ class JavaScript extends adapter_core_1.Adapter {
                 }
             }
         }
-        this.errorLogFunction = this.log;
         this.context = {
             mods: this.mods,
             objects: this.objects,
@@ -661,6 +666,8 @@ class JavaScript extends adapter_core_1.Adapter {
         }
     }
     async onReady() {
+        this.errorLogFunction = this.log;
+        this.context.errorLogFunction = this.log;
         this.config.maxSetStatePerMinute = parseInt(this.config.maxSetStatePerMinute, 10) || 1000;
         this.config.maxTriggersPerScript = parseInt(this.config.maxTriggersPerScript, 10) || 100;
         if (this.supportsFeature && this.supportsFeature('PLUGINS')) {

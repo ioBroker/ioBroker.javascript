@@ -27,7 +27,7 @@ class ActionSetState extends GenericBlock<RuleBlockConfigActionSetState> {
 
     isAllTriggersOnState(): boolean {
         return (
-            this.props.userRules?.triggers?.find(item => item.id === 'TriggerState') &&
+            !!this.props.userRules?.triggers?.find(item => item.id === 'TriggerState') &&
             !this.props.userRules?.triggers?.find(item => item.id !== 'TriggerState')
         );
     }

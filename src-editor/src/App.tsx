@@ -749,7 +749,7 @@ class App extends GenericApp<AppProps, AppState> {
 
     onEnableDisable(id: string, enabled: boolean): void {
         if (this.scripts[id] && this.scripts[id].type === 'script') {
-            const common = this.scripts[id].common;
+            const common: ioBroker.ScriptCommon = this.scripts[id].common as ioBroker.ScriptCommon;
             common.enabled = enabled;
             common.expert = true;
             this.updateScript(id, id, common).catch(err => err !== 'canceled' && this.showJsError(err));

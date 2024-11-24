@@ -72,7 +72,7 @@ export interface GenericBlockProps<Settings> {
     };
     settings?: Settings;
     onChange: (settings: Settings) => void;
-    onDebugMessage?: DebugMessage | null;
+    onDebugMessage?: DebugMessage[];
     enableSimulation: boolean;
     theme: IobTheme;
     className?: string;
@@ -115,6 +115,9 @@ export abstract class GenericBlock<
     private debugHideTimeout: ReturnType<typeof setTimeout> | null = null;
 
     private lastObjectIdChange: number = 0;
+    private enableSimulationProcessing = false;
+    private lastDebugMessage = 0;
+    private debugMessageTimeout: ReturnType<typeof setTimeout> | null = null;
 
     static getStaticData(): RuleBlockDescription {
         return {
@@ -129,7 +132,7 @@ export abstract class GenericBlock<
         return '';
     }
 
-    constructor(props: GenericBlockProps<Settings>, item: RuleBlockDescription) {
+    protected constructor(props: GenericBlockProps<Settings>, item: RuleBlockDescription) {
         super(props);
         item = item || {};
         const settings: Settings =
@@ -174,48 +177,37 @@ export abstract class GenericBlock<
         } satisfies GenericBlockState<Settings>;
     }
 
-    UNSAFE_componentWillReceiveProps(nextProps: GenericBlockProps<Settings>): void {
+    static getDerivedStateFromProps(
+        nextProps: GenericBlockProps<any>,
+        state: GenericBlockState<any>,
+    ): Partial<GenericBlockState<any>> | null {
         if (!nextProps || !nextProps.settings) {
             console.log(JSON.stringify(nextProps));
-            return;
+            return null;
         }
 
-        const settings: Settings = JSON.parse(JSON.stringify(nextProps.settings));
-        if (!settings.tagCard && this.state.tagCardArray && this.state.tagCardArray.length) {
+        const settings: any = JSON.parse(JSON.stringify(nextProps.settings));
+        if (!settings.tagCard && state.tagCardArray && state.tagCardArray.length) {
             settings.tagCard =
-                typeof this.state.tagCardArray[0] !== 'string'
-                    ? this.state.tagCardArray[0].title
-                    : this.state.tagCardArray[0];
+                typeof state.tagCardArray[0] !== 'string' ? state.tagCardArray[0].title : state.tagCardArray[0];
         }
 
-        let newState: Partial<TState> | null = null;
-
-        if (nextProps.onDebugMessage?.blockId === this.props._id) {
-            newState = {};
-            newState.debugMessage = JSON.parse(JSON.stringify(nextProps.onDebugMessage));
-            this.debugHideTimeout && clearTimeout(this.debugHideTimeout);
-            this.debugHideTimeout = setTimeout(
-                () => this.setState({ debugMessage: null }),
-                nextProps.onDebugMessage.hideTimeout || 5000,
-            );
+        if (JSON.stringify(settings) !== JSON.stringify(state.settings)) {
+            return { settings };
         }
 
-        if (JSON.stringify(settings) !== JSON.stringify(this.state.settings)) {
-            newState = newState || {};
-            newState.settings = settings;
-        }
-
-        if (this.state.enableSimulation !== nextProps.enableSimulation) {
-            newState = newState || {};
-            newState.enableSimulation = nextProps.enableSimulation;
-        }
-
-        newState && this.setState(newState as TState);
+        return null;
     }
 
     componentWillUnmount(): void {
-        this.debugHideTimeout && clearTimeout(this.debugHideTimeout);
-        this.debugHideTimeout = null;
+        if (this.debugMessageTimeout) {
+            clearTimeout(this.debugMessageTimeout);
+            this.debugMessageTimeout = null;
+        }
+        if (this.debugHideTimeout) {
+            clearTimeout(this.debugHideTimeout);
+            this.debugHideTimeout = null;
+        }
     }
 
     // called every time, the tagCard changes or at start
@@ -819,7 +811,6 @@ export abstract class GenericBlock<
                 </div>
                 {openModal ? (
                     <CustomModal
-                        open
                         onApply={val =>
                             this.setState(
                                 { openModal: false },
@@ -909,7 +900,7 @@ export abstract class GenericBlock<
                         open={Boolean(openTagMenu)}
                         onClose={() => this.setState({ openTagMenu: null })}
                     >
-                        {tagCardArray.map(el => {
+                        {tagCardArray.map((el, i) => {
                             let tag: RuleTagCardTitle;
                             if (typeof el !== 'string') {
                                 tag = el.title;
@@ -918,7 +909,7 @@ export abstract class GenericBlock<
                             }
                             return (
                                 <MenuItem
-                                    key={tag}
+                                    key={`${tag}_${i}`}
                                     selected={tag === tagCard}
                                     className={`tag-card-${tag}`}
                                     style={{ placeContent: 'space-between' }}
@@ -1069,11 +1060,11 @@ export abstract class GenericBlock<
     }
 
     // eslint-disable-next-line class-methods-use-this
-    renderWriteState(): React.JSX.Element | null {
+    renderWriteState(): React.JSX.Element[] | null {
         return null;
     }
 
-    renderInputElement(input: RuleInputAny): React.JSX.Element | null {
+    renderInputElement(input: RuleInputAny, index: number): React.JSX.Element | React.JSX.Element[] | null {
         const { nameRender, defaultValue, attr } = input as RuleInputAll;
         const { settings } = this.state;
         let value: any = attr ? (settings as Record<string, any>)[attr] : undefined;
@@ -1086,7 +1077,7 @@ export abstract class GenericBlock<
                 if (attr) {
                     return this.renderTime(input as RuleInputTime, value as string, this.onChangeInput(attr));
                 }
-                return <div>{I18n.t('Invalid input config')}</div>;
+                return <div key={`invalid_${index}`}>{I18n.t('Invalid renderTime')}</div>;
 
             case 'renderNameText':
                 return this.renderNameText(input as RuleInputNameText, value);
@@ -1095,88 +1086,85 @@ export abstract class GenericBlock<
                 if (attr) {
                     return this.renderSelect(input as RuleInputSelect, value, this.onChangeInput(attr));
                 }
-                return <div>{I18n.t('Invalid input config')}</div>;
+                return <div key={`invalid_${index}`}>{I18n.t('Invalid renderSelect')}</div>;
             case 'renderModalInput':
                 if (attr) {
                     return this.renderModalInput(input as RuleInputModalInput, value, this.onChangeInput(attr));
                 }
-                return <div>{I18n.t('Invalid input config')}</div>;
+                return <div key={`invalid_${index}`}>{I18n.t('Invalid renderModalInput')}</div>;
             case 'renderObjectID':
                 if (attr) {
                     return this.renderObjectID(input as RuleInputObjectID, value, this.onChangeInput(attr));
                 }
-                return <div>{I18n.t('Invalid input config')}</div>;
+                return <div key={`invalid_${index}`}>{I18n.t('Invalid renderObjectID')}</div>;
             case 'renderDialog':
                 if (attr) {
                     return this.renderDialog(input as RuleInputDialog);
                 }
-                return <div>{I18n.t('Invalid input config')}</div>;
+                return <div key={`invalid_${index}`}>{I18n.t('Invalid renderDialog')}</div>;
             case 'renderInstance':
                 if (attr) {
                     return this.renderInstance(input as RuleInputInstance, value, this.onChangeInput(attr));
                 }
-                return <div>{I18n.t('Invalid input config')}</div>;
+                return <div key={`invalid_${index}`}>{I18n.t('Invalid renderInstance')}</div>;
             case 'renderText':
                 if (attr) {
                     return this.renderText(input as RuleInputText, value, this.onChangeInput(attr));
                 }
-                return <div>{I18n.t('Invalid input config')}</div>;
+                return <div key={`invalid_${index}`}>{I18n.t('Invalid renderText')}</div>;
             case 'renderSlider':
                 if (attr) {
                     return this.renderSlider(input as RuleInputSlider, value, this.onChangeInput(attr));
                 }
-                return <div>{I18n.t('Invalid input config')}</div>;
+                return <div key={`invalid_${index}`}>{I18n.t('Invalid renderSlider')}</div>;
             case 'renderCheckbox':
                 if (attr) {
                     return this.renderCheckbox(input as RuleInputCheckbox, value, this.onChangeInput(attr));
                 }
-                return <div>{I18n.t('Invalid input config')}</div>;
+                return <div key={`invalid_${index}`}>{I18n.t('Invalid renderCheckbox')}</div>;
             case 'renderButton':
                 if (attr) {
                     return this.renderButton(input as RuleInputButton, value, this.onChangeInput(attr));
                 }
-                return <div>{I18n.t('Invalid input config')}</div>;
+                return <div key={`invalid_${index}`}>{I18n.t('Invalid renderButton')}</div>;
             case 'renderColor':
                 if (attr) {
                     return this.renderColor(input as RuleInputColor, value, this.onChangeInput(attr));
                 }
-                return <div>{I18n.t('Invalid input config')}</div>;
+                return <div key={`invalid_${index}`}>{I18n.t('Invalid renderColor')}</div>;
             case 'renderSwitch':
                 if (attr) {
                     return this.renderSwitch(input as RuleInputSwitch, value, this.onChangeInput(attr));
                 }
-                return <div>{I18n.t('Invalid input config')}</div>;
+                return <div key={`invalid_${index}`}>{I18n.t('Invalid renderSwitch')}</div>;
             case 'renderDate':
                 if (attr) {
                     return this.renderDate(input as RuleInputDate, value, this.onChangeInput(attr));
                 }
-                return <div>{I18n.t('Invalid input config')}</div>;
+                return <div key={`invalid_${index}`}>{I18n.t('Invalid renderDate')}</div>;
             case 'renderCron':
                 if (attr) {
                     return this.renderCron(input as RuleInputCron, value, this.onChangeInput(attr));
                 }
-                return <div>{I18n.t('Invalid input config')}</div>;
+                return <div key={`invalid_${index}`}>{I18n.t('Invalid renderCron')}</div>;
             case 'renderWizard':
                 if (attr) {
                     return this.renderWizard(input as RuleInputWizard, value, this.onChangeInput(attr));
                 }
-                return <div>{I18n.t('Invalid input config')}</div>;
+                return <div key={`invalid_${index}`}>{I18n.t('Invalid renderWizard')}</div>;
             case 'renderWriteState':
-                if (attr) {
-                    return this.renderWriteState();
-                }
-                return <div>{I18n.t('Invalid input config')}</div>;
+                return this.renderWriteState();
             case 'renderNumber':
                 if (attr) {
                     return this.renderNumber(input as RuleInputNumber, value, this.onChangeInput(attr));
                 }
-                return <div>{I18n.t('Invalid input config')}</div>;
+                return <div key={`invalid_${index}`}>{I18n.t('Invalid renderNumber')}</div>;
             default:
                 if (this[nameRender]) {
                     // @ts-expect-error ignore error as it is special case
                     return this[nameRender](input, value, attr ? this.onChangeInput(attr) : null);
                 }
-                return <div>{I18n.t('Invalid input type: %s', nameRender)}</div>;
+                return <div key={`invalid_${index}`}>{I18n.t('Invalid input type: %s', nameRender)}</div>;
         }
     }
 
@@ -1192,6 +1180,58 @@ export abstract class GenericBlock<
             helpDialog,
         } = this.state;
         const { socket, notFound } = this.props;
+
+        // Detect changing of simulation
+        if (this.state.enableSimulation !== this.props.enableSimulation && !this.enableSimulationProcessing) {
+            this.enableSimulationProcessing = true;
+            setTimeout(() => {
+                this.setState({ enableSimulation: this.props.enableSimulation }, () => {
+                    this.enableSimulationProcessing = false;
+                });
+            }, 50);
+        }
+
+        // Try to find latest message for this block
+        let debugMsg;
+        if (this.props.onDebugMessage) {
+            for (let d = this.props.onDebugMessage.length - 1; d >= 0; d--) {
+                const msg = this.props.onDebugMessage[d];
+                if (msg.blockId === this.props._id && msg.ts > this.lastDebugMessage && msg.ts > Date.now() - 1000) {
+                    debugMsg = msg;
+                    break;
+                }
+            }
+        }
+
+        if (debugMsg) {
+            // Get the last message
+            this.lastDebugMessage = debugMsg.ts;
+            if (this.debugMessageTimeout) {
+                clearTimeout(this.debugMessageTimeout);
+            }
+            if (this.debugHideTimeout) {
+                clearTimeout(this.debugHideTimeout);
+                this.debugHideTimeout = null;
+            }
+            this.debugMessageTimeout = setTimeout(
+                (debugMessageStr: string): void => {
+                    const debugMessage: DebugMessage = JSON.parse(debugMessageStr);
+                    const hideTimeout: number = debugMessage.hideTimeout || 5000;
+                    this.debugMessageTimeout = null;
+                    this.setState({ debugMessage }, () => {
+                        if (this.debugHideTimeout) {
+                            clearTimeout(this.debugHideTimeout);
+                        }
+                        this.debugHideTimeout = setTimeout(() => {
+                            this.debugHideTimeout = null;
+                            this.setState({ debugMessage: null });
+                        }, hideTimeout);
+                    });
+                },
+                50,
+                JSON.stringify(debugMsg),
+            );
+        }
 
         return (
             <Fragment>
@@ -1231,7 +1271,7 @@ export abstract class GenericBlock<
                             </IconButton>
                         ) : null}
                     </span>
-                    {inputs.map(input => this.renderInputElement(input))}
+                    {inputs.map((input, index) => this.renderInputElement(input, index))}
                 </div>
                 {tagCard && (
                     <div

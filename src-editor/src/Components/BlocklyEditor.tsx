@@ -439,10 +439,10 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         const selectedBlocks: BlocklyTS.BlockSvg | null = BlocklyTS.getSelected() as BlocklyTS.BlockSvg | null;
         if (selectedBlocks) {
             const xmlBlock: Element = BlocklyTS.Xml.blockToDom(selectedBlocks) as Element;
-            // @ts-expect-error fix later
-            if (BlocklyTS.dragMode_ !== BlocklyTS.DRAG_FREE) {
-                BlocklyTS.Xml.deleteNext(xmlBlock);
-            }
+            // @1ts-expect-error fix later. TODO!!!!
+            // if (BlocklyTS.dragMode_ !== BlocklyTS.DRAG_FREE) {
+            //    BlocklyTS.Xml.deleteNext(xmlBlock);
+            // }
             // Encode start position in XML.
             const xy = selectedBlocks.getRelativeToSurfaceXY();
             xmlBlock.setAttribute('x', (selectedBlocks.RTL ? -xy.x : xy.x).toString());

@@ -9,7 +9,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 
-import GenericBlock from './Components/RulesEditor/components/GenericBlock';
+import { GenericBlock } from './Components/RulesEditor/components/GenericBlock';
 
 declare global {
     interface Window {

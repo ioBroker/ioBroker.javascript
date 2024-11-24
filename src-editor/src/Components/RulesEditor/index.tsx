@@ -13,7 +13,7 @@ import './helpers/stylesVariables.scss';
 
 import DialogExport from '../../Dialogs/Export';
 import DialogImport from '../../Dialogs/Import';
-import type { RuleUserRules } from './types';
+import type { DebugMessage, RuleUserRules } from './types';
 import type { GenericBlock } from '@/Components/RulesEditor/components/GenericBlock';
 
 interface RulesEditorProps {
@@ -32,6 +32,8 @@ interface RulesEditorProps {
     changed: boolean;
     running: boolean;
 }
+
+let gDebugMessages: DebugMessage[] = [];
 
 const RulesEditor = ({
     code,
@@ -52,8 +54,6 @@ const RulesEditor = ({
     const [userRules, setUserRules] = useState(code2json(code));
     const [importExport, setImportExport] = useState('');
     const [modal, setModal] = useState(false);
-    //const [jsAlive, setJsAlive] = useState(false);
-    //const [jsInstance, setJsInstance] = useState(false);
 
     useEffect(() => {
         let _jsInstance: string | undefined;
@@ -91,12 +91,26 @@ const RulesEditor = ({
         const handlerStatus = (_id: string, state: ioBroker.State | null | undefined): void => {
             if (state) {
                 try {
-                    const msg: { ts: number; data: any; blockId: string; ruleId: string } = JSON.parse(
-                        state.val as string,
-                    );
+                    const msg: DebugMessage = JSON.parse(state.val as string);
+                    const now = Date.now();
                     // if not from previous session
-                    if (msg.ruleId === scriptId && Date.now() - msg.ts < 1000) {
-                        setOnDebugMessage({ blockId: msg.blockId, data: msg.data, ts: msg.ts });
+                    if (msg.ruleId === scriptId && now - msg.ts < 1000) {
+                        const messages = [...gDebugMessages, { blockId: msg.blockId, data: msg.data, ts: msg.ts }];
+                        // Delete all messages older than 5 seconds and if the length is bigger than 200
+                        if (messages.length > 200) {
+                            messages.splice(0, 200 - messages.length);
+                        }
+                        for (let m = messages.length - 1; m >= 0; m--) {
+                            if (messages[m].ts < now - 5000) {
+                                messages.splice(0, m);
+                                break;
+                            }
+                        }
+                        console.log(`Debug1: ${JSON.stringify(gDebugMessages)}`);
+                        console.log(`Debug2: ${JSON.stringify(messages)}`);
+
+                        gDebugMessages = messages;
+                        setOnDebugMessage(messages);
                     }
                 } catch {
                     console.error(`Cannot parse: ${state.val}`);

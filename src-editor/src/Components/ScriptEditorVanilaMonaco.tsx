@@ -6,7 +6,7 @@ import { Fab } from '@mui/material';
 import { MdGTranslate as IconNoCheck } from 'react-icons/md';
 
 import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
-import type { DebuggerLocation, SetBreakpointParameterType } from '@/types';
+import type { DebuggerLocation, SetBreakpointParameterType } from './Debugger/types';
 
 function isIdOfGlobalScript(id: string): boolean {
     return /^script\.js\.global\./.test(id);
@@ -457,7 +457,7 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
             }
         });
         if (this.editor) {
-            this.decorations = this.editor.createDecorationsCollection(decorations);
+            // this.decorations = this.editor.createDecorationsCollection(decorations);
         }
     }
 

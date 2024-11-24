@@ -627,16 +627,17 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
             cb && cb();
         } else {
             const id: string = tasks.shift() as string;
+            const scriptObj: ioBroker.ScriptObject = this.props.scripts[id] as ioBroker.ScriptObject;
             if (
                 this.props.scripts?.[id].type === 'script' &&
-                this.props.scripts[id].common?.enabled &&
+                scriptObj.common?.enabled &&
                 !id.match(/^script\.js\.global\./) // GLOBAL_ID
             ) {
-                const instance = this.props.scripts[id].common.engine.split('.').pop();
+                const instance = scriptObj.common.engine.split('.').pop();
                 const that = this; // sometimes lambda does not work
                 const _id = `javascript.${instance}.scriptProblem.${id.substring(ROOT_ID.length + 1)}`;
 
-                void this.props.socket.getState(_id).then((state: ioBroker.State | null | undefined) => {
+                void this.props.socket.getState(_id).then((state: ioBroker.State | null | undefined): void => {
                     that.onProblemUpdated(_id, state);
                     setTimeout(() => that.readProblems(cb, tasks), 0);
                 });

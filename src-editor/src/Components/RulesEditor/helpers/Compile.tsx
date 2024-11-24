@@ -175,27 +175,15 @@ function compileConditions(
     const result: string[] = [];
     let i = 0;
     conditions?.forEach(ors => {
-        if (Object.prototype.hasOwnProperty.call(ors, 'length') && ors.length) {
-            const _ors: string[] = [];
-            ors?.forEach(block => {
-                const found = findBlock(block.id, blocks);
-                if (found) {
-                    context.condition.index = i++;
-                    _ors.push(found.compile(block, context));
-                }
-            });
-            result.push(`(${_ors.join(') &&\n                  (')})`);
-        } else {
-            // should not be used!
-            // eslint-disable-next-line no-debugger
-            debugger;
-            const config: RuleBlockConfig = ors as unknown as RuleBlockConfig;
-            const found = findBlock(config.id, blocks);
+        const _ors: string[] = [];
+        ors?.forEach(block => {
+            const found = findBlock(block.id, blocks);
             if (found) {
                 context.condition.index = i++;
-                result.push(found.compile(config, context));
+                _ors.push(found.compile(block, context));
             }
-        }
+        });
+        result.push(`(${_ors.join(') &&\n                  (')})`);
     });
 
     if (!result.length) {

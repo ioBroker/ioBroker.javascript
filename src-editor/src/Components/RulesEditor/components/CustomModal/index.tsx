@@ -7,7 +7,6 @@ import cls from './style.module.scss';
 import CustomInput from '../CustomInput';
 
 interface CustomModalProps {
-    open: boolean;
     onClose: () => void;
     children?: React.JSX.Element[] | React.JSX.Element | null;
     titleButtonApply?: string;
@@ -19,7 +18,6 @@ interface CustomModalProps {
 }
 
 const CustomModal = ({
-    open,
     onClose,
     children,
     titleButtonApply,
@@ -30,10 +28,11 @@ const CustomModal = ({
     defaultValue,
 }: CustomModalProps): React.JSX.Element => {
     const [value, setValue] = useState<string | number>(defaultValue || '');
+    const [originalValue] = useState<string | number>(defaultValue || '');
 
     return (
         <Dialog
-            open={open}
+            open={!0}
             maxWidth="md"
             disableEscapeKeyDown={false}
             onClose={onClose}
@@ -59,6 +58,7 @@ const CustomModal = ({
             </DialogContent>
             <DialogActions>
                 <Button
+                    disabled={originalValue === value}
                     onClick={() => onApply(textInput ? value : null)}
                     variant="contained"
                     color="primary"

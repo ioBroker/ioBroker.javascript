@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useContext, useMemo, useState } from 'react';
 
 import type { AdminConnection, IobTheme, ThemeName, ThemeType } from '@iobroker/adapter-react-v5';
 import cls from './style.module.scss';
@@ -35,10 +35,6 @@ const CurrentItem = memo((props: CurrentItemProps) => {
     const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
     const { blocks, socket, onUpdate, setOnUpdate, onDebugMessage, enableSimulation } =
         useContext(ContextWrapperCreate);
-
-    useEffect(() => {
-        console.log(`New message !! ${JSON.stringify(onDebugMessage)}`);
-    }, [onDebugMessage]);
 
     const findElementBlocks = useCallback(
         (id: string) =>

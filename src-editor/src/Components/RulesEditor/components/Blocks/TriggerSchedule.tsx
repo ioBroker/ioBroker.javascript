@@ -6,7 +6,7 @@ import { ComplexCron, Schedule, I18n } from '@iobroker/adapter-react-v5';
 import convertCronToText from '@iobroker/adapter-react-v5/build/Components/SimpleCron/cronText';
 
 import { GenericBlock, type GenericBlockProps, type GenericBlockState } from '../GenericBlock';
-import Compile from '../../helpers/Compile';
+import { STANDARD_FUNCTION_STATE, STANDARD_FUNCTION_STATE_ONCHANGE } from '../../helpers/Compile';
 import CustomInput from '../CustomInput';
 import CustomButton from '../CustomButton';
 import CustomModal from '../CustomModal';
@@ -63,7 +63,7 @@ class TriggerScheduleBlock extends GenericBlock<RuleBlockConfigTriggerSchedule, 
 
     static compile(config: RuleBlockConfigTriggerSchedule, context: RuleContext): string {
         let text = '';
-        let func = context.justCheck ? Compile.STANDARD_FUNCTION_STATE : Compile.STANDARD_FUNCTION_STATE_ONCHANGE;
+        let func = context.justCheck ? STANDARD_FUNCTION_STATE : STANDARD_FUNCTION_STATE_ONCHANGE;
         func = func.replace('"__%%DEBUG_TRIGGER%%__"', `_sendToFrontEnd(${config._id}, {trigger: true})`);
 
         if (config.tagCard === 'interval') {
@@ -214,7 +214,7 @@ class TriggerScheduleBlock extends GenericBlock<RuleBlockConfigTriggerSchedule, 
                 },
                 {
                     nameRender: 'renderNameText',
-                    attr: 'textTime',
+                    attr: 'textTime1',
                     defaultValue: time,
                 },
             ];
@@ -317,24 +317,25 @@ class TriggerScheduleBlock extends GenericBlock<RuleBlockConfigTriggerSchedule, 
                         onClick={() => this.setState({ openDialog: true })}
                     />
                 </div>
-                <CustomModal
-                    open={!!this.state.openDialog}
-                    onApply={(): void => {
-                        onChange(textCron, attr, () => {
-                            onChange(convertCronToText(textCron, I18n.getLanguage()), 'addText');
-                            this.setState({ openDialog: false });
-                        });
-                    }}
-                    onClose={() => this.setState({ openDialog: false })}
-                >
-                    <ComplexCron
-                        cronExpression={
-                            (settings as Record<string, any>)[attr] ? (settings as Record<string, any>)[attr] : ''
-                        }
-                        onChange={el => (textCron = el)}
-                        language={I18n.getLanguage()}
-                    />
-                </CustomModal>
+                {this.state.openDialog ? (
+                    <CustomModal
+                        onApply={(): void => {
+                            onChange(textCron, attr, () => {
+                                onChange(convertCronToText(textCron, I18n.getLanguage()), 'addText');
+                                this.setState({ openDialog: false });
+                            });
+                        }}
+                        onClose={() => this.setState({ openDialog: false })}
+                    >
+                        <ComplexCron
+                            cronExpression={
+                                (settings as Record<string, any>)[attr] ? (settings as Record<string, any>)[attr] : ''
+                            }
+                            onChange={el => (textCron = el)}
+                            language={I18n.getLanguage()}
+                        />
+                    </CustomModal>
+                ) : null}
                 {this.renderNameText(
                     {
                         nameRender: 'renderNameText',
@@ -383,30 +384,31 @@ class TriggerScheduleBlock extends GenericBlock<RuleBlockConfigTriggerSchedule, 
                         onClick={() => this.setState({ openDialog: true })}
                     />
                 </div>
-                <CustomModal
-                    open={!!this.state.openDialog}
-                    onApply={() =>
-                        this.setState({ openDialog: false }, () =>
-                            onChange({
-                                [`${attr}Text`]: wizardText,
-                                [attr]: wizard,
-                            }),
-                        )
-                    }
-                    onClose={() => this.setState({ openDialog: false })}
-                >
-                    <Schedule
-                        theme={this.props.theme}
-                        schedule={value}
-                        onChange={(schedule, description) => {
-                            wizardText = description || '';
-                            const wizardObj: ScheduleConfig = JSON.parse(schedule) as ScheduleConfig;
-                            wizardObj.valid = wizardObj.valid || {};
-                            wizardObj.valid.from = wizardObj.valid.from || Schedule.now2string();
-                            wizard = JSON.stringify(wizardObj);
-                        }}
-                    />
-                </CustomModal>
+                {this.state.openDialog ? (
+                    <CustomModal
+                        onApply={() =>
+                            this.setState({ openDialog: false }, () =>
+                                onChange({
+                                    [`${attr}Text`]: wizardText,
+                                    [attr]: wizard,
+                                }),
+                            )
+                        }
+                        onClose={() => this.setState({ openDialog: false })}
+                    >
+                        <Schedule
+                            theme={this.props.theme}
+                            schedule={value}
+                            onChange={(schedule, description) => {
+                                wizardText = description || '';
+                                const wizardObj: ScheduleConfig = JSON.parse(schedule) as ScheduleConfig;
+                                wizardObj.valid = wizardObj.valid || {};
+                                wizardObj.valid.from = wizardObj.valid.from || Schedule.now2string();
+                                wizard = JSON.stringify(wizardObj);
+                            }}
+                        />
+                    </CustomModal>
+                ) : null}
             </div>
         );
     }

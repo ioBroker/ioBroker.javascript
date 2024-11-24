@@ -457,6 +457,7 @@ export interface RuleBlockConfigTriggerState extends RuleBlockConfig {
     oid: string;
     oidType: 'boolean' | 'number' | 'string';
     oidUnit: string;
+    oidStates: { [name: string]: string };
     tagCard: 'on update' | 'on change';
 }
 
@@ -487,8 +488,9 @@ export interface RuleUserRules {
 }
 
 export type DebugMessage = {
+    ruleId?: string;
     blockId: number;
     hideTimeout?: number;
-    message: any;
+    data: any;
     ts: number;
 };

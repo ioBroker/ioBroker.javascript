@@ -1,6 +1,6 @@
 import { I18n } from '@iobroker/adapter-react-v5';
 import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
-import Compile from '../../helpers/Compile';
+import { NO_FUNCTION } from '../../helpers/Compile';
 import type {
     RuleBlockConfigTriggerScriptSave,
     RuleBlockDescription,
@@ -14,10 +14,7 @@ class TriggerScriptSave extends GenericBlock<RuleBlockConfigTriggerScriptSave> {
     }
 
     static compile(config: RuleBlockConfigTriggerScriptSave, _context: RuleContext): string {
-        return Compile.NO_FUNCTION.replace(
-            '"__%%DEBUG_TRIGGER%%__"',
-            `_sendToFrontEnd(${config._id}, {trigger: true})`,
-        );
+        return NO_FUNCTION.replace('"__%%DEBUG_TRIGGER%%__"', `_sendToFrontEnd(${config._id}, {trigger: true})`);
     }
 
     // eslint-disable-next-line class-methods-use-this

@@ -26,8 +26,8 @@ interface RuleContext {
     socket: AdminConnection | null;
     onUpdate: boolean;
     setOnUpdate: (value: boolean) => void;
-    onDebugMessage: DebugMessage | null;
-    setOnDebugMessage: (message: DebugMessage | null) => void;
+    onDebugMessage: DebugMessage[];
+    setOnDebugMessage: (message: DebugMessage[]) => void;
     enableSimulation: boolean;
     setEnableSimulation: (enableSimulation: boolean) => void;
 }
@@ -39,8 +39,8 @@ export const ContextWrapperCreate = createContext<RuleContext>({
     onUpdate: false,
     setOnUpdate: (_onUpdate: boolean): void => {},
 
-    setOnDebugMessage: (_message: DebugMessage | null): void => {},
-    onDebugMessage: null,
+    setOnDebugMessage: (_message: DebugMessage[]): void => {},
+    onDebugMessage: [],
 
     enableSimulation: false,
     setEnableSimulation: (_enableSimulation: boolean): void => {},
@@ -50,7 +50,7 @@ const getOrLoadRemote = (
     remote: string,
     shareScope: string,
     remoteFallbackUrl: string | undefined = undefined,
-): Promise<{ get: (module: string) => () => Promise<{ default: Record<string, typeof GenericBlock<any>> }> }> =>
+): Promise<{ get: (module: string) => () => Promise<{ default: typeof GenericBlock<any> }> }> =>
     new Promise((resolve, reject) => {
         // check if remote exists on window
         if (!(window as any)[remote]) {
@@ -115,8 +115,8 @@ function loadComponent(
     sharedScope: string,
     module: string,
     url: string,
-): () => Promise<{ default: Record<string, typeof GenericBlock<any>> }> {
-    return async (): Promise<{ default: Record<string, typeof GenericBlock<any>> }> => {
+): () => Promise<{ default: typeof GenericBlock<any> }> {
+    return async (): Promise<{ default: typeof GenericBlock<any> }> => {
         await getOrLoadRemote(remote, sharedScope, url);
         const container = (window as any)[remote];
         const factory = await container.get(module);
@@ -127,7 +127,7 @@ function loadComponent(
 export const ContextWrapper = ({ children, socket }: { socket: AdminConnection; children: any }): React.JSX.Element => {
     const [blocks, setBlocks] = useState<(typeof GenericBlock<any>)[] | null>(null);
     const [onUpdate, setOnUpdate] = useState(false);
-    const [onDebugMessage, setOnDebugMessage] = useState<DebugMessage | null>(null);
+    const [onDebugMessage, setOnDebugMessage] = useState<DebugMessage[]>([]);
     const [enableSimulation, setEnableSimulation] = useState(false);
 
     useEffect(() => {
@@ -175,8 +175,8 @@ export const ContextWrapper = ({ children, socket }: { socket: AdminConnection; 
                 // @ts-expect-error javascriptRules in js-controller
                 if (obj.common.javascriptRules.i18n === true) {
                     // load i18n from files
-                    const pos = url.lastIndexOf('/');
-                    let i18nURL;
+                    const pos: number = url.lastIndexOf('/');
+                    let i18nURL: string;
                     if (pos !== -1) {
                         i18nURL = url.substring(0, pos);
                     } else {
@@ -222,7 +222,7 @@ export const ContextWrapper = ({ children, socket }: { socket: AdminConnection; 
                     ).default;
 
                     if (Component) {
-                        adapterDynamicBlocksArray.push(Component.default);
+                        adapterDynamicBlocksArray.push(Component);
                         alreadyCreated.push(obj.common.name);
                         ADAPTERS[obj.common.name] = null;
                     }

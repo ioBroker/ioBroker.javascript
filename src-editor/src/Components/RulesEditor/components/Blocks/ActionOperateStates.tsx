@@ -18,7 +18,7 @@ class ActionOperateStates extends GenericBlock<RuleBlockConfigActionOperationSta
 
     isAllTriggersOnState(): boolean {
         return (
-            this.props.userRules?.triggers?.find(item => item.id === 'TriggerState') &&
+            !!this.props.userRules?.triggers?.find(item => item.id === 'TriggerState') &&
             !this.props.userRules?.triggers?.find(item => item.id !== 'TriggerState')
         );
     }
@@ -38,7 +38,9 @@ class ActionOperateStates extends GenericBlock<RuleBlockConfigActionOperationSta
         return (
             <span>
                 {I18n.t('Set:')}{' '}
-                <span className={debugMessage.data.ack ? this.props.classes.valueAck : this.props.classes.valueNotAck}>
+                <span
+                    className={debugMessage.data.ack ? this.props.classes?.valueAck : this.props.classes?.valueNotAck}
+                >
                     {renderValue(debugMessage.data.val)}
                 </span>
             </span>

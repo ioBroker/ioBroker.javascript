@@ -9,6 +9,7 @@ import { GenericBlock, type GenericBlockProps, type GenericBlockState } from '..
 import HysteresisImage from '../../../assets/hysteresis.png';
 import type {
     RuleBlockConfigActionActionState,
+    RuleBlockConfigTriggerState,
     RuleBlockDescription,
     RuleContext,
     RuleInputAny,
@@ -97,7 +98,7 @@ class ConditionState extends GenericBlock<RuleBlockConfigActionActionState, Cond
             const compare = config.tagCard === '=' ? '==' : config.tagCard === '<>' ? '!=' : config.tagCard;
             if (config.useTrigger) {
                 debugValue = 'obj.state.val';
-                if (context?.trigger?.oidType === 'string') {
+                if ((context?.trigger as RuleBlockConfigTriggerState)?.oidType === 'string') {
                     value = (value as string).replace(/"/g, '\\"');
                     result = `subCondVar${config._id} ${compare} "${value}"`;
                 } else {
@@ -127,7 +128,7 @@ class ConditionState extends GenericBlock<RuleBlockConfigActionActionState, Cond
         } else {
             if (config.useTrigger) {
                 debugValue = 'obj.state.val';
-                if (context?.trigger?.oidType === 'string') {
+                if ((context?.trigger as RuleBlockConfigTriggerState)?.oidType === 'string') {
                     value = (value as string).replace(/"/g, '\\"');
                     result = `obj.state.val.includes("${value}")`;
                 } else {
@@ -183,9 +184,9 @@ class ConditionState extends GenericBlock<RuleBlockConfigActionActionState, Cond
         }
 
         if (isAllTriggersOnState && useTrigger && this.props.userRules?.triggers?.length === 1) {
-            oidType = this.props.userRules.triggers[0].oidType;
-            oidUnit = this.props.userRules.triggers[0].oidUnit;
-            oidStates = this.props.userRules.triggers[0].oidStates;
+            oidType = (this.props.userRules.triggers[0] as RuleBlockConfigTriggerState).oidType;
+            oidUnit = (this.props.userRules.triggers[0] as RuleBlockConfigTriggerState).oidUnit;
+            oidStates = (this.props.userRules.triggers[0] as RuleBlockConfigTriggerState).oidStates;
         }
 
         const _tagCardArray: RuleTagCard[] = ConditionState.getStaticData().tagCardArray as RuleTagCard[];
@@ -233,7 +234,14 @@ class ConditionState extends GenericBlock<RuleBlockConfigActionActionState, Cond
             ];
 
             if (oidStates) {
-                options = Object.keys(oidStates).map(val => ({ value: val, title: oidStates[val] }));
+                options = Object.keys(oidStates)
+                    .map(val => {
+                        if (oidStates) {
+                            return { value: val, title: oidStates[val] };
+                        }
+                        return null;
+                    })
+                    .filter(i => i) as { value: string | boolean; title: string }[];
             }
         } else if (oidType === 'boolean') {
             tagCardArray = [
@@ -291,7 +299,10 @@ class ConditionState extends GenericBlock<RuleBlockConfigActionActionState, Cond
                 },
             ];
             if (oidStates) {
-                options = Object.keys(oidStates).map(val => ({ value: val, title: oidStates[val] }));
+                options = Object.keys(oidStates).map(val => ({
+                    value: val,
+                    title: oidStates ? oidStates[val] : val.toString(),
+                }));
             }
         }
 
