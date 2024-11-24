@@ -8,13 +8,13 @@ import CustomCheckbox from '../CustomCheckbox';
 
 interface CustomSelectProps {
     multiple?: boolean;
-    value?: string | string[];
+    value?: string | string[] | number;
     customValue?: boolean;
     title?: string;
     attr: string;
-    options: { title: string; titleShort?: string; title2?: string; value: string; only?: boolean }[];
+    options: { title: string; titleShort?: string; title2?: string; value: string | number; only?: boolean }[];
     style?: React.CSSProperties;
-    onChange: (value: string | string[], attr: string) => void;
+    onChange: (value: string | string[] | number, attr: string) => void;
     className?: string;
     doNotTranslate?: boolean;
     doNotTranslate2?: boolean;
@@ -66,7 +66,8 @@ const CustomSelect = ({
                         }
 
                         const onlyItem = options.find(el => el.only);
-                        if (onlyItem && selected.includes(onlyItem.value)) {
+
+                        if (onlyItem && selected.includes(onlyItem.value as string)) {
                             return onlyItem.titleShort
                                 ? doNotTranslate
                                     ? onlyItem.titleShort
@@ -106,20 +107,21 @@ const CustomSelect = ({
                 onChange={e => {
                     !customValue && setInputText(e.target.value);
                     if (multiple) {
+                        const values = e.target.value as string[];
                         const onlyItem = options.find(el => el.only);
+
                         if (onlyItem) {
-                            const valueOnly = onlyItem.value;
-                            if (e.target.value.length === options.length - 1 && e.target.value.includes(valueOnly)) {
+                            const valueOnly = onlyItem.value as string;
+
+                            if (values.length === options.length - 1 && values.includes(valueOnly)) {
                                 return onChange(
-                                    (e.target.value as string[]).filter(el => el !== valueOnly),
+                                    values.filter(el => el !== valueOnly),
                                     attr,
                                 );
                             }
-                            if (e.target.value.includes(valueOnly)) {
-                                return onChange(
-                                    options.map(el => el.value),
-                                    attr,
-                                );
+
+                            if (values.includes(valueOnly)) {
+                                return onChange(options.map(el => el.value) as string[], attr);
                             }
                         }
                     }
@@ -151,8 +153,7 @@ const CustomSelect = ({
                         </MenuItem>
                     ))}
                 {multiple &&
-                    options &&
-                    options.map(item => (
+                    options?.map(item => (
                         <MenuItem
                             style={{ placeContent: 'space-between' }}
                             key={`key-${item.value}`}
@@ -161,7 +162,7 @@ const CustomSelect = ({
                             {doNotTranslate ? item.title : I18n.t(item.title)}{' '}
                             <CustomCheckbox
                                 customValue
-                                value={value?.includes(item.value)}
+                                value={(value as string[])?.includes(item.value as string)}
                             />
                         </MenuItem>
                     ))}

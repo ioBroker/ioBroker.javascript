@@ -1,6 +1,7 @@
-// eslint-disable-next-line no-unused-vars
+import type { RuleBlockConfig, RuleContext, RuleUserConditionsSaved, RuleUserRules } from '../types';
+import type { GenericBlock } from '../components/GenericBlock';
 
-const STANDARD_FUNCTION_STATE = `async function (obj) {
+export const STANDARD_FUNCTION_STATE = `async function (obj) {
     "__%%DEBUG_TRIGGER%%__";
     __%%CONDITIONS_VARS%%__
     const _cond = __%%CONDITION%%__;
@@ -13,7 +14,7 @@ __%%THEN%%__
 __%%ELSE%%__
     }
 }`;
-const STANDARD_FUNCTION_STATE_ONCHANGE = `async function (obj) {
+export const STANDARD_FUNCTION_STATE_ONCHANGE = `async function (obj) {
     "__%%DEBUG_TRIGGER%%__";
     __%%CONDITIONS_VARS%%__
     const _cond = __%%CONDITION%%__;
@@ -28,7 +29,7 @@ __%%THEN%%__
 __%%ELSE%%__
     }
 }`;
-const STANDARD_FUNCTION = `async function () {
+export const STANDARD_FUNCTION = `async function () {
     "__%%DEBUG_TRIGGER%%__";
     __%%CONDITIONS_VARS%%__
     const _cond = __%%CONDITION%%__;
@@ -42,7 +43,7 @@ __%%ELSE%%__
     }
 }`;
 
-const STANDARD_FUNCTION_ONCHANGE = `async function () {
+export const STANDARD_FUNCTION_ONCHANGE = `async function () {
     "__%%DEBUG_TRIGGER%%__";
     __%%CONDITIONS_VARS%%__
     const _cond = __%%CONDITION%%__;
@@ -58,7 +59,7 @@ __%%ELSE%%__
     }
 }`;
 
-const NO_FUNCTION = `"__%%DEBUG_TRIGGER%%__";
+export const NO_FUNCTION = `"__%%DEBUG_TRIGGER%%__";
 __%%CONDITIONS_VARS%%__
 const _cond = __%%CONDITION%%__;
 
@@ -70,7 +71,7 @@ __%%THEN%%__
 __%%ELSE%%__
 }`;
 
-const DEFAULT_RULE = {
+const DEFAULT_RULE: RuleUserRules = {
     triggers: [],
     conditions: [[]],
     justCheck: false,
@@ -80,23 +81,27 @@ const DEFAULT_RULE = {
     },
 };
 
-function compileTriggers(json, context, blocks) {
-    const triggers = [];
+function compileTriggers(
+    json: RuleUserRules,
+    _context: RuleContext | null,
+    blocks: (typeof GenericBlock<any>)[],
+): string {
+    const triggers: string[] = [];
     let jsonTriggers = json.triggers;
     if (!jsonTriggers.length) {
-        jsonTriggers = [{ id: 'TriggerScriptSave' }];
+        jsonTriggers = [{ id: 'TriggerScriptSave' } as RuleBlockConfig];
     }
 
-    const vars = [];
-    let prelines = [];
-    let hist = json.conditions.find(conds => conds.find(cond => cond.tagCard === '()'));
+    const vars: string[] = [];
+    const prelines: string[] = [];
+    const hist = json.conditions.find(conds => conds.find(cond => cond.tagCard === '()'));
 
     jsonTriggers.forEach((trigger, i) => {
         const found = findBlock(trigger.id, blocks);
         if (found) {
-            const _context = {
+            const _context: RuleContext = {
                 trigger,
-                condition: {},
+                condition: { index: 0 },
                 justCheck: hist ? false : json.justCheck || !json.conditions.length || !json.conditions[0].length,
                 conditionsDebug: [],
                 conditionsVars: [],
@@ -110,7 +115,7 @@ function compileTriggers(json, context, blocks) {
             // find indent
             vars.push(`cond${i}`);
 
-            if (_context.prelines && _context.prelines.length) {
+            if (_context.prelines?.length) {
                 _context.prelines.forEach(line => prelines.push(line));
             }
 
@@ -126,7 +131,7 @@ function compileTriggers(json, context, blocks) {
                     .replace('__%%CONDITION%%__', conditions)
                     .replace('__%%THEN%%__', then || '// ignore')
                     .replace('__%%ELSE%%__', _else || '// ignore')
-                    .replace(/__%%STATE%%__/g, 'cond' + i),
+                    .replace(/__%%STATE%%__/g, `cond${i}`),
             );
         }
     });
@@ -143,81 +148,88 @@ function compileTriggers(json, context, blocks) {
     return text;
 }
 
-function findBlock(type, blocks) {
+function findBlock(type: string, blocks: (typeof GenericBlock<any>)[]): typeof GenericBlock<any> | undefined {
     return blocks.find(block => block.getStaticData && block.getStaticData().id === type);
 }
 
-function compileActions(actions, context, blocks) {
-    let result = [];
-    actions &&
-        actions.forEach(action => {
-            const found = findBlock(action.id, blocks);
-            if (found) {
-                result.push(found.compile(action, context));
-            }
-        });
-    return `\t\t${result.join('\n\n\t\t')}` || '';
+function compileActions(
+    actions: RuleBlockConfig[],
+    context: RuleContext,
+    blocks: (typeof GenericBlock<any>)[],
+): string {
+    const result: string[] = [];
+    actions?.forEach(action => {
+        const found = findBlock(action.id, blocks);
+        if (found) {
+            result.push(found.compile(action, context));
+        }
+    });
+    return `\t\t${result.join('\n\n\t\t')}`;
 }
 
-function compileConditions(conditions, context, blocks) {
-    let result = [];
+function compileConditions(
+    conditions: RuleUserConditionsSaved,
+    context: RuleContext,
+    blocks: (typeof GenericBlock<any>)[],
+): string {
+    const result: string[] = [];
     let i = 0;
-    conditions &&
-        conditions.forEach(ors => {
-            if (ors.hasOwnProperty('length') && ors.length) {
-                const _ors = [];
-                _ors &&
-                    ors.forEach(block => {
-                        const found = findBlock(block.id, blocks);
-                        if (found) {
-                            context.condition.index = i++;
-                            _ors.push(found.compile(block, context));
-                        }
-                    });
-                result.push(`(${_ors.join(') &&\n                  (')})`);
-            } else {
-                const found = findBlock(ors.id, blocks);
+    conditions?.forEach(ors => {
+        if (Object.prototype.hasOwnProperty.call(ors, 'length') && ors.length) {
+            const _ors: string[] = [];
+            ors?.forEach(block => {
+                const found = findBlock(block.id, blocks);
                 if (found) {
                     context.condition.index = i++;
-                    result.push(found.compile(ors, context));
+                    _ors.push(found.compile(block, context));
                 }
+            });
+            result.push(`(${_ors.join(') &&\n                  (')})`);
+        } else {
+            // should not be used!
+            // eslint-disable-next-line no-debugger
+            debugger;
+            const config: RuleBlockConfig = ors as unknown as RuleBlockConfig;
+            const found = findBlock(config.id, blocks);
+            if (found) {
+                context.condition.index = i++;
+                result.push(found.compile(config, context));
             }
-        });
+        }
+    });
 
     if (!result.length) {
         return 'true';
-    } else if (result.length === 1) {
-        return result[0] || 'true';
-    } else {
-        return `(${result.join(') || (')})`;
     }
+    if (result.length === 1) {
+        return result[0] || 'true';
+    }
+    return `(${result.join(') || (')})`;
 }
 
-function compile(json, blocks) {
+export function compile(json: RuleUserRules, blocks: (typeof GenericBlock<any>)[]): string {
     return compileTriggers(json, null, blocks);
 }
 
 // eslint-disable-next-line no-unused-vars
-function code2json(code) {
+export function code2json(code: string): RuleUserRules {
     if (!code) {
         return DEFAULT_RULE;
-    } else {
-        const lines = code.split('\n');
-        try {
-            let json = lines.pop().replace(/^\/\//, '');
-            json = JSON.parse(json);
-            if (!json.triggers) {
-                json = DEFAULT_RULE;
-            }
-            return json;
-        } catch (e) {
-            return DEFAULT_RULE;
+    }
+    const lines = code.split('\n');
+    try {
+        const jsonStr = (lines.pop() || '').replace(/^\/\//, '');
+        let json: RuleUserRules = JSON.parse(jsonStr);
+        if (!json.triggers) {
+            json = DEFAULT_RULE;
         }
+        return json;
+    } catch {
+        return DEFAULT_RULE;
     }
 }
 
-// eslint-disable-next-line no-unused-vars
-function json2code(json, blocks) {
+export function json2code(json: RuleUserRules, blocks: (typeof GenericBlock<any>)[]): string {
     let code = '';
 
     const compiled = compile(json, blocks);
@@ -227,16 +239,3 @@ function json2code(json, blocks) {
 
     return `${code}\n//${JSON.stringify(json)}`;
 }
-
-const Compile = {
-    code2json,
-    json2code,
-    compile,
-    STANDARD_FUNCTION,
-    STANDARD_FUNCTION_ONCHANGE,
-    STANDARD_FUNCTION_STATE,
-    STANDARD_FUNCTION_STATE_ONCHANGE,
-    NO_FUNCTION,
-};
-
-export default Compile;

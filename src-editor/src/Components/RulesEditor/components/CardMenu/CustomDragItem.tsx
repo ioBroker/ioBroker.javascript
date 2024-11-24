@@ -3,18 +3,23 @@ import CardMenu from '.';
 import { deepCopy } from '../../helpers/deepCopy';
 import DragWrapper from '../DragWrapper';
 import { STEPS } from '../../helpers/Tour';
+import type { AdminConnection } from '@iobroker/adapter-react-v5';
+import type { BlockValue, RuleBlockDescription, RuleUserRules } from '../../types';
 
 interface CustomDragItemProps {
-    allProperties: {
-        acceptedBy: string;
-        id: string;
-    };
-    setUserRules: (value: any) => void;
-    userRules: any;
-    setTourStep: (value: any) => void;
-    tourStep: number;
+    adapter: string | undefined;
+    allProperties: RuleBlockDescription;
+    icon: string | undefined;
+    id: string;
+    isActive: boolean;
     isTourOpen: boolean;
+    name: string;
     onTouchMove: (e: React.TouchEvent) => void;
+    setTourStep: (step: number) => void;
+    setUserRules: (value: RuleUserRules) => void;
+    socket: AdminConnection | null;
+    tourStep: number;
+    userRules: RuleUserRules;
 }
 
 const CustomDragItem = (props: CustomDragItemProps): React.JSX.Element => {
@@ -27,25 +32,27 @@ const CustomDragItem = (props: CustomDragItemProps): React.JSX.Element => {
         tourStep,
         isTourOpen,
         onTouchMove,
+        isActive,
     } = props;
+
     return (
         <DragWrapper
-            {...props}
-            {...allProperties}
+            allProperties={allProperties}
+            id={allProperties.id}
+            isActive={isActive}
+            setUserRules={setUserRules}
+            userRules={userRules}
         >
             <CardMenu
-                onTouchMove={onTouchMove}
                 onDoubleClick={() => {
-                    isTourOpen &&
-                        tourStep === STEPS.addScheduleByDoubleClick &&
-                        id === 'TriggerScheduleBlock' &&
+                    if (isTourOpen && tourStep === STEPS.addScheduleByDoubleClick && id === 'TriggerScheduleBlock') {
                         setTourStep(STEPS.openTagsMenu);
-                    isTourOpen &&
-                        tourStep === STEPS.addActionPrintText &&
-                        id === 'ActionPrintText' &&
+                    }
+                    if (isTourOpen && tourStep === STEPS.addActionPrintText && id === 'ActionPrintText') {
                         setTourStep(STEPS.showJavascript);
-                    let _id = Date.now();
-                    let blockValue;
+                    }
+                    const _id = Date.now();
+                    let blockValue: BlockValue;
                     switch (acceptedBy) {
                         case 'actions':
                             blockValue = 'then';
@@ -58,18 +65,22 @@ const CustomDragItem = (props: CustomDragItemProps): React.JSX.Element => {
                         default:
                             break;
                     }
-                    let newUserRules = deepCopy(acceptedBy, userRules, blockValue);
+                    const newUserRules = deepCopy(acceptedBy, userRules, blockValue);
                     const newItem = { id, _id, acceptedBy };
                     if (blockValue !== undefined) {
-                        newUserRules[acceptedBy][blockValue].push({ ...newItem });
+                        if (acceptedBy === 'actions') {
+                            newUserRules.actions[blockValue as 'then' | 'else'].push({ ...newItem });
+                        } else if (acceptedBy === 'conditions') {
+                            newUserRules.conditions[blockValue as number].push({ ...newItem });
+                        }
                     } else {
-                        newUserRules[acceptedBy].push({ ...newItem });
+                        newUserRules.triggers.push({ ...newItem });
                     }
                     setUserRules(newUserRules);
                 }}
-                onDoubl
                 {...props}
                 {...allProperties}
+                onTouchMove={onTouchMove}
             />
         </DragWrapper>
     );

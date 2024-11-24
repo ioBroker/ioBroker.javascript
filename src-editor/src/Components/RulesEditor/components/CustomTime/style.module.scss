@@ -4,10 +4,10 @@
     * {
         color: var(--colorBlock) !important;
     }
-    [class*="MuiInputLabel-shrink"] {
+    [class*='MuiInputLabel-shrink'] {
         color: var(--colorBlock) !important;
     }
-    [class*="MuiInput-underline"] {
+    [class*='MuiInput-underline'] {
         &:after {
             border-bottom-color: var(--lineColor) !important;
         }

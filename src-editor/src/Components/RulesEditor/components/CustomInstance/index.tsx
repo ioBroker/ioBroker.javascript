@@ -37,10 +37,10 @@ interface CustomInstanceProps {
     value: string | string[];
     customValue: boolean;
     socket: AdminConnection;
-    title: string;
+    title?: string;
     attr: string;
     adapter: string;
-    style: React.CSSProperties;
+    style?: React.CSSProperties;
     onChange: (value: string | string[]) => void;
     onInstanceHide: (value: string) => void;
 }
@@ -114,7 +114,7 @@ const CustomInstance = ({
                     </MenuItem>
                 ))}
             </Select>
-            <FormHelperText>{I18n.t(title)}</FormHelperText>
+            {title ? <FormHelperText>{I18n.t(title)}</FormHelperText> : null}
         </FormControl>
     );
 };

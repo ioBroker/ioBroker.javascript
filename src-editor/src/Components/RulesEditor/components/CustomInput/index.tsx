@@ -17,10 +17,10 @@ interface CustomInputProps {
     error?: string;
     size?: 'small' | 'medium';
     variant?: 'standard' | 'filled' | 'outlined';
-    value: string | undefined;
+    value: string | number | undefined;
     type?: string;
     style?: React.CSSProperties;
-    onChange: (value: string) => void;
+    onChange?: (value: string | number) => void;
     className?: string;
     customValue?: boolean;
     icon?: string;
@@ -58,7 +58,6 @@ const CustomInput = (props: CustomInputProps): React.JSX.Element => {
             size: 'medium',
             component: null,
             styleComponentBlock: null,
-            onChange: () => {},
             fullWidth: false,
             autoComplete: '',
             customValue: false,
@@ -86,7 +85,7 @@ const CustomInput = (props: CustomInputProps): React.JSX.Element => {
             autoComplete={autoComplete}
             onChange={e => {
                 !customValue && setInputText(e.target.value);
-                onChange(e.target.value);
+                onChange && onChange(e.target.value);
             }}
             slotProps={{
                 input: {

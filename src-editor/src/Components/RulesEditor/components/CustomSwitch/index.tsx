@@ -6,7 +6,7 @@ import cls from './style.module.scss';
 
 interface CustomSwitchProps {
     label: string;
-    size: 'small' | 'medium';
+    size?: 'small' | 'medium';
     value: boolean;
     style?: React.CSSProperties;
     onChange: (value: boolean) => void;

@@ -8,14 +8,14 @@ import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 interface CardMenuProps {
     name: string;
     id: string;
-    active: boolean;
-    icon: string;
-    adapter: string;
-    socket: AdminConnection;
+    active?: boolean;
+    icon?: string | undefined;
+    adapter?: string;
+    socket: AdminConnection | null;
     onDoubleClick: () => void;
-    title: string;
+    title?: string;
     onTouchMove: (e: React.TouchEvent) => void;
-    style: React.CSSProperties;
+    style?: React.CSSProperties;
 }
 
 const CardMenu = ({
@@ -34,7 +34,7 @@ const CardMenu = ({
         onDoubleClick={onDoubleClick}
         onTouchMove={onTouchMove}
         key={id}
-        title={I18n.t(title)}
+        title={title ? I18n.t(title) : undefined}
         className={Utils.clsx(cls.switchesItem, active && cls.switchesItemActive, `block-${id}`)}
     >
         <MaterialDynamicIcon

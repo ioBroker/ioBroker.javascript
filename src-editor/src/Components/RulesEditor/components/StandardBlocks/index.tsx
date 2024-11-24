@@ -12,8 +12,9 @@ import ActionPause from '../Blocks/ActionPause';
 import ActionFunction from '../Blocks/ActionFunction';
 import ActionSetStateDelayed from '../Blocks/ActionSetStateDelayed';
 import ActionOperateStates from '../Blocks/ActionOperateStates';
+import type { GenericBlock } from '@/Components/RulesEditor/components/GenericBlock';
 
-const StandardBlocks = [
+const StandardBlocks: (typeof GenericBlock<any>)[] = [
     TriggerSchedule,
     TriggerScriptSave,
     TriggerState,

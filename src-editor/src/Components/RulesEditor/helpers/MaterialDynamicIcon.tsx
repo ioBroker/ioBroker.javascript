@@ -39,10 +39,10 @@ const objIcon: Record<string, SvgIconComponent> = {
 };
 
 interface MaterialDynamicIconProps {
-    iconName: string;
+    iconName: string | undefined;
     className?: string;
     adapter?: string;
-    socket?: AdminConnection;
+    socket?: AdminConnection | null;
     onClick?: (e: React.MouseEvent) => void;
     style?: React.CSSProperties;
 }
@@ -79,7 +79,7 @@ function MaterialDynamicIcon({
             />
         );
     }
-    const Element = objIcon[iconName] || Help;
+    const Element = (iconName && objIcon[iconName]) || Help;
 
     return (
         <Element

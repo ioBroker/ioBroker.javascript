@@ -6,8 +6,8 @@ import type {
     RuleTagCardTitle,
 } from '@/Components/RulesEditor/types';
 
-class ActionHTTPCall extends GenericBlock {
-    constructor(props: GenericBlockProps) {
+class ActionHTTPCall extends GenericBlock<RuleBlockConfigActionHTTPCall> {
+    constructor(props: GenericBlockProps<RuleBlockConfigActionHTTPCall>) {
         super(props, ActionHTTPCall.getStaticData());
     }
 
@@ -18,6 +18,7 @@ class ActionHTTPCall extends GenericBlock {
 \t\trequest(subActionVar${config._id});`;
     }
 
+    // eslint-disable-next-line class-methods-use-this
     renderDebug(debugMessage: { data: RuleBlockConfigActionHTTPCall }): string {
         return `URL: ${debugMessage.data.url}`;
     }

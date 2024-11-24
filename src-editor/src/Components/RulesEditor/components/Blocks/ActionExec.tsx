@@ -1,8 +1,8 @@
 import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
 import type { RuleBlockConfigActionExec, RuleBlockDescription, RuleContext, RuleTagCardTitle } from '../../types';
 
-class ActionExec extends GenericBlock {
-    constructor(props: GenericBlockProps) {
+class ActionExec extends GenericBlock<RuleBlockConfigActionExec> {
+    constructor(props: GenericBlockProps<RuleBlockConfigActionExec>) {
         super(props, ActionExec.getStaticData());
     }
 
@@ -13,7 +13,8 @@ class ActionExec extends GenericBlock {
 \t\tconsole.log(subActionVar${config._id});`;
     }
 
-    renderDebug(debugMessage: { data: { exec: string } }): string {
+    // eslint-disable-next-line class-methods-use-this
+    renderDebug(debugMessage: { data: RuleBlockConfigActionExec }): string {
         return `Exec: ${debugMessage.data.exec}`;
     }
 

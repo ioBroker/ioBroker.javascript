@@ -9,13 +9,13 @@ import CustomInput from '../CustomInput';
 interface CustomModalProps {
     open: boolean;
     onClose: () => void;
-    children: any;
-    titleButtonApply: string;
-    titleButtonClose: string;
-    onApply: (value: any) => void;
+    children?: React.JSX.Element[] | React.JSX.Element | null;
+    titleButtonApply?: string;
+    titleButtonClose?: string;
+    onApply: (value: string | number | null) => void;
     className?: string;
     textInput?: boolean;
-    defaultValue?: string;
+    defaultValue?: string | number;
 }
 
 const CustomModal = ({
@@ -29,7 +29,7 @@ const CustomModal = ({
     textInput,
     defaultValue,
 }: CustomModalProps): React.JSX.Element => {
-    const [value, setValue] = useState<string>(defaultValue || '');
+    const [value, setValue] = useState<string | number>(defaultValue || '');
 
     return (
         <Dialog

@@ -6,8 +6,8 @@ import type {
     RuleTagCardTitle,
 } from '@/Components/RulesEditor/types';
 
-class ActionFunction extends GenericBlock {
-    constructor(props: GenericBlockProps) {
+class ActionFunction extends GenericBlock<RuleBlockConfigActionFunction> {
+    constructor(props: GenericBlockProps<RuleBlockConfigActionFunction>) {
         super(props, ActionFunction.getStaticData());
     }
 

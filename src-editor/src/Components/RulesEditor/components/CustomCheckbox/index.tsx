@@ -7,10 +7,10 @@ import { Utils } from '@iobroker/adapter-react-v5';
 import cls from './style.module.scss';
 
 interface CustomCheckboxProps {
-    title: string;
-    size: 'small' | 'medium';
+    title?: string;
+    size?: 'small' | 'medium';
     value: boolean;
-    onChange: (value: boolean) => void;
+    onChange?: (value: boolean) => void;
     className?: string;
     customValue?: boolean;
     disabled?: boolean;
@@ -35,7 +35,7 @@ const CustomCheckbox = ({
                 className={Utils.clsx(cls.root, className)}
                 onChange={e => {
                     customValue && setSwitchChecked(e.target.checked);
-                    onChange(e.target.checked);
+                    onChange && onChange(e.target.checked);
                 }}
                 size={size || 'medium'}
             />

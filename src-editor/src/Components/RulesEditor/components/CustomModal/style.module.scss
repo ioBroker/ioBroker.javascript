@@ -29,7 +29,7 @@
 }
 .modalWrapper {
     /*position: relative;*/
-    [class*="MuiPaper-root MuiDialog-paper MuiPaper-elevation24 MuiDialog-paperScrollPaper MuiDialog-paperWidthXl MuiPaper-elevation24 MuiPaper-rounded"] {
+    [class*='MuiPaper-root MuiDialog-paper MuiPaper-elevation24 MuiDialog-paperScrollPaper MuiDialog-paperWidthXl MuiPaper-elevation24 MuiPaper-rounded'] {
         background-color: #f6f6f6;
     }
 }
@@ -51,7 +51,7 @@
     &:before {
         position: absolute;
         left: 15px;
-        content: "";
+        content: '';
         height: 33px;
         width: 4px;
         background-color: #ff4f4f;
@@ -60,7 +60,7 @@
     &:after {
         position: absolute;
         left: 15px;
-        content: "";
+        content: '';
         height: 33px;
         width: 4px;
         background-color: #ff4f4f;

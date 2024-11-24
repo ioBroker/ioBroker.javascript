@@ -1,18 +1,26 @@
+// @ts-expect-error no types available
 import SunCalc from 'suncalc2';
 import { I18n } from '@iobroker/adapter-react-v5';
 import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
+import type {
+    RuleBlockConfigConditionAstronomical,
+    RuleBlockDescription,
+    RuleContext,
+    RuleInputAny,
+    RuleTagCard,
+} from '../../types';
 
-class ConditionAstronomical extends GenericBlock {
-    constructor(props) {
+class ConditionAstronomical extends GenericBlock<RuleBlockConfigConditionAstronomical> {
+    private coordinates: { latitude: number; longitude: number } | null = null;
+    constructor(props: GenericBlockProps<RuleBlockConfigConditionAstronomical>) {
         super(props, ConditionAstronomical.getStaticData());
-        this.coordinates = null;
     }
 
-    static compile(config, context) {
-        const compare = config.tagCard === '=' ? '===' : (config.tagCard === '<>' ? '!==' : config.tagCard);
+    static compile(config: RuleBlockConfigConditionAstronomical, context: RuleContext): string {
+        const compare = config.tagCard === '=' ? '===' : config.tagCard === '<>' ? '!==' : config.tagCard;
         let offset;
         if (config.offset) {
-            offset = parseInt(config.offsetValue, 10) || 0;
+            offset = parseInt(config.offsetValue as unknown as string, 10) || 0;
         }
         const cond = `formatDate(Date.now(), 'hh:mm') ${compare} formatDate(getAstroDate("${config.astro}"${offset ? `, undefined, ${offset}` : ''}), 'hh:mm')`;
         context.conditionsVars.push(`const subCond${config._id} = ${cond};`);
@@ -20,73 +28,76 @@ class ConditionAstronomical extends GenericBlock {
         return cond;
     }
 
-    static _time2String(time) {
+    static _time2String(time: Date): string {
         if (!time) {
             return '--:--';
         }
         return `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
     }
 
-    onValueChanged(value, attr) {
+    onValueChanged(value: any, attr: string): void {
         if (attr === 'astro') {
-            this._setAstro(value);
+            void this._setAstro(value);
         } else if (attr === 'offset') {
-            this._setAstro(undefined, value);
+            void this._setAstro(undefined, value);
         } else if (attr === 'offsetValue') {
-            this._setAstro(undefined, undefined, value);
+            void this._setAstro(undefined, undefined, value);
         }
     }
 
-    async _setAstro(astro, offset, offsetValue) {
+    async _setAstro(astro?: string, offset?: boolean, offsetValue?: number): Promise<void> {
         astro = astro || this.state.settings.astro || 'solarNoon';
         offset = offset === undefined ? this.state.settings.offset : offset;
         offsetValue = offsetValue === undefined ? this.state.settings.offsetValue : offsetValue;
 
-        offsetValue = parseInt(offsetValue, 10) || 0;
+        offsetValue = parseInt(offsetValue as unknown as string, 10) || 0;
         if (!this.coordinates) {
-            await this.props.socket.getObject('system.adapter.javascript.0')
-                .then(({ native: { latitude, longitude } }) => {
-                    if (!latitude && !longitude) {
-                        return this.props.socket.getObject('system.config')
-                            .then(obj => {
-                                if (obj && (obj.common.latitude || obj.common.longitude)) {
-                                    this.coordinates = {
-                                        latitude: obj.common.latitude,
-                                        longitude: obj.common.longitude,
-                                    }
-                                } else {
-                                    this.coordinates = null;
-                                }
-                            });
-                    } else {
-                        this.coordinates = {
-                            latitude,
-                            longitude,
-                        };
-                    }
-                });
+            const jsInstance: ioBroker.InstanceObject | null | undefined =
+                await this.props.socket.getObject('system.adapter.javascript.0');
+            if (!jsInstance?.native.latitude && !jsInstance?.native.longitude) {
+                const systemConfig: ioBroker.SystemConfigObject | null | undefined =
+                    await this.props.socket.getObject('system.config');
+                if (systemConfig && (systemConfig.common.latitude || systemConfig.common.longitude)) {
+                    this.coordinates = {
+                        latitude: systemConfig.common.latitude as number,
+                        longitude: systemConfig.common.longitude as number,
+                    };
+                } else {
+                    this.coordinates = null;
+                }
+            } else {
+                this.coordinates = {
+                    latitude: jsInstance?.native.latitude,
+                    longitude: jsInstance?.native.longitude,
+                };
+            }
         }
-        const sunValue = this.coordinates && SunCalc.getTimes(new Date(), this.coordinates.latitude, this.coordinates.longitude);
-        const options = sunValue ? Object.keys(sunValue).map(name => ({
-            value: name,
-            title: name,
-            title2: `[${ConditionAstronomical._time2String(sunValue[name])}]`,
-            order: ConditionAstronomical._time2String(sunValue[name]),
-        })) : [];
-        options.sort((a, b) => a.order > b.order ? 1 : (a.order < b.order ? -1 : 0));
+        const sunValue: Record<string, Date> | null = this.coordinates
+            ? SunCalc.getTimes(new Date(), this.coordinates.latitude, this.coordinates.longitude)
+            : null;
+        const options = sunValue
+            ? Object.keys(sunValue).map(name => ({
+                  value: name,
+                  title: name,
+                  title2: `[${ConditionAstronomical._time2String(sunValue[name])}]`,
+                  order: ConditionAstronomical._time2String(sunValue[name]),
+              }))
+            : [];
+        options.sort((a, b) => (a.order > b.order ? 1 : a.order < b.order ? -1 : 0));
 
         // calculate time text
-        const tagCardArray = ConditionAstronomical.getStaticData().tagCardArray;
-        const tag = tagCardArray.find(item => item.title === this.state.settings.tagCard);
+        const tagCardArray: RuleTagCard[] = ConditionAstronomical.getStaticData().tagCardArray as RuleTagCard[];
+        const tag: RuleTagCard =
+            tagCardArray.find(item => item.title === this.state.settings.tagCard) || tagCardArray[0];
 
         let time = '--:--';
         if (astro && sunValue && sunValue[astro]) {
             const astroTime = new Date(sunValue[astro]);
-            offset && astroTime.setMinutes(astroTime.getMinutes() + parseInt(offsetValue, 10));
+            offset && astroTime.setMinutes(astroTime.getMinutes() + parseInt(offsetValue as unknown as string, 10));
             time = `(${I18n.t(tag.text)} ${ConditionAstronomical._time2String(astroTime)})`;
         }
 
-        let inputs;
+        let inputs: RuleInputAny[];
 
         if (offset) {
             inputs = [
@@ -155,11 +166,11 @@ class ConditionAstronomical extends GenericBlock {
         this.setState({ inputs }, () => super.onTagChange());
     }
 
-    onTagChange(tagCard: RuleTagCardTitle) {
-        this._setAstro();
+    onTagChange(): void {
+        void this._setAstro();
     }
 
-    static getStaticData() {
+    static getStaticData(): RuleBlockDescription {
         return {
             acceptedBy: 'conditions',
             name: 'Astronomical',
@@ -198,10 +209,11 @@ class ConditionAstronomical extends GenericBlock {
                 },
             ],
             title: 'Compares current time with astronomical event',
-        }
+        };
     }
 
-    getData() {
+    // eslint-disable-next-line class-methods-use-this
+    getData(): RuleBlockDescription {
         return ConditionAstronomical.getStaticData();
     }
 }

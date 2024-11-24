@@ -6,7 +6,7 @@ import { I18n, Utils } from '@iobroker/adapter-react-v5';
 
 import cls from './style.module.scss';
 
-const DAYS = [
+const DAYS: number[] = [
     31, // 1
     29, // 2
     31, // 3

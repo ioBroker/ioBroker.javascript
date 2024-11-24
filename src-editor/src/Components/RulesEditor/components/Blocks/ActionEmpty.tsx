@@ -1,8 +1,12 @@
 import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
-import type { RuleBlockDescription, RuleTagCardTitle } from '@/Components/RulesEditor/types';
+import type {
+    RuleBlockConfigActionEmpty,
+    RuleBlockDescription,
+    RuleTagCardTitle,
+} from '@/Components/RulesEditor/types';
 
-class ActionEmpty extends GenericBlock {
-    constructor(props: GenericBlockProps) {
+class ActionEmpty extends GenericBlock<RuleBlockConfigActionEmpty> {
+    constructor(props: GenericBlockProps<RuleBlockConfigActionEmpty>) {
         super(props, ActionEmpty.getStaticData());
     }
 
