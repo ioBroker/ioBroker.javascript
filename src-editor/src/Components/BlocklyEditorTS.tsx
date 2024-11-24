@@ -1,25 +1,17 @@
+// This file uses Typescript Blockly from sources. The problem is, all blocks must be rewritten into TS, event dynamical one
+// So this is just a POC
+
 import React from 'react';
 
 import { I18n, Message as DialogMessage, type ThemeType } from '@iobroker/adapter-react-v5';
 import DialogError from '../Dialogs/Error';
 import DialogExport from '../Dialogs/Export';
 import DialogImport from '../Dialogs/Import';
-
-// Used only types of blockly, no code
+import * as BlocklyTS from 'blockly/core';
 import type { WorkspaceSvg } from 'blockly/core/workspace_svg';
 import type { BlockSvg } from 'blockly/core/block_svg';
+import { javascriptGenerator } from 'blockly/javascript';
 import type { FlyoutDefinition } from 'blockly/core/utils/toolbox';
-import type { Block, BlocklyOptions, ISelectable, Theme } from 'blockly';
-import type { ConnectionType } from 'blockly/core';
-import type { ITheme } from 'blockly/core/theme';
-import type { JavascriptGenerator } from 'blockly/javascript';
-
-// Multiline is now plugin. Together with FieldColor
-import { FieldMultilineInput, installAllBlocks as installMultiBlocks } from '@blockly/field-multilineinput';
-import { FieldColour, installAllBlocks as installColourBlocks } from '@blockly/field-colour';
-import { common as BlocklyCommon } from 'blockly/core';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
-import { Cancel as IconCancel, Check as IconOk } from '@mui/icons-material';
 
 let languageBlocklyLoaded = false;
 let languageOwnLoaded = false;
@@ -32,53 +24,6 @@ interface CustomBlock {
     blocks: Record<string, string>;
 }
 
-interface BlocklyType {
-    CustomBlocks: string[];
-    Words: Record<string, Record<ioBroker.Languages, string>>;
-    Action: CustomBlock;
-    Blocks: Record<string, BlockSvg>;
-    JavaScript: JavascriptGenerator;
-    Procedures: {
-        flyoutCategoryNew: (workspace: WorkspaceSvg) => FlyoutDefinition;
-    };
-    Xml: {
-        workspaceToDom: (workspace: WorkspaceSvg) => Element;
-        domToText: (dom: Node) => string;
-        blockToDom: (block: Block, opt_noId?: boolean) => Element | DocumentFragment;
-        domToPrettyText: (dom: Node) => string;
-        domToWorkspace: (xml: Element, workspace: WorkspaceSvg) => string[];
-    };
-    svgResize: (workspace: WorkspaceSvg) => void;
-    INPUT_VALUE: ConnectionType.INPUT_VALUE;
-    OUTPUT_VALUE: ConnectionType.OUTPUT_VALUE;
-    NEXT_STATEMENT: ConnectionType.NEXT_STATEMENT;
-    PREVIOUS_STATEMENT: ConnectionType.PREVIOUS_STATEMENT;
-    getSelected(): ISelectable | null;
-    utils: {
-        xml: {
-            textToDom: (text: string) => Element;
-        };
-    };
-    Theme: {
-        defineTheme: (name: string, themeObj: ITheme) => Theme;
-    };
-    inject: (container: Element | string, opt_options?: BlocklyOptions) => WorkspaceSvg;
-    Themes: {
-        Classic: Theme;
-    };
-    Events: {
-        VIEWPORT_CHANGE: 'viewport_change';
-        CREATE: 'create';
-        UI: 'ui';
-    };
-    FieldMultilineInput: typeof FieldMultilineInput;
-    FieldColour: typeof FieldColour;
-    dialog: {
-        prompt: (promptText: string, defaultText: string, callback: (p1: string | null) => void) => void;
-        setPrompt: (promptFunction: (p1: string, p2: string, p3: (p1: string | null) => void) => void) => void;
-    };
-}
-
 declare global {
     interface Window {
         ActiveXObject: any;
@@ -88,7 +33,18 @@ declare global {
             blocklyWorkspace: WorkspaceSvg;
             scripts?: string[];
         };
-        Blockly: BlocklyType;
+        Blockly: {
+            CustomBlocks: string[];
+            Words: Record<string, Record<ioBroker.Languages, string>>;
+            Action: CustomBlock;
+            Blocks: Record<string, BlockSvg>;
+            JavaScript: {
+                forBlock: Record<string, (block: BlockSvg) => string>;
+            };
+            Procedures: {
+                flyoutCategoryNew: (workspace: WorkspaceSvg) => FlyoutDefinition;
+            };
+        };
     }
 }
 
@@ -132,12 +88,6 @@ interface BlocklyEditorState {
     exportText: string;
     importText: boolean;
     searchText: string;
-    showInputPrompt: null | {
-        promptText: string;
-        defaultText: string;
-        callback: (p1: string | null) => void;
-        value: string;
-    };
 }
 
 class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorState> {
@@ -150,11 +100,10 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
     private ignoreChanges: boolean = false;
     private darkTheme: any;
     private blinkBlock: any;
-    private readonly onResizeBind: () => void;
+    private onResizeBind: () => void;
     private didUpdate: ReturnType<typeof setTimeout> | null = null;
     private lastCommand = '';
     private lastSearch: string;
-    public static Blockly: BlocklyType = window.Blockly;
 
     constructor(props: BlocklyEditorProps) {
         super(props);
@@ -169,7 +118,6 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
             exportText: '',
             importText: false,
             searchText: this.props.searchText || '',
-            showInputPrompt: null,
         };
         this.originalCode = props.code || '';
 
@@ -179,166 +127,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
 
         this.lastSearch = this.props.searchText || '';
         this.blinkBlock = null;
-
-        BlocklyEditor.initBlockly();
-        BlocklyEditor.Blockly.dialog.setPrompt(this.onShowNameDialog);
-
         this.loadLanguages();
-    }
-
-    onShowNameDialog = (promptText: string, defaultText: string, callback: (p1: string | null) => void): void => {
-        this.setState({ showInputPrompt: { promptText, defaultText, callback, value: defaultText } });
-    };
-
-    static initBlockly(): void {
-        if (!BlocklyEditor.Blockly.FieldMultilineInput) {
-            installMultiBlocks({ javascript: BlocklyEditor.Blockly.JavaScript });
-            BlocklyEditor.Blockly.FieldMultilineInput = FieldMultilineInput;
-            Object.assign(
-                BlocklyEditor.Blockly.Blocks,
-                BlocklyCommon.createBlockDefinitionsFromJsonArray([
-                    {
-                        type: 'text_multiline',
-                        message0: '%1 %2',
-                        args0: [
-                            {
-                                type: 'field_image',
-                                src:
-                                    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAARCAYAAADpP' +
-                                    'U2iAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAdhgAAHYYBXaITgQAAABh0RVh0' +
-                                    'U29mdHdhcmUAcGFpbnQubmV0IDQuMS42/U4J6AAAAP1JREFUOE+Vks0KQUEYhjm' +
-                                    'RIja4ABtZ2dm5A3t3Ia6AUm7CylYuQRaUhZSlLZJiQbFAyRnPN33y01HOW08z88' +
-                                    '73zpwzM4F3GWOCruvGIE4/rLaV+Nq1hVGMBqzhqlxgCys4wJA65xnogMHsQ5luj' +
-                                    'nYHTejBBCK2mE4abjCgMGhNxHgDFWjDSG07kdfVa2pZMf4ZyMAdWmpZMfYOsLiD' +
-                                    'MYMjlMB+K613QISRhTnITnsYg5yUd0DETmEoMlkFOeIT/A58iyK5E18BuTBfgYX' +
-                                    'fwNJv4P9/oEBerLylOnRhygmGdPpTTBZAPkde61lbQe4moWUvYUZYLfUNftIY4z' +
-                                    'wA5X2Z9AYnQrEAAAAASUVORK5CYII=',
-                                width: 12,
-                                height: 17,
-                                alt: '\u00B6',
-                            },
-                            {
-                                type: 'field_multilinetext',
-                                name: 'TEXT',
-                                text: '',
-                            },
-                        ],
-                        output: 'String',
-                        style: 'text_blocks',
-                        helpUrl: '%{BKY_TEXT_TEXT_HELPURL}',
-                        tooltip: '%{BKY_TEXT_TEXT_TOOLTIP}',
-                        extensions: ['parent_tooltip_when_inline'],
-                    },
-                ]),
-            );
-        }
-        if (!BlocklyEditor.Blockly.FieldColour) {
-            installColourBlocks({ javascript: BlocklyEditor.Blockly.JavaScript });
-            BlocklyEditor.Blockly.FieldColour = FieldColour;
-            Object.assign(
-                BlocklyEditor.Blockly.Blocks,
-                BlocklyCommon.createBlockDefinitionsFromJsonArray([
-                    {
-                        type: 'colour_picker',
-                        message0: '%1',
-                        args0: [
-                            {
-                                type: 'field_colour',
-                                name: 'COLOUR',
-                                colour: '#ff0000',
-                            },
-                        ],
-                        output: 'Colour',
-                        helpUrl: '%{BKY_COLOUR_PICKER_HELPURL}',
-                        style: 'colour_blocks',
-                        tooltip: '%{BKY_COLOUR_PICKER_TOOLTIP}',
-                        extensions: ['parent_tooltip_when_inline'],
-                    },
-                ]),
-            );
-            Object.assign(
-                BlocklyEditor.Blockly.Blocks,
-                BlocklyCommon.createBlockDefinitionsFromJsonArray([
-                    {
-                        type: 'colour_random',
-                        message0: '%{BKY_COLOUR_RANDOM_TITLE}',
-                        output: 'Colour',
-                        helpUrl: '%{BKY_COLOUR_RANDOM_HELPURL}',
-                        style: 'colour_blocks',
-                        tooltip: '%{BKY_COLOUR_RANDOM_TOOLTIP}',
-                    },
-                ]),
-            );
-            Object.assign(
-                BlocklyEditor.Blockly.Blocks,
-                BlocklyCommon.createBlockDefinitionsFromJsonArray([
-                    {
-                        type: 'colour_rgb',
-                        message0:
-                            '%{BKY_COLOUR_RGB_TITLE} %{BKY_COLOUR_RGB_RED} %1 %{BKY_COLOUR_RGB_GREEN} %2 %{BKY_COLOUR_RGB_BLUE} %3',
-                        args0: [
-                            {
-                                type: 'input_value',
-                                name: 'RED',
-                                check: 'Number',
-                                align: 'RIGHT',
-                            },
-                            {
-                                type: 'input_value',
-                                name: 'GREEN',
-                                check: 'Number',
-                                align: 'RIGHT',
-                            },
-                            {
-                                type: 'input_value',
-                                name: 'BLUE',
-                                check: 'Number',
-                                align: 'RIGHT',
-                            },
-                        ],
-                        output: 'Colour',
-                        helpUrl: '%{BKY_COLOUR_RGB_HELPURL}',
-                        style: 'colour_blocks',
-                        tooltip: '%{BKY_COLOUR_RGB_TOOLTIP}',
-                    },
-                ]),
-            );
-            Object.assign(
-                BlocklyEditor.Blockly.Blocks,
-                BlocklyCommon.createBlockDefinitionsFromJsonArray([
-                    {
-                        type: 'colour_blend',
-                        message0:
-                            '%{BKY_COLOUR_BLEND_TITLE} %{BKY_COLOUR_BLEND_COLOUR1} ' +
-                            '%1 %{BKY_COLOUR_BLEND_COLOUR2} %2 %{BKY_COLOUR_BLEND_RATIO} %3',
-                        args0: [
-                            {
-                                type: 'input_value',
-                                name: 'COLOUR1',
-                                check: 'Colour',
-                                align: 'RIGHT',
-                            },
-                            {
-                                type: 'input_value',
-                                name: 'COLOUR2',
-                                check: 'Colour',
-                                align: 'RIGHT',
-                            },
-                            {
-                                type: 'input_value',
-                                name: 'RATIO',
-                                check: 'Number',
-                                align: 'RIGHT',
-                            },
-                        ],
-                        output: 'Colour',
-                        helpUrl: '%{BKY_COLOUR_BLEND_HELPURL}',
-                        style: 'colour_blocks',
-                        tooltip: '%{BKY_COLOUR_BLEND_TOOLTIP}',
-                    },
-                ]),
-            );
-        }
     }
 
     static loadJS(url: string, callback: () => void, location?: HTMLElement): void {
@@ -361,9 +150,8 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
     static loadScripts(scripts: string[], callback: () => void): void {
         if (!scripts?.length) {
             if (callback) {
-                callback();
+                return callback();
             }
-            return;
         }
         const adapter = scripts.pop();
         if (adapter && !scriptsLoaded.includes(adapter)) {
@@ -416,7 +204,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
 
     searchBlocks(text: string): string[] {
         if (this.blocklyWorkspace) {
-            const dom: Element = BlocklyEditor.Blockly.Xml.workspaceToDom(this.blocklyWorkspace);
+            const dom: Element = BlocklyTS.Xml.workspaceToDom(this.blocklyWorkspace);
             const ids = searchXml(dom, text.toLowerCase());
 
             console.log(`Search "${text}" found blocks: ${ids.length ? JSON.stringify(ids) : 'none'}`);
@@ -506,7 +294,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
 
     onResize(): void {
         if (this.blocklyWorkspace) {
-            BlocklyEditor.Blockly.svgResize(this.blocklyWorkspace);
+            BlocklyTS.svgResize(this.blocklyWorkspace);
         }
     }
 
@@ -603,8 +391,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
                 for (let j = 0; (conn = connections[j]); j++) {
                     if (
                         !conn.sourceBlock_ ||
-                        ((conn.type === BlocklyEditor.Blockly.INPUT_VALUE ||
-                            conn.type === BlocklyEditor.Blockly.OUTPUT_VALUE) &&
+                        ((conn.type === BlocklyTS.INPUT_VALUE || conn.type === BlocklyTS.OUTPUT_VALUE) &&
                             !conn.targetConnection &&
                             // @ts-expect-error Check it later
                             !conn._optional)
@@ -636,11 +423,11 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         if (!this.blocklyWorkspace) {
             return '';
         }
-        let code = BlocklyEditor.Blockly.JavaScript.workspaceToCode(this.blocklyWorkspace);
+        let code = javascriptGenerator.workspaceToCode(this.blocklyWorkspace);
         if (!oneWay) {
             code += '\n';
-            const dom = BlocklyEditor.Blockly.Xml.workspaceToDom(this.blocklyWorkspace);
-            const text = BlocklyEditor.Blockly.Xml.domToText(dom);
+            const dom = BlocklyTS.Xml.workspaceToDom(this.blocklyWorkspace);
+            const text = BlocklyTS.Xml.domToText(dom);
             code += `//${btoa(encodeURIComponent(text))}`;
         }
 
@@ -652,22 +439,22 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
             return;
         }
         let exportText: string;
-        const selectedBlocks: BlockSvg | null = BlocklyEditor.Blockly.getSelected() as BlockSvg | null;
+        const selectedBlocks: BlocklyTS.BlockSvg | null = BlocklyTS.getSelected() as BlocklyTS.BlockSvg | null;
         if (selectedBlocks) {
-            const xmlBlock: Element = BlocklyEditor.Blockly.Xml.blockToDom(selectedBlocks) as Element;
+            const xmlBlock: Element = BlocklyTS.Xml.blockToDom(selectedBlocks) as Element;
             // @1ts-expect-error fix later. TODO!!!!
-            // if (BlocklyEditor.Blockly.dragMode_ !== BlocklyEditor.Blockly.DRAG_FREE) {
-            //    BlocklyEditor.Blockly.Xml.deleteNext(xmlBlock);
+            // if (BlocklyTS.dragMode_ !== BlocklyTS.DRAG_FREE) {
+            //    BlocklyTS.Xml.deleteNext(xmlBlock);
             // }
             // Encode start position in XML.
             const xy = selectedBlocks.getRelativeToSurfaceXY();
             xmlBlock.setAttribute('x', (selectedBlocks.RTL ? -xy.x : xy.x).toString());
             xmlBlock.setAttribute('y', xy.y.toString());
 
-            exportText = BlocklyEditor.Blockly.Xml.domToPrettyText(xmlBlock);
+            exportText = BlocklyTS.Xml.domToPrettyText(xmlBlock);
         } else {
-            const dom = BlocklyEditor.Blockly.Xml.workspaceToDom(this.blocklyWorkspace);
-            exportText = BlocklyEditor.Blockly.Xml.domToPrettyText(dom);
+            const dom = BlocklyTS.Xml.workspaceToDom(this.blocklyWorkspace);
+            exportText = BlocklyTS.Xml.domToPrettyText(dom);
         }
         this.setState({ exportText });
     }
@@ -706,7 +493,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
                 xml = xml.replace(/[\n\r]/g, '').replace(/<variables>.*<\/variables>/g, '');
                 window.scripts.loading = true;
 
-                const xmlBlocks = BlocklyEditor.Blockly.utils.xml.textToDom(xml);
+                const xmlBlocks = BlocklyTS.utils.xml.textToDom(xml);
                 if (xmlBlocks.nodeName === 'xml') {
                     for (let b = 0; b < xmlBlocks.children.length; b++) {
                         // @ts-expect-error fix later
@@ -739,8 +526,8 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
                 BlocklyEditor.jsCode2Blockly(this.originalCode) ||
                 '<xml xmlns="https://developers.google.com/blockly/xml"></xml>';
             window.scripts.loading = true;
-            const dom = BlocklyEditor.Blockly.utils.xml.textToDom(xml);
-            BlocklyEditor.Blockly.Xml.domToWorkspace(dom, this.blocklyWorkspace);
+            const dom = BlocklyTS.utils.xml.textToDom(xml);
+            BlocklyTS.Xml.domToWorkspace(dom, this.blocklyWorkspace);
             window.scripts.loading = false;
         } catch (e) {
             console.error(e);
@@ -770,11 +557,11 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
 
         window.addEventListener('resize', this.onResizeBind, false);
         toolboxText = toolboxText || (await this.getToolbox());
-        toolboxXml = toolboxXml || BlocklyEditor.Blockly.utils.xml.textToDom(toolboxText);
+        toolboxXml = toolboxXml || BlocklyTS.utils.xml.textToDom(toolboxText);
 
-        this.darkTheme = BlocklyEditor.Blockly.Theme.defineTheme('dark', {
+        this.darkTheme = BlocklyTS.Theme.defineTheme('dark', {
             name: 'dark',
-            base: BlocklyEditor.Blockly.Themes.Classic,
+            base: BlocklyTS.Themes.Classic,
             componentStyles: {
                 workspaceBackgroundColour: '#1e1e1e',
                 toolboxBackgroundColour: 'blackBackground',
@@ -791,7 +578,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         });
 
         // https://developers.google.com/blockly/reference/js/blockly.blocklyoptions_interface.md
-        this.blocklyWorkspace = BlocklyEditor.Blockly.inject(this.blockly, {
+        this.blocklyWorkspace = BlocklyTS.inject(this.blockly, {
             renderer: 'thrasos',
             theme: 'classic',
             media: 'google-blockly/media/',
@@ -838,11 +625,9 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
             }
 
             if (
-                [
-                    BlocklyEditor.Blockly.Events.UI,
-                    BlocklyEditor.Blockly.Events.CREATE,
-                    BlocklyEditor.Blockly.Events.VIEWPORT_CHANGE,
-                ].includes(masterEvent.type as 'ui' | 'create' | 'viewport_change')
+                [BlocklyTS.Events.UI, BlocklyTS.Events.CREATE, BlocklyTS.Events.VIEWPORT_CHANGE].includes(
+                    masterEvent.type,
+                )
             ) {
                 return; // Don't mirror UI events.
             }
@@ -871,7 +656,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
             this.blocklyWorkspace?.setTheme(this.darkTheme);
         } else if (this.blocklyWorkspace) {
             this.blocklyWorkspace.getThemeManager();
-            this.blocklyWorkspace.setTheme(BlocklyEditor.Blockly.Themes.Classic);
+            this.blocklyWorkspace.setTheme(BlocklyTS.Themes.Classic);
         }
     }
 
@@ -879,7 +664,6 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         if (!this.blocklyWorkspace) {
             return;
         }
-
         this.blocklyWorkspace.dispose();
         this.blocklyWorkspace = null;
         this.changeTimer && clearTimeout(this.changeTimer);
@@ -981,96 +765,6 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         ) : null;
     }
 
-    renderDialogPrompt(): React.JSX.Element | null {
-        if (!this.state.showInputPrompt) {
-            return null;
-        }
-        return (
-            <Dialog
-                key="inputDialog"
-                onClose={() => {
-                    const cb = this.state.showInputPrompt?.callback;
-                    if (cb) {
-                        cb(null);
-                    }
-                    this.setState({ showInputPrompt: null });
-                }}
-                maxWidth="sm"
-                fullWidth
-                open={!0}
-            >
-                <DialogTitle>{this.state.showInputPrompt.promptText}</DialogTitle>
-                <DialogContent>
-                    <TextField
-                        variant="standard"
-                        fullWidth
-                        value={this.state.showInputPrompt.value}
-                        onKeyUp={e => {
-                            if (e.key === 'Enter') {
-                                const cb = this.state.showInputPrompt?.callback;
-                                const value = this.state.showInputPrompt?.value;
-                                if (cb) {
-                                    cb(value === undefined ? null : value);
-                                }
-                                this.setState({ showInputPrompt: null });
-                            }
-                        }}
-                        onChange={e => {
-                            const showInputPrompt: {
-                                promptText: string;
-                                defaultText: string;
-                                callback: (p1: string | null) => void;
-                                value: string;
-                            } = { ...this.state.showInputPrompt } as {
-                                promptText: string;
-                                defaultText: string;
-                                callback: (p1: string | null) => void;
-                                value: string;
-                            };
-                            if (this.state.showInputPrompt?.callback) {
-                                showInputPrompt.callback = this.state.showInputPrompt?.callback;
-                            }
-                            showInputPrompt.value = e.target.value;
-                            this.setState({ showInputPrompt });
-                        }}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        variant="contained"
-                        disabled={!this.state.showInputPrompt.value}
-                        onClick={() => {
-                            const cb = this.state.showInputPrompt?.callback;
-                            const value = this.state.showInputPrompt?.value;
-                            if (cb) {
-                                cb(value === undefined ? null : value);
-                            }
-                            this.setState({ showInputPrompt: null });
-                        }}
-                        color="primary"
-                        startIcon={<IconOk />}
-                    >
-                        {I18n.t('Apply')}
-                    </Button>
-                    <Button
-                        color="grey"
-                        variant="contained"
-                        onClick={() => {
-                            const cb = this.state.showInputPrompt?.callback;
-                            if (cb) {
-                                cb(null);
-                            }
-                            this.setState({ showInputPrompt: null });
-                        }}
-                        startIcon={<IconCancel />}
-                    >
-                        {I18n.t('Close')}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        );
-    }
-
     render(): (React.JSX.Element | null)[] | null {
         if (this.state.languageBlocklyLoaded && this.state.languageOwnLoaded) {
             this.didUpdate = setTimeout(() => {
@@ -1091,7 +785,6 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
                     }}
                 />,
 
-                this.renderDialogPrompt(),
                 this.renderMessageDialog(),
                 this.renderErrorDialog(),
                 this.renderExportDialog(),

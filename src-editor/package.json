@@ -4,6 +4,8 @@
     "private": true,
     "dependencies": {
         "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+        "@blockly/field-multilineinput": "^5.0.10",
+        "@blockly/field-colour": "^5.0.9",
         "@craco/craco": "^7.1.0",
         "@devbookhq/splitter": "^1.4.2",
         "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
@@ -46,7 +48,8 @@
         "start": "craco start",
         "lint": "eslint -c eslint.config.mjs",
         "build": "craco build",
-        "tsc": "tsc -p tsconfig.json"
+        "tsc": "tsc -p tsconfig.json",
+        "npm": "npm i -f"
     },
     "eslintConfig": {
         "extends": "react-app"

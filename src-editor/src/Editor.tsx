@@ -1,5 +1,4 @@
 import React from 'react';
-// @ts-expect-error no types
 import Tour from 'reactour';
 
 import {

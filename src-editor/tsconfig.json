@@ -19,5 +19,6 @@
             "@/*": ["./src/*"]
         }
     },
-    "include": ["./src/**/*", "./src/types.d.ts"]
+    "include": ["./src/**/*", "./src/types.d.ts"],
+    "exclude": ["./src/Components/BlocklyEditorTS.tsx"]
 }
