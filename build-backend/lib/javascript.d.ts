@@ -9,7 +9,6 @@ type ErrorCallback = (err?: Error) => void | Promise<void>;
 type GenericCallback<T> = (err?: Error | null, result?: T) => void | Promise<void>;
 type SimpleCallback<T> = (result?: T) => void | Promise<void>;
 type MessageCallback<T> = (data: T, callback: iobJS.MessageCallback) => void | Promise<void>;
-type LogCallback = (msg: any) => void | Promise<void>;
 
 type SecondParameterOf<T extends (...args: any[]) => any> = T extends (arg0: any, arg1: infer R, ...args: any[]) => any
     ? R
@@ -332,7 +331,7 @@ declare global {
             /** ID of a helper state indicating if the handler of this state is working */
             workingID?: string;
 
-            /** attached history information */
+            /** @deprecated moved to `custom.history´ - attached history information */
             history?: any;
 
             /** Custom settings for this state */
@@ -898,7 +897,7 @@ declare global {
                 ack?: boolean | 'true' | 'false',
             ): Promise<void>;
             setStateDelayed(
-                state: any,
+                state: ioBroker.StateValue | ioBroker.SettableState,
                 isAck: boolean | number | undefined,
                 delay?: number | boolean,
                 clearRunning?: boolean | (() => void),

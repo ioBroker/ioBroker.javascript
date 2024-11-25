@@ -30,7 +30,6 @@ import {
     MdSwapVert as IconReorder,
     MdEdit as IconEdit,
     MdSearch as IconFind,
-    MdPersonPin as IconExpert,
     MdPalette as IconDark,
     MdUnfoldMore as IconExpandAll,
     MdUnfoldLess as IconCollapseAll,
@@ -46,7 +45,14 @@ import {
 
 import { red, green, yellow } from '@mui/material/colors';
 
-import { type AdminConnection, I18n, type IobTheme, type ThemeName, Utils } from '@iobroker/adapter-react-v5';
+import {
+    type AdminConnection,
+    I18n,
+    type IobTheme,
+    type ThemeName,
+    Utils,
+    IconExpert,
+} from '@iobroker/adapter-react-v5';
 
 import ImgJS from './assets/js.png';
 import ImgBlockly from './assets/blockly.png';

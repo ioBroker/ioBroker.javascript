@@ -34,6 +34,19 @@ import type { REPLServer } from 'repl';
 import createRepl from './debugger';
 // const runAsStandalone = typeof __dirname !== 'undefined';
 
+interface DebugValue {
+    type: 'function' | 'string' | 'boolean' | 'number' | 'object' | 'undefined' | 'null' | 'bigint' | 'symbol';
+    description: string;
+    value: any;
+}
+interface DebugVariable {
+    name: string;
+    value: DebugValue;
+    configurable?: boolean;
+    enumerable?: boolean;
+    isOwn?: boolean;
+    writable?: boolean;
+}
 const breakOnStart = process.argv.includes('--breakOnStart');
 
 const debuglog = utilDebugLog('inspect');
@@ -189,8 +202,8 @@ type CommandToHost = {
     expr?: { name: string };
     bp?: Debugger.Location;
     context?: DebuggerContext | null | string;
-    error?: any;
-    errorContext?: any;
+    error?: Error | string;
+    errorContext?: Error;
     id?: Debugger.BreakpointId; // breakpoint ID
     breakpoints?: Debugger.Location[];
     scriptId?: Runtime.ScriptId;
@@ -563,8 +576,8 @@ function parseArgv([target, ...args]: string[]): NodeInspectorOptions {
             // https://github.com/node-inspector/node-inspector?tab=readme-ov-file#windows
             // @ts-expect-error undocumented function
             process._debugProcess(pid);
-        } catch (e: any) {
-            if (e.code === 'ESRCH') {
+        } catch (e: unknown) {
+            if (e && (e as any).code === 'ESRCH') {
                 console.error(`Target process: ${pid} doesn't exist.`);
                 process.exit(1);
             }
@@ -705,6 +718,8 @@ type DebugCommand = {
 };
 
 function processCommand(data: DebugCommand): void {
+    console.log(`[DEBUGGER]: processCommand: ${JSON.stringify(data)}`);
+
     if (data.cmd === 'start') {
         scriptToDebug = data.scriptName as string;
         // we can request the script by name or iobroker instance to debug
@@ -722,7 +737,7 @@ function processCommand(data: DebugCommand): void {
             let file: string | undefined;
             try {
                 file = require.resolve(`iobroker.${adapter}`);
-            } catch (e: any) {
+            } catch (e: unknown) {
                 // try to locate in the same dir
                 const dir = normalize(join(__dirname, '..', `iobroker.${adapter}`));
                 if (existsSync(dir)) {
@@ -733,7 +748,7 @@ function processCommand(data: DebugCommand): void {
                 }
 
                 if (!file) {
-                    sendToHost({ cmd: 'error', error: `Cannot locate iobroker.${adapter}`, errorContext: e });
+                    sendToHost({ cmd: 'error', error: `Cannot locate iobroker.${adapter}`, errorContext: e as Error });
                     setTimeout(() => {
                         sendToHost({ cmd: 'finished', context: `Cannot locate iobroker.${adapter}` });
                         setTimeout(() => process.exit(124), 500);
@@ -754,19 +769,19 @@ function processCommand(data: DebugCommand): void {
                 sendToHost({ cmd: 'script', scriptId: data.scriptId, text: script.scriptSource }),
         );
     } else if (data.cmd === 'cont') {
-        inspector.Debugger.resume().catch((e: any) => sendToHost({ cmd: 'error', error: e }));
+        inspector.Debugger.resume().catch((e: unknown) => sendToHost({ cmd: 'error', error: e as Error }));
     } else if (data.cmd === 'next') {
-        inspector.Debugger.stepOver().catch((e: any) => sendToHost({ cmd: 'error', error: e }));
+        inspector.Debugger.stepOver().catch((e: unknown) => sendToHost({ cmd: 'error', error: e as Error }));
     } else if (data.cmd === 'pause') {
-        inspector.Debugger.pause().catch((e: any) => sendToHost({ cmd: 'error', error: e }));
+        inspector.Debugger.pause().catch((e: unknown) => sendToHost({ cmd: 'error', error: e as Error }));
     } else if (data.cmd === 'step') {
-        inspector.Debugger.stepInto().catch((e: any) => sendToHost({ cmd: 'error', error: e }));
+        inspector.Debugger.stepInto().catch((e: unknown) => sendToHost({ cmd: 'error', error: e as Error }));
     } else if (data.cmd === 'out') {
-        inspector.Debugger.stepOut().catch((e: any) => sendToHost({ cmd: 'error', error: e }));
+        inspector.Debugger.stepOut().catch((e: unknown) => sendToHost({ cmd: 'error', error: e as Error }));
     } else if (data.cmd === 'sb') {
         console.log(JSON.stringify(data));
 
-        Promise.all(
+        void Promise.all(
             (data.breakpoints as Debugger.Location[])?.map((bp: Debugger.Location) =>
                 inspector.Debugger.setBreakpoint({
                     location: {
@@ -779,54 +794,79 @@ function processCommand(data: DebugCommand): void {
                         id: result.breakpointId,
                         location: result.actualLocation,
                     }))
-                    .catch((e: any) =>
-                        sendToHost({ cmd: 'error', error: `Cannot set breakpoint: ${e}`, errorContext: e, bp }),
+                    .catch((e: unknown) =>
+                        sendToHost({
+                            cmd: 'error',
+                            error: `Cannot set breakpoint: ${e as Error}`,
+                            errorContext: e as Error,
+                            bp,
+                        }),
                     ),
             ) || [],
         ).then(breakpoints => sendToHost({ cmd: 'sb', breakpoints }));
     } else if (data.cmd === 'cb') {
-        Promise.all(
+        void Promise.all(
             (data.breakpoints as Debugger.BreakpointId[])?.map(breakpointId =>
                 inspector.Debugger.removeBreakpoint({ breakpointId } as Debugger.RemoveBreakpointParameterType)
                     .then(() => breakpointId)
-                    .catch((e: any) =>
+                    .catch((e: unknown) => {
+                        console.error(`[DEBUGGER]: Cannot clear breakpoint: ${e as Error}`);
                         sendToHost({
                             cmd: 'error',
-                            error: `Cannot clear breakpoint: ${e}`,
-                            errorContext: e,
+                            error: `Cannot clear breakpoint: ${e as Error}`,
+                            errorContext: e as Error,
                             id: breakpointId,
-                        }),
-                    ),
+                        });
+                    }),
             ) || [],
-        ).then(breakpoints => sendToHost({ cmd: 'cb', breakpoints }));
+        ).then(breakpoints => {
+            console.error(`[DEBUGGER]: sent breakpoints ${JSON.stringify(breakpoints)}`);
+            sendToHost({ cmd: 'cb', breakpoints });
+        });
     } else if (data.cmd === 'watch') {
-        Promise.all(
+        void Promise.all(
             data.expressions?.map(expr =>
-                inspector.Debugger.watch(expr).catch((e: any) =>
-                    sendToHost({ cmd: 'error', error: `Cannot watch expr: ${e}`, errorContext: e, expr }),
+                inspector.Debugger.watch(expr).catch((e: unknown) =>
+                    sendToHost({
+                        cmd: 'error',
+                        error: `Cannot watch expr: ${e as Error}`,
+                        errorContext: e as Error,
+                        expr,
+                    }),
                 ),
             ) || [],
         ).then(() => console.log('Watch done'));
     } else if (data.cmd === 'unwatch') {
-        Promise.all(
+        void Promise.all(
             data.expressions?.map(expr =>
-                inspector.Debugger.unwatch(expr).catch((e: any) =>
-                    sendToHost({ cmd: 'error', error: `Cannot unwatch expr: ${e}`, errorContext: e, expr }),
+                inspector.Debugger.unwatch(expr).catch((e: unknown) =>
+                    sendToHost({
+                        cmd: 'error',
+                        error: `Cannot unwatch expr: ${e as Error}`,
+                        errorContext: e as Error,
+                        expr,
+                    }),
                 ),
             ) || [],
         ).then(() => console.log('Watch done'));
     } else if (data.cmd === 'scope') {
-        Promise.all(
+        void Promise.all(
             data.scopes
-                ?.filter(scope => scope?.object && scope.object.objectId)
+                ?.filter(scope => scope?.object?.objectId)
                 .map(scope =>
                     inspector.Runtime.getProperties({
                         objectId: scope.object.objectId,
                         generatePreview: true,
                     } as Runtime.GetPropertiesParameterType)
-                        .then((result: any) => ({ type: scope.type, properties: result }))
-                        .catch((e: any) =>
-                            sendToHost({ cmd: 'error', error: `Cannot get scopes expr: ${e}`, errorContext: e }),
+                        .then((result: { result: DebugVariable[] }) => {
+                            return { type: scope.type, properties: result };
+                        })
+                        .catch((e: unknown) =>
+                            sendToHost({
+                                cmd: 'error',
+                                error: `Cannot get scopes expr: ${e as Error}`,
+                                errorContext: e as Error,
+                            }),
                         ),
                 ) || [],
         ).then(scopes => sendToHost({ cmd: 'scope', scopes }));
@@ -837,18 +877,26 @@ function processCommand(data: DebugCommand): void {
             newValue: data.newValue,
             callFrameId: data.callFrameId,
         } as Debugger.SetVariableValueParameterType)
-            .catch((e: any) => sendToHost({ cmd: 'setValue', variableName: `Cannot setValue: ${e}`, errorContext: e }))
-            .then(() =>
+            .catch((e: unknown) => {
+                console.error(`Cannot setValue "${data.variableName}": ${e as Error}`);
+                sendToHost({
+                    cmd: 'setValue',
+                    variableName: `Cannot setValue: ${e as Error}`,
+                    errorContext: e as Error,
+                });
+            })
+            .then(() => {
+                console.log(`setValue "${data.variableName}" successful`);
                 sendToHost({
                     cmd: 'setValue',
                     variableName: data.variableName,
                     scopeNumber: data.scopeNumber,
                     newValue: data.newValue,
                     callFrameId: data.callFrameId,
-                }),
-            );
+                });
+            });
     } else if (data.cmd === 'expressions') {
-        Promise.all(
+        void Promise.all(
             data.expressions?.map(item =>
                 inspector.Debugger.evaluateOnCallFrame({
                     callFrameId: data.callFrameId,
@@ -864,27 +912,37 @@ function processCommand(data: DebugCommand): void {
                         }
                         return { name: item.name, result };
                     })
-                    .catch((e: any) =>
-                        sendToHost({ cmd: 'expressions', variableName: `Cannot setValue: ${e}`, errorContext: e }),
+                    .catch((e: unknown) =>
+                        sendToHost({
+                            cmd: 'expressions',
+                            variableName: `Cannot setValue: ${e as Error}`,
+                            errorContext: e as Error,
+                        }),
                     ),
             ) || [],
-        ).then(expressions => sendToHost({ cmd: 'expressions', expressions }));
+        ).then(expressions => {
+            sendToHost({ cmd: 'expressions', expressions });
+        });
     } else if (data.cmd === 'stopOnException') {
         inspector.Debugger.setPauseOnExceptions({
             state: data.state ? 'all' : 'none',
-        } as Debugger.SetPauseOnExceptionsParameterType).catch((e: any) =>
-            sendToHost({ cmd: 'stopOnException', variableName: `Cannot stopOnException: ${e}`, errorContext: e }),
+        } as Debugger.SetPauseOnExceptionsParameterType).catch((e: unknown) =>
+            sendToHost({
+                cmd: 'stopOnException',
+                variableName: `Cannot stopOnException: ${e as Error}`,
+                errorContext: e as Error,
+            }),
         );
     } else if (data.cmd === 'getPossibleBreakpoints') {
         inspector.Debugger.getPossibleBreakpoints({ start: data.start, end: data.end })
             .then((breakpoints: Debugger.GetPossibleBreakpointsReturnType) =>
                 sendToHost({ cmd: 'getPossibleBreakpoints', breakpoints: breakpoints.locations }),
             )
-            .catch((e: any) =>
+            .catch((e: unknown) =>
                 sendToHost({
                     cmd: 'getPossibleBreakpoints',
-                    variableName: `Cannot getPossibleBreakpoints: ${e}`,
-                    errorContext: e,
+                    variableName: `Cannot getPossibleBreakpoints: ${e as Error}`,
+                    errorContext: e as Error,
                 }),
             );
     } else {
@@ -903,5 +961,7 @@ function sendToHost(data: CommandToHost): void {
         }
     }
 
-    process.send && process.send(JSON.stringify(data));
+    if (process.send) {
+        process.send(JSON.stringify(data));
+    }
 }

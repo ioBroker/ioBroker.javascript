@@ -34,7 +34,6 @@ const node_fs_1 = require("node:fs");
 // @ts-expect-error no types available
 const inspect_client_1 = __importDefault(require("node-inspect/lib/internal/inspect_client"));
 const debugger_1 = __importDefault(require("./debugger"));
-// const runAsStandalone = typeof __dirname !== 'undefined';
 const breakOnStart = process.argv.includes('--breakOnStart');
 const debuglog = (0, node_util_1.debuglog)('inspect');
 let inspector;
@@ -436,7 +435,7 @@ function parseArgv([target, ...args]) {
             process._debugProcess(pid);
         }
         catch (e) {
-            if (e.code === 'ESRCH') {
+            if (e && e.code === 'ESRCH') {
                 console.error(`Target process: ${pid} doesn't exist.`);
                 process.exit(1);
             }
@@ -508,6 +507,7 @@ process.on('message', (message) => {
 });
 sendToHost({ cmd: 'ready' });
 function processCommand(data) {
+    console.log(`[DEBUGGER]: processCommand: ${JSON.stringify(data)}`);
     if (data.cmd === 'start') {
         scriptToDebug = data.scriptName;
         // we can request the script by name or iobroker instance to debug
@@ -574,7 +574,7 @@ function processCommand(data) {
     }
     else if (data.cmd === 'sb') {
         console.log(JSON.stringify(data));
-        Promise.all(data.breakpoints?.map((bp) => inspector.Debugger.setBreakpoint({
+        void Promise.all(data.breakpoints?.map((bp) => inspector.Debugger.setBreakpoint({
             location: {
                 scriptId: bp.scriptId,
                 lineNumber: bp.lineNumber,
@@ -585,33 +585,60 @@ function processCommand(data) {
             id: result.breakpointId,
             location: result.actualLocation,
         }))
-            .catch((e) => sendToHost({ cmd: 'error', error: `Cannot set breakpoint: ${e}`, errorContext: e, bp }))) || []).then(breakpoints => sendToHost({ cmd: 'sb', breakpoints }));
-    }
-    else if (data.cmd === 'cb') {
-        Promise.all(data.breakpoints?.map(breakpointId => inspector.Debugger.removeBreakpoint({ breakpointId })
-            .then(() => breakpointId)
             .catch((e) => sendToHost({
             cmd: 'error',
-            error: `Cannot clear breakpoint: ${e}`,
+            error: `Cannot set breakpoint: ${e}`,
             errorContext: e,
-            id: breakpointId,
-        }))) || []).then(breakpoints => sendToHost({ cmd: 'cb', breakpoints }));
+            bp,
+        }))) || []).then(breakpoints => sendToHost({ cmd: 'sb', breakpoints }));
+    }
+    else if (data.cmd === 'cb') {
+        void Promise.all(data.breakpoints?.map(breakpointId => inspector.Debugger.removeBreakpoint({ breakpointId })
+            .then(() => breakpointId)
+            .catch((e) => {
+            console.error(`[DEBUGGER]: Cannot clear breakpoint: ${e}`);
+            sendToHost({
+                cmd: 'error',
+                error: `Cannot clear breakpoint: ${e}`,
+                errorContext: e,
+                id: breakpointId,
+            });
+        })) || []).then(breakpoints => {
+            console.error(`[DEBUGGER]: sent breakpoints ${JSON.stringify(breakpoints)}`);
+            sendToHost({ cmd: 'cb', breakpoints });
+        });
     }
     else if (data.cmd === 'watch') {
-        Promise.all(data.expressions?.map(expr => inspector.Debugger.watch(expr).catch((e) => sendToHost({ cmd: 'error', error: `Cannot watch expr: ${e}`, errorContext: e, expr }))) || []).then(() => console.log('Watch done'));
+        void Promise.all(data.expressions?.map(expr => inspector.Debugger.watch(expr).catch((e) => sendToHost({
+            cmd: 'error',
+            error: `Cannot watch expr: ${e}`,
+            errorContext: e,
+            expr,
+        }))) || []).then(() => console.log('Watch done'));
     }
     else if (data.cmd === 'unwatch') {
-        Promise.all(data.expressions?.map(expr => inspector.Debugger.unwatch(expr).catch((e) => sendToHost({ cmd: 'error', error: `Cannot unwatch expr: ${e}`, errorContext: e, expr }))) || []).then(() => console.log('Watch done'));
+        void Promise.all(data.expressions?.map(expr => inspector.Debugger.unwatch(expr).catch((e) => sendToHost({
+            cmd: 'error',
+            error: `Cannot unwatch expr: ${e}`,
+            errorContext: e,
+            expr,
+        }))) || []).then(() => console.log('Watch done'));
     }
     else if (data.cmd === 'scope') {
-        Promise.all(data.scopes
-            ?.filter(scope => scope?.object && scope.object.objectId)
+        void Promise.all(data.scopes
+            ?.filter(scope => scope?.object?.objectId)
             .map(scope => inspector.Runtime.getProperties({
             objectId: scope.object.objectId,
             generatePreview: true,
         })
-            .then((result) => ({ type: scope.type, properties: result }))
-            .catch((e) => sendToHost({ cmd: 'error', error: `Cannot get scopes expr: ${e}`, errorContext: e }))) || []).then(scopes => sendToHost({ cmd: 'scope', scopes }));
+            .then((result) => {
+            return { type: scope.type, properties: result };
+        })
+            .catch((e) => sendToHost({
+            cmd: 'error',
+            error: `Cannot get scopes expr: ${e}`,
+            errorContext: e,
+        }))) || []).then(scopes => sendToHost({ cmd: 'scope', scopes }));
     }
     else if (data.cmd === 'setValue') {
         inspector.Debugger.setVariableValue({
@@ -620,17 +647,27 @@ function processCommand(data) {
             newValue: data.newValue,
             callFrameId: data.callFrameId,
         })
-            .catch((e) => sendToHost({ cmd: 'setValue', variableName: `Cannot setValue: ${e}`, errorContext: e }))
-            .then(() => sendToHost({
-            cmd: 'setValue',
-            variableName: data.variableName,
-            scopeNumber: data.scopeNumber,
-            newValue: data.newValue,
-            callFrameId: data.callFrameId,
-        }));
+            .catch((e) => {
+            console.error(`Cannot setValue "${data.variableName}": ${e}`);
+            sendToHost({
+                cmd: 'setValue',
+                variableName: `Cannot setValue: ${e}`,
+                errorContext: e,
+            });
+        })
+            .then(() => {
+            console.log(`setValue "${data.variableName}" successful`);
+            sendToHost({
+                cmd: 'setValue',
+                variableName: data.variableName,
+                scopeNumber: data.scopeNumber,
+                newValue: data.newValue,
+                callFrameId: data.callFrameId,
+            });
+        });
     }
     else if (data.cmd === 'expressions') {
-        Promise.all(data.expressions?.map(item => inspector.Debugger.evaluateOnCallFrame({
+        void Promise.all(data.expressions?.map(item => inspector.Debugger.evaluateOnCallFrame({
             callFrameId: data.callFrameId,
             expression: item.name,
             objectGroup: 'node-inspect',
@@ -644,12 +681,22 @@ function processCommand(data) {
             }
             return { name: item.name, result };
         })
-            .catch((e) => sendToHost({ cmd: 'expressions', variableName: `Cannot setValue: ${e}`, errorContext: e }))) || []).then(expressions => sendToHost({ cmd: 'expressions', expressions }));
+            .catch((e) => sendToHost({
+            cmd: 'expressions',
+            variableName: `Cannot setValue: ${e}`,
+            errorContext: e,
+        }))) || []).then(expressions => {
+            sendToHost({ cmd: 'expressions', expressions });
+        });
     }
     else if (data.cmd === 'stopOnException') {
         inspector.Debugger.setPauseOnExceptions({
             state: data.state ? 'all' : 'none',
-        }).catch((e) => sendToHost({ cmd: 'stopOnException', variableName: `Cannot stopOnException: ${e}`, errorContext: e }));
+        }).catch((e) => sendToHost({
+            cmd: 'stopOnException',
+            variableName: `Cannot stopOnException: ${e}`,
+            errorContext: e,
+        }));
     }
     else if (data.cmd === 'getPossibleBreakpoints') {
         inspector.Debugger.getPossibleBreakpoints({ start: data.start, end: data.end })
@@ -674,6 +721,8 @@ function sendToHost(data) {
             console.error(`[BP] ${JSON.stringify(data.bp)}`);
         }
     }
-    process.send && process.send(JSON.stringify(data));
+    if (process.send) {
+        process.send(JSON.stringify(data));
+    }
 }
 //# sourceMappingURL=inspect.js.map

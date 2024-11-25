@@ -8,7 +8,7 @@ import { ListItemButton, ListItemText, Input, InputAdornment, IconButton, List, 
 import { MdCheck as CheckIcon, MdAdd as IconAdd, MdDelete as IconDelete } from 'react-icons/md';
 
 import { I18n, type IobTheme, type ThemeType } from '@iobroker/adapter-react-v5';
-import type { DebugScopes, CallFrame, DebugValue, DebugVariable } from '@/Components/Debugger/types';
+import type { DebugScopes, CallFrame, DebugValue, DebugVariable, DebugObject } from './types';
 
 const styles: Record<string, any> = {
     frameRoot: {
@@ -129,6 +129,10 @@ const styles: Record<string, any> = {
     valueFunc: {
         color: '#ac4343',
     },
+    error: (theme: IobTheme): React.CSSProperties => ({
+        color: theme.palette.mode === 'dark' ? '#FF8080' : '#FF0000',
+        fontStyle: 'italic',
+    }),
 };
 
 interface StackProps {
@@ -174,6 +178,36 @@ interface StackState {
     } | null;
     callFrames: CallFrame[] | undefined;
     framesSizes: number[];
+}
+
+function previewToObject(obj: DebugObject): Record<string, any> | string {
+    const result: Record<string, any> = {};
+    if (obj.className === 'ReferenceError') {
+        return obj.description;
+    }
+    obj.preview?.properties?.forEach(item => {
+        if (item?.type === 'object') {
+            if (item.subtype === 'null') {
+                result[item.name] = null;
+            } else {
+                result[item.name] = `{ ${item.value === 'Object' ? '...' : item.value} }`;
+            }
+        } else {
+            if (item.type === 'boolean') {
+                result[item.name || item.description] = item.value === 'true';
+            } else if (item.type === 'number') {
+                result[item.name || item.description] = parseFloat(item.value);
+            } else if (item.type === 'function') {
+                result[item.name || item.description] = 'function(){}';
+            } else if (item.type === 'undefined') {
+                result[item.name || item.description] = undefined;
+            } else {
+                result[item.name || item.description] = item.value;
+            }
+        }
+    });
+
+    return result;
 }
 
 class Stack extends React.Component<StackProps, StackState> {
@@ -331,12 +365,24 @@ class Stack extends React.Component<StackProps, StackState> {
         );
     }
 
-    formatValue(value: DebugValue | null, forEdit?: boolean): React.JSX.Element | string {
+    formatValue(value: DebugValue | DebugObject | null, forEdit?: boolean): React.JSX.Element | string {
         if (!value) {
             if (forEdit) {
                 return 'none';
             }
             return <span style={styles.valueNone}>none</span>;
+        }
+        if (value.type === 'undefined') {
+            if (forEdit) {
+                return 'undefined';
+            }
+            return <span style={styles.valueUndefined}>undefined</span>;
+        }
+        if (value.type === 'null') {
+            if (forEdit) {
+                return 'null';
+            }
+            return <span style={styles.valueNull}>null</span>;
         }
         if (value.type === 'function') {
             const text = value.description
@@ -354,6 +400,26 @@ class Stack extends React.Component<StackProps, StackState> {
                 >
                     {text}
                 </span>
+            );
+        }
+        if (value.type === 'object') {
+            const val = previewToObject(value as DebugObject);
+            if (forEdit) {
+                return JSON.stringify(val);
+            }
+            if (typeof val === 'string') {
+                return <Box component="span" sx={styles.error}>{val}</Box>;
+            }
+            return (
+                <ReactJson
+                    name={false}
+                    enableClipboard={false}
+                    style={{ backgroundColor: 'inherit', marginTop: 3 }}
+                    src={val}
+                    collapsed
+                    theme={this.props.themeType === 'dark' ? 'brewer' : 'rjv-default'}
+                    displayDataTypes={false}
+                />
             );
         }
         if (value.value === undefined) {
@@ -389,21 +455,6 @@ class Stack extends React.Component<StackProps, StackState> {
                 return value.value.toString();
             }
             return <span style={styles.valueBoolean}>{value.value.toString()}</span>;
-        }
-        if (value.type === 'object') {
-            if (forEdit) {
-                return JSON.stringify(value.value);
-            }
-            return (
-                <ReactJson
-                    enableClipboard={false}
-                    style={{ backgroundColor: 'inherit', marginTop: 3 }}
-                    src={value.value}
-                    collapsed
-                    theme={this.props.themeType === 'dark' ? 'brewer' : 'rjv-default'}
-                    displayDataTypes={false}
-                />
-            );
         }
 
         return value.value.toString();
@@ -449,8 +500,8 @@ class Stack extends React.Component<StackProps, StackState> {
                 item.value.type === 'string' ||
                 item.value.type === 'number' ||
                 item.value.type === 'boolean' ||
-                item.value?.value === null ||
-                item.value?.value === undefined);
+                (item.value as DebugValue)?.value === null ||
+                ((item.value as DebugValue)?.value === undefined && item.value.type !== 'object'));
 
         const el =
             this.state.editValue?.type === type && this.state.editValue?.name === item.name
@@ -527,7 +578,7 @@ class Stack extends React.Component<StackProps, StackState> {
                     }}
                     onDoubleClick={() => {
                         if (editable) {
-                            this.scopeValue = item.value.value;
+                            this.scopeValue = (item.value as DebugValue).value;
                             this.setState({
                                 editValue: {
                                     scopeId,
@@ -535,7 +586,7 @@ class Stack extends React.Component<StackProps, StackState> {
                                     index: 0,
                                     valueType: item.value.type,
                                     name: item.name,
-                                    value: item.value.value,
+                                    value: (item.value as DebugValue).value,
                                 },
                             });
                         }
@@ -555,14 +606,12 @@ class Stack extends React.Component<StackProps, StackState> {
         const result: React.JSX.Element[] = this.renderExpressions();
 
         let items = this.props.scopes?.local?.properties?.result.map(
-            // @ts-expect-error fix later
-            item => this.props.scopes && this.renderScope(this.props.scopes.id, item, 'local'),
+            item => this.props.scopes && this.renderScope('', item, 'local'),
         );
         items?.forEach(item => item && result.push(item));
 
         items = this.props.scopes?.closure?.properties?.result.map(
-            // @ts-expect-error fix later
-            item => this.props.scopes && this.renderScope(this.props.scopes.id, item, 'closure'),
+            item => this.props.scopes && this.renderScope('', item, 'closure'),
         );
         items?.forEach(item => item && result.push(item));
 
@@ -587,9 +636,7 @@ class Stack extends React.Component<StackProps, StackState> {
             >
                 <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>
                     <List style={styles.listRoot}>
-                        {this.props.callFrames
-                            ? this.props.callFrames.map((frame, i) => this.renderOneFrameTitle(frame, i))
-                            : null}
+                        {this.props.callFrames?.map((frame, i) => this.renderOneFrameTitle(frame, i)) || null}
                     </List>
                 </div>
                 <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>
@@ -615,8 +662,7 @@ class Stack extends React.Component<StackProps, StackState> {
                         </IconButton>
                     </Box>
                     <div style={styles.scopesAfterToolbar}>
-                        {this.props.callFrames &&
-                            this.props.callFrames.length &&
+                        {this.props.callFrames?.length &&
                             this.renderScopes(this.props.callFrames[this.props.currentFrame])}
                     </div>
                 </div>

@@ -3022,7 +3022,7 @@ class JavaScript extends Adapter {
                         args.push('--breakOnStart');
                     }
 
-                    this.debugState.child = fork(`${__dirname}/lib/inspect.ts`, args, options);
+                    this.debugState.child = fork(`${__dirname}/lib/inspect.js`, args, options);
 
                     /*debugState.child.stdout.setEncoding('utf8');
                     debugState.child.stderr.setEncoding('utf8');

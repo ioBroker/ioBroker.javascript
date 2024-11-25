@@ -33,7 +33,7 @@ import DialogError from '../../Dialogs/Error';
 import Editor from './Editor';
 import Console from './Console';
 import Stack from './Stack';
-import type {
+import {
     CallFrame,
     DebugVariable,
     DebuggerLocation,
@@ -141,32 +141,30 @@ interface DebuggerProps {
 }
 
 interface DebuggerState {
-    starting: boolean;
-    selected: string | null;
-    tabs: Record<string, string>;
-    script: string;
     breakpoints: SetBreakpointParameterType[];
-    expressions: DebugVariable[];
-    running: boolean;
-    error: string;
-    started: boolean;
-    paused: boolean;
-    location: DebuggerLocation | null;
-    toolsTab: string;
-    stopOnException: boolean;
     console: { text: string; severity: ioBroker.LogLevel; ts: number }[];
-    finished: boolean;
+    context: { callFrames: CallFrame[] } | null;
     currentFrame: number;
-    scopes: DebugScopes;
-    queryBreakpoints: DebuggerLocation[] | null;
+    error: string;
+    expressions: DebugVariable[];
+    finished: boolean;
+    instance: string | undefined;
+    location: DebuggerLocation | null;
     logErrors: number;
     logWarnings: number;
     logs: number;
+    paused: boolean;
+    queryBreakpoints: DebuggerLocation[] | null;
+    running: boolean;
+    scopes: DebugScopes;
+    script: string;
+    selected: string | null;
+    started: boolean;
+    starting: boolean;
+    stopOnException: boolean;
+    tabs: Record<string, string>;
     toolSizes: number[];
-    context: {
-        callFrames: CallFrame[];
-    } | null;
-    instance: string | undefined;
+    toolsTab: string;
 }
 
 class Debugger extends React.Component<DebuggerProps, DebuggerState> {
@@ -192,7 +190,7 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
             const names = expressionsStr ? (JSON.parse(expressionsStr) as string[]) : [];
             expressions = names.map(name => ({
                 name,
-                value: { type: 'undefined', description: '', value: undefined },
+                value: { type: 'undefined', description: '', value: 'undefined', name: 'name' },
             }));
         } catch {
             expressions = [];
@@ -480,7 +478,7 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
                     data.breakpoints
                         .filter(id => id !== undefined && id !== null)
                         .forEach(bp => {
-                            const found = breakpoints.find(item => item.id === bp.id);
+                            const found = breakpoints.find(item => item.id === bp);
                             if (found) {
                                 const pos = breakpoints.indexOf(found);
                                 breakpoints.splice(pos, 1);
@@ -512,6 +510,7 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
                         item = scopes?.closure?.properties?.result.find(item => item.name === data.variableName);
                     }
                     if (item) {
+                        // @ts-expect-error fix later
                         item.value.value = data.newValue.value;
                         this.setState({ scopes });
                     }
@@ -530,12 +529,12 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
 
                     console.log(`expressions: ${JSON.stringify(data)}`);
                 } else if (data.cmd === 'getPossibleBreakpoints') {
-                    if (data.breakpoints?.locations?.length === 1) {
-                        this.sendToInstance({ breakpoints: data.breakpoints.locations, cmd: 'sb' });
-                    } else if (!data.breakpoints?.locations?.length) {
+                    if (data.breakpoints?.length === 1) {
+                        this.sendToInstance({ breakpoints: data.breakpoints, cmd: 'sb' });
+                    } else if (!data.breakpoints?.length) {
                         window.alert('cannot set');
                     } else {
-                        this.setState({ queryBreakpoints: data.breakpoints.locations });
+                        this.setState({ queryBreakpoints: data.breakpoints });
                     }
                 } else {
                     console.error(`Unknown command: ${JSON.stringify(data)}`);

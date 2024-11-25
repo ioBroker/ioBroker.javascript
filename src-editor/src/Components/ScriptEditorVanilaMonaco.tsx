@@ -73,7 +73,7 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
     // TypeScript declarations
     private typings: Record<string, string> = {};
 
-    private decorations: monacoEditor.editor.IEditorDecorationsCollection | null = null;
+    private decorations: string[] = [];
 
     constructor(props: ScriptEditorProps) {
         super(props);
@@ -186,6 +186,7 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
                     scrollBeyondLastLine: false,
                     automaticLayout: true,
                     glyphMargin: !!this.props.breakpoints,
+                    colorDecorators: true,
                 });
 
                 this.editor.onDidChangeModelContent(() => this.onChange());
@@ -466,7 +467,11 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
             }
         });
         if (this.editor) {
-            // this.decorations = this.editor.createDecorationsCollection(decorations);
+            const editorModel = this.editor.getModel();
+            if (editorModel) {
+                this.decorations = editorModel.deltaDecorations(this.decorations, decorations);
+                // this.decorations = this.editor.createDecorationsCollection(decorations);
+            }
         }
     }
 

@@ -182,14 +182,31 @@ interface CallFrame {
 }
 
 interface DebugValue {
-    type: 'function' | 'string' | 'boolean' | 'number' | 'object' | 'undefined' | 'null' | 'bigint' | 'symbol';
+    type: 'function' | 'string' | 'boolean' | 'number' | 'undefined' | 'null' | 'object' | 'bigint' | 'symbol';
     description: string;
-    value: any;
+    value: string;
+    name: string;
+    subtype?: string;
+}
+interface DebugObject {
+    type: 'object';
+    className: string;
+    objectId: string;
+    description: string;
+    preview: {
+        description: string;
+        overflow: boolean;
+        properties: DebugValue[];
+    };
 }
 
 interface DebugVariable {
     name: string;
-    value: DebugValue;
+    value: DebugValue | DebugObject;
+    configurable?: boolean;
+    enumerable?: boolean;
+    isOwn?: boolean;
+    writable?: boolean;
 }
 
 interface DebugScopes {
@@ -326,7 +343,8 @@ export interface DebugCommandFromBackEndBreakpointsSet {
 }
 export interface DebugCommandFromBackEndBreakpointsCleared {
     cmd: 'cb';
-    breakpoints: SetBreakpointParameterType[];
+    /** indexes of deleted breakpoints */
+    breakpoints: string[];
 }
 export interface DebugCommandFromBackEndBreakpointsScope {
     cmd: 'scope';
@@ -350,9 +368,7 @@ export interface DebugCommandFromBackEndExpressions {
 }
 export interface DebugCommandFromBackEndGetPossibleBreakpoints {
     cmd: 'getPossibleBreakpoints';
-    breakpoints: {
-        locations: DebuggerLocation[];
-    };
+    breakpoints: DebuggerLocation[];
 }
 
 export type DebugCommandFromBackEnd =

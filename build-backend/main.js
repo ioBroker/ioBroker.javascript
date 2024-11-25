@@ -2520,7 +2520,7 @@ class JavaScript extends adapter_core_1.Adapter {
                 if (this.debugState.adapterInstance) {
                     args.push('--breakOnStart');
                 }
-                this.debugState.child = (0, node_child_process_1.fork)(`${__dirname}/lib/inspect.ts`, args, options);
+                this.debugState.child = (0, node_child_process_1.fork)(`${__dirname}/lib/inspect.js`, args, options);
                 /*debugState.child.stdout.setEncoding('utf8');
                 debugState.child.stderr.setEncoding('utf8');
                 debugState.child.stdout.on('data', childPrint);
