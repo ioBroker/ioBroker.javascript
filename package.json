@@ -38,10 +38,12 @@
         "node": ">=18"
     },
     "depsComment": {
-        "@types/node": "should match the lowest MAJOR version of Node.js we support."
+        "@types/node": "should match the lowest MAJOR version of Node.js we support.",
+        "@iobroker/types": "must be in dependencies, as used during runtime"
     },
     "dependencies": {
         "@iobroker/adapter-core": "^3.2.2",
+        "@iobroker/types": "^6.0.11",
         "@types/node": "^18.19.64",
         "axios": "^1.7.7",
         "jsonata": "^2.0.5",
@@ -61,7 +63,6 @@
         "@iobroker/build-tools": "^2.0.6",
         "@iobroker/eslint-config": "^0.1.7",
         "@iobroker/testing": "^5.0.0",
-        "@iobroker/types": "^6.0.11",
         "@types/nodemailer": "^6.4.16",
         "@types/node-schedule": "^2.1.7",
         "@types/request": "^2.48.12",
@@ -91,7 +92,7 @@
         "translate": "translate-adapter",
         "//postinstall": "node ./install/installTypings.js",
         "build": "node tasks && npm run tsc-backend",
-        "tsc-backend": "tsc -p tsconfig.build.json",
+        "tsc-backend": "tsc -p tsconfig.build.json && node tasks.js --copy-types",
         "release": "release-script --noPush -y --all",
         "update-packages": "ncu --upgrade && cd src && ncu --upgrade && cd ../src-admin && ncu --upgrade",
         "npm": "npm i && cd src && npm i -f && cd ../src-admin && npm i -f",

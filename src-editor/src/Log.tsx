@@ -109,6 +109,10 @@ const styles: Record<string, any> = {
         width: 40,
         fontWeight: 'bold',
     },
+    trPreMessage: {
+        padding: 0,
+        margin: 0,
+    },
     iconButtons: {
         width: 32,
         height: 32,
@@ -166,7 +170,7 @@ class Log extends React.Component<LogProps, LogState> {
         this.messagesEnd = React.createRef<HTMLDivElement>();
     }
 
-    static generateLine(row: LogMessage): React.JSX.Element {
+    static generateLine(row: LogMessage, scriptName: string): React.JSX.Element {
         let message = row.message || '';
 
         if (typeof message !== 'object') {
@@ -183,6 +187,10 @@ class Log extends React.Component<LogProps, LogState> {
             }
         }
 
+        if (message.startsWith(`${scriptName}: `)) {
+            message = message.substring(scriptName.length + 2);
+        }
+
         return (
             <Box
                 component="tr"
@@ -192,7 +200,9 @@ class Log extends React.Component<LogProps, LogState> {
                 <td style={styles.trFrom}>{row.from}</td>
                 <td style={styles.trTime}>{getTimeString(new Date(row.ts))}</td>
                 <td style={styles.trSeverity}>{row.severity}</td>
-                <td>{message}</td>
+                <td>
+                    <pre style={styles.trPreMessage}>{message}</pre>
+                </td>
             </Box>
         );
     }
@@ -222,7 +232,7 @@ class Log extends React.Component<LogProps, LogState> {
         const lines: React.JSX.Element[] = allLines[selected] || [];
         const text: string[] = gText[selected] || [];
 
-        lines.push(Log.generateLine(message));
+        lines.push(Log.generateLine(message, selected));
         let severity = message.severity;
         if (severity === 'info' || severity === 'warn') {
             severity += ' ';

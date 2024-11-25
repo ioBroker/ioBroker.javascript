@@ -31,6 +31,7 @@ const constsMod = __importStar(require("./consts"));
 const wordsMod = __importStar(require("./words"));
 const eventObjMod = __importStar(require("./eventObj"));
 const patternCompareFunctions_1 = require("./patternCompareFunctions");
+const SCRIPT_CODE_MARKER = 'script.js.';
 const pattern2RegEx = adapter_core_1.commonTools.pattern2RegEx;
 function sandBox(script, name, verbose, debug, context) {
     const consts = constsMod;
@@ -48,12 +49,12 @@ function sandBox(script, name, verbose, debug, context) {
     // eslint-disable-next-line prefer-const
     let sandbox;
     function errorInCallback(e) {
-        adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, {
+        void adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
             val: true,
             ack: true,
             c: 'errorInCallback',
         });
-        context.logError('Error in callback', e);
+        context.logError(name, 'Error in callback:', e);
         context.debugMode && console.log(`error$$${name}$$Exception in callback: ${e}`, Date.now());
     }
     function subscribePattern(script, pattern) {
@@ -547,8 +548,8 @@ function sandBox(script, name, verbose, debug, context) {
                 return mods[md];
             }
             catch (e) {
-                context.logError(name, error || e, 6);
-                adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, {
+                context.logError(name, `Error by loading module "${md}":`, error || e, 6);
+                void adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
                     val: true,
                     ack: true,
                     c: 'require',
@@ -1293,7 +1294,7 @@ function sandBox(script, name, verbose, debug, context) {
             let tempDirPath = context.tempDirectories?.[sandbox.scriptName];
             if (!tempDirPath) {
                 // create temp directory
-                tempDirPath = fs.mkdtempSync(path.join(os.tmpdir(), `${sandbox.scriptName.substring('script.js.'.length)}-`));
+                tempDirPath = fs.mkdtempSync(path.join(os.tmpdir(), `${sandbox.scriptName.substring(SCRIPT_CODE_MARKER.length)}-`));
                 context.tempDirectories[sandbox.scriptName] = tempDirPath;
                 sandbox.verbose &&
                     sandbox.log(`createTempFile(fileName=${fileName}, tempDirPath=${tempDirPath}) created temp directory in ${os.tmpdir()}`, 'info');
@@ -2374,7 +2375,7 @@ function sandBox(script, name, verbose, debug, context) {
                         result = JSON.parse(JSON.stringify(objects[id]));
                     }
                     catch (err) {
-                        adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, {
+                        adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
                             val: true,
                             ack: true,
                             c: 'getObject',
@@ -2417,7 +2418,7 @@ function sandBox(script, name, verbose, debug, context) {
                     result = JSON.parse(JSON.stringify(objects[id]));
                 }
                 catch (err) {
-                    adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, {
+                    adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
                         val: true,
                         ack: true,
                         c: 'getObject',
@@ -4141,7 +4142,7 @@ function sandBox(script, name, verbose, debug, context) {
                     obj = JSON.parse(obj);
                 }
                 catch (err) {
-                    adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, {
+                    adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
                         val: true,
                         ack: true,
                         c: 'getAttr',
@@ -4155,7 +4156,7 @@ function sandBox(script, name, verbose, debug, context) {
                 obj = obj[attr];
             }
             catch (err) {
-                adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, {
+                void adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
                     val: true,
                     ack: true,
                     c: 'getAttr',

@@ -68,19 +68,6 @@ class DialogRename extends React.Component<DialogRenameProps, DialogRenameState>
         return `${this.state.prefix}.${name}`;
     }
 
-    static getDerivedStateFromProps(
-        props: DialogRenameProps,
-        state: DialogRenameState,
-    ): Partial<DialogRenameState> | null {
-        if (props.name !== state.name) {
-            return { name: props.name };
-        }
-        if (props.id !== state.id) {
-            return { id: props.id, prefix: DialogRename.getPrefix(props.id) };
-        }
-        return null;
-    }
-
     handleCancel = (): void => {
         this.props.onClose();
     };

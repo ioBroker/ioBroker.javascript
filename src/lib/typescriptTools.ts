@@ -119,11 +119,15 @@ export function resolveTypings(
     // First, try to resolve the package itself in case it brings its own typings
     tryToLoadPackage(`${adapterScopedPackageName}/package.json`);
 
+    if (!rootTypings) {
+        tryToLoadPackage(`${pkg}/package.json`);
+    }
     // If that didn't work, try again with the @types version of the package
     if (!rootTypings) {
         tryToLoadPackage(`@types/${pkg}/package.json`);
         pkgIncludesTypings = false;
     }
+
     // TODO: If that didn't work, download @types/<packagename> and retry the previous step
 
     // Nothing to do here since we found no packages

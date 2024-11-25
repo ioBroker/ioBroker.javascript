@@ -33,6 +33,8 @@ import type { ScheduleName, SchedulerRule } from './scheduler';
 import type { EventObj } from './eventObj';
 import type { AstroEvent } from './consts';
 
+const SCRIPT_CODE_MARKER = 'script.js.';
+
 const pattern2RegEx = commonTools.pattern2RegEx;
 
 export function sandBox(
@@ -60,12 +62,12 @@ export function sandBox(
     let sandbox: SandboxType;
 
     function errorInCallback(e: Error): void {
-        adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, {
+        void adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
             val: true,
             ack: true,
             c: 'errorInCallback',
         });
-        context.logError('Error in callback', e);
+        context.logError(name, 'Error in callback:', e);
         context.debugMode && console.log(`error$$${name}$$Exception in callback: ${e}`, Date.now());
     }
 
@@ -621,8 +623,9 @@ export function sandBox(
 
                 return mods[md];
             } catch (e: any) {
-                context.logError(name, error || e, 6);
-                adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, {
+                context.logError(name, `Error by loading module "${md}":`, error || e, 6);
+
+                void adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
                     val: true,
                     ack: true,
                     c: 'require',
@@ -1593,7 +1596,7 @@ export function sandBox(
             if (!tempDirPath) {
                 // create temp directory
                 tempDirPath = fs.mkdtempSync(
-                    path.join(os.tmpdir(), `${sandbox.scriptName.substring('script.js.'.length)}-`),
+                    path.join(os.tmpdir(), `${sandbox.scriptName.substring(SCRIPT_CODE_MARKER.length)}-`),
                 );
                 context.tempDirectories[sandbox.scriptName] = tempDirPath;
 
@@ -3079,7 +3082,7 @@ export function sandBox(
                     try {
                         result = JSON.parse(JSON.stringify(objects[id]));
                     } catch (err: unknown) {
-                        adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, {
+                        adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
                             val: true,
                             ack: true,
                             c: 'getObject',
@@ -3121,7 +3124,7 @@ export function sandBox(
                 try {
                     result = JSON.parse(JSON.stringify(objects[id]));
                 } catch (err: unknown) {
-                    adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, {
+                    adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
                         val: true,
                         ack: true,
                         c: 'getObject',
@@ -4626,7 +4629,12 @@ export function sandBox(
         ): void {
             return sandbox.unlink(_adapter, fileName as string, callback);
         },
-        rename: function (_adapter: string, oldName: string, newName: string, callback?: (err?: Error | null) => void) {
+        rename: function (
+            _adapter: string,
+            oldName: string,
+            newName: string,
+            callback?: (err?: Error | null) => void,
+        ): void {
             _adapter = _adapter || '0_userdata.0';
 
             if (debug) {
@@ -5097,7 +5105,7 @@ export function sandBox(
                 try {
                     obj = JSON.parse(obj);
                 } catch (err: unknown) {
-                    adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, {
+                    adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
                         val: true,
                         ack: true,
                         c: 'getAttr',
@@ -5112,7 +5120,7 @@ export function sandBox(
             try {
                 obj = (obj as Record<string, any>)[attr];
             } catch (err: unknown) {
-                adapter.setState(`scriptProblem.${name.substring('script.js.'.length)}`, {
+                void adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
                     val: true,
                     ack: true,
                     c: 'getAttr',

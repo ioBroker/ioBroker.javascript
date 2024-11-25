@@ -14,6 +14,7 @@ const {
     readdirSync,
     renameSync,
     unlinkSync,
+    copyFileSync,
 } = require('node:fs');
 const { join } = require('node:path');
 const { execSync } = require('node:child_process');
@@ -49,11 +50,19 @@ function copyAllFiles() {
         [
             'src-editor/build/**/*',
             '!src-editor/build/index.html',
-            '!src-editor/build/static/js/main.*.chunk.js',
+//             '!src-editor/build/static/js/main.*.chunk.js',
             '!src-editor/build/i18n/**/*',
             '!src-editor/build/i18n',
+            '!src-editor/build/google-blockly/blockly-*.*.*.tgz',
         ],
         'admin/',
+        {
+            process: (fileData, fileName) => {
+                if (fileName.includes('.tgz')) {
+                    return null;
+                }
+            }
+        }
     );
 
     let index = readFileSync(`${__dirname}/src-editor/build/index.html`).toString();
@@ -61,12 +70,12 @@ function copyAllFiles() {
     index = index.replace('src="/', 'src="');
     writeFileSync(`${__dirname}/admin/tab.html`, index);
 
-    copyFiles(['src-editor/build/static/js/main.*.chunk.js'], 'admin/assets/', {
+    /*copyFiles(['src-editor/build/static/js/main.*.chunk.js'], 'admin/assets/', {
         replace: {
             find: '"/assets',
             text: '"./assets',
         },
-    });
+    });*/
 }
 
 function patch() {
@@ -457,8 +466,10 @@ if (typeof module !== 'undefined' && typeof module.parent !== 'undefined') {
 `;
     writeFileSync('./src-editor/public/google-blockly/own/blocks_words.js', text);
 }
-
-if (process.argv.includes('--admin-0-clean')) {
+if (process.argv.includes('--copy-types')) {
+    copyFileSync(`${__dirname}/src/types.d.ts`, `${__dirname}/build-backend/types.d.ts`);
+    copyFileSync(`${__dirname}/src/lib/javascript.d.ts`, `${__dirname}/build-backend/lib/javascript.d.ts`);
+} else if (process.argv.includes('--admin-0-clean')) {
     adminClean();
 } else if (process.argv.includes('--admin-1-npm')) {
     npmInstall(`${__dirname}/src-admin/`).catch(e => {

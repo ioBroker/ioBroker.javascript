@@ -11,9 +11,10 @@ import {
     Select,
     InputLabel,
     MenuItem,
+    IconButton,
 } from '@mui/material';
 
-import { Check as IconOk, Cancel as IconCancel } from '@mui/icons-material';
+import { Check as IconOk, Cancel as IconCancel, Clear as ClearIcon } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 import type { ScriptType } from '@/types';
@@ -70,34 +71,13 @@ class DialogNew extends React.Component<DialogNewProps, DialogNewState> {
         return `${this.state ? this.state.parent : this.props.parent}.${name}`;
     }
 
-    static getDerivedStateFromProps(props: DialogNewProps, state: DialogNewState): Partial<DialogNewState> | null {
-        if (props.name !== state.name) {
-            return { name: props.name };
-        }
-        return null;
-    }
-
-    handleCancel = (): void => {
-        this.props.onClose();
-    };
-
     handleOk = (): void => {
         this.props.onAdd(this.getId(this.state.name), this.state.name, this.state.instance, this.props.type);
         this.props.onClose();
     };
 
-    handleChange = (name: string): void => {
-        const id = this.getId(name);
-        if (!name) {
-            this.setState({ name, id, error: I18n.t('Empty name is not allowed') });
-        } else if (this.props.existingItems && this.props.existingItems.indexOf(id) !== -1) {
-            this.setState({ name, id, error: I18n.t('Duplicate name') });
-        } else {
-            this.setState({ name, id, error: '' });
-        }
-    };
-
     render(): React.JSX.Element {
+        console.log(this.state.name);
         return (
             <Dialog
                 onClose={() => false}
@@ -119,16 +99,38 @@ class DialogNew extends React.Component<DialogNewProps, DialogNewState> {
                             autoFocus
                             error={!!this.state.error}
                             label={I18n.t('Name')}
-                            value={this.state.name}
+                            value={this.state.name || ''}
                             helperText={this.state.error}
+                            slotProps={{
+                                input: {
+                                    endAdornment: this.state.name ? (
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => this.setState({ name: '' })}
+                                        >
+                                            <ClearIcon />
+                                        </IconButton>
+                                    ) : undefined,
+                                },
+                            }}
                             onKeyUp={ev => {
-                                if (ev.key === 'Enter') {
-                                    // Do code here
-                                    ev.preventDefault();
+                                ev.preventDefault();
+                                if (ev.key === 'Enter' && !this.state.error) {
                                     setTimeout(() => this.handleOk(), 200);
                                 }
                             }}
-                            onChange={e => this.handleChange(e.target.value)}
+                            onChange={e => {
+                                const name = e.target.value;
+                                const id = this.getId(name);
+                                if (!name) {
+                                    this.setState({ name, id, error: I18n.t('Empty name is not allowed') });
+                                } else if (this.props.existingItems?.includes(id)) {
+                                    this.setState({ name, id, error: I18n.t('Duplicate name') });
+                                } else {
+                                    console.log(`Set name: "${name}"`);
+                                    this.setState({ name, id, error: '' });
+                                }
+                            }}
                             margin="normal"
                         />
                         <FormControl
@@ -215,7 +217,7 @@ class DialogNew extends React.Component<DialogNewProps, DialogNewState> {
                     <Button
                         color="grey"
                         variant="contained"
-                        onClick={this.handleCancel}
+                        onClick={() => this.props.onClose()}
                         startIcon={<IconCancel />}
                     >
                         {I18n.t('Cancel')}

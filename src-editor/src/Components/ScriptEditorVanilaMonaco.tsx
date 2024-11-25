@@ -164,13 +164,17 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
             // For some reason, we have to get the original compiler options
             // and assign new properties one by one
             const compilerOptions = this.monaco.languages.typescript.typescriptDefaults.getCompilerOptions();
-            compilerOptions.target = this.monaco.languages.typescript.ScriptTarget.ES2015;
+            // compilerOptions.target = this.monaco.languages.typescript.ScriptTarget.ES2020;
             compilerOptions.allowJs = true;
             compilerOptions.checkJs = this.props.checkJs !== false;
             compilerOptions.noLib = true;
             compilerOptions.lib = [];
             compilerOptions.useUnknownInCatchVariables = false;
             compilerOptions.moduleResolution = this.monaco.languages.typescript.ModuleResolutionKind.NodeJs;
+            compilerOptions.target = this.monaco.languages.typescript.ScriptTarget.ESNext;
+            compilerOptions.module = this.monaco.languages.typescript.ModuleKind.ESNext;
+            compilerOptions.allowNonTsExtensions = true;
+
             this.monaco.languages.typescript.typescriptDefaults.setCompilerOptions(compilerOptions);
 
             this.setTypeCheck(false);
@@ -336,6 +340,11 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
             noSyntaxValidation: !this.state.alive, // always check the syntax
         };
         this.monaco?.languages.typescript.typescriptDefaults.setDiagnosticsOptions(options);
+
+        this.monaco?.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+            noSemanticValidation: !this.state.alive || !enabled,
+            noSyntaxValidation: !this.state.alive,
+        });
     }
 
     /**

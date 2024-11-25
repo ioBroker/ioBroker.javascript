@@ -19,9 +19,12 @@ exports.tsCompilerOptions = {
     // we MUST target ES5, otherwise the compiled
     // scripts may include `import` keywords, which are not
     // supported by vm.Script.
-    target: typescript_1.ScriptTarget.ES5,
+    target: typescript_1.ScriptTarget.ES2022,
     // This is required for QueryResults to be iterable (https://github.com/ioBroker/ioBroker.javascript/pull/663#issuecomment-721645705)
     downlevelIteration: true,
+    // Specify the module resolution strategy
+    moduleResolution: typescript_1.ModuleResolutionKind.NodeNext,
+    module: typescript_1.ModuleKind.ESNext,
     lib: [`lib.${exports.targetTsLib}.d.ts`],
 };
 exports.jsDeclarationCompilerOptions = Object.assign({}, exports.tsCompilerOptions, {

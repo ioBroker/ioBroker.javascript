@@ -372,7 +372,7 @@ class JavaScript extends Adapter {
                         // This is a script error
                         let scriptName = err.stack.substring(scriptCodeMarkerIndex);
                         scriptName = scriptName.substring(0, scriptName.indexOf(':'));
-                        this.logError(scriptName, err);
+                        this.logError(scriptName, 'Error:', err);
 
                         // Leave the script running for now
                         // signal to the JS-Controller that we handled the error ourselves
@@ -878,12 +878,12 @@ class JavaScript extends Adapter {
                                         });
                                     }
                                 } catch (err: unknown) {
-                                    this.setState(
+                                    void this.setState(
                                         `scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`,
                                         true,
                                         true,
                                     );
-                                    this.logError('Error in callback', err as Error);
+                                    this.logError(name, 'Error in callback:', err as Error);
                                 }
                             });
                         }
@@ -1155,13 +1155,19 @@ class JavaScript extends Adapter {
         );
     }
 
-    logError(msg: string, e: Error, offs?: number): void {
+    logError(scriptName: string, msg: string, e: Error, offs?: number): void {
         const stack = e.stack ? e.stack.toString().split('\n') : e ? e.toString() : '';
         if (!msg.includes('\n')) {
             msg = msg.replace(/[: ]*$/, ': ');
         }
+        if (!msg.endsWith(' ')) {
+            msg += ':';
+        }
+        if (!scriptName.startsWith(SCRIPT_CODE_MARKER)) {
+            scriptName = SCRIPT_CODE_MARKER + scriptName;
+        }
 
-        this.errorLogFunction.error(msg + this.fixLineNo(stack[0]));
+        this.errorLogFunction.error(`${scriptName}: ${msg}${this.fixLineNo(stack[0])}`);
         for (let i = offs || 1; i < stack.length; i++) {
             if (!stack[i]) {
                 continue;
@@ -1169,7 +1175,7 @@ class JavaScript extends Adapter {
             if (stack[i].match(/runInNewContext|javascript\.js:/)) {
                 break;
             }
-            this.errorLogFunction.error(this.fixLineNo(stack[i]));
+            this.errorLogFunction.error(`${scriptName}: ${this.fixLineNo(stack[i])}`);
         }
     }
 
@@ -1446,15 +1452,15 @@ class JavaScript extends Adapter {
                 if (currentSetStatePerMinuteCounter > this.config.maxSetStatePerMinute) {
                     this.scripts[id].setStatePerMinuteProblemCounter++;
                     this.log.debug(
-                        `Script ${id} has reached the maximum of ${this.config.maxSetStatePerMinute} setState calls per minute in ${this.scripts[id].setStatePerMinuteProblemCounter} consecutive minutes`,
+                        `${id}: Script has reached the maximum of ${this.config.maxSetStatePerMinute} setState calls per minute in ${this.scripts[id].setStatePerMinuteProblemCounter} consecutive minutes`,
                     );
                     // Allow "too high counters" for 1 minute for script starts or such and only
                     // stop the script when lasts longer
                     if (this.scripts[id].setStatePerMinuteProblemCounter > 1) {
                         this.log.error(
-                            `Script ${id} is calling setState more than ${this.config.maxSetStatePerMinute} times per minute! Stopping Script now! Please check your script!`,
+                            `${id}: Script is calling setState more than ${this.config.maxSetStatePerMinute} times per minute! Stopping Script now! Please check your script!`,
                         );
-                        this.stopScript(id);
+                        void this.stopScript(id);
                     }
                 } else if (this.scripts[id].setStatePerMinuteProblemCounter > 0) {
                     this.scripts[id].setStatePerMinuteProblemCounter--;
@@ -1513,11 +1519,17 @@ class JavaScript extends Adapter {
             if (!pkgTypings) {
                 // Create the empty dummy declarations so users don't get the "not found" error
                 // for installed packages
-                pkgTypings = {
-                    [`node_modules/@types/${pkg}/index.d.ts`]: `declare module "${pkg}";`,
-                };
+                if (pkg.includes('/')) {
+                    pkgTypings = {
+                        [`node_modules/${pkg}/index.d.ts`]: `declare module "${pkg}";`,
+                    };
+                } else {
+                    pkgTypings = {
+                        [`node_modules/@types/${pkg}/index.d.ts`]: `declare module "${pkg}";`,
+                    };
+                }
             }
-            this.log.debug(`Loaded TypeScript definitions for ${pkg}: ${JSON.stringify(Object.keys(pkgTypings))}`);
+            this.log.debug(`Loaded TypeScript definitions for "${pkg}": ${JSON.stringify(Object.keys(pkgTypings))}`);
             // remember the declarations for the editor
             Object.assign(tsAmbient, pkgTypings);
             // and give the language servers access to them
@@ -1627,11 +1639,11 @@ class JavaScript extends Adapter {
             } catch (err: any) {
                 if (id.startsWith('javascript.') || id.startsWith('0_userdata.0')) {
                     this.log.info(
-                        `Could not parse value for id ${id} into ${this.objects[id].common.type}: ${err.toString()}`,
+                        `Could not parse value for id "${id}" into ${this.objects[id].common.type}: ${err.toString()}`,
                     );
                 } else {
                     this.log.debug(
-                        `Could not parse value for id ${id} into ${this.objects[id].common.type}: ${err.toString()}`,
+                        `Could not parse value for id "${id}" into ${this.objects[id].common.type}: ${err.toString()}`,
                     );
                 }
             }
@@ -2123,7 +2135,7 @@ class JavaScript extends Adapter {
                 script: new Script(source, options),
             } as JsScript;
         } catch (err: unknown) {
-            this.logError(`${name} compile failed:\r\nat `, err as Error);
+            this.logError(name, `compile failed at`, err as Error);
             return false;
         }
     }
@@ -2140,7 +2152,7 @@ class JavaScript extends Adapter {
         script.subscribesFile = {};
         script.setStatePerMinuteCounter = 0;
         script.setStatePerMinuteProblemCounter = 0;
-        this.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
+        void this.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
             val: false,
             ack: true,
             expire: 1000,
@@ -2155,12 +2167,12 @@ class JavaScript extends Adapter {
                 // lineOffset: this.globalScriptLines
             });
         } catch (err: unknown) {
-            this.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
+            void this.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
                 val: true,
                 ack: true,
                 c: 'execute',
             });
-            this.logError(name, err as Error);
+            this.logError(name, 'Error by run:', err as Error);
         }
     }
 
@@ -2228,7 +2240,7 @@ class JavaScript extends Adapter {
     }
 
     async stopScript(name: string): Promise<boolean> {
-        this.log.info(`Stopping script ${name}`);
+        this.log.info(`${name}: Stopping script`);
 
         await this.setState(`scriptEnabled.${name.substring(SCRIPT_CODE_MARKER.length)}`, false, true);
 
@@ -2240,9 +2252,9 @@ class JavaScript extends Adapter {
             try {
                 this.mods.fs.rmSync(this.tempDirectories[name], { recursive: true });
 
-                this.log.debug(`Removed temp directory of ${name}: ${this.tempDirectories[name]}`);
+                this.log.debug(`${name}: Removed temp directory: ${this.tempDirectories[name]}`);
             } catch {
-                this.log.warn(`Unable to remove temp directory of ${name}: ${this.tempDirectories[name]}`);
+                this.log.warn(`${name}: Unable to remove temp directory: ${this.tempDirectories[name]}`);
             }
 
             delete this.tempDirectories[name];
@@ -2327,7 +2339,7 @@ class JavaScript extends Adapter {
                 if (this.scripts[name].schedules[i]) {
                     const _name = this.scripts[name].schedules[i].name;
                     if (!this.mods.nodeSchedule.cancelJob(this.scripts[name].schedules[i])) {
-                        this.log.error(`Error by canceling scheduled job "${_name}"`);
+                        this.log.error(`${name}: Error by canceling scheduled job "${_name}"`);
                     }
                 }
             }
@@ -2363,7 +2375,7 @@ class JavaScript extends Adapter {
                             }
                         });
                     } catch (err: unknown) {
-                        this.log.error(`error in onStop callback: ${err as Error}`);
+                        this.log.error(`${name}: error in onStop callback: ${err as Error}`);
                     }
                 });
             }
@@ -2378,7 +2390,7 @@ class JavaScript extends Adapter {
         if (obj?.common?.enabled && this.debugState.scriptName === obj._id) {
             const id = obj._id;
             await this.debugStop();
-            this.log.info(`Debugging of ${id} was stopped, because started in normal mode`);
+            this.log.info(`${id}: Debugging was stopped, because started in normal mode`);
             return this.prepareScript(obj);
         }
 
@@ -2391,7 +2403,7 @@ class JavaScript extends Adapter {
 
             const nameId = name.substring(SCRIPT_CODE_MARKER.length);
             if (!nameId.length || nameId.endsWith('.')) {
-                this.log.error(`Script name ${name} is invalid!`);
+                this.log.error(`${name}: Script name "${name}" is invalid!`);
                 return false;
             }
             const idActive = `scriptEnabled.${nameId}`;
@@ -2411,11 +2423,11 @@ class JavaScript extends Adapter {
                 (obj.common.engineType as ScriptType) === 'Rules'
             ) {
                 // Javascript
-                this.log.info(`Start JavaScript ${name} (${obj.common.engineType})`);
+                this.log.info(`${name}: start JavaScript (${obj.common.engineType})`);
 
                 let sourceFn = name;
                 if (webstormDebug) {
-                    const fn = name.replace(/^script.js./, '').replace(/\./g, '/');
+                    const fn = name.replace(/^script\.js\./, '').replace(/\./g, '/');
                     sourceFn = this.mods.path.join(webstormDebug, `${fn}.js`);
                 }
                 const createdScript = this.createVM(`${this.globalScript}\n${obj.common.source}`, sourceFn, true);
@@ -2435,7 +2447,7 @@ class JavaScript extends Adapter {
 
             if (obj.common.engineType.toLowerCase().startsWith('typescript')) {
                 // TypeScript
-                this.log.info(`Compiling TypeScript source ${name}`);
+                this.log.info(`${name}: Compiling TypeScript source`);
                 // The source code must be transformed in order to support top level await
                 // and to force TypeScript to compile the code as a module
                 const transformedSource = transformScriptBeforeCompilation(obj.common.source, false);
@@ -2504,7 +2516,7 @@ class JavaScript extends Adapter {
                 return true;
             }
 
-            this.log.warn(`Unknown engine type for "${name}": ${obj.common.engineType}`);
+            this.log.warn(`${obj._id}: Unknown engine type: ${obj.common.engineType}`);
             return false;
         }
 
@@ -2514,7 +2526,7 @@ class JavaScript extends Adapter {
             const scriptIdName = _name.substring(SCRIPT_CODE_MARKER.length);
 
             if (!scriptIdName.length || scriptIdName.endsWith('.')) {
-                this.log.error(`Script name ${_name} is invalid!`);
+                this.log.error(`${obj._id}: Script name "${_name}" is invalid!`);
                 return false;
             }
             await this.setState(`scriptEnabled.${scriptIdName}`, false, true);
@@ -2530,7 +2542,7 @@ class JavaScript extends Adapter {
         try {
             obj = (await this.getForeignObjectAsync(id)) as ioBroker.ScriptObject | null | undefined;
         } catch (err: any) {
-            this.log.error(`Invalid script "${id}": ${err}`);
+            this.log.error(`${id}: Invalid script: ${err}`);
         }
         if (!obj) {
             return false;
@@ -2727,8 +2739,19 @@ class JavaScript extends Adapter {
     async patchFont(): Promise<boolean> {
         let stat: Stats | undefined;
         let dbFile: Buffer | undefined;
+        let fileName = `${__dirname}/../admin/vs/base/browser/ui/codicons/codicon/codicon.ttf`;
+        let jsonFileName = `${__dirname}/../admin/vsFont/codicon.json`;
         try {
-            stat = statSync(`${__dirname}/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf`);
+            if (existsSync(fileName)) {
+                stat = statSync(fileName);
+            }
+            if (!stat) {
+                jsonFileName = `${__dirname}/admin/vsFont/codicon.json`;
+                fileName = `${__dirname}/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf`;
+                if (existsSync(fileName)) {
+                    stat = statSync(fileName);
+                }
+            }
             const _dbFile = await this.readFileAsync(
                 'javascript.admin',
                 `vs/base/browser/ui/codicons/codicon/codicon.ttf`,
@@ -2742,10 +2765,7 @@ class JavaScript extends Adapter {
 
         if (stat?.size !== 73452 || dbFile?.byteLength !== 73452) {
             try {
-                const buffer = Buffer.from(
-                    JSON.parse(readFileSync(`${__dirname}/admin/vsFont/codicon.json`).toString()),
-                    'base64',
-                );
+                const buffer = Buffer.from(JSON.parse(readFileSync(jsonFileName).toString()), 'base64');
 
                 const jszip = await import('jszip');
                 const zip = await jszip.loadAsync(buffer);
@@ -2760,7 +2780,7 @@ class JavaScript extends Adapter {
                     this.log.error(`Cannot patch font: invalid font file!`);
                     return false;
                 }
-                writeFileSync(`${__dirname}/admin/vs/base/browser/ui/codicons/codicon/codicon.ttf`, Buffer.from(data));
+                writeFileSync(fileName, Buffer.from(data));
                 // upload this file
                 await this.writeFileAsync(
                     'javascript.admin',
@@ -2870,6 +2890,8 @@ class JavaScript extends Adapter {
     }
 
     /**
+     * Add declarations for global scripts
+     *
      * @param scriptID - The current script the declarations were generated from
      * @param declarations
      */
@@ -2953,15 +2975,15 @@ class JavaScript extends Adapter {
                 this.log.info(`send to debugger: ${message}`);
                 this.debugState.child.send(message);
             } catch {
-                this.debugStop().then(() =>
+                void this.debugStop().then(() =>
                     this.log.info(
-                        `Debugging of "${this.debugState.scriptName}" was stopped, because started in normal mode`,
+                        `${this.debugState.scriptName}: Debugging was stopped, because started in normal mode`,
                     ),
                 );
             }
         } else {
-            this.log.error(`Cannot send command to terminated inspector`);
-            this.setState(
+            this.log.error(`${this.debugState.scriptName}: Cannot send command to terminated inspector`);
+            void this.setState(
                 'debug.from',
                 JSON.stringify({ cmd: 'error', error: `Cannot send command to terminated inspector`, id: 1 }),
                 true,

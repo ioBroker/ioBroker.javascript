@@ -26,19 +26,6 @@ class DialogDelete extends React.Component<DialogDeleteProps, DialogDeleteState>
         };
     }
 
-    static getDerivedStateFromProps(
-        props: DialogDeleteProps,
-        state: DialogDeleteState,
-    ): Partial<DialogDeleteState> | null {
-        if (props.name !== state.name) {
-            return { name: props.name };
-        }
-        if (props.id !== state.id) {
-            return { id: props.id };
-        }
-        return null;
-    }
-
     handleCancel = (): void => {
         this.props.onClose();
     };
