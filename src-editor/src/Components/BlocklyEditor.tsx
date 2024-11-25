@@ -1,96 +1,20 @@
 import React from 'react';
 
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import { Cancel as IconCancel, Check as IconOk } from '@mui/icons-material';
+
 import { I18n, Message as DialogMessage, type ThemeType } from '@iobroker/adapter-react-v5';
+
 import DialogError from '../Dialogs/Error';
 import DialogExport from '../Dialogs/Export';
 import DialogImport from '../Dialogs/Import';
-
-// Used only types of blockly, no code
-import type { WorkspaceSvg } from 'blockly/core/workspace_svg';
-import type { BlockSvg } from 'blockly/core/block_svg';
-import type { FlyoutDefinition } from 'blockly/core/utils/toolbox';
-import type { Block, BlocklyOptions, ISelectable, Theme } from 'blockly';
-import type { ConnectionType } from 'blockly/core';
-import type { ITheme } from 'blockly/core/theme';
-import type { JavascriptGenerator } from 'blockly/javascript';
-
-// Multiline is now plugin. Together with FieldColor
-import { FieldMultilineInput, installAllBlocks as installMultiBlocks } from '@blockly/field-multilineinput';
-import { FieldColour, installAllBlocks as installColourBlocks } from '@blockly/field-colour';
-import { common as BlocklyCommon } from 'blockly/core';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
-import { Cancel as IconCancel, Check as IconOk } from '@mui/icons-material';
+import { type BlocklyType, type BlockSvg, type WorkspaceSvg, type CustomBlock, initBlockly } from './blockly-plugins';
 
 let languageBlocklyLoaded = false;
 let languageOwnLoaded = false;
 let toolboxText: string | null = null;
 let toolboxXml: Element | null = null;
 const scriptsLoaded: string[] = [];
-
-interface CustomBlock {
-    HUE: number;
-    blocks: Record<string, string>;
-}
-
-interface BlocklyType {
-    CustomBlocks: string[];
-    Words: Record<string, Record<ioBroker.Languages, string>>;
-    Action: CustomBlock;
-    Blocks: Record<string, BlockSvg>;
-    JavaScript: JavascriptGenerator;
-    Procedures: {
-        flyoutCategoryNew: (workspace: WorkspaceSvg) => FlyoutDefinition;
-    };
-    Xml: {
-        workspaceToDom: (workspace: WorkspaceSvg) => Element;
-        domToText: (dom: Node) => string;
-        blockToDom: (block: Block, opt_noId?: boolean) => Element | DocumentFragment;
-        domToPrettyText: (dom: Node) => string;
-        domToWorkspace: (xml: Element, workspace: WorkspaceSvg) => string[];
-    };
-    svgResize: (workspace: WorkspaceSvg) => void;
-    INPUT_VALUE: ConnectionType.INPUT_VALUE;
-    OUTPUT_VALUE: ConnectionType.OUTPUT_VALUE;
-    NEXT_STATEMENT: ConnectionType.NEXT_STATEMENT;
-    PREVIOUS_STATEMENT: ConnectionType.PREVIOUS_STATEMENT;
-    getSelected(): ISelectable | null;
-    utils: {
-        xml: {
-            textToDom: (text: string) => Element;
-        };
-    };
-    Theme: {
-        defineTheme: (name: string, themeObj: ITheme) => Theme;
-    };
-    inject: (container: Element | string, opt_options?: BlocklyOptions) => WorkspaceSvg;
-    Themes: {
-        Classic: Theme;
-    };
-    Events: {
-        VIEWPORT_CHANGE: 'viewport_change';
-        CREATE: 'create';
-        UI: 'ui';
-    };
-    FieldMultilineInput: typeof FieldMultilineInput;
-    FieldColour: typeof FieldColour;
-    dialog: {
-        prompt: (promptText: string, defaultText: string, callback: (p1: string | null) => void) => void;
-        setPrompt: (promptFunction: (p1: string, p2: string, p3: (p1: string | null) => void) => void) => void;
-    };
-}
-
-declare global {
-    interface Window {
-        ActiveXObject: any;
-        MSG: string[];
-        scripts: {
-            loading?: boolean;
-            blocklyWorkspace: WorkspaceSvg;
-            scripts?: string[];
-        };
-        Blockly: BlocklyType;
-    }
-}
 
 // BF (2020-10-31) I have no Idea, why it does not work as static in BlocklyEditor, but outside BlocklyEditor it works
 function searchXml(root: Element, text: string, _id?: string, _result?: string[]): string[] {
@@ -180,7 +104,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         this.lastSearch = this.props.searchText || '';
         this.blinkBlock = null;
 
-        BlocklyEditor.initBlockly();
+        initBlockly();
         BlocklyEditor.Blockly.dialog.setPrompt(this.onShowNameDialog);
 
         this.loadLanguages();
@@ -189,157 +113,6 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
     onShowNameDialog = (promptText: string, defaultText: string, callback: (p1: string | null) => void): void => {
         this.setState({ showInputPrompt: { promptText, defaultText, callback, value: defaultText } });
     };
-
-    static initBlockly(): void {
-        if (!BlocklyEditor.Blockly.FieldMultilineInput) {
-            installMultiBlocks({ javascript: BlocklyEditor.Blockly.JavaScript });
-            BlocklyEditor.Blockly.FieldMultilineInput = FieldMultilineInput;
-            Object.assign(
-                BlocklyEditor.Blockly.Blocks,
-                BlocklyCommon.createBlockDefinitionsFromJsonArray([
-                    {
-                        type: 'text_multiline',
-                        message0: '%1 %2',
-                        args0: [
-                            {
-                                type: 'field_image',
-                                src:
-                                    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAARCAYAAADpP' +
-                                    'U2iAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAdhgAAHYYBXaITgQAAABh0RVh0' +
-                                    'U29mdHdhcmUAcGFpbnQubmV0IDQuMS42/U4J6AAAAP1JREFUOE+Vks0KQUEYhjm' +
-                                    'RIja4ABtZ2dm5A3t3Ia6AUm7CylYuQRaUhZSlLZJiQbFAyRnPN33y01HOW08z88' +
-                                    '73zpwzM4F3GWOCruvGIE4/rLaV+Nq1hVGMBqzhqlxgCys4wJA65xnogMHsQ5luj' +
-                                    'nYHTejBBCK2mE4abjCgMGhNxHgDFWjDSG07kdfVa2pZMf4ZyMAdWmpZMfYOsLiD' +
-                                    'MYMjlMB+K613QISRhTnITnsYg5yUd0DETmEoMlkFOeIT/A58iyK5E18BuTBfgYX' +
-                                    'fwNJv4P9/oEBerLylOnRhygmGdPpTTBZAPkde61lbQe4moWUvYUZYLfUNftIY4z' +
-                                    'wA5X2Z9AYnQrEAAAAASUVORK5CYII=',
-                                width: 12,
-                                height: 17,
-                                alt: '\u00B6',
-                            },
-                            {
-                                type: 'field_multilinetext',
-                                name: 'TEXT',
-                                text: '',
-                            },
-                        ],
-                        output: 'String',
-                        style: 'text_blocks',
-                        helpUrl: '%{BKY_TEXT_TEXT_HELPURL}',
-                        tooltip: '%{BKY_TEXT_TEXT_TOOLTIP}',
-                        extensions: ['parent_tooltip_when_inline'],
-                    },
-                ]),
-            );
-        }
-        if (!BlocklyEditor.Blockly.FieldColour) {
-            installColourBlocks({ javascript: BlocklyEditor.Blockly.JavaScript });
-            BlocklyEditor.Blockly.FieldColour = FieldColour;
-            Object.assign(
-                BlocklyEditor.Blockly.Blocks,
-                BlocklyCommon.createBlockDefinitionsFromJsonArray([
-                    {
-                        type: 'colour_picker',
-                        message0: '%1',
-                        args0: [
-                            {
-                                type: 'field_colour',
-                                name: 'COLOUR',
-                                colour: '#ff0000',
-                            },
-                        ],
-                        output: 'Colour',
-                        helpUrl: '%{BKY_COLOUR_PICKER_HELPURL}',
-                        style: 'colour_blocks',
-                        tooltip: '%{BKY_COLOUR_PICKER_TOOLTIP}',
-                        extensions: ['parent_tooltip_when_inline'],
-                    },
-                ]),
-            );
-            Object.assign(
-                BlocklyEditor.Blockly.Blocks,
-                BlocklyCommon.createBlockDefinitionsFromJsonArray([
-                    {
-                        type: 'colour_random',
-                        message0: '%{BKY_COLOUR_RANDOM_TITLE}',
-                        output: 'Colour',
-                        helpUrl: '%{BKY_COLOUR_RANDOM_HELPURL}',
-                        style: 'colour_blocks',
-                        tooltip: '%{BKY_COLOUR_RANDOM_TOOLTIP}',
-                    },
-                ]),
-            );
-            Object.assign(
-                BlocklyEditor.Blockly.Blocks,
-                BlocklyCommon.createBlockDefinitionsFromJsonArray([
-                    {
-                        type: 'colour_rgb',
-                        message0:
-                            '%{BKY_COLOUR_RGB_TITLE} %{BKY_COLOUR_RGB_RED} %1 %{BKY_COLOUR_RGB_GREEN} %2 %{BKY_COLOUR_RGB_BLUE} %3',
-                        args0: [
-                            {
-                                type: 'input_value',
-                                name: 'RED',
-                                check: 'Number',
-                                align: 'RIGHT',
-                            },
-                            {
-                                type: 'input_value',
-                                name: 'GREEN',
-                                check: 'Number',
-                                align: 'RIGHT',
-                            },
-                            {
-                                type: 'input_value',
-                                name: 'BLUE',
-                                check: 'Number',
-                                align: 'RIGHT',
-                            },
-                        ],
-                        output: 'Colour',
-                        helpUrl: '%{BKY_COLOUR_RGB_HELPURL}',
-                        style: 'colour_blocks',
-                        tooltip: '%{BKY_COLOUR_RGB_TOOLTIP}',
-                    },
-                ]),
-            );
-            Object.assign(
-                BlocklyEditor.Blockly.Blocks,
-                BlocklyCommon.createBlockDefinitionsFromJsonArray([
-                    {
-                        type: 'colour_blend',
-                        message0:
-                            '%{BKY_COLOUR_BLEND_TITLE} %{BKY_COLOUR_BLEND_COLOUR1} ' +
-                            '%1 %{BKY_COLOUR_BLEND_COLOUR2} %2 %{BKY_COLOUR_BLEND_RATIO} %3',
-                        args0: [
-                            {
-                                type: 'input_value',
-                                name: 'COLOUR1',
-                                check: 'Colour',
-                                align: 'RIGHT',
-                            },
-                            {
-                                type: 'input_value',
-                                name: 'COLOUR2',
-                                check: 'Colour',
-                                align: 'RIGHT',
-                            },
-                            {
-                                type: 'input_value',
-                                name: 'RATIO',
-                                check: 'Number',
-                                align: 'RIGHT',
-                            },
-                        ],
-                        output: 'Colour',
-                        helpUrl: '%{BKY_COLOUR_BLEND_HELPURL}',
-                        style: 'colour_blocks',
-                        tooltip: '%{BKY_COLOUR_BLEND_TOOLTIP}',
-                    },
-                ]),
-            );
-        }
-    }
 
     static loadJS(url: string, callback: () => void, location?: HTMLElement): void {
         const scriptTag = document.createElement('script');
