@@ -1,10 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
-import {
-    Box,
-    IconButton,
-} from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 
 import {
     MdDeleteForever as IconDelete,
@@ -13,15 +9,18 @@ import {
     MdVisibilityOff as IconHide,
 } from 'react-icons/md';
 
-import { I18n, Utils } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
+import type { LogMessage } from '@/types';
 
 // replace later with MdHorizontalSplit and MdVerticalSplit
-const IconVerticalSplit   = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgAQMAAADYVuV7AAAABlBMVEUAAAAzMzPI8eYgAAAAAXRSTlMAQObYZgAAACFJREFUeAFjAIJRwP////8PYIKWHCigNQdKj/pn1D+jAABTG16wVQqVpQAAAABJRU5ErkJggg==';
-const IconHorizontalSplit = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgAQMAAADYVuV7AAAABlBMVEUAAAAzMzPI8eYgAAAAAXRSTlMAQObYZgAAABtJREFUeAFjAIJRwP8fCj7QkENn/4z6Z5QzCgBjbWaoyx1PqQAAAABJRU5ErkJggg==';
+const IconVerticalSplit =
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgAQMAAADYVuV7AAAABlBMVEUAAAAzMzPI8eYgAAAAAXRSTlMAQObYZgAAACFJREFUeAFjAIJRwP////8PYIKWHCigNQdKj/pn1D+jAABTG16wVQqVpQAAAABJRU5ErkJggg==';
+const IconHorizontalSplit =
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgAQMAAADYVuV7AAAABlBMVEUAAAAzMzPI8eYgAAAAAXRSTlMAQObYZgAAABtJREFUeAFjAIJRwP8fCj7QkENn/4z6Z5QzCgBjbWaoyx1PqQAAAABJRU5ErkJggg==';
 
-function getTimeString(d) {
+function getTimeString(d: Date): string {
     let text;
-    let i = d.getHours();
+    let i: number | string = d.getHours();
     if (i < 10) {
         i = `0${i.toString()}`;
     }
@@ -48,14 +47,14 @@ function getTimeString(d) {
 }
 const TOOLBOX_WIDTH = 34;
 
-const styles = {
+const styles: Record<string, any> = {
     logBox: {
         width: '100%',
         height: '100%',
         position: 'relative',
         overflow: 'hidden',
     },
-    logBoxInner: theme => ({
+    logBoxInner: (theme: IobTheme): React.CSSProperties => ({
         display: 'inline-block',
         color: theme.palette.mode === 'dark' ? 'white' : 'black',
         width: `calc(100% - ${TOOLBOX_WIDTH}px)`,
@@ -65,24 +64,24 @@ const styles = {
         position: 'relative',
         verticalAlign: 'top',
     }),
-    info: theme => ({
+    info: (theme: IobTheme): React.CSSProperties => ({
         background: theme.palette.mode === 'dark' ? 'darkgrey' : 'lightgrey',
-        color: theme.palette.mode === 'dark' ?  'black' : 'black',
+        color: theme.palette.mode === 'dark' ? 'black' : 'black',
     }),
-    error: theme => ({
+    error: (theme: IobTheme): React.CSSProperties => ({
         background: '#FF0000',
-        color: theme.palette.mode === 'dark' ?  'black' : 'white',
+        color: theme.palette.mode === 'dark' ? 'black' : 'white',
     }),
-    warn: theme => ({
+    warn: (theme: IobTheme): React.CSSProperties => ({
         background: '#FF8000',
-        color: theme.palette.mode === 'dark' ?  'black' : 'white',
+        color: theme.palette.mode === 'dark' ? 'black' : 'white',
     }),
-    debug: theme => ({
+    debug: (theme: IobTheme): React.CSSProperties => ({
         background: 'gray',
         opacity: 0.8,
-        color: theme.palette.mode === 'dark' ?  'black' : 'white',
+        color: theme.palette.mode === 'dark' ? 'black' : 'white',
     }),
-    silly: theme => ({
+    silly: (theme: IobTheme): React.CSSProperties => ({
         background: 'gray',
         opacity: 0.6,
         color: theme.palette.mode === 'dark' ? 'black' : 'white',
@@ -94,7 +93,8 @@ const styles = {
     toolbox: {
         width: TOOLBOX_WIDTH,
         height: '100%',
-        boxShadow: '2px 0px 4px -1px rgba(0, 0, 0, 0.2), 4px 0px 5px 0px rgba(0, 0, 0, 0.14), 1px 0px 10px 0px rgba(0, 0, 0, 0.12)',
+        boxShadow:
+            '2px 0px 4px -1px rgba(0, 0, 0, 0.2), 4px 0px 5px 0px rgba(0, 0, 0, 0.14), 1px 0px 10px 0px rgba(0, 0, 0, 0.12)',
         display: 'inline-block',
         verticalAlign: 'top',
         overflow: 'hidden',
@@ -109,12 +109,16 @@ const styles = {
         width: 40,
         fontWeight: 'bold',
     },
+    trPreMessage: {
+        padding: 0,
+        margin: 0,
+    },
     iconButtons: {
         width: 32,
         height: 32,
         padding: 4,
     },
-    layoutIcon: theme => ({
+    layoutIcon: (theme: IobTheme): any => ({
         '& img': {
             width: 24,
             height: 24,
@@ -124,20 +128,38 @@ const styles = {
     }),
 };
 
-function paddingMs(ms) {
+function paddingMs(ms: number): string {
     if (ms < 10) {
         return `00${ms}`;
     }
     if (ms < 100) {
         return `0${ms}`;
     }
-    return ms;
+    return ms.toString();
 }
 
-let gText = {};
+const gText: Record<string, string[]> = {};
 
-class Log extends React.Component {
-    constructor(props) {
+interface LogProps {
+    selected: string | null;
+    socket: AdminConnection;
+    onLayoutChange?: () => void;
+    verticalLayout: boolean;
+    editing?: string[];
+    onHideLog: () => void;
+}
+
+interface LogState {
+    lines: Record<string, React.JSX.Element[]>;
+    goBottom: boolean;
+    selected: string | null;
+    editing: string[];
+}
+
+class Log extends React.Component<LogProps, LogState> {
+    private readonly messagesEnd: React.RefObject<HTMLDivElement>;
+
+    constructor(props: LogProps) {
         super(props);
         this.state = {
             lines: {},
@@ -145,15 +167,17 @@ class Log extends React.Component {
             selected: null,
             editing: this.props.editing || [],
         };
-        this.lastIndex = null;
-        this.messagesEnd = React.createRef();
+        this.messagesEnd = React.createRef<HTMLDivElement>();
     }
 
-    generateLine(row) {
+    static generateLine(row: LogMessage, scriptName: string): React.JSX.Element {
         let message = row.message || '';
 
         if (typeof message !== 'object') {
-            const regExp = new RegExp(`${row.from.replace('.', '\\.').replace(')', '\\)').replace('(', '\\(')} \\(\\d+\\) `, 'g');
+            const regExp = new RegExp(
+                `${row.from.replace('.', '\\.').replace(')', '\\)').replace('(', '\\(')} \\(\\d+\\) `,
+                'g',
+            );
             const matches = message.match(regExp);
 
             if (matches) {
@@ -163,40 +187,52 @@ class Log extends React.Component {
             }
         }
 
-        return <Box
-            component="tr"
-            key={`tr_${row.ts}_${row.message.substr(-10)}`}
-            sx={styles[row.severity]}
-        >
-            <td style={styles.trFrom}>{row.from}</td>
-            <td style={styles.trTime}>{getTimeString(new Date(row.ts))}</td>
-            <td style={styles.trSeverity}>{row.severity}</td>
-            <td>{message}</td>
-        </Box>;
+        if (message.startsWith(`${scriptName}: `)) {
+            message = message.substring(scriptName.length + 2);
+        }
+
+        return (
+            <Box
+                component="tr"
+                key={`tr_${row.ts}_${row.message.substring(row.message.length - 10)}`}
+                sx={styles[row.severity]}
+            >
+                <td style={styles.trFrom}>{row.from}</td>
+                <td style={styles.trTime}>{getTimeString(new Date(row.ts))}</td>
+                <td style={styles.trSeverity}>{row.severity}</td>
+                <td>
+                    <pre style={styles.trPreMessage}>{message}</pre>
+                </td>
+            </Box>
+        );
     }
 
-    scrollToBottom() {
-        this.messagesEnd && this.messagesEnd.current && this.messagesEnd.current.scrollIntoView({ behavior: 'smooth' });
+    scrollToBottom(): void {
+        this.messagesEnd?.current?.scrollIntoView({ behavior: 'smooth' });
     }
 
-    logHandler = message => {
-        let allLines = this.state.lines;
+    logHandler = (message: LogMessage): void => {
+        const allLines = this.state.lines;
         const scripts = this.state.editing.filter(id => message.message.includes(id));
-        let selected;
+        let selected: string | null = null;
         if (!scripts.length) {
             return;
-        } else if (scripts.length === 1) {
+        }
+        if (scripts.length === 1) {
             selected = scripts[0];
         } else {
             // try to get the script with the longest common substring
             scripts.sort();
             selected = scripts[scripts.length - 1];
         }
+        if (!selected) {
+            return;
+        }
 
-        let lines = allLines[selected] || [];
-        let text = gText[selected] || [];
+        const lines: React.JSX.Element[] = allLines[selected] || [];
+        const text: string[] = gText[selected] || [];
 
-        lines.push(this.generateLine(message));
+        lines.push(Log.generateLine(message, selected));
         let severity = message.severity;
         if (severity === 'info' || severity === 'warn') {
             severity += ' ';
@@ -213,27 +249,31 @@ class Log extends React.Component {
         this.setState({ lines: allLines });
     };
 
-    componentDidMount() {
+    componentDidMount(): void {
+        // @ts-expect-error fixed in socket classes
         this.props.socket.registerLogHandler(this.logHandler);
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
+        // @ts-expect-error fixed in socket classes
         this.props.socket.unregisterLogHandler(this.logHandler);
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(): void {
         this.state.goBottom && this.scrollToBottom();
     }
 
-    static getDerivedStateFromProps(props, state) {
+    static getDerivedStateFromProps(props: LogProps, state: LogState): Partial<LogState> | null {
         let changed = false;
-        let newState = {};
+        const newState: Partial<LogState> = {};
 
         if (props.selected !== state.selected) {
-            let selected = props.selected;
-            let allLines = state.lines;
-            allLines[selected] = allLines[selected] || [];
-            gText[selected] = gText[selected] || [];
+            const selected = props.selected;
+            const allLines = state.lines;
+            if (selected) {
+                allLines[selected] = allLines[selected] || [];
+                gText[selected] = gText[selected] || [];
+            }
             newState.selected = selected;
             changed = true;
         }
@@ -241,10 +281,10 @@ class Log extends React.Component {
         if (JSON.stringify(props.editing) !== JSON.stringify(state.editing)) {
             const editing = JSON.parse(JSON.stringify(props.editing));
             changed = true;
-            let allLines = state.lines;
+            const allLines = state.lines;
 
             for (const id in gText) {
-                if (gText.hasOwnProperty(id)) {
+                if (Object.prototype.hasOwnProperty.call(gText, id)) {
                     if (!editing.includes(id)) {
                         delete gText[id];
                         delete allLines[id];
@@ -257,83 +297,115 @@ class Log extends React.Component {
         return changed ? newState : null;
     }
 
-    onCopy() {
-        Utils.copyToClipboard((gText[this.state.selected] || []).join('\n'));
+    onCopy(): void {
+        Utils.copyToClipboard((gText[this.state.selected as string] || []).join('\n'));
     }
 
-    clearLog() {
-        let allLines = this.state.lines;
-        if (allLines[this.state.selected]) {
-            allLines[this.state.selected] = [];
+    clearLog(): void {
+        const allLines = this.state.lines;
+        if (allLines[this.state.selected as string]) {
+            allLines[this.state.selected as string] = [];
         }
-        if (gText[this.state.selected]) {
-            gText[this.state.selected] = [];
+        if (gText[this.state.selected as string]) {
+            gText[this.state.selected as string] = [];
         }
         this.setState({ lines: allLines });
     }
 
-    renderLogList(lines) {
-        if (this.state.selected && lines && lines.length) {
-            return <Box sx={styles.logBoxInner} key="logList">
-                <table key="logTable" style={styles.table}><tbody>{lines}</tbody></table>
-                <div key="logScrollPoint" ref={this.messagesEnd} style={{ float: 'left', clear: 'both' }}/>
-            </Box>;
+    renderLogList(lines: (React.JSX.Element | null)[] | null): React.JSX.Element {
+        if (this.state.selected && lines?.length) {
+            return (
+                <Box
+                    sx={styles.logBoxInner}
+                    key="logList"
+                >
+                    <table
+                        key="logTable"
+                        style={styles.table}
+                    >
+                        <tbody>{lines}</tbody>
+                    </table>
+                    <div
+                        key="logScrollPoint"
+                        ref={this.messagesEnd}
+                        style={{ float: 'left', clear: 'both' }}
+                    />
+                </Box>
+            );
         }
 
-        return <Box key="logList" sx={styles.logBoxInner} style={{ paddingLeft: 10 }}>{I18n.t('Log outputs')}</Box>;
+        return (
+            <Box
+                key="logList"
+                sx={styles.logBoxInner}
+                style={{ paddingLeft: 10 }}
+            >
+                {I18n.t('Log outputs')}
+            </Box>
+        );
     }
 
-    render() {
-        const lines = this.state.selected && this.state.lines[this.state.selected];
-        return <div style={styles.logBox}>
-            <div style={styles.toolbox} key="toolbox">
-                <IconButton
-                    style={styles.iconButtons}
-                    onClick={() => this.setState({ goBottom: !this.state.goBottom })}
-                    color={this.state.goBottom ? 'secondary' : ''}
-                    size="medium"
+    render(): React.JSX.Element {
+        const lines = this.state.selected ? this.state.lines[this.state.selected] : null;
+        return (
+            <div style={styles.logBox}>
+                <div
+                    style={styles.toolbox}
+                    key="toolbox"
                 >
-                    <IconBottom />
-                </IconButton>
-                {lines && lines.length ? <IconButton
-                    style={styles.iconButtons}
-                    onClick={() => this.clearLog()}
-                    size="medium">
-                    <IconDelete />
-                </IconButton> : null}
-                {lines && lines.length ? <IconButton
-                    style={styles.iconButtons}
-                    onClick={() => this.onCopy()}
-                    size="medium">
-                    <IconCopy />
-                </IconButton> : null}
-                {this.props.onLayoutChange ? <IconButton
-                    style={styles.iconButtons}
-                    onClick={() => this.props.onLayoutChange()}
-                    title={I18n.t('Change layout')}
-                    size="medium"
-                    sx={styles.layoutIcon}
-                >
-                    <img alt="split" src={this.props.verticalLayout ? IconVerticalSplit : IconHorizontalSplit} />
-                </IconButton> : null}
-                <IconButton
-                    style={styles.iconButtons}
-                    onClick={() => this.props.onHideLog()}
-                    title={I18n.t('Hide logs')}
-                    size="medium">
-                    <IconHide />
-                </IconButton>
+                    <IconButton
+                        style={styles.iconButtons}
+                        onClick={() => this.setState({ goBottom: !this.state.goBottom })}
+                        color={this.state.goBottom ? 'secondary' : undefined}
+                        size="medium"
+                    >
+                        <IconBottom />
+                    </IconButton>
+                    {lines?.length ? (
+                        <IconButton
+                            style={styles.iconButtons}
+                            onClick={() => this.clearLog()}
+                            size="medium"
+                        >
+                            <IconDelete />
+                        </IconButton>
+                    ) : null}
+                    {lines?.length ? (
+                        <IconButton
+                            style={styles.iconButtons}
+                            onClick={() => this.onCopy()}
+                            size="medium"
+                        >
+                            <IconCopy />
+                        </IconButton>
+                    ) : null}
+                    {this.props.onLayoutChange ? (
+                        <IconButton
+                            style={styles.iconButtons}
+                            onClick={() => this.props.onLayoutChange && this.props.onLayoutChange()}
+                            title={I18n.t('Change layout')}
+                            size="medium"
+                            sx={styles.layoutIcon}
+                        >
+                            <img
+                                alt="split"
+                                src={this.props.verticalLayout ? IconVerticalSplit : IconHorizontalSplit}
+                            />
+                        </IconButton>
+                    ) : null}
+                    <IconButton
+                        style={styles.iconButtons}
+                        onClick={() => this.props.onHideLog()}
+                        title={I18n.t('Hide logs')}
+                        size="medium"
+                    >
+                        <IconHide />
+                    </IconButton>
+                </div>
+                {this.renderLogList(lines)}
             </div>
-            {this.renderLogList(lines)}
-        </div>;
+        );
     }
 }
-
-Log.propTypes = {
-    selected: PropTypes.string,
-    socket: PropTypes.object,
-    onLayoutChange: PropTypes.func,
-    verticalLayout: PropTypes.bool,
-};
 
 export default Log;

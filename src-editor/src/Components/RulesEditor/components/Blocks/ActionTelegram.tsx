@@ -1,14 +1,17 @@
 import { I18n } from '@iobroker/adapter-react-v5';
-import GenericBlock from '../GenericBlock';
+import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
+import type { RuleBlockConfigActionTelegram, RuleBlockDescription, RuleContext } from '@/Components/RulesEditor/types';
 
-class ActionTelegram extends GenericBlock {
-    constructor(props) {
+class ActionTelegram extends GenericBlock<RuleBlockConfigActionTelegram> {
+    private readonly cachePromises: Record<string, Promise<ioBroker.State | null | undefined>>;
+
+    constructor(props: GenericBlockProps<RuleBlockConfigActionTelegram>) {
         super(props, ActionTelegram.getStaticData());
         this.cachePromises = {};
     }
 
-    static compile(config, context) {
-        let text = (config.text || '').replace(/"/g, '\\"');
+    static compile(config: RuleBlockConfigActionTelegram, context: RuleContext): string {
+        const text = (config.text || '').replace(/"/g, '\\"');
         if (!text) {
             return `// no text defined
 _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
@@ -19,59 +22,71 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
 \t\tsendTo("${config.instance}", "send", ${config.user && config.user !== '_' ? `{user: "${(config.user || '').replace(/"/g, '\\"')}", text: subActionVar${config._id}}` : `subActionVar${config._id}`});`;
     }
 
-    renderDebug(debugMessage) {
+    // eslint-disable-next-line class-methods-use-this
+    renderDebug(debugMessage: { data: { text: string } }): string {
         return `${I18n.t('Sent:')} ${debugMessage.data.text}`;
     }
 
-    onValueChanged(value, attr) {
+    onValueChanged(value: any, attr: string): void {
         if (attr === 'instance') {
             this._setUsers(value);
         }
     }
 
-    _setUsers(instance) {
+    _setUsers(instance?: string): void {
         instance = instance || this.state.settings.instance || 'telegram.0';
-        this.cachePromises[instance] = this.cachePromises[instance] || this.props.socket.getState(`${instance}.communicate.users`);
+        if (!(this.cachePromises[instance] instanceof Promise)) {
+            this.cachePromises[instance] = this.props.socket.getState(`${instance}.communicate.users`);
+        }
         if (!this.state.settings._id) {
-            return this.setState({
-                inputs: [
-                    {
-                        nameRender: 'renderSelect',
-                        adapter: 'telegram',
-                        frontText: 'Instance:',
-                        defaultValue: 'telegram.0',
-                        attr: 'instance',
-                    },
-                    {
-                        nameRender: 'renderSelect',
-                        attr: 'user',
-                        options: [{title: 'telegram.0', value: 'telegram.0'}],
-                        defaultValue: '',
-                        frontText: 'User:',
-                    },
-                    {
-                        nameRender: 'renderModalInput',
-                        attr: 'text',
-                        defaultValue: 'Hallo',
-                        nameBlock: '',
-                        frontText: 'Text:',
-                    }
-                ]
-            }, () => super.onTagChange());
+            return this.setState(
+                {
+                    inputs: [
+                        {
+                            nameRender: 'renderSelect',
+                            adapter: 'telegram',
+                            frontText: 'Instance:',
+                            defaultValue: 'telegram.0',
+                            attr: 'instance',
+                        },
+                        {
+                            nameRender: 'renderSelect',
+                            attr: 'user',
+                            options: [{ title: 'telegram.0', value: 'telegram.0' }],
+                            defaultValue: '',
+                            frontText: 'User:',
+                        },
+                        {
+                            nameRender: 'renderModalInput',
+                            attr: 'text',
+                            defaultValue: 'Hallo',
+                            nameBlock: '',
+                            frontText: 'Text:',
+                        },
+                    ],
+                },
+                () => super.onTagChange(),
+            );
         }
 
-        this.cachePromises[instance]
-            .then(users => {
-                try {
-                    users = users?.val ? JSON.parse(users.val) : null;
-                    users = users && Object.keys(users).map(user => ({title: users[user].userName || users[user].firstName, value: user}));
-                    users = users || [];
-                    users.unshift({ title: 'all', value: '' });
-                } catch (e) {
-                    users = [{ title: 'all', value: '' }];
-                }
+        void this.cachePromises[instance].then((usersObj: ioBroker.State | null | undefined) => {
+            let users: { title: string; value: string }[];
+            try {
+                const usersA = usersObj?.val ? JSON.parse(usersObj.val as string) : null;
+                users = usersA
+                    ? Object.keys(usersA).map(user => ({
+                          title: usersA[user].userName || usersA[user].firstName,
+                          value: user,
+                      }))
+                    : [];
+                users = users || [];
+                users.unshift({ title: 'all', value: '' });
+            } catch {
+                users = [{ title: 'all', value: '' }];
+            }
 
-                this.setState({
+            this.setState(
+                {
                     inputs: [
                         {
                             nameRender: 'renderInstance',
@@ -94,27 +109,31 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
                             nameBlock: '',
                             frontText: 'Text:',
                         },
-                    ]
-                }, () => super.onTagChange());
-            });
+                    ],
+                },
+                () => super.onTagChange(),
+            );
+        });
     }
 
-    onTagChange(tagCard) {
+    onTagChange(): void {
         this._setUsers();
     }
 
-    static getStaticData() {
+    static getStaticData(): RuleBlockDescription {
         return {
             acceptedBy: 'actions',
             name: 'Telegram',
             id: 'ActionTelegram',
             adapter: 'telegram',
             title: 'Sends message via telegram',
-            helpDialog: 'You can use %s in the text to display current trigger value or %id to display the triggered object ID',
-        }
+            helpDialog:
+                'You can use %s in the text to display current trigger value or %id to display the triggered object ID',
+        };
     }
 
-    getData() {
+    // eslint-disable-next-line class-methods-use-this
+    getData(): RuleBlockDescription {
         return ActionTelegram.getStaticData();
     }
 }

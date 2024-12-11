@@ -6,33 +6,32 @@
     * {
         color: var(--colorInput) !important;
     }
-    [class*="MuiInputLabel-shrink"] {
+    [class*='MuiInputLabel-shrink'] {
         color: var(--colorBlock) !important;
     }
-    [class*="MuiInput-underline"] {
+    [class*='MuiInput-underline'] {
         :after {
             border-bottom-color: var(--lineColor) !important;
         }
     }
     &:hover {
-        [class*="MuiOutlinedInput-notchedOutline"] {
+        [class*='MuiOutlinedInput-notchedOutline'] {
             border-color: var(--lineColor) !important;
         }
     }
-    [class*="MuiOutlinedInput-notchedOutline"] {
+    [class*='MuiOutlinedInput-notchedOutline'] {
         border-color: var(--lineColor) !important;
         &:hover {
             border-color: var(--lineColor) !important;
         }
-        [class*="Mui-focused"] {
+        [class*='Mui-focused'] {
             border-color: var(--lineColor) !important;
         }
-        [class*="Mui-disabled"] {
+        [class*='Mui-disabled'] {
             border-color: var(--lineColor) !important;
         }
     }
 }
 
 .icon {
-
 }

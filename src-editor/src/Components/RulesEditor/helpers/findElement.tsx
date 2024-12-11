@@ -1,35 +1,44 @@
-export function findElement(settings, userRules, additionalParameter) {
+import type { BlockValue, RuleBlockConfig, RuleUserRules } from '@/Components/RulesEditor/types';
+
+export function findElement(
+    settings: RuleBlockConfig,
+    userRules: RuleUserRules,
+    additionalParameter: BlockValue,
+): RuleUserRules {
     const { _id, acceptedBy } = settings;
     let block;
 
     if (!acceptedBy || !userRules[acceptedBy]) {
-        console.warn('Cannot find ' + acceptedBy);
+        console.warn(`Cannot find ${acceptedBy}`);
         return userRules;
     }
 
     switch (acceptedBy) {
         case 'actions':
-            block = userRules[acceptedBy][additionalParameter].find(el => el._id === _id);
+            block = userRules.actions[additionalParameter as 'else' | 'then'].find(el => el._id === _id);
             if (!block) {
-                console.warn('Cannot find ' + _id);
+                console.warn(`Cannot find ${_id}`);
             } else {
-                userRules[acceptedBy][additionalParameter][userRules[acceptedBy][additionalParameter].indexOf(block)] = settings;
+                const pos = userRules.actions[additionalParameter as 'else' | 'then'].indexOf(block);
+                userRules.actions[additionalParameter as 'else' | 'then'][pos] = settings;
             }
             return userRules;
         case 'conditions':
-            block = userRules[acceptedBy][additionalParameter].find(el => el._id === _id);
+            block = userRules.conditions[additionalParameter as number].find(el => el._id === _id);
             if (!block) {
-                console.warn('Cannot find ' + _id);
+                console.warn(`Cannot find ${_id}`);
             } else {
-                userRules[acceptedBy][additionalParameter][userRules[acceptedBy][additionalParameter].indexOf(block)] = settings;
+                const pos = userRules.conditions[additionalParameter as number].indexOf(block);
+                userRules.conditions[additionalParameter as number][pos] = settings;
             }
             return userRules;
         default:
-            block = userRules[acceptedBy].find(el => el._id === _id);
+            block = userRules.triggers.find(el => el._id === _id);
             if (!block) {
-                console.warn('Cannot find ' + _id);
+                console.warn(`Cannot find ${_id}`);
             } else {
-                userRules[acceptedBy][userRules[acceptedBy].indexOf(block)] = settings;
+                const pos = userRules.triggers.indexOf(block);
+                userRules.triggers[pos] = settings;
             }
             return userRules;
     }

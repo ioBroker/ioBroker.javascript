@@ -1,10 +1,6 @@
-import React, {
-    createContext,
-    useEffect,
-    useState,
-} from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
 
 import ActionSayText from '../Blocks/ActionSayText';
 import ActionSendEmail from '../Blocks/ActionSendEmail';
@@ -13,8 +9,10 @@ import ActionPushover from '../Blocks/ActionPushover';
 import ActionWhatsappcmb from '../Blocks/ActionWhatsappcmb';
 import ActionPushsafer from '../Blocks/ActionPushsafer';
 import StandardBlocks from '../StandardBlocks';
+import type { GenericBlock } from '../GenericBlock';
+import type { DebugMessage } from '../../types';
 
-const ADAPTERS = {
+const ADAPTERS: Record<string, typeof GenericBlock<any> | null> = {
     telegram: ActionTelegram,
     email: ActionSendEmail,
     sayit: ActionSayText,
@@ -23,36 +21,67 @@ const ADAPTERS = {
     pushsafer: ActionPushsafer,
 };
 
-export const ContextWrapperCreate = createContext();
+interface RuleContext {
+    blocks: (typeof GenericBlock<any>)[] | null;
+    socket: AdminConnection | null;
+    onUpdate: boolean;
+    setOnUpdate: (value: boolean) => void;
+    onDebugMessage: DebugMessage[];
+    setOnDebugMessage: (message: DebugMessage[]) => void;
+    enableSimulation: boolean;
+    setEnableSimulation: (enableSimulation: boolean) => void;
+}
 
-const getOrLoadRemote = (remote, shareScope, remoteFallbackUrl = undefined) =>
+export const ContextWrapperCreate = createContext<RuleContext>({
+    blocks: null,
+    socket: null,
+
+    onUpdate: false,
+    setOnUpdate: (_onUpdate: boolean): void => {},
+
+    setOnDebugMessage: (_message: DebugMessage[]): void => {},
+    onDebugMessage: [],
+
+    enableSimulation: false,
+    setEnableSimulation: (_enableSimulation: boolean): void => {},
+});
+
+const getOrLoadRemote = (
+    remote: string,
+    shareScope: string,
+    remoteFallbackUrl: string | undefined = undefined,
+): Promise<{ get: (module: string) => () => Promise<{ default: typeof GenericBlock<any> }> }> =>
     new Promise((resolve, reject) => {
-    // check if remote exists on window
-        if (!window[remote]) {
+        // check if remote exists on window
+        if (!(window as any)[remote]) {
             // search dom to see if remote tag exists, but might still be loading (async)
-            const existingRemote = document.querySelector(`[data-webpack="${remote}"]`);
+            const existingRemote: HTMLScriptElement | null = document.querySelector(`[data-webpack="${remote}"]`);
+
             // when remote is loaded...
-            const onload = async () => {
+            const onload = async (): Promise<void> => {
                 // check if it was initialized
-                if (!window[remote]) {
-                    return reject(`Cannot load Remote "${remote}" to inject`);
+                if (!(window as any)[remote]) {
+                    reject(new Error(`Cannot load Remote "${remote}" to inject`));
+                    return;
                 }
-                if (!window[remote].__initialized) {
+                if (!(window as any)[remote].__initialized) {
                     // if share scope doesn't exist (like in webpack 4) then expect shareScope to be a manual object
+                    // @ts-expect-error it is a trick and must be so
                     if (typeof __webpack_share_scopes__ === 'undefined') {
                         // use default share scope object passed in manually
-                        await window[remote].init(shareScope.default);
+                        await (window as any)[remote].init(shareScope);
                     } else {
                         // otherwise, init share scope as usual
-                        // eslint-disable-next-line
-                        await window[remote].init(__webpack_share_scopes__[shareScope]);
+                        // @ts-expect-error it is a trick and must be so
+                        await (window as any)[remote].init(__webpack_share_scopes__[shareScope]);
                     }
                     // mark remote as initialized
-                    window[remote].__initialized = true;
+                    (window as any)[remote].__initialized = true;
                 }
                 // resolve promise so marking remote as loaded
-                resolve();
+                resolve((window as any)[remote]);
             };
+
             if (existingRemote) {
                 // if existing remote but not loaded, hook into its onload and wait for it to be ready
                 existingRemote.onload = onload;
@@ -73,26 +102,32 @@ const getOrLoadRemote = (remote, shareScope, remoteFallbackUrl = undefined) =>
                 d.getElementsByTagName('head')[0].appendChild(script);
             } else {
                 // no remote and no fallback exist, reject
-                reject(`Cannot Find Remote ${remote} to inject`);
+                reject(new Error(`Cannot Find Remote ${remote} to inject`));
             }
         } else {
             // remote already instantiated, resolve
-            resolve();
+            resolve((window as any)[remote]);
         }
     });
 
-const loadComponent = (remote, sharedScope, module, url) => async () => {
-    await getOrLoadRemote(remote, sharedScope, url);
-    const container = window[remote];
-    const factory = await container.get(module);
-    const Module = factory();
-    return Module;
-};
+function loadComponent(
+    remote: string,
+    sharedScope: string,
+    module: string,
+    url: string,
+): () => Promise<{ default: typeof GenericBlock<any> }> {
+    return async (): Promise<{ default: typeof GenericBlock<any> }> => {
+        await getOrLoadRemote(remote, sharedScope, url);
+        const container = (window as any)[remote];
+        const factory = await container.get(module);
+        return factory();
+    };
+}
 
-export const ContextWrapper = ({ children, socket }) => {
-    const [blocks, setBlocks] = useState(null);
+export const ContextWrapper = ({ children, socket }: { socket: AdminConnection; children: any }): React.JSX.Element => {
+    const [blocks, setBlocks] = useState<(typeof GenericBlock<any>)[] | null>(null);
     const [onUpdate, setOnUpdate] = useState(false);
-    const [onDebugMessage, setOnDebugMessage] = useState(false);
+    const [onDebugMessage, setOnDebugMessage] = useState<DebugMessage[]>([]);
     const [enableSimulation, setEnableSimulation] = useState(false);
 
     useEffect(() => {
@@ -100,36 +135,48 @@ export const ContextWrapper = ({ children, socket }) => {
     }, [onUpdate]);
 
     useEffect(() => {
-        (async () => {
+        void (async () => {
             const instances = await socket.getAdapterInstances();
             const adapters = Object.keys(ADAPTERS).filter(adapter =>
-                instances.find(obj => obj?.common?.name === adapter));
+                instances.find(obj => obj?.common?.name === adapter),
+            );
 
-            const adapterDynamicBlocksArray = [];
+            const adapterDynamicBlocksArray: (typeof GenericBlock<any>)[] = [];
 
             // find all adapters, that have custom rule blocks
+            // @ts-expect-error javascriptRules in js-controller
             const dynamicRules = instances.filter(obj => obj.common.javascriptRules);
 
-            const alreadyCreated = [];
-            for (let k in dynamicRules) {
+            const alreadyCreated: string[] = [];
+            for (const k in dynamicRules) {
                 const obj = dynamicRules[k];
                 if (alreadyCreated.includes(obj.common.name)) {
                     continue;
                 }
 
                 let url;
-                if (obj.common.javascriptRules.url.startsWith('http:') || obj.common.javascriptRules.url.startsWith('https:')) {
+                if (
+                    // @ts-expect-error javascriptRules in js-controller
+                    obj.common.javascriptRules.url.startsWith('http:') ||
+                    // @ts-expect-error javascriptRules in js-controller
+                    obj.common.javascriptRules.url.startsWith('https:')
+                ) {
+                    // @ts-expect-error javascriptRules in js-controller
                     url = obj.common.javascriptRules.url;
+                    // @ts-expect-error javascriptRules in js-controller
                 } else if (obj.common.javascriptRules.url.startsWith('./')) {
+                    // @ts-expect-error javascriptRules in js-controller
                     url = `${window.location.protocol}//${window.location.host}${obj.common.javascriptRules.url.replace(/^\./, '')}`;
                 } else {
+                    // @ts-expect-error javascriptRules in js-controller
                     url = `${window.location.protocol}//${window.location.host}/adapter/${obj.common.name}/${obj.common.javascriptRules.url}`;
                 }
 
+                // @ts-expect-error javascriptRules in js-controller
                 if (obj.common.javascriptRules.i18n === true) {
                     // load i18n from files
-                    const pos = url.lastIndexOf('/');
-                    let i18nURL;
+                    const pos: number = url.lastIndexOf('/');
+                    let i18nURL: string;
                     if (pos !== -1) {
                         i18nURL = url.substring(0, pos);
                     } else {
@@ -147,21 +194,32 @@ export const ContextWrapper = ({ children, socket }) => {
                                 return fetch(`${i18nURL}/i18n/en.json`)
                                     .then(data => data.json())
                                     .then(json => I18n.extendTranslations(json, lang))
-                                    .catch(error => console.error(`Cannot load i18n "${file}": ${error}`))
-                            } else {
-                                console.log(`Cannot load i18n "${file}": ${error}`)
+                                    .catch(error => console.error(`Cannot load i18n "${file}": ${error}`));
                             }
+                            console.log(`Cannot load i18n "${file}": ${error}`);
                         });
+                    // @ts-expect-error javascriptRules in js-controller
                 } else if (obj.common.javascriptRules.i18n && typeof obj.common.javascriptRules.i18n === 'object') {
                     try {
+                        // @ts-expect-error javascriptRules in js-controller
                         I18n.extendTranslations(obj.common.javascriptRules.i18n);
                     } catch (error) {
+                        // @ts-expect-error javascriptRules in js-controller
                         console.error(`Cannot import i18n for "${obj.common.javascriptRules.name}": ${error}`);
                     }
                 }
 
                 try {
-                    const Component = (await loadComponent(obj.common.javascriptRules.name, 'default', `./${obj.common.javascriptRules.name}`, url)()).default;
+                    const Component = (
+                        await loadComponent(
+                            // @ts-expect-error javascriptRules in js-controller
+                            obj.common.javascriptRules.name,
+                            'default',
+                            // @ts-expect-error javascriptRules in js-controller
+                            `./${obj.common.javascriptRules.name}`,
+                            url,
+                        )()
+                    ).default;
 
                     if (Component) {
                         adapterDynamicBlocksArray.push(Component);
@@ -169,27 +227,34 @@ export const ContextWrapper = ({ children, socket }) => {
                         ADAPTERS[obj.common.name] = null;
                     }
                 } catch (e) {
+                    // @ts-expect-error javascriptRules in js-controller
                     console.error(`Cannot load component "${obj.common.javascriptRules.name}": ${e}`);
                 }
             }
 
-            const adapterBlocksArray = adapters.filter(adapter => ADAPTERS[adapter]).map(adapter => ADAPTERS[adapter]);
+            const adapterBlocksArray: (typeof GenericBlock<any>)[] = adapters
+                .filter(adapter => ADAPTERS[adapter])
+                .map(adapter => ADAPTERS[adapter]) as (typeof GenericBlock<any>)[];
 
             setBlocks([...StandardBlocks, ...adapterBlocksArray, ...adapterDynamicBlocksArray]);
         })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    return <ContextWrapperCreate.Provider value={{
-        blocks,
-        socket,
-        onUpdate,
-        setOnUpdate,
-        onDebugMessage,
-        setOnDebugMessage,
-        enableSimulation,
-        setEnableSimulation
-    }}>
-        {children}
-    </ContextWrapperCreate.Provider>;
+    return (
+        <ContextWrapperCreate.Provider
+            value={{
+                blocks,
+                socket,
+                onUpdate,
+                setOnUpdate,
+                onDebugMessage,
+                setOnDebugMessage,
+                enableSimulation,
+                setEnableSimulation,
+            }}
+        >
+            {children}
+        </ContextWrapperCreate.Provider>
+    );
 };

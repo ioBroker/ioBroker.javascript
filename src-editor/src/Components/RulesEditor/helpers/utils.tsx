@@ -1,16 +1,27 @@
 import { I18n } from '@iobroker/adapter-react-v5';
 
-let lang;
-const getName = obj => {
+let lang: ioBroker.Languages | undefined;
+export function getName(obj: undefined | ioBroker.StringOrTranslated | null): string {
     lang = lang || I18n.getLanguage();
-    if (typeof obj === 'object') {
+    if (obj && typeof obj === 'object') {
         return obj[lang] || obj.en;
     }
-    return obj;
-};
+    return obj || '';
+}
 
-const utils = {
-    getName,
-};
+export function renderValue(val: any): string {
+    if (val === null) {
+        return 'null';
+    }
+    if (val === undefined) {
+        return 'undefined';
+    }
+    if (Array.isArray(val)) {
+        return val.join(', ');
+    }
+    if (typeof val === 'object') {
+        return JSON.stringify(val);
+    }
 
-export default utils;
+    return val.toString();
+}

@@ -2,10 +2,10 @@
     * {
         color: var(--colorBlock) !important;
     }
-    [class*="Mui-checked"] {
+    [class*='Mui-checked'] {
         color: var(--lineColor) !important;
     }
-    [class*="Mui-checked"] + [class*="MuiSwitch-track"] {
+    [class*='Mui-checked'] + [class*='MuiSwitch-track'] {
         background-color: var(--lineColor) !important;
     }
 }

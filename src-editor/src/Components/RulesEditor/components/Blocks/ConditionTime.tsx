@@ -1,6 +1,14 @@
-import GenericBlock from '../GenericBlock';
+import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
+import type {
+    RuleBlockConfigConditionTime,
+    RuleBlockDescription,
+    RuleContext,
+    RuleInputAny,
+    RuleTagCard,
+    RuleTagCardTitle,
+} from '../../types';
 
-const DAYS = [
+const DAYS: number[] = [
     31, // 1
     29, // 2
     31, // 3
@@ -15,19 +23,19 @@ const DAYS = [
     31, // 12
 ];
 
-class ConditionTime extends GenericBlock {
-    constructor(props) {
+class ConditionTime extends GenericBlock<RuleBlockConfigConditionTime> {
+    constructor(props: GenericBlockProps<RuleBlockConfigConditionTime>) {
         super(props, ConditionTime.getStaticData());
     }
 
-    static compile(config, context) {
-        const compare = config.tagCard === '=' ? '===' : (config.tagCard === '<>' ? '!==' : config.tagCard);
+    static compile(config: RuleBlockConfigConditionTime, context: RuleContext): string {
+        const compare = config.tagCard === '=' ? '===' : config.tagCard === '<>' ? '!==' : config.tagCard;
         let cond;
 
         if (config.withDate) {
-            let [month, date] = (config.date || '01.01').toString().split('.');
-            date = parseInt(date, 10) || 0;
-            month = parseInt(month, 10) || 0;
+            const [monthStr, dateStr] = (config.date || '01.01').toString().split('.');
+            let date = parseInt(dateStr, 10) || 0;
+            let month = parseInt(monthStr, 10) || 0;
             if (month > 12) {
                 month = 12;
             } else if (month < 0) {
@@ -56,12 +64,12 @@ class ConditionTime extends GenericBlock {
         return `subCond${config._id}`;
     }
 
-    _setInputs(tagCard, withDate, ) {
+    _setInputs(tagCard?: RuleTagCardTitle, withDate?: boolean): void {
         withDate = withDate === undefined ? this.state.settings.withDate : withDate;
         tagCard = tagCard || this.state.settings.tagCard;
-        const tagCardArray = ConditionTime.getStaticData().tagCardArray;
-        const tag = tagCardArray.find(item => item.title === tagCard);
-        const inputs = [
+        const tagCardArray: RuleTagCard[] = ConditionTime.getStaticData().tagCardArray as RuleTagCard[];
+        const tag = tagCardArray?.find(item => item.title === tagCard);
+        const inputs: RuleInputAny[] = [
             {
                 nameRender: 'renderNameText',
                 attr: 'interval',
@@ -78,7 +86,7 @@ class ConditionTime extends GenericBlock {
                 nameRender: 'renderCheckbox',
                 attr: 'withDate',
                 defaultValue: false,
-            }
+            },
         ];
         if (withDate) {
             inputs.push({
@@ -87,23 +95,26 @@ class ConditionTime extends GenericBlock {
                 defaultValue: '01.01',
             });
         }
-        this.setState({
-            inputs,
-            iconTag:true
-        }, () => super.onTagChange());
+        this.setState(
+            {
+                inputs,
+                iconTag: true,
+            },
+            () => super.onTagChange(),
+        );
     }
 
-    onValueChanged(value, attr) {
+    onValueChanged(value: any, attr: string): void {
         if (attr === 'withDate') {
             this._setInputs(undefined, value);
         }
     }
 
-    onTagChange(tagCard) {
+    onTagChange(tagCard: RuleTagCardTitle): void {
         this._setInputs(tagCard);
     }
 
-    static getStaticData() {
+    static getStaticData(): RuleBlockDescription {
         return {
             acceptedBy: 'conditions',
             name: 'Time condition',
@@ -139,13 +150,14 @@ class ConditionTime extends GenericBlock {
                     title: '<>',
                     title2: '[not equal]',
                     text: 'not equal to',
-                }
+                },
             ],
             title: 'Compares current time with the user specific time',
-        }
+        };
     }
 
-    getData() {
+    // eslint-disable-next-line class-methods-use-this
+    getData(): RuleBlockDescription {
         return ConditionTime.getStaticData();
     }
 }

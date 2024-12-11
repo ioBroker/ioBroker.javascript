@@ -10,7 +10,7 @@ $themeStandard: (
     --backgroundBlock: #c9e7ffab,
     --backgroundGlobalColor: #ffffff00,
     --backgroundMobile: #041c35d4,
-    --debugColor: #c6511b
+    --debugColor: #c6511b,
 );
 $themeGreen: (
     --backgroundColor: #3081333b,
@@ -24,7 +24,7 @@ $themeGreen: (
     --backgroundBlock: #c9ffcfab,
     --backgroundGlobalColor: #51ff001b,
     --backgroundMobile: #3081333b,
-    --debugColor: #c6511b
+    --debugColor: #c6511b,
 );
 $themeSilver: (
     --backgroundColor: rgba(31, 31, 31, 0.23),
@@ -38,7 +38,7 @@ $themeSilver: (
     --backgroundBlock: #c1c1c1ab,
     --backgroundGlobalColor: rgba(28, 28, 28, 0.93),
     --backgroundMobile: #040303eb,
-    --debugColor: #c6511b
+    --debugColor: #c6511b,
 );
 $themeLight: (
     --backgroundColor: #3131313b,
@@ -52,7 +52,7 @@ $themeLight: (
     --backgroundBlock: #000000,
     --backgroundGlobalColor: #ffffff40,
     --backgroundMobile: #b4b2c7bf,
-    --debugColor: #c6511b
+    --debugColor: #c6511b,
 );
 @mixin spread-map($map: ()) {
     @each $key, $value in $map {

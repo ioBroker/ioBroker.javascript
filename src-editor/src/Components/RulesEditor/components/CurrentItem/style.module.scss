@@ -11,7 +11,10 @@
     align-items: center;
     background: #ffffff6b;
     border-radius: 4px;
-    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12);
+    box-shadow:
+        0 2px 1px -1px rgba(0, 0, 0, 0.2),
+        0 1px 1px 0 rgba(0, 0, 0, 0.14),
+        0 1px 3px 0 rgba(0, 0, 0, 0.12);
 }
 .cardStyleActive {
     width: 300px;
@@ -34,7 +37,7 @@
     margin: 5px auto;
     cursor: pointer;
     &:before {
-        content: "+";
+        content: '+';
         color: #f7060684;
         position: absolute;
         z-index: 2;
@@ -46,7 +49,7 @@
         transition: all 0.3s cubic-bezier(0.77, 0, 0.2, 0.85);
     }
     &:after {
-        content: "";
+        content: '';
         position: absolute;
         top: 0;
         left: 0;

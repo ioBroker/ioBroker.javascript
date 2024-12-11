@@ -73,7 +73,9 @@
     display: flex;
     flex-direction: column;
     overflow: auto;
-    transition: height 0.3s, background 0.5s;
+    transition:
+        height 0.3s,
+        background 0.5s;
 }
 
 .wrapperMargin {
@@ -106,7 +108,7 @@
     color: var(--lineColor);
     &::after,
     &::before {
-        content: "";
+        content: '';
         flex: 1;
         border-bottom: 1px solid;
     }

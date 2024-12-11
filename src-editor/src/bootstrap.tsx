@@ -9,8 +9,16 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 
-import GenericBlock from './Components/RulesEditor/components/GenericBlock'
+import { GenericBlock } from './Components/RulesEditor/components/GenericBlock';
 
+declare global {
+    interface Window {
+        GenericBlock: any;
+        sentryDSN: string;
+        loadDynamicScript: (url: string, callback: () => void) => void;
+        socketLoadedHandler: () => void;
+    }
+}
 window.GenericBlock = GenericBlock;
 
 window.adapterName = 'javascript';
@@ -20,10 +28,14 @@ console.log(`iobroker.${window.adapterName}@${pgk.version}`);
 
 const isMobile = window.innerWidth < 600;
 const container = document.getElementById('root');
-const root = createRoot(container);
-root.render(<DndProvider backend={isMobile ? TouchBackend : HTML5Backend}>
-    <App version={pgk.version} />
-</DndProvider>);
+if (container) {
+    const root = createRoot(container);
+    root.render(
+        <DndProvider backend={isMobile ? TouchBackend : HTML5Backend}>
+            <App version={pgk.version} />
+        </DndProvider>,
+    );
+}
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
@@ -36,7 +48,16 @@ serviceWorker.unregister();
 */
 // loader must be after socket.io, elsewise there is no window.io
 const loadDynamicScript = window.loadDynamicScript;
-loadDynamicScript && loadDynamicScript(window.location.port === '3000' ? `${window.location.protocol}//${window.location.hostname}:8081/lib/js/socket.io.js` : './../../lib/js/socket.io.js', () =>
-    loadDynamicScript('vs/loader.js', () =>
-        loadDynamicScript('vs/configure.js', () =>
-            typeof window.socketLoadedHandler === 'function' && window.socketLoadedHandler())));
+loadDynamicScript &&
+    loadDynamicScript(
+        window.location.port === '3000'
+            ? `${window.location.protocol}//${window.location.hostname}:8081/lib/js/socket.io.js`
+            : './../../lib/js/socket.io.js',
+        () =>
+            loadDynamicScript('vs/loader.js', () =>
+                loadDynamicScript(
+                    'vs/configure.js',
+                    () => typeof window.socketLoadedHandler === 'function' && window.socketLoadedHandler(),
+                ),
+            ),
+    );

@@ -1,20 +1,28 @@
-import _ from "lodash";
+import _ from 'lodash';
+import type { BlockValue, RuleBlockConfig, RuleBlockType, RuleUserRules } from '../types';
 
-const funcSet = _.throttle(
-    (setCards, userRules) => setCards(userRules)
-    , 0);
+const funcSet = _.throttle((setCards, userRules) => setCards(userRules), 0);
 
-const moveCard = (
-    id,
-    atIndex,
-    cards,
-    setCards,
-    userRules,
-    acceptedBy,
-    additionally,
-    hoverClientY,
-    hoverMiddleY) => {
+export function findCard(id: number, cards: RuleBlockConfig[]): { card: RuleBlockConfig | undefined; index: number } {
+    const card = cards.find(c => c._id === id);
 
+    return {
+        card,
+        index: card ? cards.indexOf(card) : -1,
+    };
+}
+
+export function moveCard(
+    id: number,
+    atIndex: number,
+    cards: RuleBlockConfig[],
+    setCards: (newRules: RuleUserRules) => void,
+    userRules: RuleUserRules,
+    acceptedBy: RuleBlockType,
+    additionally: BlockValue,
+    hoverClientY: number,
+    hoverMiddleY: number,
+): void {
     const { card, index } = findCard(id, cards);
     if (index < atIndex && hoverClientY < hoverMiddleY) {
         return;
@@ -26,29 +34,22 @@ const moveCard = (
         const copyCard = _.clone(cards);
         copyCard.splice(index, 1);
         copyCard.splice(atIndex, 0, card);
-        const newTriggers = _.clone(userRules);
+        const newUserRules = _.clone(userRules);
         switch (acceptedBy) {
             case 'actions':
-                newTriggers[acceptedBy][additionally] = copyCard;
-                funcSet(setCards, newTriggers);
+                newUserRules.actions[additionally as 'else' | 'then'] = copyCard;
+                funcSet(setCards, newUserRules);
                 return;
+
             case 'conditions':
-                newTriggers[acceptedBy][additionally] = copyCard;
-                funcSet(setCards, newTriggers);
+                newUserRules.conditions[additionally as number] = copyCard;
+                funcSet(setCards, newUserRules);
                 return;
+
             default:
-                newTriggers[acceptedBy] = copyCard;
-                funcSet(setCards, newTriggers);
+                newUserRules.triggers = copyCard;
+                funcSet(setCards, newUserRules);
                 return;
         }
     }
-};
-const findCard = (id, cards) => {
-    const card = cards.find((c) => c._id === id);
-    return {
-        card,
-        index: cards.indexOf(card),
-    };
-};
-
-export { moveCard, findCard };
+}

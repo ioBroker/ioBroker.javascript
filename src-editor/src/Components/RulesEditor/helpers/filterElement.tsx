@@ -1,13 +1,27 @@
-export function filterElement(name, userRules, additionalParameter, _id) {
+import type { BlockValue, RuleUserRules } from '@/Components/RulesEditor/types';
+
+export function filterElement(
+    name: string,
+    userRules: RuleUserRules,
+    additionalParameter: BlockValue,
+    _id: number,
+): RuleUserRules {
     switch (name) {
         case 'actions':
-            userRules[name][additionalParameter] = userRules[name][additionalParameter].filter(el => el._id !== _id);
+            userRules.actions[additionalParameter as 'then' | 'else'] = userRules.actions[
+                additionalParameter as 'then' | 'else'
+            ].filter(el => el._id !== _id);
             return userRules;
+
         case 'conditions':
-            userRules[name][additionalParameter] = userRules[name][additionalParameter].filter(el => el._id !== _id);
+            userRules.conditions[additionalParameter as number] = userRules.conditions[
+                additionalParameter as number
+            ]?.filter(el => el._id !== _id);
             return userRules;
+
+        case 'triggers':
         default:
-            userRules[name] = userRules[name].filter(el => el._id !== _id);
+            userRules.triggers = userRules.triggers.filter(el => el._id !== _id);
             return userRules;
     }
 }

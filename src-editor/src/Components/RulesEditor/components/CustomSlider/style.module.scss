@@ -1,18 +1,18 @@
 .root {
     color: var(--lineColorActive) !important;
     height: 8px !important;
-    [class*="MuiSlider-rail"] {
+    [class*='MuiSlider-rail'] {
         height: 8px !important;
         border-radius: 4px;
     }
-    [class*="MuiSlider-track"] {
+    [class*='MuiSlider-track'] {
         height: 8px !important;
         border-radius: 4px;
     }
-    [class*="MuiSlider-valueLabel"] {
+    [class*='MuiSlider-valueLabel'] {
         left: calc(-50% + 4px);
     }
-    [class*="MuiSlider-thumb"] {
+    [class*='MuiSlider-thumb'] {
         height: 24px;
         width: 24px;
         background-color: var(--colorBlock);
@@ -21,7 +21,7 @@
         margin-left: -12px;
         &:focus,
         &:hover,
-        &[class*="MuiSlider-active"] {
+        &[class*='MuiSlider-active'] {
             box-shadow: inherit !important;
         }
     }
@@ -29,4 +29,3 @@
         background-color: #00000000 !important;
     }
 }
-

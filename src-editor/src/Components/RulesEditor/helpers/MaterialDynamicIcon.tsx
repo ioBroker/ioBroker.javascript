@@ -1,39 +1,93 @@
-import { useState, useEffect } from 'react';
-import * as Icons from '@mui/icons-material/';
+import React, { useState, useEffect } from 'react';
+import {
+    Shuffle,
+    Apps,
+    Functions,
+    Language,
+    AddBox,
+    Pause,
+    Subject,
+    PlayForWork,
+    Brightness3,
+    HelpOutline,
+    Storage,
+    AccessTime,
+    PlayArrow,
+    FlashOn,
+    Help,
+    type SvgIconComponent,
+} from '@mui/icons-material';
+import type { AdminConnection } from '@iobroker/adapter-react-v5';
 
-const ICON_CACHE = {};
+const ICON_CACHE: Record<string, Promise<ioBroker.AdapterObject | null | undefined>> = {};
 
-const MaterialDynamicIcon = ({ iconName, style, adapter, socket, onClick, className }) => {
-    let [url, setUrl] = useState('');
+const objIcon: Record<string, SvgIconComponent> = {
+    Shuffle,
+    Apps,
+    Functions,
+    Language,
+    AddBox,
+    Pause,
+    Subject,
+    PlayForWork,
+    Brightness3,
+    HelpOutline,
+    Storage,
+    AccessTime,
+    PlayArrow,
+    FlashOn,
+};
+
+interface MaterialDynamicIconProps {
+    iconName: string | undefined;
+    className?: string;
+    adapter?: string;
+    socket?: AdminConnection | null;
+    onClick?: (e: React.MouseEvent) => void;
+    style?: React.CSSProperties;
+}
+
+function MaterialDynamicIcon({
+    iconName,
+    className,
+    adapter,
+    socket,
+    onClick,
+    style,
+}: MaterialDynamicIconProps): React.JSX.Element {
+    const [url, setUrl] = useState('');
 
     useEffect(() => {
         if (adapter && socket) {
-            ICON_CACHE[adapter] = ICON_CACHE[adapter] || socket.getObject(`system.adapter.${adapter}`);
-            ICON_CACHE[adapter].then(obj =>
-                obj?.common?.icon && setUrl(`../../adapter/${adapter}/${obj.common.icon}`));
+            if (!(ICON_CACHE[adapter] instanceof Promise)) {
+                ICON_CACHE[adapter] = socket.getObject(`system.adapter.${adapter}`);
+            }
+            void ICON_CACHE[adapter].then(
+                obj => obj?.common?.icon && setUrl(`../../adapter/${adapter}/${obj.common.icon}`),
+            );
         }
     }, [adapter, socket]);
 
     if (adapter) {
-        return <img
-            onClick={e => onClick && onClick(e)}
-            src={url || ''}
-            style={style}
-            className={className}
-            alt=""
-        />;
+        return (
+            <img
+                onClick={e => onClick && onClick(e)}
+                src={url || ''}
+                className={className}
+                style={style}
+                alt=""
+            />
+        );
     }
+    const Element = (iconName && objIcon[iconName]) || Help;
 
-    const Element = Icons[iconName || 'Help'];
-    return <Element
-        style={style}
-        onClick={e => onClick && onClick(e)}
-    />;
+    return (
+        <Element
+            className={className}
+            style={style}
+            onClick={e => onClick && onClick(e)}
+        />
+    );
 }
-
-MaterialDynamicIcon.defaultProps = {
-    style: null,
-    iconName: 'Help'
-};
 
 export default MaterialDynamicIcon;

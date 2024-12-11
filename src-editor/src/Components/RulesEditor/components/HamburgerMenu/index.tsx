@@ -1,18 +1,13 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import cls from './hamburgerMenu.module.scss';
 
-const HamburgerMenu = ({ boolean }) => {
-    return <div className={`${cls.hamburgerMenu} ${boolean ? cls.animate : ''}`}/>
+interface HamburgerMenuProps {
+    bool: boolean;
 }
 
-HamburgerMenu.defaultProps = {
-    boolean: false
-};
-
-HamburgerMenu.propTypes = {
-    boolean: PropTypes.bool
-};
+function HamburgerMenu({ bool }: HamburgerMenuProps): React.JSX.Element {
+    return <div className={`${cls.hamburgerMenu} ${bool ? cls.animate : ''}`} />;
+}
 
 export default HamburgerMenu;

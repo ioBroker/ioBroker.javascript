@@ -10,45 +10,54 @@ const STEPS = {
     saveTheScript: 8,
 };
 
-const steps = [
-    {  // 0
+const steps: { selector: string; content: string }[] = [
+    {
+        // 0
         selector: '.blocks-triggers',
         content: 'Select triggers',
     },
-    {  // 1
+    {
+        // 1
         selector: '.block-TriggerScheduleBlock',
         content: 'Double click to add the block',
     },
-    {   // 2
+    {
+        // 2
         selector: '.tag-card',
         content: 'Open drop down menu',
     },
-    {   // 3
+    {
+        // 3
         selector: '.tag-card-interval',
         content: 'Select interval',
     },
-    {   // 4
+    {
+        // 4
         selector: '.blocks-actions',
         content: 'Select action blocks',
     },
-    {  // 5
+    {
+        // 5
         selector: '.block-ActionPrintText',
         content: 'Double click to add the block',
     },
-    {  // 6
+    {
+        // 6
         selector: '.button-js-code',
         content: 'Check the script',
     },
-    {  // 7
+    {
+        // 7
         selector: '.button-js-code',
         content: 'Switch back to rules',
     },
-    {   // 8
+    {
+        // 8
         selector: '.button-save',
         content: 'Save the script',
-    }
+    },
 ];
 
-export {STEPS};
+export { STEPS };
 
 export default steps;

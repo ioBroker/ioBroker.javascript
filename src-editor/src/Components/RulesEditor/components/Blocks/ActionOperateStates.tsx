@@ -1,19 +1,31 @@
+import React from 'react';
 import { I18n } from '@iobroker/adapter-react-v5';
-import GenericBlock from '../GenericBlock';
+import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
+import { renderValue } from '../../helpers/utils';
+import type {
+    RuleBlockConfigActionOperationState,
+    RuleBlockDescription,
+    RuleInputAny,
+    RuleInputNameText,
+    RuleInputObjectID,
+    RuleInputSelect,
+} from '@/Components/RulesEditor/types';
 
-class ActionOperateStates extends GenericBlock {
-    constructor(props) {
+class ActionOperateStates extends GenericBlock<RuleBlockConfigActionOperationState> {
+    constructor(props: GenericBlockProps<RuleBlockConfigActionOperationState>) {
         super(props, ActionOperateStates.getStaticData());
     }
 
-    isAllTriggersOnState() {
-        return this.props.userRules?.triggers?.find(item => item.id === 'TriggerState') &&
-            !this.props.userRules?.triggers?.find(item => item.id !== 'TriggerState');
+    isAllTriggersOnState(): boolean {
+        return (
+            !!this.props.userRules?.triggers?.find(item => item.id === 'TriggerState') &&
+            !this.props.userRules?.triggers?.find(item => item.id !== 'TriggerState')
+        );
     }
 
-    static compile(config, context) {
-        let oid1 = `const val2_${config._id} = (await getStateAsync("${config.oid1}")).val;`;
-        let oid2 = `const val1_${config._id} = (await getStateAsync("${config.oid2}")).val;`;
+    static compile(config: RuleBlockConfigActionOperationState): string {
+        const oid1 = `const val2_${config._id} = (await getStateAsync("${config.oid1}")).val;`;
+        const oid2 = `const val1_${config._id} = (await getStateAsync("${config.oid2}")).val;`;
 
         return `// ${config.oid1} ${config.operation} ${config.oid2} => ${config.oidResult}
 \t\t ${oid1}
@@ -22,26 +34,21 @@ class ActionOperateStates extends GenericBlock {
 \t\tawait setStateAsync("${config.oidResult}", val1_${config._id} ${config.operation} val2_${config._id}, ${config.tagCard === 'update'});`;
     }
 
-    static renderValue(val) {
-        if (val === null) {
-            return 'null';
-        } else if (val === undefined) {
-            return 'undefined';
-        } else if (Array.isArray(val)) {
-            return val.join(', ');
-        } else if (typeof val === 'object') {
-            return JSON.stringify(val);
-        } else {
-            return val.toString();
-        }
+    renderDebug(debugMessage: { data: { ack: boolean; val: any } }): React.JSX.Element {
+        return (
+            <span>
+                {I18n.t('Set:')}{' '}
+                <span
+                    className={debugMessage.data.ack ? this.props.classes?.valueAck : this.props.classes?.valueNotAck}
+                >
+                    {renderValue(debugMessage.data.val)}
+                </span>
+            </span>
+        );
     }
 
-    renderDebug(debugMessage) {
-        return <span>{I18n.t('Set:')} <span className={debugMessage.data.ack ? this.props.classes.valueAck : this.props.classes.valueNotAck}>{ActionOperateStates.renderValue(debugMessage.data.val)}</span></span>;
-    }
-
-    onTagChange(tagCard, cb, ignore, toggle, useTrigger) {
-        const inputs = [];
+    onTagChange(): void {
+        const inputs: RuleInputAny[] = [];
 
         inputs.push({
             nameRender: 'renderObjectID',
@@ -49,21 +56,21 @@ class ActionOperateStates extends GenericBlock {
             attr: 'oid1',
             defaultValue: '',
             checkReadOnly: false,
-        });
+        } as RuleInputObjectID);
 
         inputs.push({
             nameRender: 'renderSelect',
-            //frontText: 'with',
+            // frontText: 'with',
             options: [
-                {value: '+', title: '+'},
-                {value: '-', title: '-'},
-                {value: '*', title: '*'},
-                {value: '/', title: '/'},
+                { value: '+', title: '+' },
+                { value: '-', title: '-' },
+                { value: '*', title: '*' },
+                { value: '/', title: '/' },
             ],
             doNotTranslate: true,
             defaultValue: '+',
-            attr: 'operation'
-        });
+            attr: 'operation',
+        } as RuleInputSelect);
 
         inputs.push({
             nameRender: 'renderObjectID',
@@ -71,36 +78,38 @@ class ActionOperateStates extends GenericBlock {
             attr: 'oid2',
             defaultValue: '',
             checkReadOnly: false,
-        });
+        } as RuleInputObjectID);
 
         inputs.push({
             nameRender: 'renderNameText',
             defaultValue: 'store in',
             attr: 'textEqual',
-        });
+        } as RuleInputNameText);
 
         inputs.push({
             nameRender: 'renderObjectID',
             attr: 'oidResult',
             defaultValue: '',
             checkReadOnly: true,
-        });
+        } as RuleInputObjectID);
 
-        this.setState({inputs}, () => super.onTagChange(null, () => {
-            const settings = JSON.parse(JSON.stringify(this.state.settings));
-            this.props.onChange(settings);
-        }));
+        this.setState({ inputs }, () =>
+            super.onTagChange(null, () => {
+                const settings = JSON.parse(JSON.stringify(this.state.settings));
+                this.props.onChange(settings);
+            }),
+        );
     }
 
-    onValueChanged(value, attr, context) {
-        this.onTagChange(undefined, undefined, undefined, attr === 'toggle' ? value : undefined, attr === 'useTrigger' ? value : undefined);
-    }
-
-    onUpdate() {
+    onValueChanged(_value: any, _attr: string): void {
         this.onTagChange();
     }
 
-    static getStaticData() {
+    onUpdate(): void {
+        this.onTagChange();
+    }
+
+    static getStaticData(): RuleBlockDescription {
         return {
             acceptedBy: 'actions',
             name: 'Operate two states',
@@ -108,10 +117,11 @@ class ActionOperateStates extends GenericBlock {
             icon: 'AddBox',
             tagCardArray: ['control', 'update'],
             title: 'Operations with two states',
-        }
+        };
     }
 
-    getData() {
+    // eslint-disable-next-line class-methods-use-this
+    getData(): RuleBlockDescription {
         return ActionOperateStates.getStaticData();
     }
 }

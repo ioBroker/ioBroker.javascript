@@ -1,15 +1,18 @@
 import { I18n } from '@iobroker/adapter-react-v5';
-import GenericBlock from '../GenericBlock';
+import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
+import type {
+    RuleBlockConfigActionFunction,
+    RuleBlockDescription,
+    RuleTagCardTitle,
+} from '@/Components/RulesEditor/types';
 
-class ActionFunction extends GenericBlock {
-    constructor(props) {
+class ActionFunction extends GenericBlock<RuleBlockConfigActionFunction> {
+    constructor(props: GenericBlockProps<RuleBlockConfigActionFunction>) {
         super(props, ActionFunction.getStaticData());
     }
 
-    static compile(config, context) {
-        const lines = (config.func || '')
-            .split('\n')
-            .map((line, i) => `        ${line}`);
+    static compile(config: RuleBlockConfigActionFunction): string {
+        const lines = (config.func || '').split('\n').map(line => `        ${line}`);
 
         lines.unshift(`\t\t_sendToFrontEnd(${config._id}, {func: 'executed'});`);
         lines.unshift(`// user function`);
@@ -17,25 +20,29 @@ class ActionFunction extends GenericBlock {
         return lines.join('\n');
     }
 
-    renderDebug(debugMessage) {
+    // eslint-disable-next-line class-methods-use-this
+    renderDebug(): string {
         return I18n.t('Function: executed');
     }
 
-    onTagChange(tagCard) {
-        this.setState({
-            inputs: [
-                {
-                    nameRender: 'renderModalInput',
-                    attr: 'func',
-                    noTextEdit: true,
-                    defaultValue: 'console.log("Test")',
-                    nameBlock: 'Function',
-                }
-            ]
-        }, () => super.onTagChange(tagCard));
+    onTagChange(tagCard: RuleTagCardTitle): void {
+        this.setState(
+            {
+                inputs: [
+                    {
+                        nameRender: 'renderModalInput',
+                        attr: 'func',
+                        noTextEdit: true,
+                        defaultValue: 'console.log("Test")',
+                        nameBlock: 'Function',
+                    },
+                ],
+            },
+            () => super.onTagChange(tagCard),
+        );
     }
 
-    static getStaticData() {
+    static getStaticData(): RuleBlockDescription {
         return {
             acceptedBy: 'actions',
             name: 'User function',
@@ -43,10 +50,11 @@ class ActionFunction extends GenericBlock {
             icon: 'Functions',
             title: 'Write your own code',
             helpDialog: 'This is advances option. You can write your own code here and it will be executed on trigger',
-        }
+        };
     }
 
-    getData() {
+    // eslint-disable-next-line class-methods-use-this
+    getData(): RuleBlockDescription {
         return ActionFunction.getStaticData();
     }
 }

@@ -1,18 +1,23 @@
 import React from 'react';
 
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText } from '@mui/material';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-import GenericBlock from '../GenericBlock';
+import { GenericBlock, type GenericBlockProps, type GenericBlockState } from '../GenericBlock';
 
 import HysteresisImage from '../../../assets/hysteresis.png';
+import type {
+    RuleBlockConfigActionActionState,
+    RuleBlockConfigTriggerState,
+    RuleBlockDescription,
+    RuleContext,
+    RuleInputAny,
+    RuleInputDialog,
+    RuleInputSelect,
+    RuleTagCard,
+    RuleTagCardTitle,
+} from '../../types';
 
 const HYSTERESIS = `function __hysteresis(val, limit, state, hist, comp) {
     let cond1, cond2;
@@ -45,26 +50,32 @@ const HYSTERESIS = `function __hysteresis(val, limit, state, hist, comp) {
     }
 }`;
 
-class ConditionState extends GenericBlock {
-    constructor(props) {
+interface ConditionStateState extends GenericBlockState<RuleBlockConfigActionActionState> {
+    showHysteresisHelp: boolean;
+}
+
+class ConditionState extends GenericBlock<RuleBlockConfigActionActionState, ConditionStateState> {
+    constructor(props: GenericBlockProps<RuleBlockConfigActionActionState>) {
         super(props, ConditionState.getStaticData());
     }
 
-    isAllTriggersOnState() {
-        return this.props.userRules?.triggers?.find(item => item.id === 'TriggerState') &&
-            !this.props.userRules?.triggers?.find(item => item.id !== 'TriggerState');
+    isAllTriggersOnState(): boolean {
+        return (
+            !!this.props.userRules?.triggers?.find(item => item.id === 'TriggerState') &&
+            !this.props.userRules?.triggers?.find(item => item.id !== 'TriggerState')
+        );
     }
 
-    static compile(config, context) {
+    static compile(config: RuleBlockConfigActionActionState, context: RuleContext): string {
         let value = config.value;
         if (value === null || value === undefined) {
             value = false;
         }
-        let debugValue = '';
+        let debugValue: string;
 
         let result;
         if (config.tagCard === '()') {
-            context.prelines =  context.prelines || [];
+            context.prelines = context.prelines || [];
             !context.prelines.find(item => item !== HYSTERESIS) && context.prelines.push(HYSTERESIS);
             if (config.useTrigger) {
                 debugValue = 'obj.state.val';
@@ -83,13 +94,12 @@ class ConditionState extends GenericBlock {
 
                 result = `__hysteresis(subCondVar${config._id}, ${value}, __%%STATE%%__, ${config.hist}, "${config.histComp}")`;
             }
-        } else
-        if (config.tagCard !== 'includes') {
-            const compare = config.tagCard === '=' ? '==' : (config.tagCard === '<>' ? '!=' : config.tagCard);
+        } else if (config.tagCard !== 'includes') {
+            const compare = config.tagCard === '=' ? '==' : config.tagCard === '<>' ? '!=' : config.tagCard;
             if (config.useTrigger) {
                 debugValue = 'obj.state.val';
-                if (context?.trigger?.oidType === 'string') {
-                    value = value.replace(/"/g, '\\"');
+                if ((context?.trigger as RuleBlockConfigTriggerState)?.oidType === 'string') {
+                    value = (value as string).replace(/"/g, '\\"');
                     result = `subCondVar${config._id} ${compare} "${value}"`;
                 } else {
                     if (value === '') {
@@ -103,7 +113,7 @@ class ConditionState extends GenericBlock {
             } else {
                 debugValue = `(await getStateAsync("${config.oid}")).val`;
                 if (config.oidType === 'string') {
-                    value = value.replace(/"/g, '\\"');
+                    value = (value as string).replace(/"/g, '\\"');
                     result = `subCondVar${config._id} ${compare} "${value}"`;
                 } else {
                     if (value === '') {
@@ -118,8 +128,8 @@ class ConditionState extends GenericBlock {
         } else {
             if (config.useTrigger) {
                 debugValue = 'obj.state.val';
-                if (context?.trigger?.oidType === 'string') {
-                    value = value.replace(/"/g, '\\"');
+                if ((context?.trigger as RuleBlockConfigTriggerState)?.oidType === 'string') {
+                    value = (value as string).replace(/"/g, '\\"');
                     result = `obj.state.val.includes("${value}")`;
                 } else {
                     result = `false`;
@@ -127,7 +137,7 @@ class ConditionState extends GenericBlock {
             } else {
                 debugValue = `(await getStateAsync("${config.oid}")).val`;
                 if (config.oidType === 'string') {
-                    value = value.replace(/"/g, '\\"');
+                    value = (value as string).replace(/"/g, '\\"');
                     result = `subCondVar${config._id}.includes("${value}")`;
                 } else {
                     result = `false`;
@@ -137,11 +147,13 @@ class ConditionState extends GenericBlock {
         context.conditionsStates.push({ name: `subCondVar${config._id}`, id: config.oid });
         context.conditionsVars.push(`const subCondVar${config._id} = ${debugValue};`);
         context.conditionsVars.push(`const subCond${config._id} = ${result};`);
-        context.conditionsDebug.push(`_sendToFrontEnd(${config._id}, {result: subCond${config._id}, value: subCondVar${config._id}, compareWith: "${value}"});`);
+        context.conditionsDebug.push(
+            `_sendToFrontEnd(${config._id}, {result: subCond${config._id}, value: subCondVar${config._id}, compareWith: "${value}"});`,
+        );
         return `subCond${config._id}`;
     }
 
-    renderDebug(debugMessage) {
+    renderDebug(debugMessage: { data: { result: boolean; value: string; compareWith: string } }): string {
         const condition = this.state.settings.tagCard;
         if (condition === '()') {
             // TODO
@@ -152,26 +164,35 @@ class ConditionState extends GenericBlock {
         return I18n.t('Triggered');
     }
 
-    onShowHelp = () => this.setState({showHysteresisHelp: true});
+    onShowHelp = (): void => this.setState({ showHysteresisHelp: true });
 
-    _setInputs(useTrigger, tagCard, oidType, oidUnit, oidStates) {
+    _setInputs(
+        useTrigger: boolean | undefined,
+        tagCard?: RuleTagCardTitle,
+        oidType?: string,
+        oidUnit?: string,
+        oidStates?: Record<string, string>,
+    ): void {
         const isAllTriggersOnState = this.isAllTriggersOnState();
 
-        tagCard   = tagCard   || this.state.settings.tagCard;
-        oidType   = oidType   || this.state.settings.oidType;
-        oidUnit   = oidUnit   || this.state.settings.oidUnit;
+        tagCard = tagCard || this.state.settings.tagCard;
+        oidType = oidType || this.state.settings.oidType;
+        oidUnit = oidUnit || this.state.settings.oidUnit;
         oidStates = oidStates || this.state.settings.oidStates;
-
-        if (isAllTriggersOnState && useTrigger && this.props.userRules?.triggers?.length === 1) {
-            oidType   = this.props.userRules.triggers[0].oidType;
-            oidUnit   = this.props.userRules.triggers[0].oidUnit;
-            oidStates = this.props.userRules.triggers[0].oidStates;
+        if (useTrigger === undefined) {
+            useTrigger = this.state.settings.useTrigger;
         }
 
-        const _tagCardArray = ConditionState.getStaticData().tagCardArray;
-        const tag = _tagCardArray.find(item => item.title === tagCard);
-        let tagCardArray;
-        let options = null;
+        if (isAllTriggersOnState && useTrigger && this.props.userRules?.triggers?.length === 1) {
+            oidType = (this.props.userRules.triggers[0] as RuleBlockConfigTriggerState).oidType;
+            oidUnit = (this.props.userRules.triggers[0] as RuleBlockConfigTriggerState).oidUnit;
+            oidStates = (this.props.userRules.triggers[0] as RuleBlockConfigTriggerState).oidStates;
+        }
+
+        const _tagCardArray: RuleTagCard[] = ConditionState.getStaticData().tagCardArray as RuleTagCard[];
+        const tag: RuleTagCard = _tagCardArray.find(item => item.title === tagCard) || _tagCardArray[0];
+        let tagCardArray: RuleTagCard[];
+        let options: { value: string | boolean; title: string }[] | null = null;
 
         if (oidType === 'number') {
             tagCardArray = [
@@ -213,7 +234,14 @@ class ConditionState extends GenericBlock {
             ];
 
             if (oidStates) {
-                options = Object.keys(oidStates).map(val => ({ value: val, title: oidStates[val] }));
+                options = Object.keys(oidStates)
+                    .map(val => {
+                        if (oidStates) {
+                            return { value: val, title: oidStates[val] };
+                        }
+                        return null;
+                    })
+                    .filter(i => i) as { value: string | boolean; title: string }[];
             }
         } else if (oidType === 'boolean') {
             tagCardArray = [
@@ -226,7 +254,7 @@ class ConditionState extends GenericBlock {
                     title: '<>',
                     title2: '[not equal]',
                     text: 'not equal to',
-                }
+                },
             ];
             options = [
                 { title: 'false', value: false },
@@ -268,26 +296,29 @@ class ConditionState extends GenericBlock {
                     title: '.',
                     title2: '[includes]',
                     text: 'includes',
-                }
+                },
             ];
             if (oidStates) {
-                options = Object.keys(oidStates).map(val => ({ value: val, title: oidStates[val] }));
+                options = Object.keys(oidStates).map(val => ({
+                    value: val,
+                    title: oidStates ? oidStates[val] : val.toString(),
+                }));
             }
         }
 
-        let settings = null;
+        let settings: RuleBlockConfigActionActionState | null = null;
         if (!tagCardArray.find(item => item.title === tagCard)) {
             tagCard = tagCardArray[0].title;
             settings = settings || { ...this.state.settings };
             settings.tagCard = tagCard;
         }
 
-        let inputs;
-        let renderText = {
+        let inputs: RuleInputAny[];
+        let renderText: RuleInputAny = {
             nameRender: 'renderText',
             defaultValue: '',
             attr: 'value',
-            frontText: tagCard === '()' ? 'Limit' : (tag?.text || 'compare with'),
+            frontText: tagCard === '()' ? 'Limit' : tag?.text || 'compare with',
             doNotTranslateBack: true,
             backText: oidUnit,
         };
@@ -301,7 +332,8 @@ class ConditionState extends GenericBlock {
                 frontText: tag?.text || 'compare with',
                 doNotTranslateBack: true,
                 backText: oidUnit,
-            };
+            } as RuleInputSelect;
+
             if (!options.find(item => item.value === this.state.settings.value)) {
                 settings = settings || { ...this.state.settings };
                 settings.value = options[0].value;
@@ -317,7 +349,7 @@ class ConditionState extends GenericBlock {
                         title: '<>',
                         title2: '[not equal]',
                         text: 'not equal to',
-                    }
+                    },
                 ];
             }
         }
@@ -363,7 +395,8 @@ class ConditionState extends GenericBlock {
                 icon: 'HelpOutline',
                 frontText: 'Explanation',
                 onShowDialog: this.onShowHelp,
-            });
+            } as RuleInputDialog);
+
             inputs.splice(2, 0, {
                 nameRender: 'renderSelect',
                 attr: 'histComp',
@@ -371,13 +404,13 @@ class ConditionState extends GenericBlock {
                 frontText: 'Condition',
                 doNotTranslate: true,
                 options: [
-                    { title: '>',  value: '>' },
+                    { title: '>', value: '>' },
                     { title: '>=', value: '>=' },
-                    { title: '<',  value: '<' },
+                    { title: '<', value: '<' },
                     { title: '<=', value: '<=' },
-                    { title: '=',  value: '=' },
+                    { title: '=', value: '=' },
                     { title: '<>', value: '<>' },
-                ]
+                ],
             });
             inputs.push({
                 frontText: 'Δ',
@@ -397,40 +430,41 @@ class ConditionState extends GenericBlock {
             inputs,
         };
 
-        this.setState(state,() =>
+        this.setState(state, () =>
             super.onTagChange(null, () => {
                 if (settings) {
-                    this.setState({settings});
+                    this.setState({ settings });
                     this.props.onChange(settings);
                 }
-            }));
+            }),
+        );
     }
 
-    onValueChanged(value, attr, context) {
+    onValueChanged(value: any, attr: string): void {
         if (typeof value === 'object') {
-            this._setInputs(value.useTrigger, value.tagCard, value.oidType, value.states);
+            void this._setInputs(value.useTrigger, value.tagCard, value.oidType, value.states);
         } else {
             if (attr === 'useTrigger') {
-                this._setInputs(value);
+                void this._setInputs(value as boolean);
             } else if (attr === 'oidType') {
-                this._setInputs(value, undefined, value);
+                void this._setInputs(undefined, undefined, value as string);
             } else if (attr === 'oidUnit') {
-                this._setInputs(value, undefined, undefined, value);
+                void this._setInputs(undefined, undefined, undefined, value as string);
             } else if (attr === 'oidStates') {
-                this._setInputs(value, undefined, undefined, undefined, value);
+                void this._setInputs(undefined, undefined, undefined, undefined, value as Record<string, string>);
             }
         }
     }
 
-    onUpdate() {
+    onUpdate(): void {
         this._setInputs(this.state.settings.useTrigger);
     }
 
-    onTagChange(tagCard) {
+    onTagChange(tagCard: RuleTagCardTitle): void {
         this._setInputs(this.state.settings.useTrigger, tagCard);
     }
 
-    static getStaticData() {
+    static getStaticData(): RuleBlockDescription {
         return {
             acceptedBy: 'conditions',
             name: 'State condition',
@@ -476,39 +510,48 @@ class ConditionState extends GenericBlock {
                     title: '()',
                     title2: '[hysteresis]',
                     text: 'hysteresis',
-                }
+                },
             ],
             title: 'Compares the state value with user defined value',
-        }
+        };
     }
 
-    getData() {
+    // eslint-disable-next-line class-methods-use-this
+    getData(): RuleBlockDescription {
         return ConditionState.getStaticData();
     }
 
-    renderSpecific() {
+    renderSpecific(): React.JSX.Element | null {
         if (this.state.showHysteresisHelp) {
-            return <Dialog
-                open={!0}
-                maxWidth="md"
-                onClose={() => this.setState({ showHysteresisHelp: false })}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        <img src={HysteresisImage} alt="Hysteresis"/>
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => this.setState({ showHysteresisHelp: false })} color="primary" autoFocus>
-                        {I18n.t('OK')}
-                    </Button>
-                </DialogActions>
-            </Dialog>;
-        } else {
-            return null;
+            return (
+                <Dialog
+                    open={!0}
+                    maxWidth="md"
+                    onClose={() => this.setState({ showHysteresisHelp: false })}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            <img
+                                src={HysteresisImage}
+                                alt="Hysteresis"
+                            />
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button
+                            onClick={() => this.setState({ showHysteresisHelp: false })}
+                            color="primary"
+                            autoFocus
+                        >
+                            {I18n.t('OK')}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            );
         }
+        return null;
     }
 }
 

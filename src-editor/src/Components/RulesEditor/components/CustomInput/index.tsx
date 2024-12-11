@@ -1,76 +1,108 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 
-import {
-    TextField,
-    InputAdornment,
-} from '@mui/material';
+import { TextField, InputAdornment } from '@mui/material';
 
 import { Utils, Icon as CustomIcon } from '@iobroker/adapter-react-v5';
 
 import cls from './style.module.scss';
 
-const CustomInput = ({ autoFocus, fullWidth, disabled, multiline, rows, autoComplete, label, error, size, variant, value, type, style, onChange, className, customValue, icon }) => {
-    const [inputText, setInputText] = useState('');
-    return <TextField
-        error={!!error}
-        autoFocus={autoFocus}
-        fullWidth={fullWidth}
-        label={label}
-        disabled={disabled}
-        variant={variant}
-        multiline={multiline}
-        rows={rows}
-        value={customValue ? value : inputText}
-        type={type}
-        helperText={error}
-        style={style}
-        className={Utils.clsx(cls.root, className)}
-        autoComplete={autoComplete}
-        onChange={e => {
-            !customValue && setInputText(e.target.value);
-            onChange(e.target.value);
-        }}
-        slotProps={{
-            input: {
-                endAdornment: icon ?
-                    <InputAdornment position="end"><CustomIcon className={cls.icon} src={icon}/></InputAdornment>
-                    : null,
-            },
-        }}
-        margin="normal"
-        size={size}
-    />;
+interface CustomInputProps {
+    autoFocus?: boolean;
+    fullWidth?: boolean;
+    disabled?: boolean;
+    multiline?: boolean;
+    rows?: number;
+    autoComplete?: string;
+    label?: string;
+    error?: string;
+    size?: 'small' | 'medium';
+    variant?: 'standard' | 'filled' | 'outlined';
+    value: string | number | undefined;
+    type?: string;
+    style?: React.CSSProperties;
+    onChange?: (value: string | number) => void;
+    className?: string;
+    customValue?: boolean;
+    icon?: string;
 }
 
-CustomInput.defaultProps = {
-    value: '',
-    type: 'text',
-    error: '',
-    className: null,
-    table: false,
-    native: {},
-    variant: 'standard',
-    size: 'medium',
-    component: null,
-    styleComponentBlock: null,
-    onChange: () => { },
-    fullWidth: false,
-    autoComplete: '',
-    customValue: false,
-    autoFocus: false,
-    rows: 1
-};
+const CustomInput = (props: CustomInputProps): React.JSX.Element => {
+    const [inputText, setInputText] = useState('');
+    const {
+        value,
+        type,
+        error,
+        className,
+        icon,
+        label,
+        style,
+        onChange,
+        fullWidth,
+        autoComplete,
+        customValue,
+        autoFocus,
+        rows,
+        size,
+        variant,
+        multiline,
+        disabled,
+    }: CustomInputProps = Object.assign(
+        {
+            value: '',
+            type: 'text',
+            error: '',
+            className: null,
+            table: false,
+            native: {},
+            variant: 'standard',
+            size: 'medium',
+            component: null,
+            styleComponentBlock: null,
+            fullWidth: false,
+            autoComplete: '',
+            customValue: false,
+            autoFocus: false,
+            rows: 1,
+        },
+        props,
+    );
 
-CustomInput.propTypes = {
-    title: PropTypes.string,
-    attr: PropTypes.string,
-    type: PropTypes.string,
-    style: PropTypes.object,
-    native: PropTypes.object,
-    onChange: PropTypes.func,
-    component: PropTypes.object,
-    styleComponentBlock: PropTypes.object
+    return (
+        <TextField
+            error={!!error}
+            autoFocus={autoFocus}
+            fullWidth={fullWidth}
+            label={label}
+            disabled={disabled}
+            variant={variant}
+            multiline={multiline}
+            rows={rows}
+            value={customValue ? value : inputText}
+            type={type}
+            helperText={error}
+            style={style}
+            className={Utils.clsx(cls.root, className)}
+            autoComplete={autoComplete}
+            onChange={e => {
+                !customValue && setInputText(e.target.value);
+                onChange && onChange(e.target.value);
+            }}
+            slotProps={{
+                input: {
+                    endAdornment: icon ? (
+                        <InputAdornment position="end">
+                            <CustomIcon
+                                className={cls.icon}
+                                src={icon}
+                            />
+                        </InputAdornment>
+                    ) : null,
+                },
+            }}
+            margin="normal"
+            size={size}
+        />
+    );
 };
 
 export default CustomInput;

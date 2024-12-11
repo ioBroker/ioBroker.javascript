@@ -1,5 +1,6 @@
 .wrapperRules {
-    background: linear-gradient(0deg, var(--backgroundGlobalColor), var(--backgroundGlobalColor)), url("../assets/back.jpg");
+    background: linear-gradient(0deg, var(--backgroundGlobalColor), var(--backgroundGlobalColor)),
+        url('../assets/back.jpg');
     background-repeat: no-repeat;
     background-size: cover;
     height: 100%;
