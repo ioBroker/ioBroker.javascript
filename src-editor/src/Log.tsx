@@ -250,12 +250,10 @@ class Log extends React.Component<LogProps, LogState> {
     };
 
     componentDidMount(): void {
-        // @ts-expect-error fixed in socket classes
         this.props.socket.registerLogHandler(this.logHandler);
     }
 
     componentWillUnmount(): void {
-        // @ts-expect-error fixed in socket classes
         this.props.socket.unregisterLogHandler(this.logHandler);
     }
 

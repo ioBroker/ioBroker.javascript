@@ -775,6 +775,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
     onConvertBlockly2JS(): void {
         this.showConfirmDialog(I18n.t('It will not be possible to revert this operation.'), result => {
             if (result) {
+                // @ts-expect-error fixed in js-controller 7
                 this.scripts[this.state.selected].engineType = 'Javascript/js';
                 const source: string = this.scripts[this.state.selected].source;
                 const lines = source.split('\n');
@@ -1775,6 +1776,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                     selected={selectedId}
                     expertMode={this.selectId.type && expertModeTypes.includes(this.selectId.type) ? true : undefined}
                     // statesOnly={!this.selectId.type || this.selectId.type === 'state'}
+                    // @ts-expect-error to be fixed
                     types={this.selectId?.type === 'all' ? allObjectTypes : [this.selectId.type || 'state']}
                     onClose={() => {
                         this.setState({ showSelectId: false });

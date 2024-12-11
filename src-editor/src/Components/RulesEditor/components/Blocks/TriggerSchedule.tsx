@@ -2,8 +2,7 @@ import React from 'react';
 // @ts-expect-error no types in suncalc2
 import SunCalc from 'suncalc2';
 
-import { ComplexCron, Schedule, I18n } from '@iobroker/adapter-react-v5';
-import convertCronToText from '@iobroker/adapter-react-v5/build/Components/SimpleCron/cronText';
+import { ComplexCron, Schedule, I18n, convertCronToText } from '@iobroker/adapter-react-v5';
 
 import { GenericBlock, type GenericBlockProps, type GenericBlockState } from '../GenericBlock';
 import { STANDARD_FUNCTION_STATE, STANDARD_FUNCTION_STATE_ONCHANGE } from '../../helpers/Compile';

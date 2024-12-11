@@ -144,7 +144,6 @@ export const ContextWrapper = ({ children, socket }: { socket: AdminConnection; 
             const adapterDynamicBlocksArray: (typeof GenericBlock<any>)[] = [];
 
             // find all adapters, that have custom rule blocks
-            // @ts-expect-error javascriptRules in js-controller
             const dynamicRules = instances.filter(obj => obj.common.javascriptRules);
 
             const alreadyCreated: string[] = [];
