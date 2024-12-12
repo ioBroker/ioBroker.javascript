@@ -6,7 +6,7 @@ export function getName(obj: undefined | ioBroker.StringOrTranslated | null): st
     if (obj && typeof obj === 'object') {
         return obj[lang] || obj.en;
     }
-    return obj || '';
+    return obj as string || '';
 }
 
 export function renderValue(val: any): string {

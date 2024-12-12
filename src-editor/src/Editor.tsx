@@ -375,7 +375,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                 }
                 this.selectId.callback = cb as (selected: string | string[] | undefined) => void;
                 this.selectId.initValue = initValue;
-                this.selectId.type = type;
+                this.selectId.type = type as any;
                 this.setState({ showSelectId: true });
             },
             cronDialog: (initValue, cb) => {
@@ -827,11 +827,11 @@ class Editor extends React.Component<EditorProps, EditorState> {
         const common = this.scripts[selected] || (this.props.objects[selected] && this.props.objects[selected].common);
         this.setState({
             selected,
-            rules: common.engineType === 'Rules',
-            blockly: common.engineType === 'Blockly',
+            rules: (common as any).engineType === 'Rules',
+            blockly: (common as any).engineType === 'Blockly',
             showCompiledCode: false,
-            verboseEnabled: common.verbose,
-            debugEnabled: common.debug,
+            verboseEnabled: (common as any).verbose,
+            debugEnabled: (common as any).debug,
         });
         this.props.onSelectedChange && this.props.onSelectedChange(selected, this.state.editing);
     }
@@ -883,10 +883,10 @@ class Editor extends React.Component<EditorProps, EditorState> {
                         newState.selected &&
                         (this.scripts[newState.selected] ||
                             (this.props.objects[newState.selected] && this.props.objects[newState.selected].common));
-                    newState.blockly = common ? common.engineType === 'Blockly' : false;
-                    newState.rules = common ? common.engineType === 'Rules' : false;
-                    newState.verboseEnabled = common ? common.verbose : false;
-                    newState.debugEnabled = common ? common.debug : false;
+                    newState.blockly = common ? (common as any).engineType === 'Blockly' : false;
+                    newState.rules = common ? (common as any).engineType === 'Rules' : false;
+                    newState.verboseEnabled = common ? (common as any).verbose : false;
+                    newState.debugEnabled = common ? (common as any).debug : false;
                     newState.showCompiledCode = false;
                 }
 
@@ -1993,10 +1993,11 @@ class Editor extends React.Component<EditorProps, EditorState> {
                         runningInstances={this.state.runningInstances}
                         adapterName={this.props.adapterName}
                         socket={this.props.socket}
+                        // @ts-expect-error fix later
                         theme={this.props.theme}
                         themeName={this.props.themeName}
                         themeType={this.props.themeType}
-                        // @ts-expect-error fix later
+                        // @#ts-expect-error fix later
                         src={this.props.debugInstance ? this.props.debugInstance.adapter : this.state.selected}
                         debugInstance={this.props.debugInstance}
                     />

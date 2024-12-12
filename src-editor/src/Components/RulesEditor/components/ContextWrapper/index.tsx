@@ -155,23 +155,23 @@ export const ContextWrapper = ({ children, socket }: { socket: AdminConnection; 
 
                 let url;
                 if (
-                    // @ts-expect-error javascriptRules in js-controller
+                    // @#ts-expect-error javascriptRules in js-controller
                     obj.common.javascriptRules.url.startsWith('http:') ||
-                    // @ts-expect-error javascriptRules in js-controller
+                    // @#ts-expect-error javascriptRules in js-controller
                     obj.common.javascriptRules.url.startsWith('https:')
                 ) {
-                    // @ts-expect-error javascriptRules in js-controller
+                    // @#ts-expect-error javascriptRules in js-controller
                     url = obj.common.javascriptRules.url;
-                    // @ts-expect-error javascriptRules in js-controller
+                    // @#ts-expect-error javascriptRules in js-controller
                 } else if (obj.common.javascriptRules.url.startsWith('./')) {
-                    // @ts-expect-error javascriptRules in js-controller
+                    // @#ts-expect-error javascriptRules in js-controller
                     url = `${window.location.protocol}//${window.location.host}${obj.common.javascriptRules.url.replace(/^\./, '')}`;
                 } else {
-                    // @ts-expect-error javascriptRules in js-controller
+                    // @#ts-expect-error javascriptRules in js-controller
                     url = `${window.location.protocol}//${window.location.host}/adapter/${obj.common.name}/${obj.common.javascriptRules.url}`;
                 }
 
-                // @ts-expect-error javascriptRules in js-controller
+                // @#ts-expect-error javascriptRules in js-controller
                 if (obj.common.javascriptRules.i18n === true) {
                     // load i18n from files
                     const pos: number = url.lastIndexOf('/');
@@ -197,13 +197,13 @@ export const ContextWrapper = ({ children, socket }: { socket: AdminConnection; 
                             }
                             console.log(`Cannot load i18n "${file}": ${error}`);
                         });
-                    // @ts-expect-error javascriptRules in js-controller
+                    // @#ts-expect-error javascriptRules in js-controller
                 } else if (obj.common.javascriptRules.i18n && typeof obj.common.javascriptRules.i18n === 'object') {
                     try {
-                        // @ts-expect-error javascriptRules in js-controller
+                        // @#ts-expect-error javascriptRules in js-controller
                         I18n.extendTranslations(obj.common.javascriptRules.i18n);
                     } catch (error) {
-                        // @ts-expect-error javascriptRules in js-controller
+                        // @#ts-expect-error javascriptRules in js-controller
                         console.error(`Cannot import i18n for "${obj.common.javascriptRules.name}": ${error}`);
                     }
                 }
@@ -211,10 +211,10 @@ export const ContextWrapper = ({ children, socket }: { socket: AdminConnection; 
                 try {
                     const Component = (
                         await loadComponent(
-                            // @ts-expect-error javascriptRules in js-controller
+                            // @#ts-expect-error javascriptRules in js-controller
                             obj.common.javascriptRules.name,
                             'default',
-                            // @ts-expect-error javascriptRules in js-controller
+                            // @#ts-expect-error javascriptRules in js-controller
                             `./${obj.common.javascriptRules.name}`,
                             url,
                         )()
@@ -226,7 +226,7 @@ export const ContextWrapper = ({ children, socket }: { socket: AdminConnection; 
                         ADAPTERS[obj.common.name] = null;
                     }
                 } catch (e) {
-                    // @ts-expect-error javascriptRules in js-controller
+                    // @#ts-expect-error javascriptRules in js-controller
                     console.error(`Cannot load component "${obj.common.javascriptRules.name}": ${e}`);
                 }
             }

@@ -152,6 +152,7 @@ Do not import any libraries as all functions are already imported.`,
                 ],
             });
             const message = chatCompletionPhase1.choices[0].message;
+            // @ts-expect-error
             const m = message.content?.match(/```(javascript|js|typescript)\n?(.*)```(.*)/ms);
             let code;
             if (!m) {

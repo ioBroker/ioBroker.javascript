@@ -182,7 +182,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
                 return xmlDoc;
             };
         } else {
-            parseXml = () => null;
+            parseXml = ():null => null;
         }
         return parseXml(text);
     }
