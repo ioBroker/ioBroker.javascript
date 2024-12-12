@@ -20,6 +20,15 @@ const makeShared = pkgs => {
 
 export default defineConfig({
   plugins: [
+    federation( {
+      name: 'iobroker_javascript',
+      shared: makeShared([
+        'react', 'react-dom', '@mui/material', '@mui/styles', '@mui/icons-material', 'prop-types', '@iobroker/adapter-react-v5', 'react-ace',
+      ]),
+      exposes: {},
+      remotes: {},
+      filename: 'remoteEntry.js',
+    }),
     react(),
     vitetsConfigPaths(),
     commonjs(),
@@ -28,14 +37,6 @@ export default defineConfig({
         'src/**/*.svg',
       ],
     }),
-    federation( {
-        name: 'iobroker_javascript',
-        remotes: {
-        },
-        shared: makeShared([
-            'react', 'react-dom', '@mui/material', '@mui/styles', '@mui/icons-material', 'prop-types', '@iobroker/adapter-react-v5', 'react-ace',
-        ]),
-    })
   ],
   server: {
     port: 3000
