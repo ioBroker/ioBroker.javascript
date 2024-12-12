@@ -401,7 +401,7 @@ class TriggerScheduleBlock extends GenericBlock<RuleBlockConfigTriggerSchedule, 
                             onChange={(schedule, description) => {
                                 wizardText = description || '';
                                 const wizardObj: ScheduleConfig = JSON.parse(schedule) as ScheduleConfig;
-                                wizardObj.valid = wizardObj.valid || {} as any;
+                                wizardObj.valid = wizardObj.valid || {};
                                 wizardObj.valid.from = wizardObj.valid.from || Schedule.now2string();
                                 wizard = JSON.stringify(wizardObj);
                             }}
@@ -436,7 +436,7 @@ class TriggerScheduleBlock extends GenericBlock<RuleBlockConfigTriggerSchedule, 
 
             case 'wizard': {
                 const wizard: ScheduleConfig = JSON.parse(DEFAULT_WIZARD);
-                wizard.valid = wizard.valid || {} as any;
+                wizard.valid = wizard.valid || {};
                 wizard.valid.from = wizard.valid.from || Schedule.now2string();
 
                 this.setState(

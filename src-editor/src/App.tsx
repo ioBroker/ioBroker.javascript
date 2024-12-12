@@ -25,17 +25,17 @@ import { ContextWrapper } from './Components/RulesEditor/components/ContextWrapp
 import { Box } from '@mui/material';
 import type { GenericAppProps, GenericAppState } from '@iobroker/adapter-react-v5/build/types';
 
-// import enLang from './i18n/en.json';
-// import deLang from './i18n/de.json';
-// import esLang from './i18n/es.json';
-// import frLang from './i18n/fr.json';
-// import itLang from './i18n/it.json';
-// import nlLang from './i18n/nl.json';
-// import plLang from './i18n/pl.json';
-// import ptLang from './i18n/pt.json';
-// import ruLang from './i18n/ru.json';
-// import ukLang from './i18n/uk.json';
-// import zhCnLang from './i18n/zh-cn.json';
+import enLang from './i18n/en.json';
+import deLang from './i18n/de.json';
+import esLang from './i18n/es.json';
+import frLang from './i18n/fr.json';
+import itLang from './i18n/it.json';
+import nlLang from './i18n/nl.json';
+import plLang from './i18n/pl.json';
+import ptLang from './i18n/pt.json';
+import ruLang from './i18n/ru.json';
+import ukLang from './i18n/uk.json';
+import zhCnLang from './i18n/zh-cn.json';
 import type { ScriptType } from '@/types';
 
 const styles: Record<string, any> = {
@@ -173,17 +173,17 @@ class App extends GenericApp<AppProps, AppState> {
             // @ts-expect-error fix later
             Connection: AdminConnection,
             translations: {
-                // en: enLang,
-                // de: deLang,
-                // es: esLang,
-                // fr: frLang,
-                // it: itLang,
-                // nl: nlLang,
-                // pl: plLang,
-                // pt: ptLang,
-                // ru: ruLang,
-                // uk: ukLang,
-                // 'zh-cn': zhCnLang,
+                en: enLang,
+                de: deLang,
+                es: esLang,
+                fr: frLang,
+                it: itLang,
+                nl: nlLang,
+                pl: plLang,
+                pt: ptLang,
+                ru: ruLang,
+                uk: ukLang,
+                'zh-cn': zhCnLang,
             },
             bottomButtons: false,
             socket: {
@@ -549,7 +549,7 @@ class App extends GenericApp<AppProps, AppState> {
                     }
                     nId = newId + nId.substring(id.length);
                     obj._id = nId;
-                    obj.common = obj.common || {} as ioBroker.StateCommon;
+                    obj.common = obj.common || {};
                     obj.common.expert = true;
                     await this.socket.setObject(nId, obj);
                     await this.renameGroup(id, newId, newName, _list);
@@ -687,7 +687,7 @@ class App extends GenericApp<AppProps, AppState> {
         if (oldId === newId && _obj?.common && newCommon.name === _obj.common.name) {
             if (!newCommon.engineType || newCommon.engineType !== _obj.common.engineType) {
                 if (newCommon.engineType !== undefined) {
-                    obj.common.engineType = newCommon.engineType || 'JavaScript/js';
+                    obj.common.engineType = newCommon.engineType || 'Javascript/js';
                 }
             }
             obj.type = 'script';

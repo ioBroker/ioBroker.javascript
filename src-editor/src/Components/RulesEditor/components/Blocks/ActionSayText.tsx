@@ -3,12 +3,7 @@ import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
 import type { RuleBlockConfigActionSayText, RuleBlockDescription, RuleContext } from '@/Components/RulesEditor/types';
 
 // copied from https://github.com/ioBroker/ioBroker.sayit/blob/master/admin/blockly.js#L37
-const sayitEngines: Record<string, 
-    { name: string; engine: string; params: string[]; 
-        voice?: string[]; emotion?: string[]; language?: string; ename?: string; ssml?: boolean;
-        gender?: string;
-    }>
- = {
+const sayitEngines = {
     en: { name: 'Google - English', engine: 'google', params: [] },
     de: { name: 'Google - Deutsch', engine: 'google', params: [] },
     ru: { name: 'Google - Русский', engine: 'google', params: [] },

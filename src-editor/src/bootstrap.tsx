@@ -3,9 +3,7 @@ import { createRoot } from 'react-dom/client';
 
 import './index.css';
 import App from './App';
-// @ts-expect-error
 import * as serviceWorker from './serviceWorker';
-// @ts-expect-error
 import pgk from '../package.json';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';

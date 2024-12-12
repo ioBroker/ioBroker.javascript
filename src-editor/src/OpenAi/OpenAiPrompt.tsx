@@ -1,7 +1,7 @@
 import ChannelDetector, { type DetectOptions, Types } from '@iobroker/type-detector';
 import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
 import type { PatternControl } from '@iobroker/type-detector';
-// @ts-expect-error
+//@ts-expect-error
 const docs = import(`./docs.md?raw`);
 
 interface DeviceState {
@@ -66,7 +66,7 @@ function getText(text: ioBroker.StringOrTranslated, lang: ioBroker.Languages): s
     if (text && typeof text === 'object') {
         return text[lang] || text.en;
     }
-    return text as string || '';
+    return text || '';
 }
 
 async function detectDevices(socket: AdminConnection): Promise<DeviceObject[]> {

@@ -134,7 +134,7 @@ export abstract class GenericBlock<
 
     protected constructor(props: GenericBlockProps<Settings>, item: RuleBlockDescription) {
         super(props);
-        item = item || {} as any;
+        item = item || {};
         const settings: Settings =
             props.settings ||
             ({
@@ -502,7 +502,7 @@ export abstract class GenericBlock<
             return this.props.socket
                 .getObject(newId)
                 .then(o => this.findIcon(o))
-                .catch((): any => null);
+                .catch(() => null);
         }
         return Promise.resolve(null);
     }
