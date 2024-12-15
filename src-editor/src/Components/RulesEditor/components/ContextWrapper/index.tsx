@@ -2,6 +2,8 @@ import React, { createContext, useEffect, useState } from 'react';
 
 import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
 
+import {init, loadRemote} from '@module-federation/runtime';
+
 import ActionSayText from '../Blocks/ActionSayText';
 import ActionSendEmail from '../Blocks/ActionSendEmail';
 import ActionTelegram from '../Blocks/ActionTelegram';
@@ -209,15 +211,18 @@ export const ContextWrapper = ({ children, socket }: { socket: AdminConnection; 
                 }
 
                 try {
+                    init({
+                        name: obj.common.javascriptRules!.name,
+                        remotes: [
+                          {
+                            name: obj.common.javascriptRules!.name,
+                            entry: url
+                          }
+                        ],
+                        // force: true // may be needed to sideload remotes after the fact.
+                      })
                     const Component = (
-                        await loadComponent(
-                            // @ts-expect-error javascriptRules in js-controller
-                            obj.common.javascriptRules.name,
-                            'default',
-                            // @ts-expect-error javascriptRules in js-controller
-                            `./${obj.common.javascriptRules.name}`,
-                            url,
-                        )()
+                        await loadRemote(obj.common.javascriptRules!.name + '/' + obj.common.javascriptRules!.name) as any
                     ).default;
 
                     if (Component) {
