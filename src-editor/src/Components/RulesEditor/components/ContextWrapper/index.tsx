@@ -216,7 +216,8 @@ export const ContextWrapper = ({ children, socket }: { socket: AdminConnection; 
                         remotes: [
                           {
                             name: obj.common.javascriptRules!.name,
-                            entry: url
+                            entry: url,
+                            type: 'module'
                           }
                         ],
                         // force: true // may be needed to sideload remotes after the fact.
