@@ -23,7 +23,10 @@ export default defineConfig({
     federation( {
       name: 'iobroker_javascript',
       shared: makeShared([
-        'react', 'react-dom', '@mui/material', '@mui/styles', '@mui/icons-material', 'prop-types', '@iobroker/adapter-react-v5', 'react-ace',
+        'react', 'react-dom', '@mui/material', 
+        //'@mui/styles', 
+        //'@mui/icons-material', 
+        'prop-types', '@iobroker/adapter-react-v5', 'react-ace',
       ]),
       exposes: {},
       remotes: {},

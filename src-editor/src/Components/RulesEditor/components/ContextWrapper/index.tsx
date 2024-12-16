@@ -2,7 +2,7 @@ import React, { createContext, useEffect, useState } from 'react';
 
 import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
 
-import {init, loadRemote} from '@module-federation/runtime';
+import {registerRemotes, loadRemote} from '@module-federation/runtime';
 
 import ActionSayText from '../Blocks/ActionSayText';
 import ActionSendEmail from '../Blocks/ActionSendEmail';
@@ -211,9 +211,8 @@ export const ContextWrapper = ({ children, socket }: { socket: AdminConnection; 
                 }
 
                 try {
-                    init({
-                        name: obj.common.javascriptRules!.name,
-                        remotes: [
+                    registerRemotes(
+                        [
                           {
                             name: obj.common.javascriptRules!.name,
                             entry: url,
@@ -221,7 +220,7 @@ export const ContextWrapper = ({ children, socket }: { socket: AdminConnection; 
                           }
                         ],
                         // force: true // may be needed to sideload remotes after the fact.
-                      })
+                      )
                     const Component = (
                         await loadRemote(obj.common.javascriptRules!.name + '/' + obj.common.javascriptRules!.name) as any
                     ).default;
