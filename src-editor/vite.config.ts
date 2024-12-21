@@ -31,6 +31,7 @@ export default defineConfig({
       exposes: {},
       remotes: {},
       filename: 'remoteEntry.js',
+      manifest: true,
     }),
     react(),
     vitetsConfigPaths(),

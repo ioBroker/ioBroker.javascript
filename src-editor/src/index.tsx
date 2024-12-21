@@ -11,6 +11,9 @@ import { TouchBackend } from 'react-dnd-touch-backend';
 
 import { GenericBlock } from './Components/RulesEditor/components/GenericBlock';
 
+(React as any).something = 'test';
+console.log((React as any).something);
+
 declare global {
     interface Window {
         GenericBlock: any;
