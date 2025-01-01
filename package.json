@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@iobroker/adapter-core": "^3.1.6",
-    "@types/node": "^22.5.2",
+    "@types/node": "^22.10.3",
     "@types/request": "^2.48.12",
     "axios": "^1.7.7",
     "jsonata": "^2.0.5",
