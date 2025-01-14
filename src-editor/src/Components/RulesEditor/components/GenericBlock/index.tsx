@@ -1161,7 +1161,7 @@ export abstract class GenericBlock<
                 return <div key={`invalid_${index}`}>{I18n.t('Invalid renderNumber')}</div>;
             default:
                 if (this[nameRender]) {
-                    // @ts-expect-error ignore error as it is special case
+                    // @ts-expect-error ignore error as it is a special case
                     return this[nameRender](input, value, attr ? this.onChangeInput(attr) : null);
                 }
                 return <div key={`invalid_${index}`}>{I18n.t('Invalid input type: %s', nameRender)}</div>;

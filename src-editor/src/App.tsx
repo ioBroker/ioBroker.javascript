@@ -641,14 +641,13 @@ class App extends GenericApp<AppProps, AppState> {
             }
 
             this.socket
-                // @ts-expect-error Fixed in js-controller 7
                 .setObject(id, {
                     _id: id,
                     type: 'script',
                     common: {
                         name,
                         expert: true,
-                        engineType: type || 'Javascript/js',
+                        engineType: (type as 'TypeScript/ts' | 'Blockly' | 'Rules' | 'JavaScript/js') || 'Javascript/js',
                         enabled: false,
                         engine: `system.adapter.javascript.${instance || 0}`,
                         source: source || '',

@@ -1,7 +1,6 @@
-import ChannelDetector, { type DetectOptions, Types } from '@iobroker/type-detector';
+import ChannelDetector, { type DetectOptions, Types, type PatternControl } from '@iobroker/type-detector';
 import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
-import type { PatternControl } from '@iobroker/type-detector';
-//@ts-expect-error
+// @ts-expect-error no types in Markdown
 const docs = import(`./docs.md?raw`);
 
 interface DeviceState {

@@ -432,8 +432,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             return;
         }
 
-        // @ts-expect-error will be fixed
-        if (!obj && window.main.instances.includes[id]) {
+        if (!obj && window.main.instances.includes(id)) {
             delete window.main.objects[id];
             const pos = window.main.instances.indexOf(id);
             window.main.instances.splice(pos, 1);
@@ -776,7 +775,6 @@ class Editor extends React.Component<EditorProps, EditorState> {
     onConvertBlockly2JS(): void {
         this.showConfirmDialog(I18n.t('It will not be possible to revert this operation.'), result => {
             if (result) {
-                // @ts-expect-error fixed in js-controller 7
                 this.scripts[this.state.selected].engineType = 'Javascript/js';
                 const source: string = this.scripts[this.state.selected].source;
                 const lines = source.split('\n');
@@ -1706,7 +1704,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
 
     getSelectIdDialog(): React.JSX.Element | null {
         if (this.state.showSelectId) {
-            const allObjectTypes = [
+            const allObjectTypes: ioBroker.ObjectType[] = [
                 'state',
                 'channel',
                 'device',
@@ -1725,7 +1723,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                 //'design',
             ];
 
-            const expertModeTypes = [
+            const expertModeTypes: ioBroker.ObjectType[] = [
                 'adapter',
                 'instance',
                 'enum',
@@ -1775,9 +1773,14 @@ class Editor extends React.Component<EditorProps, EditorState> {
                     themeType={this.state.themeType}
                     socket={this.props.socket}
                     selected={selectedId}
-                    expertMode={this.selectId.type && expertModeTypes.includes(this.selectId.type) ? true : undefined}
+                    expertMode={
+                        this.selectId.type &&
+                        this.selectId.type !== 'all' &&
+                        expertModeTypes.includes(this.selectId.type)
+                            ? true
+                            : undefined
+                    }
                     // statesOnly={!this.selectId.type || this.selectId.type === 'state'}
-                    // @ts-expect-error to be fixed
                     types={this.selectId?.type === 'all' ? allObjectTypes : [this.selectId.type || 'state']}
                     onClose={() => {
                         this.setState({ showSelectId: false });
@@ -1994,11 +1997,9 @@ class Editor extends React.Component<EditorProps, EditorState> {
                         runningInstances={this.state.runningInstances}
                         adapterName={this.props.adapterName}
                         socket={this.props.socket}
-                        theme={this.props.theme}
                         themeName={this.props.themeName}
                         themeType={this.props.themeType}
-                        // @ts-expect-error fix later
-                        src={this.props.debugInstance ? this.props.debugInstance.adapter : this.state.selected}
+                        src={this.props.debugInstance ? this.props.debugInstance.adapter! : this.state.selected}
                         debugInstance={this.props.debugInstance}
                     />
                 );
