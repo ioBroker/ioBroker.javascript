@@ -2,11 +2,11 @@ import React, { createContext, useEffect, useState } from 'react';
 
 import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
 
-import {registerRemotes, loadRemote} from '@module-federation/runtime';
+import { registerRemotes, loadRemote } from '@module-federation/runtime';
 
 import ActionSayText from '../Blocks/ActionSayText';
 import ActionSendEmail from '../Blocks/ActionSendEmail';
-import ActionTelegram from '../Blocks/ActionTelegram';
+// import ActionTelegram from '../Blocks/ActionTelegram';
 import ActionPushover from '../Blocks/ActionPushover';
 import ActionWhatsappcmb from '../Blocks/ActionWhatsappcmb';
 import ActionPushsafer from '../Blocks/ActionPushsafer';
@@ -135,16 +135,18 @@ export const ContextWrapper = ({ children, socket }: { socket: AdminConnection; 
                 try {
                     registerRemotes(
                         [
-                          {
-                            name: obj.common.javascriptRules!.name,
-                            entry: url,
-                            type: (obj.common.javascriptRules! as any).type
-                          }
+                            {
+                                name: obj.common.javascriptRules!.name,
+                                entry: url,
+                                type: (obj.common.javascriptRules! as any).type,
+                            },
                         ],
                         // force: true // may be needed to sideload remotes after the fact.
-                      )
+                    );
                     const Component = (
-                        await loadRemote(obj.common.javascriptRules!.name + '/' + obj.common.javascriptRules!.name) as any
+                        (await loadRemote(
+                            obj.common.javascriptRules!.name + '/' + obj.common.javascriptRules!.name,
+                        )) as any
                     ).default;
 
                     if (Component) {

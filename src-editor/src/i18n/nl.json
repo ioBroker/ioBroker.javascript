@@ -1,8 +1,10 @@
 {
+    "%s not found": "%s niet gevonden",
     "()": "()",
     "(optional)": "(optioneel)",
     "-": "-",
     ".": ".",
+    "AI code generator": "AI-codegenerator",
     "Ack": "Erkend",
     "Actions": "Acties",
     "Actual time of day": "Werkelijke tijd van de dag",

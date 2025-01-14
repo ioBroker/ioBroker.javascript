@@ -1,8 +1,10 @@
 {
+    "%s not found": "%s not found",
     "()": "()",
     "(optional)": "(optional)",
     "-": "-",
     ".": ".",
+    "AI code generator": "AI code generator",
     "Ack": "Acknowledged",
     "Actions": "Actions",
     "Actual time of day": "Actual time of day",

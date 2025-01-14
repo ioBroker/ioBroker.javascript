@@ -1,8 +1,10 @@
 {
+    "%s not found": "%s 未找到",
     "()": "()",
     "(optional)": "（选修的）",
     "-": "-",
     ".": ".",
+    "AI code generator": "AI代码生成器",
     "Ack": "确认",
     "Actions": "动作",
     "Actual time of day": "一天中的实际时间",

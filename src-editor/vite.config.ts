@@ -24,11 +24,8 @@ export default defineConfig({
                 'react',
                 'react-dom',
                 '@mui/material',
-                //'@mui/styles',
-                //'@mui/icons-material',
                 'prop-types',
                 '@iobroker/adapter-react-v5',
-                'react-ace',
             ]),
             exposes: {},
             remotes: {},
@@ -38,9 +35,6 @@ export default defineConfig({
         react(),
         vitetsConfigPaths(),
         commonjs(),
-        svgr({
-            include: ['src/**/*.svg'],
-        }),
     ],
     server: {
         port: 3000,

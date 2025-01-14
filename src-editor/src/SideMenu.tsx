@@ -54,10 +54,10 @@ import {
     IconExpert,
 } from '@iobroker/adapter-react-v5';
 
-const ImgJS = './assets/js.svg';
-const ImgBlockly = './assets/blockly.svg';
-const ImgTypeScript = './assets/typescript.svg';
-const ImgRules = './assets/rules.svg';
+import ImgJS from './assets/js.svg';
+import ImgBlockly from './assets/blockly.svg';
+import ImgTypeScript from './assets/typescript.svg';
+import ImgRules from './assets/rules.svg';
 
 import DialogRename from './Dialogs/Rename';
 import DialogDelete from './Dialogs/Delete';

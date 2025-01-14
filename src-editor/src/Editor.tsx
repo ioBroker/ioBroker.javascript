@@ -55,12 +55,12 @@ import {
     FaFlagCheckered as IconCheck,
 } from 'react-icons/fa';
 
-const ImgJS = './assets/js.svg';
-const ImgBlockly = './assets/blockly.svg';
-const ImgTypeScript = './assets/typescript.svg';
-const ImgBlockly2Js = './assets/blockly2js.svg';
-const ImgRules2Js = './assets/rules2js.svg';
-const ImgRules = './assets/rules.svg';
+import ImgJS from './assets/js.svg';
+import ImgBlockly from './assets/blockly.svg';
+import ImgTypeScript from './assets/typescript.svg';
+import ImgBlockly2Js from './assets/blockly2js.svg';
+import ImgRules2Js from './assets/rules2js.svg';
+import ImgRules from './assets/rules.svg';
 
 import {
     I18n,
