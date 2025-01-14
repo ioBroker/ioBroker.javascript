@@ -55,12 +55,12 @@ import {
     FaFlagCheckered as IconCheck,
 } from 'react-icons/fa';
 
-import ImgJS from './assets/js.png';
-import ImgBlockly from './assets/blockly.png';
-import ImgTypeScript from './assets/typescript.png';
-import ImgBlockly2Js from './assets/blockly2js.svg';
-import ImgRules2Js from './assets/rules2js.svg';
-import ImgRules from './assets/rules.png';
+const ImgJS = './assets/js.svg';
+const ImgBlockly = './assets/blockly.svg';
+const ImgTypeScript = './assets/typescript.svg';
+const ImgBlockly2Js = './assets/blockly2js.svg';
+const ImgRules2Js = './assets/rules2js.svg';
+const ImgRules = './assets/rules.svg';
 
 import {
     I18n,
@@ -115,11 +115,12 @@ const COLOR_RUN = green[400];
 const COLOR_PAUSE = red[400];
 
 const styles: Record<string, any> = {
-    toolbar: {
+    toolbar: (theme: IobTheme): React.CSSProperties => ({
         minHeight: 38, // Theme.toolbar.height,
         boxShadow:
             '0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12)',
-    },
+        backgroundColor: theme.palette.mode === 'dark' ? '#1e1e1e' : '#E2E2E2',
+    }),
     toolbarButtons: {
         padding: 4,
         marginLeft: 4,
@@ -1108,9 +1109,9 @@ class Editor extends React.Component<EditorProps, EditorState> {
             ];
         }
         return (
-            <div
+            <Box
                 key="tabs2"
-                style={styles.toolbar}
+                sx={styles.toolbar}
             >
                 <Button
                     color="grey"
@@ -1126,7 +1127,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                     />
                     <span key="select4">{I18n.t('for edit or create script')}</span>
                 </Button>
-            </div>
+            </Box>
         );
     }
 
@@ -1250,7 +1251,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             return (
                 <Toolbar
                     variant="dense"
-                    style={styles.toolbar}
+                    sx={styles.toolbar}
                     key="toolbar1"
                 >
                     {!this.props.debugInstance && this.state.menuOpened && this.props.onLocate && (

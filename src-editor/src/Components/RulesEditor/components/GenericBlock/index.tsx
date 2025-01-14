@@ -604,13 +604,13 @@ export abstract class GenericBlock<
                             (settings as Record<string, any>)[`showSelectId${attr}`] = false;
                             this.setState(settings as TState);
                         }}
-                        onOk={(selected: string | string[] | undefined, _name: string): void => {
+                        onOk={(selected: string | string[] | undefined, _name: string | null): void => {
                             const settings: Partial<TState> = {};
                             (settings as Record<string, any>)[`showSelectId${attr}`] = false;
                             const oid = Array.isArray(selected) ? selected[0] : selected;
 
                             this.setState(settings as TState, async () => {
-                                // read type of object
+                                // read a type of object
                                 const obj = oid ? await socket.getObject(oid) : undefined;
                                 this.lastObjectIdChange = Date.now();
                                 onChange(

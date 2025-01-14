@@ -2,6 +2,8 @@ import React from 'react';
 
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import { Cancel as IconCancel, Check as IconOk } from '@mui/icons-material';
+// @ts-expect-error no types
+import DarkTheme from '@blockly/theme-dark';
 
 import { I18n, Message as DialogMessage, type ThemeType } from '@iobroker/adapter-react-v5';
 
@@ -72,7 +74,6 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
     private changeTimer: ReturnType<typeof setTimeout> | null = null;
     private someSelectedTime: number = 0;
     private ignoreChanges: boolean = false;
-    private darkTheme: any;
     private blinkBlock: any;
     private readonly onResizeBind: () => void;
     private didUpdate: ReturnType<typeof setTimeout> | null = null;
@@ -545,28 +546,10 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         toolboxText = toolboxText || (await this.getToolbox());
         toolboxXml = toolboxXml || BlocklyEditor.Blockly.utils.xml.textToDom(toolboxText);
 
-        this.darkTheme = BlocklyEditor.Blockly.Theme.defineTheme('dark', {
-            name: 'dark',
-            base: BlocklyEditor.Blockly.Themes.Classic,
-            componentStyles: {
-                workspaceBackgroundColour: '#1e1e1e',
-                toolboxBackgroundColour: 'blackBackground',
-                toolboxForegroundColour: '#fff',
-                flyoutBackgroundColour: '#252526',
-                flyoutForegroundColour: '#ccc',
-                flyoutOpacity: 1,
-                scrollbarColour: '#797979',
-                insertionMarkerColour: '#fff',
-                insertionMarkerOpacity: 0.3,
-                scrollbarOpacity: 0.4,
-                cursorColour: '#d0d0d0',
-            },
-        });
-
         // https://developers.google.com/blockly/reference/js/blockly.blocklyoptions_interface.md
         this.blocklyWorkspace = BlocklyEditor.Blockly.inject(this.blockly, {
             renderer: 'thrasos',
-            theme: 'classic',
+            theme: this.state.themeType === 'dark' ? DarkTheme : 'classic',
             media: 'google-blockly/media/',
             toolbox: toolboxXml,
             zoom: {
@@ -641,7 +624,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
 
     updateBackground(): void {
         if (this.state.themeType === 'dark') {
-            this.blocklyWorkspace?.setTheme(this.darkTheme);
+            this.blocklyWorkspace?.setTheme(DarkTheme);
         } else if (this.blocklyWorkspace) {
             this.blocklyWorkspace.getThemeManager();
             this.blocklyWorkspace.setTheme(BlocklyEditor.Blockly.Themes.Classic);

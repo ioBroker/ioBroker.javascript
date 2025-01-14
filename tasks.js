@@ -50,7 +50,7 @@ function copyAllFiles() {
         [
             'src-editor/build/**/*',
             '!src-editor/build/index.html',
-//             '!src-editor/build/static/js/main.*.chunk.js',
+            //             '!src-editor/build/static/js/main.*.chunk.js',
             '!src-editor/build/i18n/**/*',
             '!src-editor/build/i18n',
             '!src-editor/build/google-blockly/blockly-*.*.*.tgz',
@@ -61,8 +61,8 @@ function copyAllFiles() {
                 if (fileName.includes('.tgz')) {
                     return null;
                 }
-            }
-        }
+            },
+        },
     );
 
     let index = readFileSync(`${__dirname}/src-editor/build/index.html`).toString();
@@ -78,11 +78,34 @@ function copyAllFiles() {
     });*/
 }
 
+function replaceScript(text, replaceText) {
+    if (text.includes(replaceText)) {
+        return text;
+    }
+    const lines = text.split('\n');
+    let found = false;
+    let done = false;
+    const newLines = [];
+    for (let i = 0; i < lines.length; i++) {
+        if (!done && lines[i].includes('<script>')) {
+            found = true;
+            newLines.push(`    ${replaceText}`);
+        } else if (!done && found && lines[i].includes('</script>')) {
+            found = false;
+            done = true;
+        } else if (!found) {
+            newLines.push(lines[i]);
+        }
+    }
+
+    return newLines.join('\n');
+}
+
 function patch() {
     if (existsSync(`${__dirname}/admin/tab.html`)) {
         let code = readFileSync(`${__dirname}/admin/tab.html`).toString('utf8');
-        code = code.replace(
-            /<script>var head=document\.getElementsByTagName\("head"\)\[0][^<]+<\/script>/,
+        code = replaceScript(
+            code,
             `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./../../lib/js/socket.io.js"></script>`,
         );
         // add the monaco script at the end
@@ -92,33 +115,12 @@ function patch() {
             )
         ) {
             code = code.replace(
-                '</body></html>',
-                `<script type="text/javascript" src="vs/loader.js"></script><script type="text/javascript" src="vs/configure.js"></script></body></html>`,
+                /<\/body>\n?<\/html>/,
+                `    <script type="text/javascript" src="vs/loader.js"></script><script type="text/javascript" src="vs/configure.js"></script>\n    </body>\n</html>`,
             );
         }
 
         writeFileSync(`${__dirname}/admin/tab.html`, code);
-    }
-
-    if (existsSync(`${__dirname}/src-editor/build/index.html`)) {
-        let code = readFileSync(`${__dirname}/src-editor/build/index.html`).toString('utf8');
-        code = code.replace(
-            /<script>var head=document\.getElementsByTagName\("head"\)\[0][^<]+<\/script>/,
-            `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./../../lib/js/socket.io.js"></script>`,
-        );
-        // add the monaco script at the end
-        if (
-            !code.includes(
-                `<script type="text/javascript" src="vs/loader.js"></script><script type="text/javascript" src="vs/configure.js"></script>`,
-            )
-        ) {
-            code = code.replace(
-                '</body></html>',
-                `<script type="text/javascript" src="vs/loader.js"></script><script type="text/javascript" src="vs/configure.js"></script></body></html>`,
-            );
-        }
-
-        writeFileSync(`${__dirname}/src-editor/build/index.html`, code);
     }
 
     const buffer = Buffer.from(JSON.parse(readFileSync(`${__dirname}/admin/vsFont/codicon.json`).toString()), 'base64');
@@ -505,7 +507,7 @@ if (process.argv.includes('--copy-types')) {
 } else if (process.argv.includes('--2-build')) {
     buildReact(`${__dirname}/src-editor/`, {
         rootDir: __dirname,
-        craco: true,
+        vite: true,
         maxRam: 7000,
     }).catch(e => {
         console.error(`Cannot build react: ${e}`);
@@ -524,7 +526,8 @@ if (process.argv.includes('--copy-types')) {
         .then(() =>
             buildReact(`${__dirname}/src-editor/`, {
                 rootDir: __dirname,
-                craco: true,
+                tsc: true,
+                vite: true,
                 maxRam: 7000,
             }),
         )
@@ -550,7 +553,8 @@ if (process.argv.includes('--copy-types')) {
         .then(() =>
             buildReact(`${__dirname}/src-editor/`, {
                 rootDir: __dirname,
-                craco: true,
+                vite: true,
+                tsc: true,
                 maxRam: 7000,
             }),
         )

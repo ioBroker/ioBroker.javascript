@@ -2,7 +2,6 @@ import React from 'react';
 import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 
-import type { IobTheme } from '@iobroker/adapter-react-v5';
 import {
     I18n,
     Utils,
@@ -11,6 +10,7 @@ import {
     GenericApp,
     Message as DialogMessage,
     Confirm as DialogConfirm,
+    type IobTheme,
 } from '@iobroker/adapter-react-v5';
 
 import { MdMenu as IconMenuClosed, MdArrowBack as IconMenuOpened, MdVisibility as IconShowLog } from 'react-icons/md';
