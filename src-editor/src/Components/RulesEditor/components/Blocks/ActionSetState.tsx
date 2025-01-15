@@ -1,6 +1,5 @@
 import React from 'react';
 import { I18n } from '@iobroker/adapter-react-v5';
-import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
 import type {
     RuleBlockConfigActionSetState,
     RuleBlockDescription,
@@ -8,7 +7,10 @@ import type {
     RuleInputAny,
     RuleInputObjectID,
     RuleTagCardTitle,
-} from '../../types';
+    GenericBlockProps,
+} from '@iobroker/javascript-rules-dev';
+import { GenericBlock } from '../GenericBlock';
+
 import { renderValue } from '../../helpers/utils';
 
 const styles = {

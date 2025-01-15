@@ -1,10 +1,11 @@
 import { I18n } from '@iobroker/adapter-react-v5';
-import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import type {
     RuleBlockConfigActionFunction,
     RuleBlockDescription,
     RuleTagCardTitle,
-} from '@/Components/RulesEditor/types';
+    GenericBlockProps,
+} from '@iobroker/javascript-rules-dev';
 
 class ActionFunction extends GenericBlock<RuleBlockConfigActionFunction> {
     constructor(props: GenericBlockProps<RuleBlockConfigActionFunction>) {

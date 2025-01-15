@@ -12,7 +12,7 @@ import ActionWhatsappcmb from '../Blocks/ActionWhatsappcmb';
 import ActionPushsafer from '../Blocks/ActionPushsafer';
 import StandardBlocks from '../StandardBlocks';
 import type { GenericBlock } from '../GenericBlock';
-import type { DebugMessage } from '../../types';
+import type { DebugMessage } from '@iobroker/javascript-rules-dev';
 
 const ADAPTERS: Record<string, typeof GenericBlock<any> | null> = {
     // telegram: ActionTelegram,

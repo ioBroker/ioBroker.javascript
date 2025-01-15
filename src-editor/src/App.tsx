@@ -11,6 +11,8 @@ import {
     Message as DialogMessage,
     Confirm as DialogConfirm,
     type IobTheme,
+    type GenericAppProps,
+    type GenericAppState,
 } from '@iobroker/adapter-react-v5';
 
 import { MdMenu as IconMenuClosed, MdArrowBack as IconMenuOpened, MdVisibility as IconShowLog } from 'react-icons/md';
@@ -23,7 +25,6 @@ import DialogImportFile from './Dialogs/ImportFile';
 import BlocklyEditor from './Components/BlocklyEditor';
 import { ContextWrapper } from './Components/RulesEditor/components/ContextWrapper';
 import { Box } from '@mui/material';
-import type { GenericAppProps, GenericAppState } from '@iobroker/adapter-react-v5/build/types';
 
 import enLang from './i18n/en.json';
 import deLang from './i18n/de.json';
@@ -647,7 +648,8 @@ class App extends GenericApp<AppProps, AppState> {
                     common: {
                         name,
                         expert: true,
-                        engineType: (type as 'TypeScript/ts' | 'Blockly' | 'Rules' | 'JavaScript/js') || 'Javascript/js',
+                        engineType:
+                            (type as 'TypeScript/ts' | 'Blockly' | 'Rules' | 'Javascript/js') || 'Javascript/js',
                         enabled: false,
                         engine: `system.adapter.javascript.${instance || 0}`,
                         source: source || '',

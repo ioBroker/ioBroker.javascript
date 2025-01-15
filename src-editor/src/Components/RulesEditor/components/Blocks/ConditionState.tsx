@@ -4,7 +4,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText } from 
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-import { GenericBlock, type GenericBlockProps, type GenericBlockState } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 
 import HysteresisImage from '../../../assets/hysteresis.png';
 import type {
@@ -17,7 +17,9 @@ import type {
     RuleInputSelect,
     RuleTagCard,
     RuleTagCardTitle,
-} from '../../types';
+    GenericBlockProps,
+    GenericBlockState,
+} from '@iobroker/javascript-rules-dev';
 
 const HYSTERESIS = `function __hysteresis(val, limit, state, hist, comp) {
     let cond1, cond2;

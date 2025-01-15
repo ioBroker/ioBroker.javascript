@@ -64,9 +64,9 @@ import ImgRules from './assets/rules.svg';
 
 import {
     I18n,
-    Cron as DialogCron,
-    Confirm as DialogConfirm,
-    SelectID as DialogSelectID,
+    DialogCron,
+    DialogConfirm,
+    DialogSelectID,
     type IobTheme,
     type ThemeType,
     type AdminConnection,

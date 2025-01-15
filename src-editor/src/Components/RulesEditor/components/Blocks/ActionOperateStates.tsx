@@ -1,6 +1,6 @@
 import React from 'react';
 import { I18n } from '@iobroker/adapter-react-v5';
-import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import { renderValue } from '../../helpers/utils';
 import type {
     RuleBlockConfigActionOperationState,
@@ -9,7 +9,8 @@ import type {
     RuleInputNameText,
     RuleInputObjectID,
     RuleInputSelect,
-} from '@/Components/RulesEditor/types';
+    GenericBlockProps,
+} from '@iobroker/javascript-rules-dev';
 
 class ActionOperateStates extends GenericBlock<RuleBlockConfigActionOperationState> {
     constructor(props: GenericBlockProps<RuleBlockConfigActionOperationState>) {

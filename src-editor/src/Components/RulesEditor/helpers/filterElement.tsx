@@ -1,4 +1,4 @@
-import type { BlockValue, RuleUserRules } from '@/Components/RulesEditor/types';
+import type { BlockValue, RuleUserRules } from '@iobroker/javascript-rules-dev';
 
 export function filterElement(
     name: string,

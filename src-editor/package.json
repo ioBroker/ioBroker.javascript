@@ -9,6 +9,7 @@
         "@blockly/theme-dark": "^7.0.10",
         "@devbookhq/splitter": "^1.4.2",
         "@iobroker/adapter-react-v5": "^7.4.4",
+        "@iobroker/javascript-rules-dev": "^0.0.6",
         "@iobroker/type-detector": "^4.1.0",
         "@iobroker/types": "^7.0.7-alpha.3-20250114-3f7dfd711",
         "@module-federation/runtime": "^0.8.2",

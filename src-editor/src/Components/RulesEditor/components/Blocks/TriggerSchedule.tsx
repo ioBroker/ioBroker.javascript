@@ -4,7 +4,7 @@ import SunCalc from 'suncalc2';
 
 import { ComplexCron, Schedule, I18n, convertCronToText } from '@iobroker/adapter-react-v5';
 
-import { GenericBlock, type GenericBlockProps, type GenericBlockState } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import { STANDARD_FUNCTION_STATE, STANDARD_FUNCTION_STATE_ONCHANGE } from '../../helpers/Compile';
 import CustomInput from '../CustomInput';
 import CustomButton from '../CustomButton';
@@ -19,7 +19,9 @@ import type {
     RuleInputText,
     RuleInputWizard,
     RuleTagCardTitle,
-} from '@/Components/RulesEditor/types';
+    GenericBlockState,
+    GenericBlockProps,
+} from '@iobroker/javascript-rules-dev';
 
 const DEFAULT_WIZARD = '{"time":{"start":"00:00","end":"24:00","mode":"hours","interval":1},"period":{"days":1}}';
 

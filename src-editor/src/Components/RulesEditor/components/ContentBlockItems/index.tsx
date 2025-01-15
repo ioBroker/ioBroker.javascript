@@ -21,7 +21,7 @@ import DragWrapper from '../DragWrapper';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import DialogHelp from './DialogHelp';
 import DialogCondition from './DialogCondition';
-import type { BlockValue, RuleBlockDescription, RuleBlockType, RuleUserRules, RuleBlockConfig } from '../../types';
+import type { BlockValue, RuleBlockDescription, RuleBlockType, RuleUserRules, RuleBlockConfig } from '@iobroker/javascript-rules-dev';
 
 interface AdditionallyContentBlockItemsProps {
     size: boolean;

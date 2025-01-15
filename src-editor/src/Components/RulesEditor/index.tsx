@@ -13,7 +13,7 @@ import './helpers/stylesVariables.scss';
 
 import DialogExport from '../../Dialogs/Export';
 import DialogImport from '../../Dialogs/Import';
-import type { DebugMessage, RuleUserRules } from './types';
+import type { DebugMessage, RuleUserRules } from '@iobroker/javascript-rules-dev';
 import type { GenericBlock } from '@/Components/RulesEditor/components/GenericBlock';
 
 interface RulesEditorProps {

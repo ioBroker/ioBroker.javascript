@@ -1,6 +1,6 @@
 import React from 'react';
 import { I18n } from '@iobroker/adapter-react-v5';
-import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import type {
     RuleBlockConfigActionSetState,
     RuleBlockConfigActionSetStateDelayed,
@@ -10,7 +10,8 @@ import type {
     RuleInputNumber,
     RuleInputObjectID,
     RuleTagCardTitle,
-} from '@/Components/RulesEditor/types';
+    GenericBlockProps,
+} from '@iobroker/javascript-rules-dev';
 import { renderValue } from '../../helpers/utils';
 
 class ActionSetStateDelayed extends GenericBlock<RuleBlockConfigActionSetStateDelayed> {

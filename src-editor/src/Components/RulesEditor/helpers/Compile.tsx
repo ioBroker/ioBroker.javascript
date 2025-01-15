@@ -1,4 +1,4 @@
-import type { RuleBlockConfig, RuleContext, RuleUserConditionsSaved, RuleUserRules } from '../types';
+import type { RuleBlockConfig, RuleContext, RuleUserConditionsSaved, RuleUserRules } from '@iobroker/javascript-rules-dev';
 import type { GenericBlock } from '../components/GenericBlock';
 
 export const STANDARD_FUNCTION_STATE = `async function (obj) {

@@ -1,4 +1,4 @@
-import type { BlockValue, RuleBlockType, RuleUserRules } from '../types';
+import type { BlockValue, RuleBlockType, RuleUserRules } from '@iobroker/javascript-rules-dev';
 
 export function deepCopy(
     name: RuleBlockType,

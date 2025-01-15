@@ -18,10 +18,17 @@ import { MdCancel as IconCancel, MdCheck as IconCheck } from 'react-icons/md';
 
 import { I18n } from '@iobroker/adapter-react-v5';
 
-import { GenericBlock, type GenericBlockProps, type GenericBlockState } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import { STANDARD_FUNCTION_STATE, STANDARD_FUNCTION_STATE_ONCHANGE } from '../../helpers/Compile';
 import { renderValue } from '../../helpers/utils';
-import type { RuleBlockConfigTriggerState, RuleBlockDescription, RuleContext, RuleTagCardTitle } from '../../types';
+import type {
+    RuleBlockConfigTriggerState,
+    RuleBlockDescription,
+    RuleContext,
+    RuleTagCardTitle,
+    GenericBlockProps,
+    GenericBlockState,
+} from '@iobroker/javascript-rules-dev';
 
 const styles: Record<string, React.CSSProperties> = {
     valueAck: {

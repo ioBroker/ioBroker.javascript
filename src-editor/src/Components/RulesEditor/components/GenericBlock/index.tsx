@@ -4,16 +4,7 @@ import cls from './style.module.scss';
 import { Menu, MenuItem, IconButton } from '@mui/material';
 import { HelpOutline as IconHelp } from '@mui/icons-material';
 
-import {
-    getSelectIdIcon,
-    I18n,
-    Utils,
-    SelectID as DialogSelectID,
-    Error as DialogError,
-    Message as DialogMessage,
-    type AdminConnection,
-    type IobTheme,
-} from '@iobroker/adapter-react-v5';
+import { getSelectIdIcon, I18n, Utils, DialogSelectID, DialogError, DialogMessage } from '@iobroker/adapter-react-v5';
 
 import CustomButton from '../CustomButton';
 import CustomCheckbox from '../CustomCheckbox';
@@ -45,7 +36,6 @@ import type {
     RuleInputAll,
     RuleTagCard,
     RuleTagCardTitle,
-    RuleUserRules,
     RuleInputObjectID,
     RuleInputTime,
     RuleInputSelect,
@@ -57,56 +47,9 @@ import type {
     RuleInputWizard,
     DebugMessage,
     RuleBlockConfigTriggerState,
-} from '../../types';
-
-export interface GenericBlockProps<Settings> {
-    _id: number;
-    name?: string;
-    icon?: string;
-    adapter?: string;
-    socket: AdminConnection;
-    userRules?: RuleUserRules;
-    classes?: {
-        valueAck: string;
-        valueNotAck: string;
-    };
-    settings?: Settings;
-    onChange: (settings: Settings) => void;
-    onDebugMessage?: DebugMessage[];
-    enableSimulation: boolean;
-    theme: IobTheme;
-    className?: string;
-    style?: React.CSSProperties;
-    inputs?: RuleInputAny[];
-    notFound?: boolean;
-    isTourOpen?: boolean;
-    tourStep?: number;
-    setTourStep?: (step: number) => void;
-    setOnUpdate?: (value: boolean) => void;
-    helpDialog?: string;
-    acceptedBy?: string;
-    onUpdate?: boolean;
-}
-
-export interface GenericBlockState<Settings> {
-    inputs: RuleInputAny[];
-    name: string;
-    icon: string;
-    adapter: string;
-    helpDialog: string;
-    tagCardArray: (RuleTagCard | RuleTagCardTitle)[];
-    openTagMenu: any;
-    openModal: boolean;
-    iconTag: boolean;
-    error: string;
-    helpText: string;
-    instanceSelectionOptions: any[];
-    instanceSelectionDef: string;
-    hideAttributes: string[];
-    settings: Settings;
-    debugMessage: any;
-    enableSimulation: boolean;
-}
+    GenericBlockState,
+    GenericBlockProps,
+} from '@iobroker/javascript-rules-dev';
 
 export abstract class GenericBlock<
     Settings extends RuleBlockConfig = RuleBlockConfig,

@@ -1,5 +1,11 @@
-import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
-import type { RuleBlockConfigActionExec, RuleBlockDescription, RuleContext, RuleTagCardTitle } from '../../types';
+import { GenericBlock } from '../GenericBlock';
+import type {
+    RuleBlockConfigActionExec,
+    RuleBlockDescription,
+    RuleContext,
+    RuleTagCardTitle,
+    GenericBlockProps,
+} from '@iobroker/javascript-rules-dev';
 
 class ActionExec extends GenericBlock<RuleBlockConfigActionExec> {
     constructor(props: GenericBlockProps<RuleBlockConfigActionExec>) {

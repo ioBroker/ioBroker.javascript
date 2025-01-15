@@ -4,7 +4,7 @@ import { deepCopy } from '../../helpers/deepCopy';
 import DragWrapper from '../DragWrapper';
 import { STEPS } from '../../helpers/Tour';
 import type { AdminConnection } from '@iobroker/adapter-react-v5';
-import type { BlockValue, RuleBlockDescription, RuleUserRules } from '../../types';
+import type { BlockValue, RuleBlockDescription, RuleUserRules } from '@iobroker/javascript-rules-dev';
 
 interface CustomDragItemProps {
     adapter: string | undefined;

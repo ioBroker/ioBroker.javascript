@@ -1,6 +1,11 @@
 import { I18n } from '@iobroker/adapter-react-v5';
-import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
-import type { RuleBlockConfigActionPrintText, RuleBlockDescription, RuleContext } from '@/Components/RulesEditor/types';
+import { GenericBlock } from '../GenericBlock';
+import type {
+    RuleBlockConfigActionPrintText,
+    RuleBlockDescription,
+    RuleContext,
+    GenericBlockProps,
+} from '@iobroker/javascript-rules-dev';
 
 class ActionPrintText extends GenericBlock<RuleBlockConfigActionPrintText> {
     constructor(props: GenericBlockProps<RuleBlockConfigActionPrintText>) {

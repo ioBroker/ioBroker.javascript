@@ -1,6 +1,10 @@
 import { I18n } from '@iobroker/adapter-react-v5';
-import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
-import type { RuleBlockConfigActionPause, RuleBlockDescription } from '../../types';
+import { GenericBlock } from '../GenericBlock';
+import type {
+    RuleBlockConfigActionPause,
+    RuleBlockDescription,
+    GenericBlockProps,
+} from '@iobroker/javascript-rules-dev';
 
 class ActionPause extends GenericBlock<RuleBlockConfigActionPause> {
     constructor(props: GenericBlockProps<RuleBlockConfigActionPause>) {
