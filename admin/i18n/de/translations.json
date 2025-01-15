@@ -48,7 +48,7 @@
     "Maximum setState requests per Minute per Script": "Maximale setState-Anfragen pro Minute pro Skript",
     "Create states for all astro times": "Erstelle Zustände für alle Astrozeiten",
     "Maximum triggers per Script (until warning)": "Maximale Auslöser/Trigger pro Skript (bis zur Warnung)",
-    "Activate syntax help for these npm modules": "Die Syntaxhilfe für diese npm-Module aktivieren",
+    "Activate syntax help for these npm modules": "Die Syntaxhilfe für diese NPM-Module aktivieren",
     "Additional npm modules": "Zusätzliche NPM-Module",
     "Do not subscribe all states on start": "Nicht alle Zustände beim Start abonnieren",
     "Enable command \"exec\"": "Kommando \"exec\" erlauben",
