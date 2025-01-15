@@ -604,7 +604,7 @@ export class Mirror {
         try {
             if (dirPath && !dirPath.startsWith('.') && existsSync(dirPath)) {
                 const files = readdirSync(dirPath).filter(name => !name.startsWith('.'));
-                files.forEach(file => {
+                for (const file of files) {
                     const fullName = join(dirPath, file);
                     const stats = statSync(fullName);
                     if (stats.isDirectory()) {
@@ -617,7 +617,7 @@ export class Mirror {
                             name: fullName,
                         };
                     }
-                });
+                }
             }
         } catch (err: unknown) {
             this.log.error(`Error while checking files in directory ${dirPath}: ${err as Error}`);

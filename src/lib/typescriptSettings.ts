@@ -1,4 +1,4 @@
-import { type CompilerOptions, ScriptTarget, ModuleResolutionKind, ModuleKind } from 'typescript';
+import { type CompilerOptions, ScriptTarget /*, ModuleResolutionKind, ModuleKind */ } from 'typescript';
 
 // Node.js 18+ supports the features of ES2022
 // consider changing this, so we get to support the newest features too
@@ -22,8 +22,8 @@ export const tsCompilerOptions: CompilerOptions = {
     // This is required for QueryResults to be iterable (https://github.com/ioBroker/ioBroker.javascript/pull/663#issuecomment-721645705)
     downlevelIteration: true,
     // Specify the module resolution strategy
-    moduleResolution: ModuleResolutionKind.NodeNext,
-    module: ModuleKind.ESNext,
+    // moduleResolution: ModuleResolutionKind.NodeNext,
+    // module: ModuleKind.ESNext,
     lib: [`lib.${targetTsLib}.d.ts`],
 };
 
