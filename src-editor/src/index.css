@@ -1,0 +1,86 @@
+html {
+    width: 100%;
+    height: 100%;
+}
+
+.Light.visGutter {
+    background: #dadada !important;
+}
+.Dark.visGutter {
+    background: #1e1e1e !important;
+}
+
+body {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
+        'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    width: 100%;
+    height: 100%;
+}
+
+.iobVerticalSplitter .layout-pane-primary {
+    overflow: hidden !important;
+}
+
+#root {
+    width: 100%;
+    height: 100%;
+}
+#___reactour > div:first-of-type {
+    opacity: 0.4;
+}
+.layout-pane-primary {
+    height: 100%;
+}
+
+.blocklyToolboxDiv {
+    /*left: -180px !important;*/
+    left: 0 !important;
+    width: 180px;
+    top: 0 !important;
+    height: 100% !important;
+}
+
+.no-underline:before {
+    border-bottom: 0 !important;
+}
+.monaco-aria-container {
+    top: 0;
+}
+
+.iobVerticalSplitter .layout-pane-primary {
+    overflow: hidden;
+}
+
+.monacoCurrentLine {
+    background: #59fd8c;
+}
+.monacoCurrentLineDark {
+    background: #165b2c;
+}
+.monacoCurrentFullLine {
+    background: #cbffdc;
+    opacity: 0.7;
+}
+.monacoCurrentFullLineDark {
+    background: #0e3b1f;
+    opacity: 0.7;
+}
+.monacoBreakPointDark {
+    background: #800000;
+    border-radius: 50%;
+    width: 16px !important;
+    height: 16px !important;
+    margin-left: 4px;
+}
+.monacoBreakPoint {
+    background: #d71a1a;
+    border-radius: 50%;
+    width: 16px !important;
+    height: 16px !important;
+    margin-left: 4px;
+}
