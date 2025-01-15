@@ -1,6 +1,6 @@
 'use strict';
 
-// The adapter includes typings for the lowest supported NodeJS version.
+// The adapter includes typings for the lowest supported Node.js version.
 // This script updates them to the installed version
 
 const { spawn } = require('node:child_process');
@@ -16,29 +16,6 @@ function fail(reason) {
 
 // Find the latest version on npm
 console.log('Installing NodeJS typings...');
-npmCommand('view', ['@types/node', 'version'], {stdout: 'pipe', stderr: 'pipe'})
-    .then(cmdResult => {
-        if (cmdResult.exitCode !== 0) {
-            return fail(cmdResult.stderr);
-        }
-        const latestVersion = semver.coerce(cmdResult.stdout).major;
-        console.log(`latest @types: ${latestVersion}, installed node: ${installedNodeVersion}`);
-        return semver.gt(`${installedNodeVersion}.0.0`, `${latestVersion}.0.0`)
-            ? 'latest' // The installed version is too new, install latest
-            : installedNodeVersion.toString()
-        ;
-    })
-    .then(targetVersion => {
-        // Install the desired version
-        return npmCommand('i', [`@types/node@${targetVersion}`], {stdout: 'ignore', stderr: 'pipe'});
-    })
-    .then(cmdResult => {
-        if (cmdResult.exitCode !== 0) {
-            return fail(cmdResult.stderr);
-        } else {
-            process.exit(0);
-        }
-    });
 
 // TODO: the following code is copied from a js-controller fork
 // It should be moved to the core and referenced from there in a future version
@@ -60,7 +37,7 @@ npmCommand('view', ['@types/node', 'version'], {stdout: 'pipe', stderr: 'pipe'})
  */
 
 /**
- * Executes an npm command (e.g. install) and returns the exit code and (if requested) the stdout
+ * Executes a npm command (e.g., install) and returns the exit code and (if requested) the stdout
  * @param {string} command The npm command to execute
  * @param {string[]} [npmArgs] The command line arguments for the npm command
  * @param {Partial<NpmCommandOptions>} [options] (optional) Some options for the command execution
@@ -78,50 +55,39 @@ function npmCommand(command, npmArgs, options) {
     const npmBinary = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
     /** @type {import("child_process").SpawnOptions} */
     const spawnOptions = {
-        stdio: [
-            options.stdin || process.stdin,
-            options.stdout || process.stdout,
-            options.stderr || process.stderr,
-        ],
+        stdio: [options.stdin || process.stdin, options.stdout || process.stdout, options.stderr || process.stderr],
         // @ts-ignore This option exists starting with NodeJS 8
         windowsHide: true,
     };
     if (options.cwd != null) spawnOptions.cwd = options.cwd;
 
     // Now execute the npm process and avoid throwing errors
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         try {
             /** @type {string} */
             let bufferedStdout;
             /** @type {string} */
             let bufferedStderr;
-            const cmd = spawn(npmBinary, [command].concat(npmArgs), spawnOptions)
-                .on('close', (code, signal) => {
-                    resolve({
-                        exitCode: code,
-                        signal,
-                        stdout: bufferedStdout,
-                        stderr: bufferedStderr
-                    });
+            const cmd = spawn(npmBinary, [command].concat(npmArgs), spawnOptions).on('close', (code, signal) => {
+                resolve({
+                    exitCode: code,
+                    signal,
+                    stdout: bufferedStdout,
+                    stderr: bufferedStderr,
                 });
+            });
             // Capture stdout/stderr if requested
             if (options.stdout === 'pipe') {
                 bufferedStdout = '';
                 cmd.stdout.on('data', chunk => {
-                    const buffer = Buffer.isBuffer(chunk)
-                        ? chunk
-                        : new Buffer(chunk, 'utf8')
-                        ;
+                    const buffer = Buffer.isBuffer(chunk) ? chunk : new Buffer(chunk, 'utf8');
                     bufferedStdout += buffer;
                 });
             }
             if (options.stderr === 'pipe') {
                 bufferedStderr = '';
                 cmd.stderr.on('data', chunk => {
-                    const buffer = Buffer.isBuffer(chunk)
-                        ? chunk
-                        : new Buffer(chunk, 'utf8')
-                        ;
+                    const buffer = Buffer.isBuffer(chunk) ? chunk : new Buffer(chunk, 'utf8');
                     bufferedStderr += buffer;
                 });
             }
@@ -130,3 +96,24 @@ function npmCommand(command, npmArgs, options) {
         }
     });
 }
+
+npmCommand('view', ['@types/node', 'version'], { stdout: 'pipe', stderr: 'pipe' })
+    .then(cmdResult => {
+        if (cmdResult.exitCode !== 0) {
+            return fail(cmdResult.stderr);
+        }
+        const latestVersion = semver.coerce(cmdResult.stdout).major;
+        console.log(`latest @types: ${latestVersion}, installed node: ${installedNodeVersion}`);
+        return semver.gt(`${installedNodeVersion}.0.0`, `${latestVersion}.0.0`)
+            ? 'latest' // The installed version is too new, install latest
+            : installedNodeVersion.toString();
+    })
+    // Install the desired version
+    .then(targetVersion => npmCommand('i', [`@types/node@${targetVersion}`], { stdout: 'ignore', stderr: 'pipe' }))
+    .then(cmdResult => {
+        if (cmdResult.exitCode !== 0) {
+            fail(cmdResult.stderr);
+        } else {
+            process.exit(0);
+        }
+    });

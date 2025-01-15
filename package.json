@@ -43,21 +43,17 @@
     "dependencies": {
         "@iobroker/adapter-core": "^3.2.3",
         "@iobroker/types": "^6.0.11",
-
-        "@types/node": "^22.10.1",
-        "@types/request": "^2.48.12",
+        "@iobroker/plugin-sentry": "^2.0.4",
+        "@types/node": "^18.19.70",
         "axios": "^1.7.9",
         "jsonata": "^2.0.6",
         "jszip": "^3.10.1",
         "node-inspect": "^2.0.0",
         "node-schedule": "2.1.1",
-        "promisify-child-process": "^4.1.2",
-        "request": "^2.88.2",
         "semver": "^7.6.3",
         "suncalc2": "^1.8.1",
-        "typescript": "~5.7.2",
-        "virtual-tsc": "^0.6.2",
-        "wake_on_lan": "^1.0.0"
+        "typescript": "~5.7.3",
+        "virtual-tsc": "^0.6.2"
     },
     "devDependencies": {
         "@alcalzone/release-script": "^3.8.0",
@@ -80,16 +76,14 @@
     "bugs": {
         "url": "https://github.com/ioBroker/ioBroker.javascript/issues"
     },
-    "main": "main.js",
+    "main": "build-backend/main.js",
     "files": [
         "admin/",
-        "lib/",
+        "build-backend/",
         "docs/",
         "install/",
         "io-package.json",
-        "LICENSE",
-        "main.js",
-        "admin/vsFont/codicon.json"
+        "LICENSE"
     ],
     "scripts": {
         "test:declarations": "tsc -p test/lib/TS/tsconfig.json && tsc -p test/lib/JS/tsconfig.json",
@@ -97,7 +91,8 @@
         "test": "npm run test:declarations && npm run test:javascript",
         "translate": "translate-adapter",
         "//postinstall": "node ./install/installTypings.js",
-        "build": "node tasks",
+        "build": "node tasks && npm run tsc-backend",
+        "tsc-backend": "tsc -p tsconfig.build.json && node tasks.js --copy-types",
         "release": "release-script --noPush -y --all",
         "update-packages": "ncu --upgrade && cd src && ncu --upgrade && cd ../src-admin && ncu --upgrade",
         "npm": "npm i && cd src-editor && npm i -f && cd ../src-admin && npm i -f",

@@ -1,814 +1,766 @@
 {
-  "common": {
-    "name": "javascript",
-    "version": "8.8.3",
-    "blockedVersions": [
-      "8.0.0",
-      "8.0.1"
-    ],
-    "titleLang": {
-      "en": "Script Engine",
-      "de": "Skriptausführung",
-      "ru": "Скрипты",
-      "pt": "Script Engine",
-      "nl": "Script-engine",
-      "fr": "Moteur de script",
-      "it": "Motore di script",
-      "es": "Motor de script",
-      "pl": "Silnik skryptowy",
-      "uk": "Механізм сценаріїв",
-      "zh-cn": "脚本引擎"
-    },
-    "desc": {
-      "en": "Javascript/Blockly Script Engine for ioBroker",
-      "de": "Javascript/Blockly Skriptausführung für ioBroker",
-      "ru": "Выполнение Javascript/Blockly скриптов для ioBroker",
-      "pt": "Mecanismo Javascript/Blockly Script para ioBroker",
-      "nl": "Javascript/Blockly Script-engine voor ioBroker",
-      "fr": "Moteur de script Javascript/Blockly pour ioBroker",
-      "it": "Motore di script Javascript/Blockly per ioBroker",
-      "es": "Motor de secuencias de comandos Javascript/Blockly para ioBroker",
-      "pl": "Silnik skryptów JavaScript/Blockly dla ioBroker",
-      "uk": "Javascript/Blockly Script Engine для ioBroker",
-      "zh-cn": "ioBroker 的 Javascript/Blockly 脚本引擎"
-    },
-    "authors": [
-      "bluefox <dogafox@gmail.com>",
-      "hobbyquaker <hq@ccu.io>",
-      "Apollon77 <iobroker@fischer-ka.de>",
-      "AlCalzone <d.griesel@gmx.net>",
-      "Matthias Kleine <info@haus-automatisierung.com>"
-    ],
-    "news": {
-      "8.8.3": {
-        "en": "Fixed object selector in rules",
-        "de": "Behobene Objektauswahl in Regeln",
-        "ru": "Фиксированный селектор объекта в правилах",
-        "pt": "Seletor de objetos fixos em regras",
-        "nl": "Objectselectie vast in regels",
-        "fr": "Sélecteur d'objet fixe dans les règles",
-        "it": "Selettore di oggetti fissi nelle regole",
-        "es": "Selector de objeto fijo en las reglas",
-        "pl": "Naprawiono wybór obiektu w zasadach",
-        "uk": "Фіксований вибір об'єкта в правилах",
-        "zh-cn": "规则中的固定对象选择器"
-      },
-      "8.8.2": {
-        "en": "updated dependencies",
-        "de": "aktualisierte abhängigkeiten",
-        "ru": "обновленные зависимости",
-        "pt": "dependências atualizadas",
-        "nl": "bijgewerkte afhankelijkheden",
-        "fr": "dépendances actualisées",
-        "it": "dipendenze aggiornate",
-        "es": "dependencias actualizadas",
-        "pl": "zaktualizowane zależności",
-        "uk": "оновлені залежності",
-        "zh-cn": "更新的依赖关系"
-      },
-      "8.8.1": {
-        "en": "updated dependencies",
-        "de": "aktualisierte abhängigkeiten",
-        "ru": "обновленные зависимости",
-        "pt": "dependências atualizadas",
-        "nl": "bijgewerkte afhankelijkheden",
-        "fr": "dépendances actualisées",
-        "it": "dipendenze aggiornate",
-        "es": "dependencias actualizadas",
-        "pl": "zaktualizowane zależności",
-        "uk": "оновлені залежності",
-        "zh-cn": "更新的依赖关系"
-      },
-      "8.8.0": {
-        "en": "Added option to register notifications via scripts\nFixed sendTo block with empty name list",
-        "de": "Option hinzugefügt, um Benachrichtigungen über Skripte zu registrieren\nFester Versand Blockieren mit leerer Namensliste",
-        "ru": "Добавлена возможность регистрации уведомлений через скрипты\nFixed send Заблокировать с пустым списком имен",
-        "pt": "Opção adicionada para registrar notificações via scripts\nEnviar fixo Para bloquear com lista de nomes vazia",
-        "nl": "Toegevoegd optie om meldingen te registreren via scripts\nVaste verzending Te blokkeren met lege naamlijst",
-        "fr": "Ajout d'une option pour enregistrer les notifications via des scripts\nEnvoi fixe Pour bloquer avec la liste des noms vides",
-        "it": "Aggiunta opzione per registrare le notifiche tramite script\nInviato fisso Per bloccare con l'elenco dei nomi vuoti",
-        "es": "Opción agregada para registrar notificaciones a través de scripts\nEnvío fijo Para bloquear con lista de nombres vacía",
-        "pl": "Dodano opcję rejestracji powiadomień za pomocą skryptów\nPoprawiono wysyłanie Blokowanie z pustą listą nazw",
-        "uk": "Додано опцію для реєстрації повідомлень через скрипти\nВиправлена відправка Заблокувати список порожніх імен",
-        "zh-cn": "添加通过脚本注册通知的选项\n固定发送 以空名称列表屏蔽"
-      },
-      "8.7.7": {
-        "en": "Fixed import scripts dialog\nAllow to remove all custom packages (empty list)",
-        "de": "Feste Importskripte Dialog\nLassen Sie alle benutzerdefinierte Pakete entfernen (leere Liste)",
-        "ru": "Диалог сценариев импорта\nПозволить удалить все пользовательские пакеты (пустый список)",
-        "pt": "Diálogo de scripts de importação fixos\nPermitir remover todos os pacotes personalizados (lista vazia)",
-        "nl": "Dialoogvenster Vaste importscripts\nAlle aangepaste pakketten verwijderen (lege lijst)",
-        "fr": "Boîte de dialogue d'importation fixe\nPermettre de supprimer tous les paquets personnalisés (liste vide)",
-        "it": "Dialogo di script di importazione fissi\nConsentire di rimuovere tutti i pacchetti personalizzati (elenco vuoto)",
-        "es": "Diálogo de scripts de importación fijos\nPermitir eliminar todos los paquetes personalizados (lista vacía)",
-        "pl": "Okno importu stałych skryptów\nPozwól usunąć wszystkie niestandardowe pakiety (pusta lista)",
-        "uk": "Виправлено імпорт сценаріїв діалог\nДозволити видалити всі спеціальні пакети (зразковий список)",
-        "zh-cn": "固定导入脚本对话框\n允许删除所有自定义软件包( 空列表)"
-      },
-      "8.7.6": {
-        "en": "fix error with subpath imports in scripts",
-        "de": "fehler mit subpfad-importen in skripten beheben",
-        "ru": "исправление ошибки с импортом субпатов в сценариях",
-        "pt": "corrigir erro com subpath importações em scripts",
-        "nl": "fout oplossen met subpath import in scripts",
-        "fr": "corriger l'erreur avec les importations de sous-chemin dans les scripts",
-        "it": "correzione di errore con le importazioni subpath in script",
-        "es": "corregir error con las importaciones de subpatos en scripts",
-        "pl": "naprawić błąd przy importowaniu podścieżki w skryptach",
-        "uk": "виправлено помилку при імпорті підпат в скриптах",
-        "zh-cn": "用脚本中的子路径导入来修正错误"
-      },
-      "8.7.5": {
-        "en": "Fixed right aligned script names when using multiple instances\nadded fallback for all require calls in scripts",
-        "de": "Behobene recht ausgerichtete Skriptnamen bei Verwendung mehrerer Instanzen\nadd fallback für alle erfordern anrufe in skripten",
-        "ru": "Исправленные правые выровненные имена сценариев при использовании нескольких экземпляров\nдобавочный откат для всех требует звонков в сценариях",
-        "pt": "Corrigido nomes de script alinhados direito ao usar várias instâncias\nadicionado fallback para todos exigem chamadas em scripts",
-        "nl": "Fixed rechts uitgelijnde scriptnamen bij het gebruik van meerdere instanties\ntoegevoegde fallback voor alle vereiste oproepen in scripts",
-        "fr": "Correction des noms de script alignés à droite lors de l'utilisation de plusieurs instances\nrechute ajoutée pour tous les appels requis dans les scripts",
-        "it": "I nomi di script allineati giusti corretti quando si utilizzano più istanze\naggiunto fallback per tutte le chiamate in script",
-        "es": "Nombres de script ajustados correctamente alineados al usar múltiples instancias\nañadida caída para todos requieren llamadas en scripts",
-        "pl": "Naprawiono nazwy skryptów ustawionych w prawo przy użyciu wielu instancji\ndodany odzew dla wszystkich wymagających wywołań w skryptach",
-        "uk": "Виправлено правильні вирівняні імена скриптів при використанні декількох екземплярів\nдодано зворотний зв'язок для всіх потреб дзвінків в скриптах",
-        "zh-cn": "使用多个实例时, 固定的右对齐脚本名称\n为所有人添加后退需要脚本调用"
-      }
-    },
-    "platform": "Javascript/Node.js",
-    "mode": "daemon",
-    "loglevel": "info",
-    "icon": "javascript.png",
-    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.javascript/master/admin/javascript.png",
-    "keywords": [
-      "js",
-      "javascript",
-      "typescript",
-      "rules",
-      "automate",
-      "scriptengine",
-      "blockly",
-      "blokly"
-    ],
-    "adminUI": {
-      "config": "json",
-      "tab": "html"
-    },
-    "readme": "https://github.com/iobroker/ioBroker.javascript/blob/master/README.md",
-    "enabled": true,
-    "licenseInformation": {
-      "license": "MIT",
-      "type": "free"
-    },
-    "compact": true,
-    "eraseOnUpload": true,
-    "adminTab": {
-      "singleton": true,
-      "name": {
-        "en": "Scripts",
-        "de": "Skripte",
-        "ru": "Скрипты"
-      }
-    },
-    "docs": {
-      "en": [
-        "docs/en/README.md",
-        "docs/en/blockly.md",
-        "docs/en/javascript.md",
-        "docs/en/upgrade-guide.md"
-      ],
-      "ru": [
-        "docs/ru/README.md",
-        "docs/ru/blockly.md"
-      ],
-      "de": [
-        "docs/de/README.md",
-        "docs/de/blockly.md",
-        "docs/de/usage.md"
-      ]
-    },
-    "dependencies": [
-      {
-        "js-controller": ">=5.0.0"
-      }
-    ],
-    "globalDependencies": [
-      {
-        "admin": ">=5.1.28"
-      }
-    ],
-    "type": "logic",
-    "messagebox": true,
-    "logTransporter": true,
-    "plugins": {
-      "sentry": {
-        "dsn": "https://f3b9740caaee4ee69eb68019d71526ff@sentry.iobroker.net/15"
-      }
-    },
-    "tier": 1,
-    "connectionType": "none",
-    "dataSource": "none",
-    "messages": [
-      {
-        "condition": {
-          "operand": "and",
-          "rules": [
-            "oldVersion<5.5.0",
-            "newVersion>=5.5.0"
-          ]
+    "common": {
+        "name": "javascript",
+        "version": "8.8.3",
+        "blockedVersions": ["8.0.0", "8.0.1"],
+        "titleLang": {
+            "en": "Script Engine",
+            "de": "Skriptausführung",
+            "ru": "Скрипты",
+            "pt": "Script Engine",
+            "nl": "Script-engine",
+            "fr": "Moteur de script",
+            "it": "Motore di script",
+            "es": "Motor de script",
+            "pl": "Silnik skryptowy",
+            "uk": "Механізм сценаріїв",
+            "zh-cn": "脚本引擎"
         },
-        "title": {
-          "en": "Check used script mirror path!",
-          "de": "Überprüfen Sie den verwendeten Skript-Spiegelpfad!",
-          "ru": "Проверьте используемый путь к зеркалу скрипта!",
-          "pt": "Verifique o caminho do espelho de script usado!",
-          "nl": "Controleer het gebruikte scriptspiegelpad!",
-          "fr": "Vérifiez le chemin du miroir de script utilisé !",
-          "it": "Controlla il percorso del mirror dello script utilizzato!",
-          "es": "¡Compruebe la ruta del espejo del script usado!",
-          "pl": "Sprawdź używaną ścieżkę lustrzaną skryptu!",
-          "zh-cn": "检查使用的脚本镜像路径！",
-          "uk": "Перевірте використаний шлях дзеркала сценарію!"
+        "desc": {
+            "en": "Javascript/Blockly Script Engine for ioBroker",
+            "de": "Javascript/Blockly Skriptausführung für ioBroker",
+            "ru": "Выполнение Javascript/Blockly скриптов для ioBroker",
+            "pt": "Mecanismo Javascript/Blockly Script para ioBroker",
+            "nl": "Javascript/Blockly Script-engine voor ioBroker",
+            "fr": "Moteur de script Javascript/Blockly pour ioBroker",
+            "it": "Motore di script Javascript/Blockly per ioBroker",
+            "es": "Motor de secuencias de comandos Javascript/Blockly para ioBroker",
+            "pl": "Silnik skryptów JavaScript/Blockly dla ioBroker",
+            "uk": "Javascript/Blockly Script Engine для ioBroker",
+            "zh-cn": "ioBroker 的 Javascript/Blockly 脚本引擎"
         },
-        "text": {
-          "en": "If the script mirror feature is used to save scripts also in the file system and a directory inside the ioBroker directory is configured, then you need to check if this mirroring location is still allowed! If not the adapter logs an error on startup and mirroring is deactivated! For a list of forbidden locations please check the adapter Readme.",
-          "de": "Wenn die Skript-Spiegelungsfunktion verwendet wird, um Skripte auch im Dateisystem zu speichern, und ein Verzeichnis innerhalb des ioBroker-Verzeichnisses konfiguriert ist, muss geprüft werden, ob dieser Spiegelungsspeicherort noch zulässig ist! Andernfalls meldet der Adapter beim Start einen Fehler und die Spiegelung wird deaktiviert! Eine Liste verbotener Orte ist in der Adapter-Readme zu finden.",
-          "ru": "Если функция зеркалирования скриптов используется для сохранения скриптов также в файловой системе и настроен каталог внутри каталога ioBroker, то вам необходимо проверить, разрешено ли это местоположение зеркалирования! В противном случае адаптер регистрирует ошибку при запуске, и зеркалирование деактивируется! Список запрещенных мест см. в файле Readme адаптера.",
-          "pt": "Se o recurso de espelhamento de script for usado para salvar scripts também no sistema de arquivos e um diretório dentro do diretório ioBroker estiver configurado, você precisará verificar se esse local de espelhamento ainda é permitido! Caso contrário, o adaptador registra um erro na inicialização e o espelhamento é desativado! Para obter uma lista de locais proibidos, verifique o Readme do adaptador.",
-          "nl": "Als de functie voor het spiegelen van scripts wordt gebruikt om scripts ook in het bestandssysteem op te slaan en een map in de ioBroker-map is geconfigureerd, moet u controleren of deze spiegellocatie nog steeds is toegestaan! Als dit niet het geval is, registreert de adapter een fout bij het opstarten en is spiegelen gedeactiveerd! Raadpleeg de adapter Readme voor een lijst met verboden locaties.",
-          "fr": "Si la fonctionnalité de mise en miroir des scripts est utilisée pour enregistrer également les scripts dans le système de fichiers et qu'un répertoire à l'intérieur du répertoire ioBroker est configuré, vous devez vérifier si cet emplacement de mise en miroir est toujours autorisé ! Si ce n'est pas le cas, l'adaptateur enregistre une erreur au démarrage et la mise en miroir est désactivée ! Pour une liste des emplacements interdits, veuillez consulter le fichier Readme de l'adaptateur.",
-          "it": "Se la funzione di mirroring degli script viene utilizzata per salvare gli script anche nel file system ed è configurata una directory all'interno della directory di ioBroker, è necessario verificare se questa posizione di mirroring è ancora consentita! In caso contrario, l'adattatore registra un errore all'avvio e il mirroring è disattivato! Per un elenco delle posizioni vietate, controllare il file Readme dell'adattatore.",
-          "es": "Si la función de duplicación de secuencias de comandos se utiliza para guardar secuencias de comandos también en el sistema de archivos y se configura un directorio dentro del directorio de ioBroker, ¡entonces debe verificar si esta ubicación de duplicación todavía está permitida! De lo contrario, el adaptador registra un error al iniciarse y la duplicación se desactiva. Para obtener una lista de ubicaciones prohibidas, consulte el archivo Léame del adaptador.",
-          "pl": "Jeśli funkcja kopii lustrzanej skryptów jest używana do zapisywania skryptów również w systemie plików, a katalog w katalogu ioBroker jest skonfigurowany, musisz sprawdzić, czy ta lokalizacja kopii lustrzanej jest nadal dozwolona! Jeśli nie, adapter rejestruje błąd podczas uruchamiania, a dublowanie jest wyłączone! Listę zabronionych lokalizacji można znaleźć w pliku Readme adaptera.",
-          "zh-cn": "如果使用脚本镜像功能将脚本也保存在文件系统中，并且配置了 ioBroker 目录内的目录，那么您需要检查该镜像位置是否仍然允许！如果不是，适配器会在启动时记录错误并且镜像被禁用！有关禁止位置的列表，请查看适配器自述文件。",
-          "uk": "Якщо функція дзеркала сценаріїв використовується для збереження сценаріїв також у файловій системі та налаштовано каталог у каталозі ioBroker, тоді вам потрібно перевірити, чи це розташування дзеркала все ще дозволено! Якщо ні, адаптер реєструє помилку під час запуску, і дзеркальне відображення вимикається! Щоб отримати список заборонених розташувань, перегляньте Readme адаптера."
+        "authors": [
+            "bluefox <dogafox@gmail.com>",
+            "hobbyquaker <hq@ccu.io>",
+            "Apollon77 <iobroker@fischer-ka.de>",
+            "AlCalzone <d.griesel@gmx.net>",
+            "Matthias Kleine <info@haus-automatisierung.com>"
+        ],
+        "news": {
+            "8.8.3": {
+                "en": "Fixed object selector in rules",
+                "de": "Behobene Objektauswahl in Regeln",
+                "ru": "Фиксированный селектор объекта в правилах",
+                "pt": "Seletor de objetos fixos em regras",
+                "nl": "Objectselectie vast in regels",
+                "fr": "Sélecteur d'objet fixe dans les règles",
+                "it": "Selettore di oggetti fissi nelle regole",
+                "es": "Selector de objeto fijo en las reglas",
+                "pl": "Naprawiono wybór obiektu w zasadach",
+                "uk": "Фіксований вибір об'єкта в правилах",
+                "zh-cn": "规则中的固定对象选择器"
+            },
+            "8.8.2": {
+                "en": "updated dependencies",
+                "de": "aktualisierte abhängigkeiten",
+                "ru": "обновленные зависимости",
+                "pt": "dependências atualizadas",
+                "nl": "bijgewerkte afhankelijkheden",
+                "fr": "dépendances actualisées",
+                "it": "dipendenze aggiornate",
+                "es": "dependencias actualizadas",
+                "pl": "zaktualizowane zależności",
+                "uk": "оновлені залежності",
+                "zh-cn": "更新的依赖关系"
+            },
+            "8.8.1": {
+                "en": "updated dependencies",
+                "de": "aktualisierte abhängigkeiten",
+                "ru": "обновленные зависимости",
+                "pt": "dependências atualizadas",
+                "nl": "bijgewerkte afhankelijkheden",
+                "fr": "dépendances actualisées",
+                "it": "dipendenze aggiornate",
+                "es": "dependencias actualizadas",
+                "pl": "zaktualizowane zależności",
+                "uk": "оновлені залежності",
+                "zh-cn": "更新的依赖关系"
+            },
+            "8.8.0": {
+                "en": "Added option to register notifications via scripts\nFixed sendTo block with empty name list",
+                "de": "Option hinzugefügt, um Benachrichtigungen über Skripte zu registrieren\nFester Versand Blockieren mit leerer Namensliste",
+                "ru": "Добавлена возможность регистрации уведомлений через скрипты\nFixed send Заблокировать с пустым списком имен",
+                "pt": "Opção adicionada para registrar notificações via scripts\nEnviar fixo Para bloquear com lista de nomes vazia",
+                "nl": "Toegevoegd optie om meldingen te registreren via scripts\nVaste verzending Te blokkeren met lege naamlijst",
+                "fr": "Ajout d'une option pour enregistrer les notifications via des scripts\nEnvoi fixe Pour bloquer avec la liste des noms vides",
+                "it": "Aggiunta opzione per registrare le notifiche tramite script\nInviato fisso Per bloccare con l'elenco dei nomi vuoti",
+                "es": "Opción agregada para registrar notificaciones a través de scripts\nEnvío fijo Para bloquear con lista de nombres vacía",
+                "pl": "Dodano opcję rejestracji powiadomień za pomocą skryptów\nPoprawiono wysyłanie Blokowanie z pustą listą nazw",
+                "uk": "Додано опцію для реєстрації повідомлень через скрипти\nВиправлена відправка Заблокувати список порожніх імен",
+                "zh-cn": "添加通过脚本注册通知的选项\n固定发送 以空名称列表屏蔽"
+            },
+            "8.7.7": {
+                "en": "Fixed import scripts dialog\nAllow to remove all custom packages (empty list)",
+                "de": "Feste Importskripte Dialog\nLassen Sie alle benutzerdefinierte Pakete entfernen (leere Liste)",
+                "ru": "Диалог сценариев импорта\nПозволить удалить все пользовательские пакеты (пустый список)",
+                "pt": "Diálogo de scripts de importação fixos\nPermitir remover todos os pacotes personalizados (lista vazia)",
+                "nl": "Dialoogvenster Vaste importscripts\nAlle aangepaste pakketten verwijderen (lege lijst)",
+                "fr": "Boîte de dialogue d'importation fixe\nPermettre de supprimer tous les paquets personnalisés (liste vide)",
+                "it": "Dialogo di script di importazione fissi\nConsentire di rimuovere tutti i pacchetti personalizzati (elenco vuoto)",
+                "es": "Diálogo de scripts de importación fijos\nPermitir eliminar todos los paquetes personalizados (lista vacía)",
+                "pl": "Okno importu stałych skryptów\nPozwól usunąć wszystkie niestandardowe pakiety (pusta lista)",
+                "uk": "Виправлено імпорт сценаріїв діалог\nДозволити видалити всі спеціальні пакети (зразковий список)",
+                "zh-cn": "固定导入脚本对话框\n允许删除所有自定义软件包( 空列表)"
+            },
+            "8.7.6": {
+                "en": "fix error with subpath imports in scripts",
+                "de": "fehler mit subpfad-importen in skripten beheben",
+                "ru": "исправление ошибки с импортом субпатов в сценариях",
+                "pt": "corrigir erro com subpath importações em scripts",
+                "nl": "fout oplossen met subpath import in scripts",
+                "fr": "corriger l'erreur avec les importations de sous-chemin dans les scripts",
+                "it": "correzione di errore con le importazioni subpath in script",
+                "es": "corregir error con las importaciones de subpatos en scripts",
+                "pl": "naprawić błąd przy importowaniu podścieżki w skryptach",
+                "uk": "виправлено помилку при імпорті підпат в скриптах",
+                "zh-cn": "用脚本中的子路径导入来修正错误"
+            },
+            "8.7.5": {
+                "en": "Fixed right aligned script names when using multiple instances\nadded fallback for all require calls in scripts",
+                "de": "Behobene recht ausgerichtete Skriptnamen bei Verwendung mehrerer Instanzen\nadd fallback für alle erfordern anrufe in skripten",
+                "ru": "Исправленные правые выровненные имена сценариев при использовании нескольких экземпляров\nдобавочный откат для всех требует звонков в сценариях",
+                "pt": "Corrigido nomes de script alinhados direito ao usar várias instâncias\nadicionado fallback para todos exigem chamadas em scripts",
+                "nl": "Fixed rechts uitgelijnde scriptnamen bij het gebruik van meerdere instanties\ntoegevoegde fallback voor alle vereiste oproepen in scripts",
+                "fr": "Correction des noms de script alignés à droite lors de l'utilisation de plusieurs instances\nrechute ajoutée pour tous les appels requis dans les scripts",
+                "it": "I nomi di script allineati giusti corretti quando si utilizzano più istanze\naggiunto fallback per tutte le chiamate in script",
+                "es": "Nombres de script ajustados correctamente alineados al usar múltiples instancias\nañadida caída para todos requieren llamadas en scripts",
+                "pl": "Naprawiono nazwy skryptów ustawionych w prawo przy użyciu wielu instancji\ndodany odzew dla wszystkich wymagających wywołań w skryptach",
+                "uk": "Виправлено правильні вирівняні імена скриптів при використанні декількох екземплярів\nдодано зворотний зв'язок для всіх потреб дзвінків в скриптах",
+                "zh-cn": "使用多个实例时, 固定的右对齐脚本名称\n为所有人添加后退需要脚本调用"
+            }
         },
-        "link": "https://github.com/ioBroker/ioBroker.javascript#forbidden-directories-for-script-filesystem-mirroring",
-        "level": "warn",
-        "linkText": {
-          "en": "List of the forbidden Mirror locations",
-          "de": "Liste der verbotenen Mirror-Standorte",
-          "ru": "Список запрещенных локаций Зеркала",
-          "pt": "Lista dos locais de espelho proibidos",
-          "nl": "Lijst met de verboden Mirror-locaties",
-          "fr": "Liste des emplacements Mirror interdits",
-          "it": "Elenco delle posizioni degli specchi proibiti",
-          "es": "Lista de las ubicaciones de Mirror prohibidas",
-          "pl": "Lista zakazanych lokalizacji Lustrzanych",
-          "zh-cn": "禁止镜像位置列表",
-          "uk": "Список заборонених місць розміщення дзеркал"
+        "platform": "Javascript/Node.js",
+        "mode": "daemon",
+        "loglevel": "info",
+        "icon": "javascript.png",
+        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.javascript/master/admin/javascript.png",
+        "keywords": ["js", "javascript", "typescript", "rules", "automate", "scriptengine", "blockly", "blokly"],
+        "adminUI": {
+            "config": "json",
+            "tab": "html"
         },
-        "buttons": [
-          "agree",
-          "cancel"
+        "readme": "https://github.com/iobroker/ioBroker.javascript/blob/master/README.md",
+        "enabled": true,
+        "licenseInformation": {
+            "license": "MIT",
+            "type": "free"
+        },
+        "compact": true,
+        "eraseOnUpload": true,
+        "adminTab": {
+            "singleton": true,
+            "name": {
+                "en": "Scripts",
+                "de": "Skripte",
+                "ru": "Скрипты"
+            }
+        },
+        "docs": {
+            "en": ["docs/en/README.md", "docs/en/blockly.md", "docs/en/javascript.md", "docs/en/upgrade-guide.md"],
+            "ru": ["docs/ru/README.md", "docs/ru/blockly.md"],
+            "de": ["docs/de/README.md", "docs/de/blockly.md", "docs/de/usage.md"]
+        },
+        "dependencies": [
+            {
+                "js-controller": ">=5.0.0"
+            }
+        ],
+        "globalDependencies": [
+            {
+                "admin": ">=5.1.28"
+            }
+        ],
+        "type": "logic",
+        "messagebox": true,
+        "logTransporter": true,
+        "plugins": {
+            "sentry": {
+                "dsn": "https://f3b9740caaee4ee69eb68019d71526ff@sentry.iobroker.net/15"
+            }
+        },
+        "tier": 1,
+        "connectionType": "none",
+        "dataSource": "none",
+        "messages": [
+            {
+                "condition": {
+                    "operand": "and",
+                    "rules": ["oldVersion<5.5.0", "newVersion>=5.5.0"]
+                },
+                "title": {
+                    "en": "Check used script mirror path!",
+                    "de": "Überprüfen Sie den verwendeten Skript-Spiegelpfad!",
+                    "ru": "Проверьте используемый путь к зеркалу скрипта!",
+                    "pt": "Verifique o caminho do espelho de script usado!",
+                    "nl": "Controleer het gebruikte scriptspiegelpad!",
+                    "fr": "Vérifiez le chemin du miroir de script utilisé !",
+                    "it": "Controlla il percorso del mirror dello script utilizzato!",
+                    "es": "¡Compruebe la ruta del espejo del script usado!",
+                    "pl": "Sprawdź używaną ścieżkę lustrzaną skryptu!",
+                    "zh-cn": "检查使用的脚本镜像路径！",
+                    "uk": "Перевірте використаний шлях дзеркала сценарію!"
+                },
+                "text": {
+                    "en": "If the script mirror feature is used to save scripts also in the file system and a directory inside the ioBroker directory is configured, then you need to check if this mirroring location is still allowed! If not the adapter logs an error on startup and mirroring is deactivated! For a list of forbidden locations please check the adapter Readme.",
+                    "de": "Wenn die Skript-Spiegelungsfunktion verwendet wird, um Skripte auch im Dateisystem zu speichern, und ein Verzeichnis innerhalb des ioBroker-Verzeichnisses konfiguriert ist, muss geprüft werden, ob dieser Spiegelungsspeicherort noch zulässig ist! Andernfalls meldet der Adapter beim Start einen Fehler und die Spiegelung wird deaktiviert! Eine Liste verbotener Orte ist in der Adapter-Readme zu finden.",
+                    "ru": "Если функция зеркалирования скриптов используется для сохранения скриптов также в файловой системе и настроен каталог внутри каталога ioBroker, то вам необходимо проверить, разрешено ли это местоположение зеркалирования! В противном случае адаптер регистрирует ошибку при запуске, и зеркалирование деактивируется! Список запрещенных мест см. в файле Readme адаптера.",
+                    "pt": "Se o recurso de espelhamento de script for usado para salvar scripts também no sistema de arquivos e um diretório dentro do diretório ioBroker estiver configurado, você precisará verificar se esse local de espelhamento ainda é permitido! Caso contrário, o adaptador registra um erro na inicialização e o espelhamento é desativado! Para obter uma lista de locais proibidos, verifique o Readme do adaptador.",
+                    "nl": "Als de functie voor het spiegelen van scripts wordt gebruikt om scripts ook in het bestandssysteem op te slaan en een map in de ioBroker-map is geconfigureerd, moet u controleren of deze spiegellocatie nog steeds is toegestaan! Als dit niet het geval is, registreert de adapter een fout bij het opstarten en is spiegelen gedeactiveerd! Raadpleeg de adapter Readme voor een lijst met verboden locaties.",
+                    "fr": "Si la fonctionnalité de mise en miroir des scripts est utilisée pour enregistrer également les scripts dans le système de fichiers et qu'un répertoire à l'intérieur du répertoire ioBroker est configuré, vous devez vérifier si cet emplacement de mise en miroir est toujours autorisé ! Si ce n'est pas le cas, l'adaptateur enregistre une erreur au démarrage et la mise en miroir est désactivée ! Pour une liste des emplacements interdits, veuillez consulter le fichier Readme de l'adaptateur.",
+                    "it": "Se la funzione di mirroring degli script viene utilizzata per salvare gli script anche nel file system ed è configurata una directory all'interno della directory di ioBroker, è necessario verificare se questa posizione di mirroring è ancora consentita! In caso contrario, l'adattatore registra un errore all'avvio e il mirroring è disattivato! Per un elenco delle posizioni vietate, controllare il file Readme dell'adattatore.",
+                    "es": "Si la función de duplicación de secuencias de comandos se utiliza para guardar secuencias de comandos también en el sistema de archivos y se configura un directorio dentro del directorio de ioBroker, ¡entonces debe verificar si esta ubicación de duplicación todavía está permitida! De lo contrario, el adaptador registra un error al iniciarse y la duplicación se desactiva. Para obtener una lista de ubicaciones prohibidas, consulte el archivo Léame del adaptador.",
+                    "pl": "Jeśli funkcja kopii lustrzanej skryptów jest używana do zapisywania skryptów również w systemie plików, a katalog w katalogu ioBroker jest skonfigurowany, musisz sprawdzić, czy ta lokalizacja kopii lustrzanej jest nadal dozwolona! Jeśli nie, adapter rejestruje błąd podczas uruchamiania, a dublowanie jest wyłączone! Listę zabronionych lokalizacji można znaleźć w pliku Readme adaptera.",
+                    "zh-cn": "如果使用脚本镜像功能将脚本也保存在文件系统中，并且配置了 ioBroker 目录内的目录，那么您需要检查该镜像位置是否仍然允许！如果不是，适配器会在启动时记录错误并且镜像被禁用！有关禁止位置的列表，请查看适配器自述文件。",
+                    "uk": "Якщо функція дзеркала сценаріїв використовується для збереження сценаріїв також у файловій системі та налаштовано каталог у каталозі ioBroker, тоді вам потрібно перевірити, чи це розташування дзеркала все ще дозволено! Якщо ні, адаптер реєструє помилку під час запуску, і дзеркальне відображення вимикається! Щоб отримати список заборонених розташувань, перегляньте Readme адаптера."
+                },
+                "link": "https://github.com/ioBroker/ioBroker.javascript#forbidden-directories-for-script-filesystem-mirroring",
+                "level": "warn",
+                "linkText": {
+                    "en": "List of the forbidden Mirror locations",
+                    "de": "Liste der verbotenen Mirror-Standorte",
+                    "ru": "Список запрещенных локаций Зеркала",
+                    "pt": "Lista dos locais de espelho proibidos",
+                    "nl": "Lijst met de verboden Mirror-locaties",
+                    "fr": "Liste des emplacements Mirror interdits",
+                    "it": "Elenco delle posizioni degli specchi proibiti",
+                    "es": "Lista de las ubicaciones de Mirror prohibidas",
+                    "pl": "Lista zakazanych lokalizacji Lustrzanych",
+                    "zh-cn": "禁止镜像位置列表",
+                    "uk": "Список заборонених місць розміщення дзеркал"
+                },
+                "buttons": ["agree", "cancel"]
+            },
+            {
+                "condition": {
+                    "operand": "and",
+                    "rules": ["oldVersion<7.0.0", "newVersion>=7.0.0"]
+                },
+                "title": {
+                    "en": "Small breaking change by usage of jsonata",
+                    "de": "Kleine Breaking-Änderung durch Verwendung von jsonata",
+                    "ru": "Небольшое изменение, вызванное использованием jsonata",
+                    "pt": "Pequena alteração de quebra por uso de jsonata",
+                    "nl": "Kleine breaking change door gebruik van jsonata",
+                    "fr": "Petite modification de rupture en utilisant jsonata",
+                    "it": "Piccola modifica di breaking utilizzando jsonata",
+                    "es": "Pequeño cambio de ruptura por uso de jsonata",
+                    "pl": "Mała zmiana w użyciu jsonata",
+                    "zh-cn": "使用 jsonata 的小破坏性变化",
+                    "uk": "Невелика критична зміна через використання jsonata"
+                },
+                "text": {
+                    "en": "All usages of jsonata must be rewritten to use promises. All blockly scripts with jsonata blocks must de changed (just move some blocks) and saved anew.",
+                    "de": "Alle Verwendungen von jsonata müssen umgeschrieben werden, um Promises zu verwenden. Alle Blockly-Skripte mit jsonata-Blöcken müssen geändert werden (nur einige Blöcke verschieben) und neu gespeichert.",
+                    "ru": "Все использования jsonata должны быть переписаны c использованием promises. Все скрипты с блоками jsonata в Blockly должны быть изменены (просто переместите некоторые блоки) и сохранены заново.",
+                    "pt": "Todas as utilizações de jsonata devem ser reescritas para usar promessas. Todos os scripts do bloco de blocos com blocos jsonata devem ser alterados (basta mover alguns blocos) e salvos novamente.",
+                    "nl": "Alle gebruiken van jsonata moeten worden herschreven om beloften te gebruiken. Alle blokly-schripten met jsonata-blokken moeten worden gewijzigd (verplaats gewoon enkele blokken) en opnieuw worden opgeslagen.",
+                    "fr": "Toutes les utilisations de jsonata doivent être réécrites pour utiliser des promesses. Tous les scripts Blockly avec des blocs jsonata doivent être modifiés (déplacez simplement certains blocs) et enregistrés à nouveau.",
+                    "it": "Tutti gli utilizzi di jsonata devono essere riscritti per utilizzare le promesse. Tutti gli script Blockly con blocchi jsonata devono essere modificati (spostare solo alcuni blocchi) e salvati di nuovo.",
+                    "es": "Todos los usos de jsonata deben reescribirse para usar promesas. Todos los scripts de bloques de bloques con bloques jsonata deben cambiarse (solo mueve algunos bloques) y guardarse de nuevo.",
+                    "pl": "Wszystkie użycia jsonata muszą zostać przepisane, aby korzystać z obietnic. Wszystkie skrypty blokowe z blokami jsonata muszą zostać zmienione (przeciągnij kilka bloków) i zapisane ponownie.",
+                    "zh-cn": "所有 jsonata 的用法都必须重写以使用承诺。所有具有 jsonata 块的 Blockly 脚本都必须更改（只需移动一些块）并重新保存。",
+                    "uk": "Усі використання jsonata потрібно переписати, щоб використовувати обіцянки. Усі блочні сценарії з блоками jsonata потрібно змінити (просто перемістити деякі блоки) і зберегти заново."
+                },
+                "level": "warn",
+                "buttons": ["agree", "cancel"]
+            },
+            {
+                "condition": {
+                    "operand": "and",
+                    "rules": ["oldVersion<7.5.0", "newVersion>=7.5.0"]
+                },
+                "title": {
+                    "en": "Check your Blockly scripts",
+                    "de": "Überprüfen Sie Ihre Blockly-Skripte",
+                    "ru": "Проверьте свой Блочные скрипты",
+                    "pt": "Verifique o seu scripts em bloco",
+                    "nl": "Controleer het. Blockly scripts",
+                    "fr": "Vérifiez scripts en bloc",
+                    "it": "Controlla il tuo Scrittori bloccati",
+                    "es": "Revisa tu scripts bloqueados",
+                    "pl": "Czujesz! skrypt Blockly",
+                    "uk": "Перевірити Блокнотні скрипти",
+                    "zh-cn": "检查 法定说明"
+                },
+                "text": {
+                    "en": "Some Blockly blocks have returned 0 instead of 7 for Sunday (when determining the day of the week). Please check all Blockly scripts that use the current day of the week as a numerical value. The week ranges from 1 (Monday) to 7 (Sunday), as described in the documentation.",
+                    "de": "Einige Blockly-Bausteine haben 0 statt 7 für Sonntag (bei der Bestimmung des Tages der Woche) zurückgegeben. Bitte überprüfen Sie alle Blockly-Skripte, welche den aktuellen Tag der Woche als Zahlenwert verwenden. Die Woche beginnt bei 1 (Montag) bis 7 (Sonntag), wie in der Dokumentation beschrieben.",
+                    "ru": "Некоторые блоки Blockly вернули 0 вместо 7 в воскресенье при определении дня недели. Пожалуйста, проверьте все Blockly скрипты, которые используют текущий день недели как числовое значение. Неделя колеблется от 1 (понедельник) до 7 (воскресенье), как описано в документации.",
+                    "pt": "Alguns blocos Blockly retornaram 0 em vez de 7 para domingo ao determinar o dia da semana. Verifique todos os scripts Blockly que usam o dia atual da semana como um valor numérico. A semana varia de 1 (segunda-feira) a 7 (domingo), conforme descrito na documentação.",
+                    "nl": "Sommige Blockly blokken hebben 0 teruggebracht in plaats van 7 voor zondag wanneer ze de dag van de week bepalen. Controleer alle Blockly scripts die de huidige dag van de week gebruiken als een numerische waarde. De wekelijkse bereik van 1 tot 7, zoals beschreven in de documentatie.",
+                    "fr": "Certains blocs Blockly ont retourné 0 au lieu de 7 pour le dimanche lors de la détermination du jour de la semaine. Veuillez vérifier tous les scripts Blockly qui utilisent le jour actuel de la semaine comme valeur numérique. La semaine varie de 1 (le lundi) à 7 (le dimanche) comme décrit dans la documentation.",
+                    "it": "Alcuni blocchi Blockly hanno restituito 0 invece di 7 per Domenica quando determina il giorno della settimana. Si prega di controllare tutti gli script Blockly che utilizzano il giorno corrente della settimana come valore numerico. La settimana varia da 1 (lunedì) a 7 (domenica) come descritto nella documentazione.",
+                    "es": "Algunos bloques Blockly han devuelto 0 en lugar de 7 para el domingo al determinar el día de la semana. Por favor, compruebe todos los scripts Blockly que utilizan el día actual de la semana como un valor numérico. La semana va de 1 (lunes) a 7 (domingo), como se describe en la documentación.",
+                    "pl": "Niektóre bloki Blockly wróciły zamiast 7 na niedzielę, gdy ustalono dzień tygodnia. Proszę sprawdzać wszystkie scenariusze Blockly, które wykorzystują bieżący dzień tygodnia jako wartość numeryczną. Tydzień to od 1 (poniedziałek) do 7 (dzisiejszy), co opisuje w dokumencie.",
+                    "uk": "Деякі блоки блокнотів повернулися 0 замість 7 на неділю при визначенні дня тижня. Будь ласка, перевірте всі сценарії Blockly, які використовують поточний день тижня як чисельне значення. Щотижневий діапазон від 1 (понеділок) до 7 (неділя,) як описано в документації.",
+                    "zh-cn": "在确定一周日时,一些锁定区已恢复了0而不是7天星期。 请检查使用本星期日作为微妙价值的所有固定文字。 如文件所述,该星期有1个(星期一)至7个(日)。."
+                },
+                "level": "warn",
+                "buttons": ["agree", "cancel"]
+            },
+            {
+                "condition": {
+                    "operand": "and",
+                    "rules": ["oldVersion<8.0.0", "newVersion>=8.0.0"]
+                },
+                "title": {
+                    "en": "Replace \"request\" functions after update",
+                    "de": "\"Request\"-Funktionen nach dem Update ersetzen",
+                    "ru": "Заменить \"запрос\" функции после обновления",
+                    "pt": "Substitua funções \"request\" após atualização",
+                    "nl": "Vervang \"verzoek\" functies na update",
+                    "fr": "Remplacer les fonctions « request » après mise à jour",
+                    "it": "Sostituisci le funzioni \"richiesta\" dopo l'aggiornamento",
+                    "es": "Reemplazar funciones de \"Solicitud\" después de la actualización",
+                    "pl": "Zastąp funkcje \"request\" po aktualizacji",
+                    "uk": "Замініть функції \"request\" після оновлення",
+                    "zh-cn": "更新后替换“ request” 函数"
+                },
+                "text": {
+                    "en": "It is required to update all scripts which use the \"request\" package! This package will be removed in future versions. Please use the new \"Bockly\" blocks for \"httpGet\" or use another library (like axios) in your JavaScript code.",
+                    "de": "Es ist erforderlich, alle Skripte zu aktualisieren, die das \"Request\"-Paket verwenden! Dieses Paket wird in zukünftigen Versionen entfernt. Bitte nutze die neuen \"Bockly\"-Blöcke für \"httpGet\" oder nutze eine andere Bibliothek (wie axios) im JavaScript-Code.",
+                    "ru": "Требуется обновить все скрипты, которые используют пакет «запроса»! Этот пакет будет удален в будущих версиях. Пожалуйста, используйте новые блоки «Bockly» для «httpGet» или используйте другую библиотеку (например, axios) в вашем коде JavaScript.",
+                    "pt": "É necessário atualizar todos os scripts que usam o pacote \"pedido\"! Este pacote será removido em versões futuras. Por favor, use os novos blocos \"Bockly\" para \"httpGet\" ou use outra biblioteca (como axios) em seu código JavaScript.",
+                    "nl": "Het is vereist om alle scripts die het \"verzoek\" pakket gebruiken te updaten! Dit pakket zal in toekomstige versies worden verwijderd. Gebruik de nieuwe blokken \"Bockly\" voor \"httpGet\" of gebruik een andere bibliotheek (zoals axios) in uw JavaScript-code.",
+                    "fr": "Il est nécessaire de mettre à jour tous les scripts qui utilisent le paquet \"request\"! Ce paquet sera supprimé dans les versions futures. Veuillez utiliser les nouveaux blocs \"Bockly\" pour \"httpGet\" ou utiliser une autre bibliothèque (comme axios) dans votre code JavaScript.",
+                    "it": "È necessario aggiornare tutti gli script che utilizzano il pacchetto \"richiesta\"! Questo pacchetto verrà rimosso nelle versioni future. Si prega di utilizzare i nuovi blocchi \"Bockly\" per \"httpGet\" o utilizzare un'altra libreria (come gli assi) nel codice JavaScript.",
+                    "es": "¡Se requiere actualizar todos los scripts que utilizan el paquete \"request\"! Este paquete será eliminado en futuras versiones. Utilice los nuevos bloques \"Bockly\" para \"httpGet\" o utilice otra biblioteca (como axios) en su código JavaScript.",
+                    "pl": "Wymagane jest uaktualnienie wszystkich skryptów, które korzystają z pakietu \"request\"! Ten pakiet zostanie usunięty w przyszłych wersjach. Proszę użyć nowych bloków \"Bockly\" dla \"httpGet\" lub użyć innej biblioteki (jak axios) w swoim kodzie JavaScript.",
+                    "uk": "Щоб оновити всі скрипти, які використовують пакет \"запит\"! Цей пакет буде видалений в наступних версіях. Будь ласка, використовуйте нові блоки для \"httpGet\" або використовуйте іншу бібліотеку (наприклад, axios) у вашому JavaScript-коді.",
+                    "zh-cn": "需要更新所有使用\"请求\"包的脚本! 这个软件包在未来的版本中将被删除. 请为“ httpGet” 使用新的“ Bockly” 块, 或者在您的 JavaScript 代码中使用另一个库( 如 axios) ."
+                },
+                "link": "https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/upgrade-guide.md",
+                "level": "warn",
+                "buttons": ["agree", "cancel"]
+            }
         ]
-      },
-      {
-        "condition": {
-          "operand": "and",
-          "rules": [
-            "oldVersion<7.0.0",
-            "newVersion>=7.0.0"
-          ]
+    },
+    "notifications": [
+        {
+            "scope": "javascript",
+            "name": {
+                "en": "Script Engine",
+                "de": "Skriptausführung",
+                "ru": "Скрипты",
+                "pt": "Script Engine",
+                "nl": "Script-engine",
+                "fr": "Moteur de script",
+                "it": "Motore di script",
+                "es": "Motor de script",
+                "pl": "Silnik skryptowy",
+                "uk": "Механізм сценаріїв",
+                "zh-cn": "脚本引擎"
+            },
+            "description": {
+                "en": "Notifications generated by the script engine",
+                "de": "Benachrichtigungen, welche von der Skript-Engine generiert werden",
+                "ru": "Уведомления, генерируемые скриптовым двигателем",
+                "pt": "Notificações geradas pelo mecanismo de script",
+                "nl": "Door de script-engine gegenereerde meldingen",
+                "fr": "Notifications générées par le moteur de script",
+                "it": "Notifiche generate dal motore di script",
+                "es": "Notificaciones generadas por el motor script",
+                "pl": "Powiadomienia generowane przez silnik skryptu",
+                "uk": "Повідомлення, що генеруються двигуном скрипта",
+                "zh-cn": "脚本引擎生成的通知"
+            },
+            "categories": [
+                {
+                    "category": "scriptMessage",
+                    "name": {
+                        "en": "Message from script",
+                        "de": "Nachricht von Skript",
+                        "ru": "Сообщение от скрипта",
+                        "pt": "Mensagem do script",
+                        "nl": "Bericht van script",
+                        "fr": "Message du script",
+                        "it": "Messaggio dallo script",
+                        "es": "Mensaje del script",
+                        "pl": "Wiadomość ze skryptu",
+                        "uk": "Повідомлення з сценарію",
+                        "zh-cn": "来自脚本的信件"
+                    },
+                    "severity": "notify",
+                    "description": {
+                        "en": "Custom message from scripts",
+                        "de": "Benutzerdefinierte Nachricht von Skript",
+                        "ru": "Пользовательское сообщение из скриптов",
+                        "pt": "Mensagem personalizada de scripts",
+                        "nl": "Aangepast bericht van scripts",
+                        "fr": "Message personnalisé à partir de scripts",
+                        "it": "Messaggi personalizzati da script",
+                        "es": "Mensaje personalizado de scripts",
+                        "pl": "Niestandardowa wiadomość ze skryptów",
+                        "uk": "Спеціальне повідомлення від сценаріїв",
+                        "zh-cn": "自定义脚本中的消息"
+                    },
+                    "regex": [],
+                    "limit": 100
+                },
+                {
+                    "category": "scriptAlert",
+                    "name": {
+                        "en": "Alert from script",
+                        "de": "Alarm von Skript",
+                        "ru": "Объявление по сценарию",
+                        "pt": "Alerta do script",
+                        "nl": "Waarschuwing van script",
+                        "fr": "Alerte du script",
+                        "it": "Avviso da script",
+                        "es": "Alerta del script",
+                        "pl": "Alarm ze skryptu",
+                        "uk": "Вставте з скрипта",
+                        "zh-cn": "从脚本发出警告"
+                    },
+                    "severity": "alert",
+                    "description": {
+                        "en": "Custom alert from scripts",
+                        "de": "Benutzerdefinierte Warnung von Skript",
+                        "ru": "Настраиваемое оповещение от скриптов",
+                        "pt": "Alerta personalizado de scripts",
+                        "nl": "Aangepaste waarschuwing van scripts",
+                        "fr": "Alerte personnalisée des scripts",
+                        "it": "Avviso personalizzato da script",
+                        "es": "Alerta personalizada de scripts",
+                        "pl": "Własny alarm ze skryptów",
+                        "uk": "Користувальницькі сповіщення від сценаріїв",
+                        "zh-cn": "自定义脚本提醒"
+                    },
+                    "regex": [],
+                    "limit": 100
+                }
+            ]
+        }
+    ],
+    "native": {
+        "latitude": "",
+        "longitude": "",
+        "enableSetObject": false,
+        "enableSendToHost": false,
+        "enableExec": false,
+        "libraries": "",
+        "libraryTypings": "",
+        "subscribe": false,
+        "useSystemGPS": true,
+        "mirrorPath": "",
+        "mirrorInstance": 0,
+        "allowSelfSignedCerts": false,
+        "sunriseEvent": "nightEnd",
+        "sunriseOffset": 0,
+        "sunriseLimitStart": "06:00",
+        "sunriseLimitEnd": "12:00",
+        "sunsetEvent": "dusk",
+        "sunsetOffset": 0,
+        "sunsetLimitStart": "18:00",
+        "sunsetLimitEnd": "23:00",
+        "createAstroStates": true,
+        "maxSetStatePerMinute": 1000,
+        "maxTriggersPerScript": 100,
+        "gptKey": ""
+    },
+    "objects": [
+        {
+            "_id": "_design/script",
+            "type": "design",
+            "language": "javascript",
+            "views": {
+                "javascript": {
+                    "map": "function(doc) { if (doc.type === 'script' && doc.common.engineType.match(/^[jJ]ava[sS]cript|^[cC]offee[sS]cript|^[tT]ype[sS]cript|^Blockly|^Rules/)) emit(doc.common.name, doc); }"
+                }
+            }
         },
-        "title": {
-          "en": "Small breaking change by usage of jsonata",
-          "de": "Kleine Breaking-Änderung durch Verwendung von jsonata",
-          "ru": "Небольшое изменение, вызванное использованием jsonata",
-          "pt": "Pequena alteração de quebra por uso de jsonata",
-          "nl": "Kleine breaking change door gebruik van jsonata",
-          "fr": "Petite modification de rupture en utilisant jsonata",
-          "it": "Piccola modifica di breaking utilizzando jsonata",
-          "es": "Pequeño cambio de ruptura por uso de jsonata",
-          "pl": "Mała zmiana w użyciu jsonata",
-          "zh-cn": "使用 jsonata 的小破坏性变化",
-          "uk": "Невелика критична зміна через використання jsonata"
+        {
+            "_id": "script.js",
+            "type": "device",
+            "common": {
+                "name": {
+                    "en": "JavaScript",
+                    "de": "JavaScript",
+                    "ru": "JavaScript",
+                    "pt": "JavaScript",
+                    "nl": "JavaScrift",
+                    "fr": "JavaScript",
+                    "it": "JavaScript",
+                    "es": "JavaScript",
+                    "pl": "JavaScript",
+                    "uk": "Про нас",
+                    "zh-cn": "瓦 兰"
+                }
+            },
+            "native": {}
         },
-        "text": {
-          "en": "All usages of jsonata must be rewritten to use promises. All blockly scripts with jsonata blocks must de changed (just move some blocks) and saved anew.",
-          "de": "Alle Verwendungen von jsonata müssen umgeschrieben werden, um Promises zu verwenden. Alle Blockly-Skripte mit jsonata-Blöcken müssen geändert werden (nur einige Blöcke verschieben) und neu gespeichert.",
-          "ru": "Все использования jsonata должны быть переписаны c использованием promises. Все скрипты с блоками jsonata в Blockly должны быть изменены (просто переместите некоторые блоки) и сохранены заново.",
-          "pt": "Todas as utilizações de jsonata devem ser reescritas para usar promessas. Todos os scripts do bloco de blocos com blocos jsonata devem ser alterados (basta mover alguns blocos) e salvos novamente.",
-          "nl": "Alle gebruiken van jsonata moeten worden herschreven om beloften te gebruiken. Alle blokly-schripten met jsonata-blokken moeten worden gewijzigd (verplaats gewoon enkele blokken) en opnieuw worden opgeslagen.",
-          "fr": "Toutes les utilisations de jsonata doivent être réécrites pour utiliser des promesses. Tous les scripts Blockly avec des blocs jsonata doivent être modifiés (déplacez simplement certains blocs) et enregistrés à nouveau.",
-          "it": "Tutti gli utilizzi di jsonata devono essere riscritti per utilizzare le promesse. Tutti gli script Blockly con blocchi jsonata devono essere modificati (spostare solo alcuni blocchi) e salvati di nuovo.",
-          "es": "Todos los usos de jsonata deben reescribirse para usar promesas. Todos los scripts de bloques de bloques con bloques jsonata deben cambiarse (solo mueve algunos bloques) y guardarse de nuevo.",
-          "pl": "Wszystkie użycia jsonata muszą zostać przepisane, aby korzystać z obietnic. Wszystkie skrypty blokowe z blokami jsonata muszą zostać zmienione (przeciągnij kilka bloków) i zapisane ponownie.",
-          "zh-cn": "所有 jsonata 的用法都必须重写以使用承诺。所有具有 jsonata 块的 Blockly 脚本都必须更改（只需移动一些块）并重新保存。",
-          "uk": "Усі використання jsonata потрібно переписати, щоб використовувати обіцянки. Усі блочні сценарії з блоками jsonata потрібно змінити (просто перемістити деякі блоки) і зберегти заново."
+        {
+            "_id": "script.js.common",
+            "type": "channel",
+            "common": {
+                "name": {
+                    "en": "Common scripts (common)",
+                    "de": "Allgemeine Skripte (common)",
+                    "ru": "Общие скрипты (common)",
+                    "pt": "Scripts comuns (common)",
+                    "nl": "Common scripts (common)",
+                    "fr": "Scénarios communs (common)",
+                    "it": "Scrittori comuni (common)",
+                    "es": "Scripts comunes (common)",
+                    "pl": "Common script (common)",
+                    "uk": "Загальні сценарії (common)",
+                    "zh-cn": "共同说明 (common)"
+                }
+            },
+            "native": {}
         },
-        "level": "warn",
-        "buttons": [
-          "agree",
-          "cancel"
-        ]
-      },
-      {
-        "condition": {
-          "operand": "and",
-          "rules": [
-            "oldVersion<7.5.0",
-            "newVersion>=7.5.0"
-          ]
+        {
+            "_id": "script.js.global",
+            "type": "channel",
+            "common": {
+                "name": {
+                    "en": "Global scripts (global)",
+                    "de": "Globale Skripte (global)",
+                    "ru": "Глобальные скрипты (global)",
+                    "pt": "Scripts globais (global)",
+                    "nl": "Global scripts (global)",
+                    "fr": "Scénarios mondiaux (global)",
+                    "it": "Scrittori globali (global)",
+                    "es": "Guiones globales (global)",
+                    "pl": "Globalny scenariusz (global)",
+                    "uk": "Глобальні сценарії (global)",
+                    "zh-cn": "全球说明 (global)"
+                }
+            },
+            "native": {}
+        }
+    ],
+    "instanceObjects": [
+        {
+            "_id": "variables",
+            "type": "channel",
+            "common": {
+                "name": {
+                    "en": "Useful variables",
+                    "de": "Nützliche Variablen",
+                    "ru": "Полезные переменные",
+                    "pt": "Variáveis úteis",
+                    "nl": "Gebruikelijke variabelen",
+                    "fr": "Variables utiles",
+                    "it": "Variazioni utili",
+                    "es": "Variables útiles",
+                    "pl": "Zmienny",
+                    "uk": "Корисні зміни",
+                    "zh-cn": "使用变量"
+                }
+            },
+            "native": {}
         },
-        "title": {
-          "en": "Check your Blockly scripts",
-          "de": "Überprüfen Sie Ihre Blockly-Skripte",
-          "ru": "Проверьте свой Блочные скрипты",
-          "pt": "Verifique o seu scripts em bloco",
-          "nl": "Controleer het. Blockly scripts",
-          "fr": "Vérifiez scripts en bloc",
-          "it": "Controlla il tuo Scrittori bloccati",
-          "es": "Revisa tu scripts bloqueados",
-          "pl": "Czujesz! skrypt Blockly",
-          "uk": "Перевірити Блокнотні скрипти",
-          "zh-cn": "检查 法定说明"
+        {
+            "_id": "variables.astro",
+            "type": "folder",
+            "common": {
+                "name": {
+                    "en": "Sun movement",
+                    "de": "Sonnenbewegung",
+                    "ru": "Солнце движение",
+                    "pt": "Movimento do sol",
+                    "nl": "Sun beweging",
+                    "fr": "Mouvement solaire",
+                    "it": "Movimento solare",
+                    "es": "Movimiento solar",
+                    "pl": "Słońce",
+                    "uk": "Сонячний рух",
+                    "zh-cn": "A. 太阳运动"
+                }
+            },
+            "native": {}
         },
-        "text": {
-          "en": "Some Blockly blocks have returned 0 instead of 7 for Sunday (when determining the day of the week). Please check all Blockly scripts that use the current day of the week as a numerical value. The week ranges from 1 (Monday) to 7 (Sunday), as described in the documentation.",
-          "de": "Einige Blockly-Bausteine haben 0 statt 7 für Sonntag (bei der Bestimmung des Tages der Woche) zurückgegeben. Bitte überprüfen Sie alle Blockly-Skripte, welche den aktuellen Tag der Woche als Zahlenwert verwenden. Die Woche beginnt bei 1 (Montag) bis 7 (Sonntag), wie in der Dokumentation beschrieben.",
-          "ru": "Некоторые блоки Blockly вернули 0 вместо 7 в воскресенье при определении дня недели. Пожалуйста, проверьте все Blockly скрипты, которые используют текущий день недели как числовое значение. Неделя колеблется от 1 (понедельник) до 7 (воскресенье), как описано в документации.",
-          "pt": "Alguns blocos Blockly retornaram 0 em vez de 7 para domingo ao determinar o dia da semana. Verifique todos os scripts Blockly que usam o dia atual da semana como um valor numérico. A semana varia de 1 (segunda-feira) a 7 (domingo), conforme descrito na documentação.",
-          "nl": "Sommige Blockly blokken hebben 0 teruggebracht in plaats van 7 voor zondag wanneer ze de dag van de week bepalen. Controleer alle Blockly scripts die de huidige dag van de week gebruiken als een numerische waarde. De wekelijkse bereik van 1 tot 7, zoals beschreven in de documentatie.",
-          "fr": "Certains blocs Blockly ont retourné 0 au lieu de 7 pour le dimanche lors de la détermination du jour de la semaine. Veuillez vérifier tous les scripts Blockly qui utilisent le jour actuel de la semaine comme valeur numérique. La semaine varie de 1 (le lundi) à 7 (le dimanche) comme décrit dans la documentation.",
-          "it": "Alcuni blocchi Blockly hanno restituito 0 invece di 7 per Domenica quando determina il giorno della settimana. Si prega di controllare tutti gli script Blockly che utilizzano il giorno corrente della settimana come valore numerico. La settimana varia da 1 (lunedì) a 7 (domenica) come descritto nella documentazione.",
-          "es": "Algunos bloques Blockly han devuelto 0 en lugar de 7 para el domingo al determinar el día de la semana. Por favor, compruebe todos los scripts Blockly que utilizan el día actual de la semana como un valor numérico. La semana va de 1 (lunes) a 7 (domingo), como se describe en la documentación.",
-          "pl": "Niektóre bloki Blockly wróciły zamiast 7 na niedzielę, gdy ustalono dzień tygodnia. Proszę sprawdzać wszystkie scenariusze Blockly, które wykorzystują bieżący dzień tygodnia jako wartość numeryczną. Tydzień to od 1 (poniedziałek) do 7 (dzisiejszy), co opisuje w dokumencie.",
-          "uk": "Деякі блоки блокнотів повернулися 0 замість 7 на неділю при визначенні дня тижня. Будь ласка, перевірте всі сценарії Blockly, які використовують поточний день тижня як чисельне значення. Щотижневий діапазон від 1 (понеділок) до 7 (неділя,) як описано в документації.",
-          "zh-cn": "在确定一周日时,一些锁定区已恢复了0而不是7天星期。 请检查使用本星期日作为微妙价值的所有固定文字。 如文件所述,该星期有1个(星期一)至7个(日)。."
+        {
+            "_id": "variables.isDayTime",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Is day time",
+                    "de": "Ist Tag",
+                    "ru": "Дневное время",
+                    "pt": "É hora do dia",
+                    "nl": "Is de dag",
+                    "fr": "Le jour",
+                    "it": "È l'ora del giorno",
+                    "es": "Es hora del día",
+                    "pl": "Czasem",
+                    "uk": "В день",
+                    "zh-cn": "日 日"
+                },
+                "type": "boolean",
+                "role": "indicator",
+                "read": true,
+                "write": false
+            },
+            "native": {}
         },
-        "level": "warn",
-        "buttons": [
-          "agree",
-          "cancel"
-        ]
-      },
-      {
-        "condition": {
-          "operand": "and",
-          "rules": [
-            "oldVersion<8.0.0",
-            "newVersion>=8.0.0"
-          ]
+        {
+            "_id": "variables.isDaylightSaving",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Is daylight saving time active",
+                    "de": "Ist Sommerzeit aktiv",
+                    "ru": "Является дневным светом экономия время активным",
+                    "pt": "É hora de salvar a luz do dia ativo",
+                    "nl": "Is daglichtbesparing",
+                    "fr": "Temps d'été actif",
+                    "it": "È tempo di risparmio di luce del giorno attivo",
+                    "es": "Es tiempo de ahorro de la luz del día activo",
+                    "pl": "Czas wolny",
+                    "uk": "Чи активна економія денного світла",
+                    "zh-cn": "导 言"
+                },
+                "type": "boolean",
+                "role": "indicator",
+                "read": true,
+                "write": false
+            },
+            "native": {}
         },
-        "title": {
-          "en": "Replace \"request\" functions after update",
-          "de": "\"Request\"-Funktionen nach dem Update ersetzen",
-          "ru": "Заменить \"запрос\" функции после обновления",
-          "pt": "Substitua funções \"request\" após atualização",
-          "nl": "Vervang \"verzoek\" functies na update",
-          "fr": "Remplacer les fonctions « request » après mise à jour",
-          "it": "Sostituisci le funzioni \"richiesta\" dopo l'aggiornamento",
-          "es": "Reemplazar funciones de \"Solicitud\" después de la actualización",
-          "pl": "Zastąp funkcje \"request\" po aktualizacji",
-          "uk": "Замініть функції \"request\" після оновлення",
-          "zh-cn": "更新后替换“ request” 函数"
+        {
+            "_id": "variables.dayTime",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Current time",
+                    "de": "Aktuelle Zeit",
+                    "ru": "Текущее время",
+                    "pt": "Tempo atual",
+                    "nl": "Tijd om",
+                    "fr": "Heure actuelle",
+                    "it": "Ora attuale",
+                    "es": "Hora actual",
+                    "pl": "Czas bieżący",
+                    "uk": "Поточний час",
+                    "zh-cn": "目前时间"
+                },
+                "type": "string",
+                "role": "state",
+                "read": true,
+                "write": false
+            },
+            "native": {
+                "format12": false,
+                "leadingZeros": true
+            }
         },
-        "text": {
-          "en": "It is required to update all scripts which use the \"request\" package! This package will be removed in future versions. Please use the new \"Bockly\" blocks for \"httpGet\" or use another library (like axios) in your JavaScript code.",
-          "de": "Es ist erforderlich, alle Skripte zu aktualisieren, die das \"Request\"-Paket verwenden! Dieses Paket wird in zukünftigen Versionen entfernt. Bitte nutze die neuen \"Bockly\"-Blöcke für \"httpGet\" oder nutze eine andere Bibliothek (wie axios) im JavaScript-Code.",
-          "ru": "Требуется обновить все скрипты, которые используют пакет «запроса»! Этот пакет будет удален в будущих версиях. Пожалуйста, используйте новые блоки «Bockly» для «httpGet» или используйте другую библиотеку (например, axios) в вашем коде JavaScript.",
-          "pt": "É necessário atualizar todos os scripts que usam o pacote \"pedido\"! Este pacote será removido em versões futuras. Por favor, use os novos blocos \"Bockly\" para \"httpGet\" ou use outra biblioteca (como axios) em seu código JavaScript.",
-          "nl": "Het is vereist om alle scripts die het \"verzoek\" pakket gebruiken te updaten! Dit pakket zal in toekomstige versies worden verwijderd. Gebruik de nieuwe blokken \"Bockly\" voor \"httpGet\" of gebruik een andere bibliotheek (zoals axios) in uw JavaScript-code.",
-          "fr": "Il est nécessaire de mettre à jour tous les scripts qui utilisent le paquet \"request\"! Ce paquet sera supprimé dans les versions futures. Veuillez utiliser les nouveaux blocs \"Bockly\" pour \"httpGet\" ou utiliser une autre bibliothèque (comme axios) dans votre code JavaScript.",
-          "it": "È necessario aggiornare tutti gli script che utilizzano il pacchetto \"richiesta\"! Questo pacchetto verrà rimosso nelle versioni future. Si prega di utilizzare i nuovi blocchi \"Bockly\" per \"httpGet\" o utilizzare un'altra libreria (come gli assi) nel codice JavaScript.",
-          "es": "¡Se requiere actualizar todos los scripts que utilizan el paquete \"request\"! Este paquete será eliminado en futuras versiones. Utilice los nuevos bloques \"Bockly\" para \"httpGet\" o utilice otra biblioteca (como axios) en su código JavaScript.",
-          "pl": "Wymagane jest uaktualnienie wszystkich skryptów, które korzystają z pakietu \"request\"! Ten pakiet zostanie usunięty w przyszłych wersjach. Proszę użyć nowych bloków \"Bockly\" dla \"httpGet\" lub użyć innej biblioteki (jak axios) w swoim kodzie JavaScript.",
-          "uk": "Щоб оновити всі скрипти, які використовують пакет \"запит\"! Цей пакет буде видалений в наступних версіях. Будь ласка, використовуйте нові блоки для \"httpGet\" або використовуйте іншу бібліотеку (наприклад, axios) у вашому JavaScript-коді.",
-          "zh-cn": "需要更新所有使用\"请求\"包的脚本! 这个软件包在未来的版本中将被删除. 请为“ httpGet” 使用新的“ Bockly” 块, 或者在您的 JavaScript 代码中使用另一个库( 如 axios) ."
+        {
+            "_id": "variables.rulesTour",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Tour completed",
+                    "de": "Tour abgeschlossen",
+                    "ru": "Тур завершен",
+                    "pt": "Excursão concluída",
+                    "nl": "Tour voltooid",
+                    "fr": "Tour terminé",
+                    "it": "Tour completato",
+                    "es": "Tour completado",
+                    "pl": "Tour",
+                    "uk": "Тур завершено",
+                    "zh-cn": "完成的工作"
+                },
+                "type": "boolean",
+                "role": "state",
+                "read": true,
+                "write": false
+            },
+            "native": {}
         },
-        "link": "https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/upgrade-guide.md",
-        "level": "warn",
-        "buttons": [
-          "agree",
-          "cancel"
-        ]
-      }
+        {
+            "_id": "debug",
+            "type": "channel",
+            "common": {
+                "name": {
+                    "en": "Debug variables",
+                    "de": "Debug-Variablen",
+                    "ru": "Переменные Debug",
+                    "pt": "Variáveis de depuração",
+                    "nl": "Debug variabelen",
+                    "fr": "Débug variables",
+                    "it": "Variabili del debito",
+                    "es": "Variables de depuración",
+                    "pl": "Zmienna debugowa",
+                    "uk": "Debug змінні",
+                    "zh-cn": "变量"
+                }
+            },
+            "native": {}
+        },
+        {
+            "_id": "debug.to",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Send data to debugger",
+                    "de": "Daten an debugger senden",
+                    "ru": "Отправить данные для отладки",
+                    "pt": "Enviar dados para depurador",
+                    "nl": "Stuur gegevens naar debugger",
+                    "fr": "Envoyer des données à debugger",
+                    "it": "Invia i dati a debugger",
+                    "es": "Enviar datos a depurador",
+                    "pl": "Dane dotyczące debuggera",
+                    "uk": "Надсилання даних на дебугер",
+                    "zh-cn": "黑暗数据"
+                },
+                "type": "string",
+                "role": "json",
+                "read": false,
+                "write": true
+            },
+            "native": {}
+        },
+        {
+            "_id": "debug.from",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Data from debugger",
+                    "de": "Daten von debugger",
+                    "ru": "Данные от debugger",
+                    "pt": "Dados do depurador",
+                    "nl": "Data van debugger",
+                    "fr": "Data from debugger",
+                    "it": "Dati dal debugger",
+                    "es": "Datos del depurador",
+                    "pl": "Dane z debuggera",
+                    "uk": "Дані з debugger",
+                    "zh-cn": "A. 黑暗取的数据"
+                },
+                "type": "string",
+                "role": "json",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "debug.rules",
+            "type": "state",
+            "common": {
+                "name": {
+                    "en": "Data from rules logic",
+                    "de": "Daten aus der Regellogik",
+                    "ru": "Данные из логики правил",
+                    "pt": "Dados da lógica de regras",
+                    "nl": "Data van regels logica",
+                    "fr": "Données de la logique des règles",
+                    "it": "Dati dalla logica delle regole",
+                    "es": "Datos de la lógica de las reglas",
+                    "pl": "Dane z zakresu logiki",
+                    "uk": "Дані з логіки правил",
+                    "zh-cn": "从规则逻辑数据"
+                },
+                "type": "string",
+                "role": "json",
+                "read": true,
+                "write": false
+            },
+            "native": {}
+        }
     ]
-  },
-  "notifications": [
-    {
-      "scope": "javascript",
-      "name": {
-        "en": "Script Engine",
-        "de": "Skriptausführung",
-        "ru": "Скрипты",
-        "pt": "Script Engine",
-        "nl": "Script-engine",
-        "fr": "Moteur de script",
-        "it": "Motore di script",
-        "es": "Motor de script",
-        "pl": "Silnik skryptowy",
-        "uk": "Механізм сценаріїв",
-        "zh-cn": "脚本引擎"
-      },
-      "description": {
-        "en": "Notifications generated by the script engine",
-        "de": "Benachrichtigungen, welche von der Skript-Engine generiert werden",
-        "ru": "Уведомления, генерируемые скриптовым двигателем",
-        "pt": "Notificações geradas pelo mecanismo de script",
-        "nl": "Door de script-engine gegenereerde meldingen",
-        "fr": "Notifications générées par le moteur de script",
-        "it": "Notifiche generate dal motore di script",
-        "es": "Notificaciones generadas por el motor script",
-        "pl": "Powiadomienia generowane przez silnik skryptu",
-        "uk": "Повідомлення, що генеруються двигуном скрипта",
-        "zh-cn": "脚本引擎生成的通知"
-      },
-      "categories": [
-        {
-          "category": "scriptMessage",
-          "name": {
-            "en": "Message from script",
-            "de": "Nachricht von Skript",
-            "ru": "Сообщение от скрипта",
-            "pt": "Mensagem do script",
-            "nl": "Bericht van script",
-            "fr": "Message du script",
-            "it": "Messaggio dallo script",
-            "es": "Mensaje del script",
-            "pl": "Wiadomość ze skryptu",
-            "uk": "Повідомлення з сценарію",
-            "zh-cn": "来自脚本的信件"
-          },
-          "severity": "notify",
-          "description": {
-            "en": "Custom message from scripts",
-            "de": "Benutzerdefinierte Nachricht von Skript",
-            "ru": "Пользовательское сообщение из скриптов",
-            "pt": "Mensagem personalizada de scripts",
-            "nl": "Aangepast bericht van scripts",
-            "fr": "Message personnalisé à partir de scripts",
-            "it": "Messaggi personalizzati da script",
-            "es": "Mensaje personalizado de scripts",
-            "pl": "Niestandardowa wiadomość ze skryptów",
-            "uk": "Спеціальне повідомлення від сценаріїв",
-            "zh-cn": "自定义脚本中的消息"
-          },
-          "regex": [],
-          "limit": 100
-        },
-        {
-          "category": "scriptAlert",
-          "name": {
-            "en": "Alert from script",
-            "de": "Alarm von Skript",
-            "ru": "Объявление по сценарию",
-            "pt": "Alerta do script",
-            "nl": "Waarschuwing van script",
-            "fr": "Alerte du script",
-            "it": "Avviso da script",
-            "es": "Alerta del script",
-            "pl": "Alarm ze skryptu",
-            "uk": "Вставте з скрипта",
-            "zh-cn": "从脚本发出警告"
-          },
-          "severity": "alert",
-          "description": {
-            "en": "Custom alert from scripts",
-            "de": "Benutzerdefinierte Warnung von Skript",
-            "ru": "Настраиваемое оповещение от скриптов",
-            "pt": "Alerta personalizado de scripts",
-            "nl": "Aangepaste waarschuwing van scripts",
-            "fr": "Alerte personnalisée des scripts",
-            "it": "Avviso personalizzato da script",
-            "es": "Alerta personalizada de scripts",
-            "pl": "Własny alarm ze skryptów",
-            "uk": "Користувальницькі сповіщення від сценаріїв",
-            "zh-cn": "自定义脚本提醒"
-          },
-          "regex": [],
-          "limit": 100
-        }
-      ]
-    }
-  ],
-  "native": {
-    "latitude": "",
-    "longitude": "",
-    "enableSetObject": false,
-    "enableSendToHost": false,
-    "enableExec": false,
-    "libraries": "",
-    "libraryTypings": "",
-    "subscribe": false,
-    "useSystemGPS": true,
-    "mirrorPath": "",
-    "mirrorInstance": 0,
-    "allowSelfSignedCerts": false,
-    "sunriseEvent": "nightEnd",
-    "sunriseOffset": 0,
-    "sunriseLimitStart": "06:00",
-    "sunriseLimitEnd": "12:00",
-    "sunsetEvent": "dusk",
-    "sunsetOffset": 0,
-    "sunsetLimitStart": "18:00",
-    "sunsetLimitEnd": "23:00",
-    "createAstroStates": true,
-    "maxSetStatePerMinute": 1000,
-    "maxTriggersPerScript": 100,
-    "gptKey": ""
-  },
-  "objects": [
-    {
-      "_id": "_design/script",
-      "type": "design",
-      "language": "javascript",
-      "views": {
-        "javascript": {
-          "map": "function(doc) { if (doc.type === 'script' && doc.common.engineType.match(/^[jJ]ava[sS]cript|^[cC]offee[sS]cript|^[tT]ype[sS]cript|^Blockly|^Rules/)) emit(doc.common.name, doc); }"
-        }
-      }
-    },
-    {
-      "_id": "script.js",
-      "type": "device",
-      "common": {
-        "name": {
-          "en": "JavaScript",
-          "de": "JavaScript",
-          "ru": "JavaScript",
-          "pt": "JavaScript",
-          "nl": "JavaScrift",
-          "fr": "JavaScript",
-          "it": "JavaScript",
-          "es": "JavaScript",
-          "pl": "JavaScript",
-          "uk": "Про нас",
-          "zh-cn": "瓦 兰"
-        }
-      },
-      "native": {}
-    },
-    {
-      "_id": "script.js.common",
-      "type": "channel",
-      "common": {
-        "name": {
-          "en": "Common scripts (common)",
-          "de": "Allgemeine Skripte (common)",
-          "ru": "Общие скрипты (common)",
-          "pt": "Scripts comuns (common)",
-          "nl": "Common scripts (common)",
-          "fr": "Scénarios communs (common)",
-          "it": "Scrittori comuni (common)",
-          "es": "Scripts comunes (common)",
-          "pl": "Common script (common)",
-          "uk": "Загальні сценарії (common)",
-          "zh-cn": "共同说明 (common)"
-        }
-      },
-      "native": {}
-    },
-    {
-      "_id": "script.js.global",
-      "type": "channel",
-      "common": {
-        "name": {
-          "en": "Global scripts (global)",
-          "de": "Globale Skripte (global)",
-          "ru": "Глобальные скрипты (global)",
-          "pt": "Scripts globais (global)",
-          "nl": "Global scripts (global)",
-          "fr": "Scénarios mondiaux (global)",
-          "it": "Scrittori globali (global)",
-          "es": "Guiones globales (global)",
-          "pl": "Globalny scenariusz (global)",
-          "uk": "Глобальні сценарії (global)",
-          "zh-cn": "全球说明 (global)"
-        }
-      },
-      "native": {}
-    }
-  ],
-  "instanceObjects": [
-    {
-      "_id": "variables",
-      "type": "channel",
-      "common": {
-        "name": {
-          "en": "Useful variables",
-          "de": "Nützliche Variablen",
-          "ru": "Полезные переменные",
-          "pt": "Variáveis úteis",
-          "nl": "Gebruikelijke variabelen",
-          "fr": "Variables utiles",
-          "it": "Variazioni utili",
-          "es": "Variables útiles",
-          "pl": "Zmienny",
-          "uk": "Корисні зміни",
-          "zh-cn": "使用变量"
-        }
-      },
-      "native": {}
-    },
-    {
-      "_id": "variables.astro",
-      "type": "folder",
-      "common": {
-        "name": {
-          "en": "Sun movement",
-          "de": "Sonnenbewegung",
-          "ru": "Солнце движение",
-          "pt": "Movimento do sol",
-          "nl": "Sun beweging",
-          "fr": "Mouvement solaire",
-          "it": "Movimento solare",
-          "es": "Movimiento solar",
-          "pl": "Słońce",
-          "uk": "Сонячний рух",
-          "zh-cn": "A. 太阳运动"
-        }
-      },
-      "native": {}
-    },
-    {
-      "_id": "variables.isDayTime",
-      "type": "state",
-      "common": {
-        "name": {
-          "en": "Is day time",
-          "de": "Ist Tag",
-          "ru": "Дневное время",
-          "pt": "É hora do dia",
-          "nl": "Is de dag",
-          "fr": "Le jour",
-          "it": "È l'ora del giorno",
-          "es": "Es hora del día",
-          "pl": "Czasem",
-          "uk": "В день",
-          "zh-cn": "日 日"
-        },
-        "type": "boolean",
-        "role": "indicator",
-        "read": true,
-        "write": false
-      },
-      "native": {}
-    },
-    {
-      "_id": "variables.isDaylightSaving",
-      "type": "state",
-      "common": {
-        "name": {
-          "en": "Is daylight saving time active",
-          "de": "Ist Sommerzeit aktiv",
-          "ru": "Является дневным светом экономия время активным",
-          "pt": "É hora de salvar a luz do dia ativo",
-          "nl": "Is daglichtbesparing",
-          "fr": "Temps d'été actif",
-          "it": "È tempo di risparmio di luce del giorno attivo",
-          "es": "Es tiempo de ahorro de la luz del día activo",
-          "pl": "Czas wolny",
-          "uk": "Чи активна економія денного світла",
-          "zh-cn": "导 言"
-        },
-        "type": "boolean",
-        "role": "indicator",
-        "read": true,
-        "write": false
-      },
-      "native": {}
-    },
-    {
-      "_id": "variables.dayTime",
-      "type": "state",
-      "common": {
-        "name": {
-          "en": "Current time",
-          "de": "Aktuelle Zeit",
-          "ru": "Текущее время",
-          "pt": "Tempo atual",
-          "nl": "Tijd om",
-          "fr": "Heure actuelle",
-          "it": "Ora attuale",
-          "es": "Hora actual",
-          "pl": "Czas bieżący",
-          "uk": "Поточний час",
-          "zh-cn": "目前时间"
-        },
-        "type": "string",
-        "role": "state",
-        "read": true,
-        "write": false
-      },
-      "native": {
-        "format12": false,
-        "leadingZeros": true
-      }
-    },
-    {
-      "_id": "variables.rulesTour",
-      "type": "state",
-      "common": {
-        "name": {
-          "en": "Tour completed",
-          "de": "Tour abgeschlossen",
-          "ru": "Тур завершен",
-          "pt": "Excursão concluída",
-          "nl": "Tour voltooid",
-          "fr": "Tour terminé",
-          "it": "Tour completato",
-          "es": "Tour completado",
-          "pl": "Tour",
-          "uk": "Тур завершено",
-          "zh-cn": "完成的工作"
-        },
-        "type": "boolean",
-        "role": "state",
-        "read": true,
-        "write": false
-      },
-      "native": {}
-    },
-    {
-      "_id": "debug",
-      "type": "channel",
-      "common": {
-        "name": {
-          "en": "Debug variables",
-          "de": "Debug-Variablen",
-          "ru": "Переменные Debug",
-          "pt": "Variáveis de depuração",
-          "nl": "Debug variabelen",
-          "fr": "Débug variables",
-          "it": "Variabili del debito",
-          "es": "Variables de depuración",
-          "pl": "Zmienna debugowa",
-          "uk": "Debug змінні",
-          "zh-cn": "变量"
-        }
-      },
-      "native": {}
-    },
-    {
-      "_id": "debug.to",
-      "type": "state",
-      "common": {
-        "name": {
-          "en": "Send data to debugger",
-          "de": "Daten an debugger senden",
-          "ru": "Отправить данные для отладки",
-          "pt": "Enviar dados para depurador",
-          "nl": "Stuur gegevens naar debugger",
-          "fr": "Envoyer des données à debugger",
-          "it": "Invia i dati a debugger",
-          "es": "Enviar datos a depurador",
-          "pl": "Dane dotyczące debuggera",
-          "uk": "Надсилання даних на дебугер",
-          "zh-cn": "黑暗数据"
-        },
-        "type": "string",
-        "role": "json",
-        "read": false,
-        "write": true
-      },
-      "native": {}
-    },
-    {
-      "_id": "debug.from",
-      "type": "state",
-      "common": {
-        "name": {
-          "en": "Data from debugger",
-          "de": "Daten von debugger",
-          "ru": "Данные от debugger",
-          "pt": "Dados do depurador",
-          "nl": "Data van debugger",
-          "fr": "Data from debugger",
-          "it": "Dati dal debugger",
-          "es": "Datos del depurador",
-          "pl": "Dane z debuggera",
-          "uk": "Дані з debugger",
-          "zh-cn": "A. 黑暗取的数据"
-        },
-        "type": "string",
-        "role": "json",
-        "read": true,
-        "write": false
-      },
-      "native": {}
-    },
-    {
-      "_id": "debug.rules",
-      "type": "state",
-      "common": {
-        "name": {
-          "en": "Data from rules logic",
-          "de": "Daten aus der Regellogik",
-          "ru": "Данные из логики правил",
-          "pt": "Dados da lógica de regras",
-          "nl": "Data van regels logica",
-          "fr": "Données de la logique des règles",
-          "it": "Dati dalla logica delle regole",
-          "es": "Datos de la lógica de las reglas",
-          "pl": "Dane z zakresu logiki",
-          "uk": "Дані з логіки правил",
-          "zh-cn": "从规则逻辑数据"
-        },
-        "type": "string",
-        "role": "json",
-        "read": true,
-        "write": false
-      },
-      "native": {}
-    }
-  ]
 }

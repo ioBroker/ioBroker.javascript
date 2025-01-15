@@ -117,6 +117,8 @@
           "i18n": true,
           "xs": 12,
           "sm": 12,
+          "md": 12,
+          "lg": 12,
           "url": "custom/customComponents.js",
           "name": "ConfigCustomJavascriptSet/Components/Astro"
         },

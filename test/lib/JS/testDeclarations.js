@@ -15,7 +15,7 @@ getState('id').ts;
 
 setState('id', 1);
 setState('id', 1, true);
-setState('id', 1, (id) => {
+setState('id', 1, id => {
     id && id.toLowerCase();
 });
 
@@ -23,7 +23,7 @@ const selected = $('selector');
 const test1 = selected.getState();
 test1 && test1.val.toFixed();
 
-schedule({ astro: 'night' }, () => { });
+schedule({ astro: 'night' }, () => {});
 
 // TODO: Add more tests
 
