@@ -1,0 +1,23 @@
+.root {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    * {
+        color: var(--colorBlock) !important;
+    }
+    [class*='MuiInputLabel-shrink'] {
+        color: var(--colorBlock) !important;
+    }
+    [class*='MuiInput-underline'] {
+        &:after {
+            border-bottom-color: var(--lineColor) !important;
+        }
+        &:before {
+            border-bottom-color: var(--lineColor) !important;
+        }
+        &:hover {
+            &:before {
+                border-bottom-color: var(--lineColor) !important;
+            }
+        }
+    }
+}

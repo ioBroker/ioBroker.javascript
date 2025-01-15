@@ -1,33 +1,22 @@
 {
-	"compileOnSave": true,
-	"compilerOptions": {
-		// do not compile anything, this file is just to configure type checking
-		"noEmit": true,
+    "compileOnSave": true,
+    "compilerOptions": {
+        "noEmit": true,
+        "allowJs": true,
+        "checkJs": true,
+        "outDir": "./build-backend/",
+        "sourceMap": true,
+        "inlineSources": true,
 
-		// check JS files
-		"allowJs": true,
-		"checkJs": true,
-
-		"module": "commonjs",
-		"moduleResolution": "node",
-		// this is necessary for the automatic typing of the adapter config
-		"resolveJsonModule": true,
-
-		// Set this to false if you want to disable the very strict rules (not recommended)
-		"strict": true,
-		// Or enable some of those features for more fine-grained control
-		// "strictNullChecks": true,
-		// "strictPropertyInitialization": true,
-		// "strictBindCallApply": true,
-		"noImplicitAny": false,
-		// "noUnusedLocals": true,
-		// "noUnusedParameters": true,
-
-		"target": "es2022",
-	},
-	"include": [
-		"lib/**/*.js",
-		"lib/**/*.d.ts",
-		"main.js"
-	]
+        "module": "esnext",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "strict": true,
+        "noImplicitAny": true,
+        "target": "es2022",
+        "esModuleInterop": true,
+        "types": ["@types/node", "@iobroker/types"],
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules/**", "admin/**"]
 }

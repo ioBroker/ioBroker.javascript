@@ -1,7 +1,7 @@
 // import all modules that are available in the sandbox
 // this has a nice side effect that we may augment the global scope
-import * as child_process from "child_process";
-import * as os from "os";
+import * as child_process from 'child_process';
+import * as os from 'os';
 
 type EmptyCallback = () => void | Promise<void>;
 type ErrorCallback = (err?: string) => void | Promise<void>;
@@ -945,7 +945,7 @@ declare global {
 			/** name is equal or matches to given one */
 			name?: string | string[] | RegExp;
 			/** type of change */
-			change?: "eq" | "ne" | "gt" | "ge" | "lt" | "le" | "any";
+			change?: "eq" | "ne" | "gt" | "ge" | "lt" | "le" | "any" | "*";
 			val?: StateValue;
 			/** New value must not be equal to given one */
 			valNe?: StateValue;
@@ -1738,8 +1738,8 @@ declare global {
 	 * @param newName New file name
 	 * @param callback Is called when the operation has finished (successfully or not)
 	 */
-	function rename(id: string, oldName: string, newName: string, callback: ErrorCallback);
-	function renameAsync(id: string, oldName: string, newName: string);
+	function rename(id: string, oldName: string, newName: string, callback: ErrorCallback): void;
+	function renameAsync(id: string, oldName: string, newName: string): Promise<void>;
 
 	/**
 	 * Renames a file.
@@ -1748,8 +1748,8 @@ declare global {
 	 * @param newName New file name
 	 * @param callback Is called when the operation has finished (successfully or not)
 	 */
-	function renameFile(id: string, oldName: string, newName: string, callback: ErrorCallback);
-	function renameFileAsync(id: string, oldName: string, newName: string);
+	function renameFile(id: string, oldName: string, newName: string, callback: ErrorCallback): void;
+	function renameFileAsync(id: string, oldName: string, newName: string): Promise<void>;
 
 	function getHistory(instance: any, options: any, callback: any): any;
 	function getHistoryAsync(instance: any, options: any): Promise<any>;
@@ -1819,7 +1819,7 @@ declare global {
 	 * @param message Message name
 	 * @param callback Callback to send the result to another script
 	 */
-	function onMessage(message: string, callback?: MessageCallback<any>);
+	function onMessage(message: string, callback?: MessageCallback<any>): void;
 
 	/**
 	 * Unregister onmessage handler
@@ -1830,10 +1830,10 @@ declare global {
 
 	function jsonataExpression(data: any, expression: string): Promise<any>;
 
-	function onObject(pattern: string, callback: iobJS.ObjectChangeHandler);
-	function subscribeObject(pattern: string, callback: iobJS.ObjectChangeHandler);
+	function onObject(pattern: string, callback: iobJS.ObjectChangeHandler): void;
+	function subscribeObject(pattern: string, callback: iobJS.ObjectChangeHandler): void;
 
-	function unsubscribeObject(id: string);
+	function unsubscribeObject(id: string): void;
 
 	/**
 	 * Receives logs of specified severity level in a script.

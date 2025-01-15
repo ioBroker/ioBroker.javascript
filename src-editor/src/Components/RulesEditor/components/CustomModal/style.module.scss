@@ -1,0 +1,74 @@
+.modalContentWrapper {
+    margin: 20px 0;
+    padding: 0 35px;
+    overflow-x: hidden;
+    min-width: 320px;
+}
+.modalButtonBlock {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    flex-flow: wrap;
+    border-top: 1px solid var(--lineColorActive);
+    border-color: var(--lineColorActive);
+    background: var(--backgroundColorHumburger);
+    border-radius: 3px;
+    & button {
+        color: var(--lineColorActive) !important;
+        flex: 1;
+    }
+}
+.modalButtonBlockTwo {
+    justify-content: space-around;
+    flex-flow: wrap-reverse;
+    position: sticky;
+    bottom: 0;
+    & button {
+        margin: 5px;
+    }
+}
+.modalWrapper {
+    /*position: relative;*/
+    [class*='MuiPaper-root MuiDialog-paper MuiPaper-elevation24 MuiDialog-paperScrollPaper MuiDialog-paperWidthXl MuiPaper-elevation24 MuiPaper-rounded'] {
+        background-color: #f6f6f6;
+    }
+}
+.modalDialog {
+    min-width: 400px;
+}
+.close {
+    position: absolute;
+    right: -14px;
+    top: -16px;
+    width: 32px;
+    height: 32px;
+    opacity: 0.9;
+    cursor: pointer;
+    transition: all 0.6s ease;
+    &:hover {
+        transform: rotate(90deg);
+    }
+    &:before {
+        position: absolute;
+        left: 15px;
+        content: '';
+        height: 33px;
+        width: 4px;
+        background-color: #ff4f4f;
+        transform: rotate(45deg);
+    }
+    &:after {
+        position: absolute;
+        left: 15px;
+        content: '';
+        height: 33px;
+        width: 4px;
+        background-color: #ff4f4f;
+        transform: rotate(-45deg);
+    }
+}
+@media screen and (max-width: 460px) {
+    .modalContentWrapper {
+        min-width: auto;
+    }
+}
