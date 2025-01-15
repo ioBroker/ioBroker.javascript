@@ -1,10 +1,11 @@
-import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import type {
     RuleBlockConfigActionHTTPCall,
     RuleBlockDescription,
     RuleContext,
     RuleTagCardTitle,
-} from '@/Components/RulesEditor/types';
+    GenericBlockProps,
+} from '@iobroker/javascript-rules-dev';
 
 class ActionHTTPCall extends GenericBlock<RuleBlockConfigActionHTTPCall> {
     constructor(props: GenericBlockProps<RuleBlockConfigActionHTTPCall>) {

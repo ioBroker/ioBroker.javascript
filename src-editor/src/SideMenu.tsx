@@ -54,10 +54,10 @@ import {
     IconExpert,
 } from '@iobroker/adapter-react-v5';
 
-import ImgJS from './assets/js.png';
-import ImgBlockly from './assets/blockly.png';
-import ImgTypeScript from './assets/typescript.png';
-import ImgRules from './assets/rules.png';
+import ImgJS from './assets/js.svg';
+import ImgBlockly from './assets/blockly.svg';
+import ImgTypeScript from './assets/typescript.svg';
+import ImgRules from './assets/rules.svg';
 
 import DialogRename from './Dialogs/Rename';
 import DialogDelete from './Dialogs/Delete';
@@ -230,18 +230,6 @@ const styles: Record<string, any> = {
     footerButtonsRight: {
         float: 'right',
     },
-
-    mainList: {
-        '& .js-folder-dragover>div>li>.folder-reorder': {
-            background: '#40adff',
-        },
-        '& .js-folder-dragging .folder-reorder': {
-            opacity: 1,
-        },
-        '& .js-folder-dragging .script-reorder': {
-            opacity: 0.3,
-        },
-    },
 };
 
 const images: Record<ScriptType | 'def', string> = {
@@ -327,11 +315,11 @@ function prepareList(data: Record<string, ioBroker.ScriptObject | ioBroker.Chann
                 title: getObjectName(ids[i], obj),
                 enabled: !!obj?.common?.enabled,
                 depth: parts.length - 1,
-                type: obj.common.engineType as 'Javascript/js' | 'TypeScript/ts' | 'Blockly' | 'Rules',
+                type: obj.common.engineType,
                 parent: parts.length > 1 ? parts.join('.') : null,
                 instance: obj.common.engine ? parseInt(obj.common.engine.split('.').pop() as string, 10) || 0 : null,
-                index: 0, // temporary. It will be filled below
-                parentIndex: 0, // temporary. It will be filled below
+                index: 0, // Temporary. It will be filled below
+                parentIndex: 0, // Temporary. It will be filled below
             });
         } else {
             result.push({
@@ -340,8 +328,8 @@ function prepareList(data: Record<string, ioBroker.ScriptObject | ioBroker.Chann
                 depth: parts.length - 1,
                 type: 'folder',
                 parent: parts.length > 1 ? parts.join('.') : null,
-                index: 0, // temporary. It will be filled below
-                parentIndex: null, // temporary. It will be filled below
+                index: 0, // Temporary. It will be filled below
+                parentIndex: null, // Temporary. It will be filled below
             });
         }
     }
@@ -399,8 +387,8 @@ function prepareList(data: Record<string, ioBroker.ScriptObject | ioBroker.Chann
                         depth: parts.length - 1,
                         type: 'folder',
                         parent: parts.length > 1 ? parts.join('.') : null,
-                        index: 0, // temporary. It will be filled below
-                        parentIndex: null, // temporary. It will be filled below
+                        index: 0, // Temporary. It will be filled below
+                        parentIndex: null, // Temporary. It will be filled below
                     });
                     modified = true;
                 }
@@ -447,12 +435,13 @@ function prepareList(data: Record<string, ioBroker.ScriptObject | ioBroker.Chann
 export function Droppable(props: {
     children: (React.JSX.Element | null)[];
     onDrop: (obj: { name: string }) => void;
+    folderName: string;
 }): React.JSX.Element {
     const { onDrop } = props;
 
     const [{ isOver, isOverAny }, drop] = useDrop({
-        accept: ['script'],
-        drop: (e: { name: string }): undefined | void => (isOver ? onDrop(e) : undefined),
+        accept: 'script',
+        drop: (item: { name: string }): undefined | void => (isOver ? onDrop(item) : undefined),
         collect: monitor => ({
             isOver: monitor.isOver({ shallow: true }),
             isOverAny: monitor.isOver(),
@@ -461,8 +450,12 @@ export function Droppable(props: {
 
     return (
         <div
+            key={props.folderName}
             ref={drop}
-            className={Utils.clsx(isOver && 'js-folder-dragover', isOverAny && 'js-folder-dragging')}
+            style={{
+                background: isOver ? '#40adff' : undefined,
+                opacity: isOverAny ? 0.7 : undefined,
+            }}
         >
             {props.children}
         </div>
@@ -484,6 +477,7 @@ export function Draggable(props: DraggableProps): React.JSX.Element {
     // About transform: https://github.com/react-dnd/react-dnd/issues/832#issuecomment-442071628
     return (
         <div
+            key={name}
             ref={drag}
             style={{ opacity, transform: 'translate3d(0, 0, 0)' }}
         >
@@ -1300,6 +1294,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                     <Droppable
                         key={`droppable_${item.id}`}
                         onDrop={e => this.onDragFinish(e.name, item.id)}
+                        folderName={item.id}
                     >
                         <Draggable
                             key={`draggable_${item.id}`}

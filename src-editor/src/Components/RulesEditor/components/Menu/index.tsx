@@ -13,7 +13,7 @@ import { useStateLocal } from '../../hooks/useStateLocal';
 import { ContextWrapperCreate } from '../ContextWrapper';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
 import { STEPS } from '../../helpers/Tour';
-import type { RuleBlockDescription, RuleBlockType, RuleUserRules } from '@/Components/RulesEditor/types';
+import type { RuleBlockDescription, RuleBlockType, RuleUserRules } from '@iobroker/javascript-rules-dev';
 import type { GenericBlock } from '@/Components/RulesEditor/components/GenericBlock';
 
 interface MenuProps {

@@ -1,5 +1,10 @@
-import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
-import type { RuleBlockConfigActionPushsafer, RuleBlockDescription, RuleContext } from '@/Components/RulesEditor/types';
+import { GenericBlock } from '../GenericBlock';
+import type {
+    RuleBlockConfigActionPushsafer,
+    RuleBlockDescription,
+    RuleContext,
+    GenericBlockProps,
+} from '@iobroker/javascript-rules-dev';
 
 class ActionPushsafer extends GenericBlock<RuleBlockConfigActionPushsafer> {
     constructor(props: GenericBlockProps<RuleBlockConfigActionPushsafer>) {

@@ -1,14 +1,15 @@
 // @ts-expect-error no types available
 import SunCalc from 'suncalc2';
 import { I18n } from '@iobroker/adapter-react-v5';
-import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import type {
     RuleBlockConfigConditionAstronomical,
     RuleBlockDescription,
     RuleContext,
     RuleInputAny,
     RuleTagCard,
-} from '../../types';
+    GenericBlockProps,
+} from '@iobroker/javascript-rules-dev';
 
 class ConditionAstronomical extends GenericBlock<RuleBlockConfigConditionAstronomical> {
     private coordinates: { latitude: number; longitude: number } | null = null;

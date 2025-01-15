@@ -1,4 +1,4 @@
-import type { BlockValue, RuleBlockConfig, RuleUserRules } from '@/Components/RulesEditor/types';
+import type { BlockValue, RuleBlockConfig, RuleUserRules } from '@iobroker/javascript-rules-dev';
 
 export function findElement(
     settings: RuleBlockConfig,

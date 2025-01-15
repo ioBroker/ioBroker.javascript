@@ -1,5 +1,4 @@
 ![Logo](admin/javascript.png)
-
 # Javascript Script Engine
 
 ![Number of Installations](http://iobroker.live/badges/javascript-installed.svg)
@@ -29,8 +28,9 @@ Executes Javascript, Typescript Scripts.
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
--   (@GermanBluefox) Backend re-written to typescript
+-   (@GermanBluefox) Backend re-written to TypeScript
 -   (@GermanBluefox) Removed the `request` module from the default modules
+-   (@GermanBluefox) Migrated GUI to TypeScript
 
 ### 8.8.3 (2024-09-05)
 

@@ -6,8 +6,14 @@ import { deepCopy } from '../../helpers/deepCopy';
 import { filterElement } from '../../helpers/filterElement';
 import { ContextWrapperCreate } from '../ContextWrapper';
 import { findElement } from '../../helpers/findElement';
-import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
-import type { BlockValue, RuleBlockConfig, RuleBlockType, RuleUserRules } from '../../types';
+import { GenericBlock } from '../GenericBlock';
+import type {
+    BlockValue,
+    RuleBlockConfig,
+    RuleBlockType,
+    RuleUserRules,
+    GenericBlockProps,
+} from '@iobroker/javascript-rules-dev';
 
 interface CurrentItemProps {
     setUserRules: (newRules: RuleUserRules) => void;

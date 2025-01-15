@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import type { BlockValue, RuleBlockConfig, RuleBlockType, RuleUserRules } from '../types';
+import type { BlockValue, RuleBlockConfig, RuleBlockType, RuleUserRules } from '@iobroker/javascript-rules-dev';
 
 const funcSet = _.throttle((setCards, userRules) => setCards(userRules), 0);
 

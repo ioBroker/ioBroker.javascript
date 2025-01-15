@@ -3,6 +3,13 @@ html {
     height: 100%;
 }
 
+.Light.visGutter {
+    background: #dadada !important;
+}
+.Dark.visGutter {
+    background: #1e1e1e !important;
+}
+
 body {
     overflow: hidden;
     margin: 0;

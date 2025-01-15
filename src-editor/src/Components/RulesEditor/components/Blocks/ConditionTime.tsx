@@ -1,4 +1,4 @@
-import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import type {
     RuleBlockConfigConditionTime,
     RuleBlockDescription,
@@ -6,7 +6,8 @@ import type {
     RuleInputAny,
     RuleTagCard,
     RuleTagCardTitle,
-} from '../../types';
+    GenericBlockProps,
+} from '@iobroker/javascript-rules-dev';
 
 const DAYS: number[] = [
     31, // 1

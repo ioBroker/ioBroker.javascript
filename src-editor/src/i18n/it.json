@@ -1,8 +1,10 @@
 {
+    "%s not found": "%s non trovato",
     "()": "()",
     "(optional)": "(opzionale)",
     "-": "-",
     ".": ".",
+    "AI code generator": "Generatore di codice AI",
     "Ack": "Riconosciuto",
     "Actions": "Azioni",
     "Actual time of day": "Ora effettiva della giornata",

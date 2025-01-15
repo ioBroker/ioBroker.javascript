@@ -1,12 +1,13 @@
 import { I18n } from '@iobroker/adapter-react-v5';
-import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import { NO_FUNCTION } from '../../helpers/Compile';
 import type {
     RuleBlockConfigTriggerScriptSave,
     RuleBlockDescription,
     RuleContext,
     RuleTagCardTitle,
-} from '../../types';
+    GenericBlockProps,
+} from '@iobroker/javascript-rules-dev';
 
 class TriggerScriptSave extends GenericBlock<RuleBlockConfigTriggerScriptSave> {
     constructor(props: GenericBlockProps<RuleBlockConfigTriggerScriptSave>) {

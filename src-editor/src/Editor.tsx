@@ -55,18 +55,18 @@ import {
     FaFlagCheckered as IconCheck,
 } from 'react-icons/fa';
 
-import ImgJS from './assets/js.png';
-import ImgBlockly from './assets/blockly.png';
-import ImgTypeScript from './assets/typescript.png';
+import ImgJS from './assets/js.svg';
+import ImgBlockly from './assets/blockly.svg';
+import ImgTypeScript from './assets/typescript.svg';
 import ImgBlockly2Js from './assets/blockly2js.svg';
 import ImgRules2Js from './assets/rules2js.svg';
-import ImgRules from './assets/rules.png';
+import ImgRules from './assets/rules.svg';
 
 import {
     I18n,
-    Cron as DialogCron,
-    Confirm as DialogConfirm,
-    SelectID as DialogSelectID,
+    DialogCron,
+    DialogConfirm,
+    DialogSelectID,
     type IobTheme,
     type ThemeType,
     type AdminConnection,
@@ -115,11 +115,12 @@ const COLOR_RUN = green[400];
 const COLOR_PAUSE = red[400];
 
 const styles: Record<string, any> = {
-    toolbar: {
+    toolbar: (theme: IobTheme): React.CSSProperties => ({
         minHeight: 38, // Theme.toolbar.height,
         boxShadow:
             '0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12)',
-    },
+        backgroundColor: theme.palette.mode === 'dark' ? '#1e1e1e' : '#E2E2E2',
+    }),
     toolbarButtons: {
         padding: 4,
         marginLeft: 4,
@@ -431,8 +432,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             return;
         }
 
-        // @ts-expect-error will be fixed
-        if (!obj && window.main.instances.includes[id]) {
+        if (!obj && window.main.instances.includes(id)) {
             delete window.main.objects[id];
             const pos = window.main.instances.indexOf(id);
             window.main.instances.splice(pos, 1);
@@ -1107,9 +1107,9 @@ class Editor extends React.Component<EditorProps, EditorState> {
             ];
         }
         return (
-            <div
+            <Box
                 key="tabs2"
-                style={styles.toolbar}
+                sx={styles.toolbar}
             >
                 <Button
                     color="grey"
@@ -1125,7 +1125,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                     />
                     <span key="select4">{I18n.t('for edit or create script')}</span>
                 </Button>
-            </div>
+            </Box>
         );
     }
 
@@ -1249,7 +1249,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             return (
                 <Toolbar
                     variant="dense"
-                    style={styles.toolbar}
+                    sx={styles.toolbar}
                     key="toolbar1"
                 >
                     {!this.props.debugInstance && this.state.menuOpened && this.props.onLocate && (
@@ -1704,7 +1704,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
 
     getSelectIdDialog(): React.JSX.Element | null {
         if (this.state.showSelectId) {
-            const allObjectTypes = [
+            const allObjectTypes: ioBroker.ObjectType[] = [
                 'state',
                 'channel',
                 'device',
@@ -1723,7 +1723,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                 //'design',
             ];
 
-            const expertModeTypes = [
+            const expertModeTypes: ioBroker.ObjectType[] = [
                 'adapter',
                 'instance',
                 'enum',
@@ -1773,7 +1773,13 @@ class Editor extends React.Component<EditorProps, EditorState> {
                     themeType={this.state.themeType}
                     socket={this.props.socket}
                     selected={selectedId}
-                    expertMode={this.selectId.type && expertModeTypes.includes(this.selectId.type) ? true : undefined}
+                    expertMode={
+                        this.selectId.type &&
+                        this.selectId.type !== 'all' &&
+                        expertModeTypes.includes(this.selectId.type)
+                            ? true
+                            : undefined
+                    }
                     // statesOnly={!this.selectId.type || this.selectId.type === 'state'}
                     types={this.selectId?.type === 'all' ? allObjectTypes : [this.selectId.type || 'state']}
                     onClose={() => {
@@ -1991,11 +1997,9 @@ class Editor extends React.Component<EditorProps, EditorState> {
                         runningInstances={this.state.runningInstances}
                         adapterName={this.props.adapterName}
                         socket={this.props.socket}
-                        theme={this.props.theme}
                         themeName={this.props.themeName}
                         themeType={this.props.themeType}
-                        // @ts-expect-error fix later
-                        src={this.props.debugInstance ? this.props.debugInstance.adapter : this.state.selected}
+                        src={this.props.debugInstance ? this.props.debugInstance.adapter! : this.state.selected}
                         debugInstance={this.props.debugInstance}
                     />
                 );

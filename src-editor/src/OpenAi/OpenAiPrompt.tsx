@@ -1,7 +1,7 @@
-import ChannelDetector, { type DetectOptions, Types } from '@iobroker/type-detector';
+import ChannelDetector, { type DetectOptions, Types, type PatternControl } from '@iobroker/type-detector';
 import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
-import docs from './docs.md';
-import type { PatternControl } from '@iobroker/type-detector';
+// @ts-expect-error no types in Markdown
+const docs = import(`./docs.md?raw`);
 
 interface DeviceState {
     id: string;
@@ -270,5 +270,5 @@ async function detectDevices(socket: AdminConnection): Promise<DeviceObject[]> {
     return result;
 }
 
-const systemPrompt: () => Promise<string> = async (): Promise<string> => (await fetch(docs)).text();
+const systemPrompt: () => Promise<string> = async (): Promise<string> => (await docs).default;
 export { systemPrompt, detectDevices };

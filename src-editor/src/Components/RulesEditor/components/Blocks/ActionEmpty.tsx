@@ -1,9 +1,10 @@
-import { GenericBlock, type GenericBlockProps } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import type {
     RuleBlockConfigActionEmpty,
     RuleBlockDescription,
     RuleTagCardTitle,
-} from '@/Components/RulesEditor/types';
+    GenericBlockProps,
+} from '@iobroker/javascript-rules-dev';
 
 class ActionEmpty extends GenericBlock<RuleBlockConfigActionEmpty> {
     constructor(props: GenericBlockProps<RuleBlockConfigActionEmpty>) {
