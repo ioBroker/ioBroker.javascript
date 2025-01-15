@@ -313,9 +313,7 @@ export default class ProtectFs {
             throw new Error('Permission denied');
         }
         if (!readOnly && filePath.startsWith(join(this.ioBrokerDataDir, 'files'))) {
-            this.log.error(
-                `May not read ${(file as PathLike).toString()} - use ${readOnly ? 'readFile' : 'writeFile'} instead`,
-            );
+            this.log.error(`May not read ${(file as PathLike).toString()} - use writeFile instead`);
             throw new Error('Permission denied');
         }
     }
