@@ -1,0 +1,17 @@
+.root {
+    color: var(--colorBlock) !important;
+    border-color: var(--colorBlock) !important;
+    &:hover {
+        border-color: var(--colorBlockHover) !important;
+        color: var(--colorBlockHover) !important;
+        background-color: inherit !important;
+    }
+}
+.square {
+    min-width: auto !important;
+    padding: 6px 16px !important;
+}
+.icon {
+    width: 24px;
+    height: 24px;
+}

@@ -1,0 +1,156 @@
+.border {
+    border-left: 1px solid var(--lineColor);
+    border-right: 1px solid var(--lineColor);
+}
+.emptyBlockStyle {
+    cursor: pointer;
+    width: auto;
+    background: #ffffff1f;
+    display: flex;
+    // padding: 10px;
+    margin: 10px 40px 10px 10px;
+    align-items: center;
+    border-radius: 4px;
+    // transition: height 0.2s;
+}
+.emptyBlock {
+    padding: 10px;
+    // height: 76px;
+    margin-top: 10px;
+    animation: marginTop 0.12s;
+    // transition: margin-top 0.1s;
+}
+.selectOnChange {
+    margin-left: 12px;
+    color: var(--lineColor) !important;
+    width: calc(100% - 42px);
+}
+.selectOnChangeHelp {
+    color: var(--lineColor);
+    vertical-align: middle;
+    cursor: pointer;
+}
+.selectOnChangeHelpIcon {
+    color: var(--lineColor);
+}
+@keyframes marginTop {
+    0% {
+        padding: 0;
+        margin-top: 70px;
+        height: 0;
+    }
+    100% {
+        padding: 10px;
+        margin-top: 10px;
+        // height: 100%;
+    }
+}
+.emptyBlockNone {
+    height: 0;
+    animation: none;
+    transition: height 0.02s;
+}
+
+.mainBlockItemRules {
+    display: flex;
+    flex: 1 3;
+    flex-direction: column;
+    transition: all 0.5s;
+    z-index: 9;
+    overflow: auto;
+    .nameBlockItems {
+        color: var(--lineColor);
+        margin-top: 10px;
+        width: 100%;
+        display: flex;
+        height: fit-content;
+        justify-content: center;
+        align-items: center;
+    }
+}
+.contentBlockItem {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    transition:
+        height 0.3s,
+        background 0.5s;
+}
+
+.wrapperMargin {
+    margin: auto 0;
+    display: flex;
+    flex-direction: column;
+}
+.contentHeightOn {
+    animation: heightBlock 0.3s;
+}
+@keyframes heightBlock {
+    0% {
+        height: 0;
+    }
+    100% {
+        height: 100%;
+    }
+}
+.contentHeightOff {
+    height: 0;
+    overflow: hidden;
+    animation: none;
+}
+.cardAdd {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 0 10px;
+    width: 100%;
+    color: var(--lineColor);
+    &::after,
+    &::before {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid;
+    }
+    &::after {
+        margin-left: 0.25em;
+    }
+    &::before {
+        margin-right: 0.25em;
+    }
+}
+.blockCardAdd {
+    display: flex;
+    padding: 0 10px 6px 10px;
+    align-items: center;
+    color: white;
+    cursor: pointer;
+    * {
+        color: #ffffffb3;
+    }
+}
+.addClassOverflow {
+    overflow: initial;
+}
+.addClassHeight {
+    min-height: 300px;
+}
+@media screen and (max-width: 835px) {
+    .mainBlockItemRules {
+        overflow: initial;
+    }
+    .contentBlockItem {
+        min-height: 300px;
+    }
+    .contentHeightOff {
+        min-height: 0;
+        transition: min-height 0.3s;
+    }
+    .contentHeightOn {
+        transition: min-height 0.3s;
+    }
+    .border {
+        border-left: initial;
+        border-right: initial;
+    }
+}

@@ -13,3 +13,5 @@ package-lock.json
 # ioBroker dev-server
 .dev-server/
 /src/dist
+/src-editor/dist
+/src-editor/.__mf__temp
