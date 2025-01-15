@@ -44,7 +44,7 @@
         "@iobroker/adapter-core": "^3.2.3",
         "@iobroker/types": "^6.0.11",
 
-        "@types/node": "^22.10.1",
+        "@types/node": "^22.10.6",
         "@types/request": "^2.48.12",
         "axios": "^1.7.9",
         "jsonata": "^2.0.6",
