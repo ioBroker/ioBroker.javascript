@@ -46,7 +46,7 @@
         "reactour": "^1.19.4",
         "sass": "^1.82.0",
         "suncalc2": "^1.8.1",
-        "vite": "5.2.10",
+        "vite": "5.2.14",
         "vite-plugin-commonjs": "^0.10.4",
         "vite-plugin-svgr": "^4.3.0",
         "vite-tsconfig-paths": "^5.1.4"
