@@ -116,7 +116,7 @@ class Mirror {
         }
     }
     checkLastSyncObject(cb) {
-        this.adapter.getForeignObject(this.lastSyncID, (_err, obj) => {
+        void this.adapter.getForeignObject(this.lastSyncID, (_err, obj) => {
             if (!obj) {
                 // create variable
                 const obj = {
@@ -135,7 +135,7 @@ class Mirror {
                 this.adapter.setForeignObject(this.lastSyncID, obj, () => this.adapter.setForeignState(this.lastSyncID, 0, true, () => cb && cb(0)));
             }
             else {
-                this.adapter.getForeignState(this.lastSyncID, (_err, state) => cb && cb(state?.val));
+                void this.adapter.getForeignState(this.lastSyncID, (_err, state) => cb && cb(state?.val));
             }
         });
     }

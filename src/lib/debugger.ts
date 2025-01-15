@@ -955,7 +955,7 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
 
         const header = `${breakType} in ${scriptUrl}:${lineNumber + 1}`;
 
-        inspector.suspendReplWhile(() =>
+        void inspector.suspendReplWhile(() =>
             Promise.all([/*formatWatchers(true), */ selectedFrame?.list(3)])
                 .then(([/*watcherList, */ context]) => {
                     /*if (watcherList) {

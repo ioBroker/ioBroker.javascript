@@ -189,7 +189,7 @@ class NodeInspector {
                     // sometimes the pause event comes before scriptParsed
                     if (this.delayedContext) {
                         console.log('Send to debugger: readyToDebug');
-                        this.scripts[this.mainScriptId]?.then(data => {
+                        void this.scripts[this.mainScriptId]?.then(data => {
                             // console.log('Send to debugger: readyToDebug ' + JSON.stringify(data));
                             sendToHost({
                                 cmd: 'readyToDebug',
@@ -222,7 +222,7 @@ class NodeInspector {
                     alreadyPausedOnFirstLine = true;
                     // sometimes the pause event comes before scriptParsed
                     if (this.mainScriptId && this.scripts[this.mainScriptId]) {
-                        this.scripts[this.mainScriptId]?.then(data => sendToHost({
+                        void this.scripts[this.mainScriptId]?.then(data => sendToHost({
                             cmd: 'readyToDebug',
                             scriptId: data.scriptId,
                             script: data.script,

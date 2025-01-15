@@ -344,7 +344,7 @@ declare global {
             smartName?:
                 | string
                 | ({ [lang in Languages]?: string } & {
-                      /** Which kind of device this is */
+                      /** Which kind of device this it is */
                       smartType?: string | null;
                       /** Which value to set when the ON command is issued */
                       byOn?: string | null;
@@ -771,23 +771,23 @@ declare global {
             valGt?: number;
             /** New value must be greater or equal to given one */
             valGe?: number;
-            /** New value must be smaller than given one */
+            /** The new value must be smaller than given one */
             valLt?: number;
             /** New value must be smaller or equal to given one */
             valLe?: number;
-            /** Acknowledged state of new value is equal to given one */
+            /** The acknowledged state of new value is equal to given one */
             ack?: boolean;
             /** Previous value must be equal to given one */
             oldVal?: ioBroker.StateValue;
             /** Previous value must be not equal to given one */
             oldValNe?: ioBroker.StateValue;
-            /** Previous value must be greater than given one */
+            /** The previous value must be greater than given one */
             oldValGt?: number;
             /** Previous value must be greater or equal given one */
             oldValGe?: number;
-            /** Previous value must be smaller than given one */
+            /** The previous value must be smaller than given one */
             oldValLt?: number;
-            /** Previous value must be smaller or equal to given one */
+            /** The previous value must be smaller or equal to given one */
             oldValLe?: number;
             /** Acknowledged state of previous value is equal to given one */
             oldAck?: boolean;
@@ -1229,7 +1229,7 @@ declare global {
      * Subscribe to the changes of the matched files.
      * The return value can be used for offFile later
      *
-     * @param id ID of meta-object, like `vis.0`
+     * @param id ID of a meta-object, like `vis.0`
      * @param filePattern File name or file pattern, like `main/*`
      * @param withFile If the content of the file must be returned in callback (high usage of memory)
      * @param handler Callback: function (id, fileName, size, data, mimeType) {}
@@ -1324,7 +1324,7 @@ declare global {
     function getSchedules(allScripts?: boolean): Array<iobJS.ScheduleStatus>;
 
     /**
-     * Creates a schedule based on the state value (e.g. 12:53:09)
+     * Creates a schedule based on the state value (e.g., 12:53:09)
      * Schedule will be updated if the state value changes
      */
     function scheduleById(id: string, callback: EmptyCallback): any;
@@ -1905,7 +1905,7 @@ declare global {
      * @param data Any data, that should be sent to message bus
      * @param options Actually only {timeout: X} is supported as option
      * @param callback Callback to get the result from other script
-     * @returns ID of the subscription. It could be used for unsubscribe.
+     * @returns ID of the subscription. It could be used for unsubscribing.
      */
     function messageTo(
         target: iobJS.MessageTarget | string,

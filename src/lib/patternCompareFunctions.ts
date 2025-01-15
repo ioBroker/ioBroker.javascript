@@ -10,7 +10,7 @@ export type PatternEventCompareFunction = (event: EventObj) => boolean;
 /**
  * @param pattern The pattern object to use
  * @param propName The name of the property to compare
- * @param eventPropertyExtractor If given, this function is used to extract the property value from the event object. Otherwise the propName is used
+ * @param eventPropertyExtractor If given, this function is used to extract the property value from the event object. Otherwise, the propName is used
  * @param invert Whether to invert the result
  */
 function stringOrRegExpCompare(
@@ -102,61 +102,61 @@ export const patternCompareFunctions = {
     },
 
     val: (pattern: Pattern): PatternEventCompareFunction => {
-        const pval = pattern.val;
-        return (event: EventObj): boolean => pval === event.newState.val;
+        const pVal = pattern.val;
+        return (event: EventObj): boolean => pVal === event.newState.val;
     },
     valGt: (pattern: Pattern): PatternEventCompareFunction => {
-        const pvalGt = pattern.valGt;
+        const pValGt = pattern.valGt;
         // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.newState.val > pvalGt;
+        return (event: EventObj): boolean => event.newState.val > pValGt;
     },
     valGe: (pattern: Pattern): PatternEventCompareFunction => {
-        const pvalGe = pattern.valGe;
+        const pValGe = pattern.valGe;
         // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.newState.val >= pvalGe;
+        return (event: EventObj): boolean => event.newState.val >= pValGe;
     },
     valLt: (pattern: Pattern): PatternEventCompareFunction => {
-        const pvalLt = pattern.valLt;
+        const pValLt = pattern.valLt;
         // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.newState.val < pvalLt;
+        return (event: EventObj): boolean => event.newState.val < pValLt;
     },
     valLe: (pattern: Pattern): PatternEventCompareFunction => {
-        const pvalLe = pattern.valLe;
+        const pValLe = pattern.valLe;
         // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.newState.val <= pvalLe;
+        return (event: EventObj): boolean => event.newState.val <= pValLe;
     },
     valNe: (pattern: Pattern): PatternEventCompareFunction => {
-        const pvalNe = pattern.valNe;
-        return (event: EventObj): boolean => event.newState.val !== pvalNe;
+        const pValNe = pattern.valNe;
+        return (event: EventObj): boolean => event.newState.val !== pValNe;
     },
 
     oldVal: (pattern: Pattern): PatternEventCompareFunction => {
-        const poldVal = pattern.oldVal;
-        return (event: EventObj): boolean => poldVal === event.oldState.val;
+        const pOldVal = pattern.oldVal;
+        return (event: EventObj): boolean => pOldVal === event.oldState.val;
     },
     oldValGt: (pattern: Pattern): PatternEventCompareFunction => {
-        const poldValGt = pattern.oldValGt;
+        const pOldValGt = pattern.oldValGt;
         // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.val > poldValGt;
+        return (event: EventObj): boolean => event.oldState.val > pOldValGt;
     },
     oldValGe: (pattern: Pattern): PatternEventCompareFunction => {
-        const poldValGe = pattern.oldValGe;
+        const pOldValGe = pattern.oldValGe;
         // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.val >= poldValGe;
+        return (event: EventObj): boolean => event.oldState.val >= pOldValGe;
     },
     oldValLt: (pattern: Pattern): PatternEventCompareFunction => {
-        const poldValLt = pattern.oldValLt;
+        const pOldValLt = pattern.oldValLt;
         // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.val < poldValLt;
+        return (event: EventObj): boolean => event.oldState.val < pOldValLt;
     },
     oldValLe: (pattern: Pattern): PatternEventCompareFunction => {
-        const poldValLe = pattern.oldValLe;
+        const pOldValLe = pattern.oldValLe;
         // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.val <= poldValLe;
+        return (event: EventObj): boolean => event.oldState.val <= pOldValLe;
     },
     oldValNe: (pattern: Pattern): PatternEventCompareFunction => {
-        const poldValNe = pattern.oldValNe;
-        return (event: EventObj): boolean => event.oldState.val !== poldValNe;
+        const pOldValNe = pattern.oldValNe;
+        return (event: EventObj): boolean => event.oldState.val !== pOldValNe;
     },
 
     ts: (pattern: Pattern): PatternEventCompareFunction => {
@@ -185,28 +185,28 @@ export const patternCompareFunctions = {
     },
 
     oldTs: (pattern: Pattern): PatternEventCompareFunction => {
-        const poldTs = pattern.oldTs;
-        return (event: EventObj): boolean => poldTs === event.oldState.ts;
+        const pOldTs = pattern.oldTs;
+        return (event: EventObj): boolean => pOldTs === event.oldState.ts;
     },
     oldTsGt: (pattern: Pattern): PatternEventCompareFunction => {
-        const poldTsGt = pattern.oldTsGt;
+        const pOldTsGt = pattern.oldTsGt;
         // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.ts > poldTsGt;
+        return (event: EventObj): boolean => event.oldState.ts > pOldTsGt;
     },
     oldTsGe: (pattern: Pattern): PatternEventCompareFunction => {
-        const poldTsGe = pattern.oldTsGe;
+        const pOldTsGe = pattern.oldTsGe;
         // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.ts >= poldTsGe;
+        return (event: EventObj): boolean => event.oldState.ts >= pOldTsGe;
     },
     oldTsLt: (pattern: Pattern): PatternEventCompareFunction => {
-        const poldTsLt = pattern.oldTsLt;
+        const pOldTsLt = pattern.oldTsLt;
         // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.ts < poldTsLt;
+        return (event: EventObj): boolean => event.oldState.ts < pOldTsLt;
     },
     oldTsLe: (pattern: Pattern): PatternEventCompareFunction => {
-        const poldTsLe = pattern.oldTsLe;
+        const pOldTsLe = pattern.oldTsLe;
         // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.ts <= poldTsLe;
+        return (event: EventObj): boolean => event.oldState.ts <= pOldTsLe;
     },
 
     lc: (pattern: Pattern): PatternEventCompareFunction => {
@@ -235,28 +235,28 @@ export const patternCompareFunctions = {
     },
 
     oldLc: (pattern: Pattern): PatternEventCompareFunction => {
-        const poldLc = pattern.oldLc;
-        return (event: EventObj): boolean => poldLc === event.oldState.lc;
+        const pOldLc = pattern.oldLc;
+        return (event: EventObj): boolean => pOldLc === event.oldState.lc;
     },
     oldLcGt: (pattern: Pattern): PatternEventCompareFunction => {
-        const poldLcGt = pattern.oldLcGt;
+        const pOldLcGt = pattern.oldLcGt;
         // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.lc > poldLcGt;
+        return (event: EventObj): boolean => event.oldState.lc > pOldLcGt;
     },
     oldLcGe: (pattern: Pattern): PatternEventCompareFunction => {
-        const poldLcGe = pattern.oldLcGe;
+        const pOldLcGe = pattern.oldLcGe;
         // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.lc >= poldLcGe;
+        return (event: EventObj): boolean => event.oldState.lc >= pOldLcGe;
     },
     oldLcLt: (pattern: Pattern): PatternEventCompareFunction => {
-        const poldLcLt = pattern.oldLcLt;
+        const pOldLcLt = pattern.oldLcLt;
         // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.lc < poldLcLt;
+        return (event: EventObj): boolean => event.oldState.lc < pOldLcLt;
     },
     oldLcLe: (pattern: Pattern): PatternEventCompareFunction => {
-        const poldLcLe = pattern.oldLcLe;
+        const pOldLcLe = pattern.oldLcLe;
         // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.lc <= poldLcLe;
+        return (event: EventObj): boolean => event.oldState.lc <= pOldLcLe;
     },
 
     from: (pattern: Pattern): PatternEventCompareFunction =>
@@ -277,7 +277,7 @@ export const patternCompareFunctions = {
     deviceName: (pattern: Pattern): PatternEventCompareFunction => stringOrRegExpCompare(pattern, 'deviceName'),
 
     enumId: (pattern: Pattern): PatternEventCompareFunction => {
-        const penumId: RegExp | string | string[] | undefined = pattern.enumId;
+        const pEnumId: RegExp | string | string[] | undefined = pattern.enumId;
 
         function ensureEnumIDsIsArray(enumIds: any): boolean {
             if (!Array.isArray(enumIds)) {
@@ -289,25 +289,25 @@ export const patternCompareFunctions = {
             return true;
         }
 
-        if (isRegExp(penumId)) {
+        if (isRegExp(pEnumId)) {
             return (event: EventObj): boolean => {
                 const enumIds = event.enumIds;
                 if (enumIds == null || !ensureEnumIDsIsArray(enumIds)) {
                     return false;
                 }
                 // Test if any enum name matches the regex:
-                return enumIds.find(e => (penumId as RegExp).test(e)) != null;
+                return enumIds.find(e => (pEnumId as RegExp).test(e)) != null;
             };
         }
 
-        if (Array.isArray(penumId)) {
+        if (Array.isArray(pEnumId)) {
             return (event: EventObj): boolean => {
                 const enumIds = event.enumIds;
                 if (enumIds == null || !ensureEnumIDsIsArray(enumIds)) {
                     return false;
                 }
                 // Test if the enum names of the event and the given array intersect
-                return enumIds.find(e => penumId.includes(e)) != null;
+                return enumIds.find(e => pEnumId.includes(e)) != null;
             };
         }
 
@@ -316,12 +316,12 @@ export const patternCompareFunctions = {
             if (enumIds == null || !ensureEnumIDsIsArray(enumIds)) {
                 return false;
             }
-            return enumIds && enumIds.includes(penumId as string);
+            return enumIds && enumIds.includes(pEnumId as string);
         };
     },
 
     enumName: (pattern: Pattern): PatternEventCompareFunction => {
-        const penumName: RegExp | string | string[] | undefined = pattern.enumName;
+        const pEnumName: RegExp | string | string[] | undefined = pattern.enumName;
 
         function ensureEnumNamesIsArray(enumNames: any): boolean {
             if (!Array.isArray(enumNames)) {
@@ -333,24 +333,24 @@ export const patternCompareFunctions = {
             return true;
         }
 
-        if (isRegExp(penumName)) {
+        if (isRegExp(pEnumName)) {
             return (event: EventObj): boolean => {
                 const enumNames = event.enumNames;
                 if (enumNames == null || !ensureEnumNamesIsArray(enumNames)) {
                     return false;
                 }
                 // Test if any enum name matches the regex:
-                return enumNames.find(e => (penumName as RegExp).test(e)) != null;
+                return enumNames.find(e => (pEnumName as RegExp).test(e)) != null;
             };
         }
-        if (Array.isArray(penumName)) {
+        if (Array.isArray(pEnumName)) {
             return (event: EventObj): boolean => {
                 const enumNames = event.enumNames;
                 if (enumNames == null || !ensureEnumNamesIsArray(enumNames)) {
                     return false;
                 }
                 // Test if the enum names of the event and the given array intersect
-                return enumNames.find(e => penumName.includes(e)) != null;
+                return enumNames.find(e => pEnumName.includes(e)) != null;
             };
         }
 
@@ -359,7 +359,7 @@ export const patternCompareFunctions = {
             if (enumNames == null || !ensureEnumNamesIsArray(enumNames)) {
                 return false;
             }
-            return enumNames?.includes(penumName as string);
+            return enumNames?.includes(pEnumName as string);
         };
     },
 };

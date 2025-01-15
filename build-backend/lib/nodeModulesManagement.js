@@ -17,7 +17,7 @@ async function requestModuleNameByUrl(url) {
                 if (typeof stdout !== 'string') {
                     throw new Error(`Could not determine module name for url "${url}". Unexpected stdout: "${stdout ? JSON.stringify(stdout) : ''}"`);
                 }
-                return stdout.trim();
+                resolve(stdout.trim());
             }
         });
     });

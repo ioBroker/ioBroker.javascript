@@ -129,8 +129,8 @@ const tsSourceHashBase = `versions:adapter=${packageJson.version},typescript=${p
 // taken from here: https://stackoverflow.com/questions/11887934/how-to-check-if-dst-daylight-saving-time-is-in-effect-and-if-so-the-offset
 function dstOffsetAtDate(dateInput: Date): number {
     const fullYear: number = dateInput.getFullYear() | 0;
-    // "Leap Years are any year that can be exactly divided by 4 (2012, 2016, etc)
-    //   except if it can be exactly divided by 100, then it isn't (2100, 2200, etc)
+    // "Leap Years are any year that can be exactly divided by 4 (2012, 2016, etc.)
+    //   except if it can be exactly divided by 100, then it isn't (2100, 2200, etc.)
     //    except if it can be exactly divided by 400, then it is (2000, 2400)"
     // (https://www.mathsisfun.com/leap-years.html).
     const isLeapYear: 1 | 0 = ((fullYear & 3) | ((fullYear / 100) & 3)) === 0 ? 1 : 0;
@@ -246,8 +246,8 @@ function formatHoursMinutesSeconds(date: Date): string {
 }
 
 // Due to a npm bug, virtual-tsc may be hoisted to the top level node_modules but
-// typescript may still be in the adapter level (https://npm.community/t/packages-with-peerdependencies-are-incorrectly-hoisted/4794),
-// so we need to tell virtual-tsc where typescript is
+// TypeScript may still be in the adapter level (https://npm.community/t/packages-with-peerdependencies-are-incorrectly-hoisted/4794),
+// so we need to tell virtual-tsc where TypeScript is
 setTypeScriptResolveOptions({
     paths: [require.resolve('typescript')],
 });
@@ -260,7 +260,7 @@ const jsDeclarationServer: Server = new Server(jsDeclarationCompilerOptions, isC
  */
 
 class JavaScript extends Adapter {
-    public declare config: JavaScriptAdapterConfig;
+    declare public config: JavaScriptAdapterConfig;
 
     private readonly context: JavascriptContext;
 
@@ -614,7 +614,7 @@ class JavaScript extends Adapter {
                 }
             } else if (obj.common?.engine === `system.adapter.${this.namespace}`) {
                 // new non-global script - create states for scripts
-                await this.createActiveObject(id, obj.common.enabled);
+                await this.createActiveObject(id, !!obj.common.enabled);
                 await this.createProblemObject(id);
                 if (obj.common.enabled) {
                     // if enabled => Start script
@@ -632,7 +632,7 @@ class JavaScript extends Adapter {
                 // No global script
                 if (obj.common?.engine === `system.adapter.${this.namespace}`) {
                     // create states for scripts
-                    await this.createActiveObject(id, obj.common.enabled);
+                    await this.createActiveObject(id, !!obj.common.enabled);
                     await this.createProblemObject(id);
                 }
 
@@ -661,11 +661,11 @@ class JavaScript extends Adapter {
                     // if (obj.common.source !== formerObj.common.source) {
                     // Source changed => restart the script
                     this.stopCounters[id] = this.stopCounters[id] ? this.stopCounters[id] + 1 : 1;
-                    this.stopScript(id).then(() => {
+                    void this.stopScript(id).then(() => {
                         // only start again after stop when "last" object change to prevent problems on
                         // multiple changes in fast frequency
                         if (!--this.stopCounters[id]) {
-                            this.loadScriptById(id);
+                            void this.loadScriptById(id);
                         }
                     });
                 }
@@ -1105,7 +1105,7 @@ class JavaScript extends Adapter {
 
             case 'debugStop': {
                 if (!this.context.debugMode) {
-                    this.debugStop().then(() => console.log('stopped'));
+                    void this.debugStop().then(() => console.log('stopped'));
                 }
                 break;
             }
@@ -1411,7 +1411,7 @@ class JavaScript extends Adapter {
             // load all scripts
             for (let i = 0; i < doc.rows.length; i++) {
                 if (!checkIsGlobal(doc.rows[i].value)) {
-                    this.loadScript(doc.rows[i].value);
+                    void this.loadScript(doc.rows[i].value);
                 }
             }
         }
@@ -1502,7 +1502,7 @@ class JavaScript extends Adapter {
                 if (!lib.includes('/')) {
                     continue;
                 }
-                const pkgName = lib.substr(0, lib.indexOf('/'));
+                const pkgName = lib.substring(0, lib.indexOf('/'));
 
                 if (installedLibs.includes(pkgName) && !packages.includes(lib)) {
                     packages.push(lib);
@@ -1652,14 +1652,8 @@ class JavaScript extends Adapter {
     }
 
     prepareStateObjectSimple(id: string, state: ioBroker.StateValue, isAck: boolean): ioBroker.State {
-        let oState: ioBroker.State;
-
-        if (typeof isAck === 'boolean') {
-            // otherwise, assume that the given state is the value to be set
-            oState = { val: state, ack: !!isAck } as ioBroker.State;
-        } else {
-            oState = { val: state } as ioBroker.State;
-        }
+        // otherwise, assume that the given state is the value to be set
+        const oState: ioBroker.State = { val: state, ack: isAck } as ioBroker.State;
 
         return this.prepareStateObject(id, oState);
     }
@@ -1856,9 +1850,9 @@ class JavaScript extends Adapter {
                 type: 'state',
             };
             try {
-                this.setForeignObjectAsync(idActive, this.objects[idActive]);
-                const intermediateStateValue = this.prepareStateObjectSimple(idActive, !!enabled, true);
-                await this.setForeignStateAsync(idActive, !!enabled, true);
+                await this.setForeignObjectAsync(idActive, this.objects[idActive]);
+                const intermediateStateValue = this.prepareStateObjectSimple(idActive, enabled, true);
+                await this.setForeignStateAsync(idActive, enabled, true);
                 if (enabled && !this.config.subscribe) {
                     this.interimStateValues[idActive] = intermediateStateValue;
                 }
@@ -1868,8 +1862,8 @@ class JavaScript extends Adapter {
         } else {
             const state = await this.getForeignStateAsync(idActive);
             if (state && state.val !== enabled) {
-                const intermediateStateValue = this.prepareStateObjectSimple(idActive, !!enabled, true);
-                await this.setForeignStateAsync(idActive, !!enabled, true);
+                const intermediateStateValue = this.prepareStateObjectSimple(idActive, enabled, true);
+                await this.setForeignStateAsync(idActive, enabled, true);
                 if (enabled && !this.config.subscribe) {
                     this.interimStateValues[id] = intermediateStateValue;
                 }
@@ -2229,11 +2223,11 @@ class JavaScript extends Adapter {
         if (this.requireLog) {
             if (found && !this.logSubscribed) {
                 this.logSubscribed = true;
-                this.requireLog(this.logSubscribed);
+                void this.requireLog(this.logSubscribed);
                 this.log.info(`Subscribed to log messages (found logSubscriptions)`);
             } else if (!found && this.logSubscribed) {
                 this.logSubscribed = false;
-                this.requireLog(this.logSubscribed);
+                void this.requireLog(this.logSubscribed);
                 this.log.info(`Unsubscribed from log messages (not found logSubscriptions)`);
             }
         }
@@ -2552,7 +2546,7 @@ class JavaScript extends Adapter {
 
     async loadScript(nameOrObject: ioBroker.ScriptObject): Promise<boolean> {
         // create states for scripts
-        await this.createActiveObject(nameOrObject._id, nameOrObject?.common?.enabled);
+        await this.createActiveObject(nameOrObject._id, !!nameOrObject?.common?.enabled);
         await this.createProblemObject(nameOrObject._id);
         return this.prepareScript(nameOrObject);
     }
@@ -2893,7 +2887,7 @@ class JavaScript extends Adapter {
      * Add declarations for global scripts
      *
      * @param scriptID - The current script the declarations were generated from
-     * @param declarations
+     * @param declarations - Declarations from script
      */
     provideDeclarationsForGlobalScript(scriptID: string, declarations: string): void {
         // Remember which declarations this global script had access to,
@@ -2920,24 +2914,24 @@ class JavaScript extends Adapter {
         if (line.includes('javascript.js:')) {
             return line;
         }
-        if (!/script[s]?\.js[.\\/]/.test(line)) {
+        if (!/scripts?\.js[.\\/]/.test(line)) {
             return line;
         }
-        if (/:([\d]+):/.test(line)) {
+        if (/:(\d+):/.test(line)) {
             line = line.replace(
-                /:([\d]+):/,
-                ($0, $1) => `:${$1 > this.globalScriptLines + 1 ? $1 - this.globalScriptLines - 1 : $1}:`,
+                /:(\d+):/,
+                (_$0, $1) => `:${$1 > this.globalScriptLines + 1 ? $1 - this.globalScriptLines - 1 : $1}:`,
             ); // one line for 'async function ()'
         } else {
             line = line.replace(
-                /:([\d]+)$/,
-                ($0, $1) => `:${$1 > this.globalScriptLines + 1 ? $1 - this.globalScriptLines - 1 : $1}`,
+                /:(\d+)$/,
+                (_$0, $1) => `:${$1 > this.globalScriptLines + 1 ? $1 - this.globalScriptLines - 1 : $1}`,
             ); // one line for 'async function ()'
         }
         return line;
     }
 
-    debugStop(): Promise<void> {
+    async debugStop(): Promise<void> {
         if (this.debugState.child) {
             this.debugSendToInspector({ cmd: 'end' });
             this.debugState.endTimeout = setTimeout(() => {
@@ -2949,15 +2943,15 @@ class JavaScript extends Adapter {
             this.debugState.promiseOnEnd = Promise.resolve(0);
         }
 
-        return this.debugState.promiseOnEnd.then(() => {
-            this.debugState.child = null;
-            this.debugState.running = false;
-            this.debugState.scriptName = '';
-            if (this.debugState.endTimeout) {
-                clearTimeout(this.debugState.endTimeout);
-                this.debugState.endTimeout = null;
-            }
-        });
+        await this.debugState.promiseOnEnd;
+
+        this.debugState.child = null;
+        this.debugState.running = false;
+        this.debugState.scriptName = '';
+        if (this.debugState.endTimeout) {
+            clearTimeout(this.debugState.endTimeout);
+            this.debugState.endTimeout = null;
+        }
     }
 
     async debugDisableScript(id: string | undefined): Promise<void> {
@@ -2999,7 +2993,7 @@ class JavaScript extends Adapter {
 
         this.debugState.started = Date.now();
         // stop the script if it's running
-        this.debugDisableScript(data.scriptName)
+        void this.debugDisableScript(data.scriptName)
             .then(() => this.debugStop())
             .then(() => {
                 if (data.adapter) {
@@ -3060,7 +3054,7 @@ class JavaScript extends Adapter {
                             }
 
                             if (oMessage.cmd !== 'ready') {
-                                this.setState('debug.from', JSON.stringify(oMessage), true);
+                                void this.setState('debug.from', JSON.stringify(oMessage), true);
                             }
 
                             switch (oMessage.cmd) {
@@ -3107,18 +3101,18 @@ class JavaScript extends Adapter {
                     );
                     this.debugState.child?.on('error', error => {
                         this.log.error(`Cannot start inspector: ${error}`);
-                        this.setState('debug.from', JSON.stringify({ cmd: 'error', error }), true);
+                        void this.setState('debug.from', JSON.stringify({ cmd: 'error', error }), true);
                     });
 
-                    this.debugState.child?.on('exit', (code: number): void => {
+                    this.debugState.child?.on('exit', async (code: number): Promise<void> => {
                         if (code) {
-                            this.setState(
+                            await this.setState(
                                 'debug.from',
                                 JSON.stringify({ cmd: 'error', error: `invalid response code: ${code}` }),
                                 true,
                             );
                         }
-                        this.setState('debug.from', JSON.stringify({ cmd: 'debugStopped', code }), true);
+                        await this.setState('debug.from', JSON.stringify({ cmd: 'debugStopped', code }), true);
                         this.debugState.child = null;
                         resolve(code);
                     });

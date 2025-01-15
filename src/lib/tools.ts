@@ -1,5 +1,5 @@
-import { readdirSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+// import { readdirSync, statSync } from 'node:fs';
+// import { join } from 'node:path';
 import { createHash } from 'node:crypto';
 import { Agent } from 'node:https';
 import type { AxiosRequestConfig, ResponseType } from 'axios';
@@ -51,7 +51,7 @@ export function matchAll(regex: RegExp, string: string): string[][] {
  * @param rootDir The directory to start in
  * @param predicate A function that takes a filename and returns true if the file should be included
  */
-export function enumFilesRecursiveSync(rootDir: string, predicate: (filename: string) => boolean): string[] {
+/*export function enumFilesRecursiveSync(rootDir: string, predicate: (filename: string) => boolean): string[] {
     const ret: string[] = [];
     try {
         const filesAndDirs = readdirSync(rootDir);
@@ -69,7 +69,7 @@ export function enumFilesRecursiveSync(rootDir: string, predicate: (filename: st
     }
 
     return ret;
-}
+}*/
 
 /**
  * Promisifies a callback-style function with parameters (err, result)
@@ -109,6 +109,7 @@ export function promisify(fn: Function, context?: any): (...args: any[]) => Prom
  * @param fn The callback-style function to promisify
  * @param context The value of `this` in the function
  */
+/*
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export function promisifyNoError(fn: Function, context: any): (...args: any[]) => Promise<any> {
     return function (...args) {
@@ -122,7 +123,7 @@ export function promisifyNoError(fn: Function, context: any): (...args: any[]) =
             }
         });
     };
-}
+}*/
 
 /**
  * Creates an MD5 hash of a script source which can be used to check whether the source of a compiled language changed

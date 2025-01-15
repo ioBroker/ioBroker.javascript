@@ -152,7 +152,7 @@ export class Mirror {
     }
 
     checkLastSyncObject(cb: (lastSyncTime: number) => void): void {
-        this.adapter.getForeignObject(this.lastSyncID, (_err, obj) => {
+        void this.adapter.getForeignObject(this.lastSyncID, (_err, obj) => {
             if (!obj) {
                 // create variable
                 const obj: ioBroker.StateObject = {
@@ -173,7 +173,7 @@ export class Mirror {
                     this.adapter.setForeignState(this.lastSyncID, 0, true, () => cb && cb(0)),
                 );
             } else {
-                this.adapter.getForeignState(this.lastSyncID, (_err, state) => cb && cb(state?.val as number));
+                void this.adapter.getForeignState(this.lastSyncID, (_err, state) => cb && cb(state?.val as number));
             }
         });
     }

@@ -3,13 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.isObject = isObject;
 exports.isArray = isArray;
 exports.matchAll = matchAll;
-exports.enumFilesRecursiveSync = enumFilesRecursiveSync;
 exports.promisify = promisify;
-exports.promisifyNoError = promisifyNoError;
 exports.hashSource = hashSource;
 exports.getHttpRequestConfig = getHttpRequestConfig;
-const node_fs_1 = require("node:fs");
-const node_path_1 = require("node:path");
+// import { readdirSync, statSync } from 'node:fs';
+// import { join } from 'node:path';
 const node_crypto_1 = require("node:crypto");
 const node_https_1 = require("node:https");
 /**
@@ -55,25 +53,25 @@ function matchAll(regex, string) {
  * @param rootDir The directory to start in
  * @param predicate A function that takes a filename and returns true if the file should be included
  */
-function enumFilesRecursiveSync(rootDir, predicate) {
-    const ret = [];
+/*export function enumFilesRecursiveSync(rootDir: string, predicate: (filename: string) => boolean): string[] {
+    const ret: string[] = [];
     try {
-        const filesAndDirs = (0, node_fs_1.readdirSync)(rootDir);
+        const filesAndDirs = readdirSync(rootDir);
         for (const f of filesAndDirs) {
-            const fullPath = (0, node_path_1.join)(rootDir, f);
-            if ((0, node_fs_1.statSync)(fullPath).isDirectory()) {
+            const fullPath = join(rootDir, f);
+
+            if (statSync(fullPath).isDirectory()) {
                 Array.prototype.push.apply(ret, enumFilesRecursiveSync(fullPath, predicate));
-            }
-            else if (typeof predicate === 'function' && predicate(fullPath)) {
+            } else if (typeof predicate === 'function' && predicate(fullPath)) {
                 ret.push(fullPath);
             }
         }
+    } catch (err: unknown) {
+        console.error(`Cannot read directory: "${rootDir}": ${err as Error}`);
     }
-    catch (err) {
-        console.error(`Cannot read directory: "${rootDir}": ${err}`);
-    }
+
     return ret;
-}
+}*/
 /**
  * Promisifies a callback-style function with parameters (err, result)
  *
@@ -112,21 +110,21 @@ function promisify(fn, context) {
  * @param fn The callback-style function to promisify
  * @param context The value of `this` in the function
  */
+/*
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-function promisifyNoError(fn, context) {
+export function promisifyNoError(fn: Function, context: any): (...args: any[]) => Promise<any> {
     return function (...args) {
         // @ts-expect-error We want this behavior
         context = context || this;
         return new Promise(resolve => {
             try {
-                fn.apply(context, [...args, (result) => resolve(result)]);
-            }
-            catch {
+                fn.apply(context, [...args, (result: any) => resolve(result)]);
+            } catch {
                 resolve(null); // what to do in this case??
             }
         });
     };
-}
+}*/
 /**
  * Creates an MD5 hash of a script source which can be used to check whether the source of a compiled language changed
  *

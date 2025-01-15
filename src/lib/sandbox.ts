@@ -27,8 +27,7 @@ import type {
 import * as constsMod from './consts';
 import * as wordsMod from './words';
 import * as eventObjMod from './eventObj';
-import { patternCompareFunctions as patternCompareFunctionsMod } from './patternCompareFunctions';
-import type { PatternEventCompareFunction } from './patternCompareFunctions';
+import { patternCompareFunctions as patternCompareFunctionsMod, type PatternEventCompareFunction } from './patternCompareFunctions';
 import type { ScheduleName, SchedulerRule } from './scheduler';
 import type { EventObj } from './eventObj';
 import type { AstroEvent } from './consts';

@@ -826,7 +826,7 @@ function createRepl(inspector) {
         const script = knownScripts[scriptId];
         const scriptUrl = script ? getRelativePath(script.url) : '[unknown]';
         const header = `${breakType} in ${scriptUrl}:${lineNumber + 1}`;
-        inspector.suspendReplWhile(() => Promise.all([/*formatWatchers(true), */ selectedFrame?.list(3)])
+        void inspector.suspendReplWhile(() => Promise.all([/*formatWatchers(true), */ selectedFrame?.list(3)])
             .then(([/*watcherList, */ context]) => {
             /*if (watcherList) {
                 return `${watcherList}\n${inspect(context)}`;

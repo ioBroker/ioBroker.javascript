@@ -20,7 +20,7 @@ export async function requestModuleNameByUrl(url: string): Promise<string> {
                         );
                     }
 
-                    return stdout.trim();
+                    resolve(stdout.trim());
                 }
             },
         );

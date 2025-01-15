@@ -58,7 +58,7 @@ export function resolveTypescriptLibs(
         // Read the file and remember it in the return dictionary
         const fileContent = readFileSync(join(typescriptLibRoot, filename), 'utf8');
         ret[filename] = fileContent;
-        // If this file references another lib file, we need to load that too
+        // If this file references another lib file, we need to load that too.
         // A reference looks like this: /// <reference lib="es2015.core" />
         // Find all libs we have not loaded yet
         matchAllLibs(fileContent)

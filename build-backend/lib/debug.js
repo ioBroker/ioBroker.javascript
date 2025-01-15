@@ -8,7 +8,7 @@ const adapter = {
         warn: (text) => console.warn(text),
         debug: (text) => console.log(text),
     },
-    setState: (id, val) => {
+    setState: (_id, val) => {
         try {
             val = JSON.parse(val);
         }
