@@ -517,7 +517,8 @@ Blockly.Sendto.blocks['sendto_gethistory'] =
     '  <field name="INSTANCE">default</field>' +
     '  <field name="AGGREGATE">none</field>' +
     '  <field name="STEP">0</field>' +
-    '  <field name="UNIT">ms</field>' +
+    '  <field name="COUNT">500</field>' +
+    '  <field name="UNIT">min</field>' +
     '  <value name="OID">' +
     '    <shadow type="field_oid">' +
     '    </shadow>' +
@@ -584,7 +585,7 @@ Blockly.Blocks['sendto_gethistory'] = {
                 [Blockly.Translate('sendto_gethistory_cnt'), 'count'],
             ]), 'AGGREGATE');
 
-        this.appendDummyInput()
+        this.appendDummyInput('UNIT')
             .appendField(Blockly.Translate('sendto_gethistory_step'))
             .appendField(new Blockly.FieldTextInput(0), 'STEP')
             .appendField(new Blockly.FieldDropdown([
@@ -594,6 +595,10 @@ Blockly.Blocks['sendto_gethistory'] = {
                 [Blockly.Translate('sendto_gethistory_hour'), 'hour'],
                 [Blockly.Translate('sendto_gethistory_day'), 'day'],
             ]), 'UNIT');
+
+        this.appendDummyInput('COUNT')
+            .appendField(Blockly.Translate('sendto_gethistory_count'))
+            .appendField(new Blockly.FieldTextInput(0), 'COUNT');
 
         this.appendStatementInput('STATEMENT')
             .setCheck(null);
@@ -616,8 +621,9 @@ Blockly.JavaScript.forBlock['sendto_gethistory'] = function (block) {
     const vEnd = Blockly.JavaScript.valueToCode(block, 'END', Blockly.JavaScript.ORDER_ATOMIC);
     const fAggregate = block.getFieldValue('AGGREGATE');
     const fUnit = block.getFieldValue('UNIT');
+    const fCount = parseInt(block.getFieldValue('COUNT'));
 
-    let fStep = block.getFieldValue('STEP');
+    let fStep = parseFloat(block.getFieldValue('STEP'));
     if (fUnit === 'day') {
         fStep *= 24 * 60 * 60 * 1000;
     } else if (fUnit === 'hour') {
@@ -646,6 +652,7 @@ Blockly.JavaScript.forBlock['sendto_gethistory'] = function (block) {
         `  start: ${vStart},\n` +
         `  end: ${vEnd},\n`+
         (fStep > 0 && fAggregate !== 'none' ? `  step: ${fStep},\n` : '') +
+        (fStep === 0 || fAggregate === 'none' ? `  count: ${fCount},\n` : '') +
         `  aggregate: '${fAggregate}',\n` +
         `  removeBorderValues: true,\n`+
         `}, async (err, result) => {\n` +
