@@ -28,6 +28,7 @@ Executes Javascript, Typescript Scripts.
 -->
 ### **WORK IN PROGRESS**
 * (@GermanBluefox) Migrated GUI to Typescript
+* (@klein0r) Added count attribute to getHistory in blockly
 
 ### 8.8.3 (2024-09-05)
 * (bluefox) Fixed object selector in rules
