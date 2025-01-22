@@ -27,7 +27,7 @@ Executes Javascript, Typescript Scripts.
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
-* (@GermanBluefox) Migrated GUI to Typescript
+* (@GermanBluefox) Migrated GUI to TypeScript
 * (@klein0r) Added count attribute to getHistory in blockly
 
 ### 8.8.3 (2024-09-05)
@@ -50,7 +50,7 @@ Executes Javascript, Typescript Scripts.
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2014-2024 bluefox <dogafox@gmail.com>,
+Copyright (c) 2014-2025 bluefox <dogafox@gmail.com>,
 
 Copyright (c) 2014      hobbyquaker
 
