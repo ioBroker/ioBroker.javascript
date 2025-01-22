@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.9.0 (2025-01-22)
 * (@GermanBluefox) Migrated GUI to TypeScript
 * (@klein0r) Added count attribute to getHistory in blockly
 
@@ -43,9 +43,6 @@ Executes Javascript, Typescript Scripts.
 ### 8.7.7 (2024-08-04)
 * (@klein0r) Fixed import scripts dialog
 * (@klein0r) Allowed removing all custom packages (empty list)
-
-### 8.7.6 (2024-07-28)
-* (foxriver76) fix error with subpath imports in scripts
 
 ## License
 The MIT License (MIT)

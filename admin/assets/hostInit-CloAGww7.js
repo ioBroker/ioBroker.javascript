@@ -1,2 +1,2 @@
-const __vite__fileDeps=["../remoteEntry.js","./iobroker_javascript__mf_v__runtimeInit__mf_v__-NaHOKE6N.js","./preload-helper-D6kgxu3v.js","./virtualExposes-BIHI7g3E.js"],__vite__mapDeps=i=>i.map(i=>__vite__fileDeps[i]);
+const __vite__fileDeps=["../remoteEntry.js","./iobroker_javascript__mf_v__runtimeInit__mf_v__-CBJZsEsl.js","./virtualExposes-BIHI7g3E.js","./preload-helper-D6kgxu3v.js"],__vite__mapDeps=i=>i.map(i=>__vite__fileDeps[i]);
 import{_ as i}from"./preload-helper-D6kgxu3v.js";const r=i(()=>import("../remoteEntry.js"),__vite__mapDeps([0,1,2,3]),import.meta.url);Promise.resolve(r).then(e=>Promise.resolve(e.__tla).then(e.init).catch(e.init));

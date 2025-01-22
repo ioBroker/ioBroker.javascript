@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.8.3",
+    "version": "8.9.0",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.9.0": {
+        "en": "Migrated GUI to TypeScript\nAdded count attribute to getHistory in blockly",
+        "de": "Migrated GUI zu TypeScript\nZählattribut zu getHistory in blockly hinzugefügt",
+        "ru": "Мигрированный графический интерфейс к TypeScript\nДобавлено значение атрибута getHistory в блокно",
+        "pt": "GUI migrada para TypeScript\nAdicionado atributo contagem para getHistory em blockly",
+        "nl": "GUI naar TypeScript migreren\nToevoegen telattribuut aan getHistory in blokly",
+        "fr": "L'interface graphique a migré vers TypeScript\nAjout de l'attribut count pour obtenir l'historique en bloc",
+        "it": "GUI migrata a TypeScript\nAggiunto conteggio attributo per ottenereHistory in blocco",
+        "es": "GUI migrado a TipoScript\nAtributo de cuenta añadido para conseguirHistoria en bloque",
+        "pl": "Migrated GUI to TypeScript\nDodano atrybut liczenia do getHistory w blockly",
+        "uk": "Мігрований графічний інтерфейс на TypeScript\nДодано атрибут підрахунку для getHistory в блоклі",
+        "zh-cn": "将图形界面切换到类型脚本\n添加计数属性以块化获取历史"
+      },
       "8.8.3": {
         "en": "Fixed object selector in rules",
         "de": "Behobene Objektauswahl in Regeln",
@@ -117,19 +130,6 @@
         "pl": "naprawić błąd przy importowaniu podścieżki w skryptach",
         "uk": "виправлено помилку при імпорті підпат в скриптах",
         "zh-cn": "用脚本中的子路径导入来修正错误"
-      },
-      "8.7.5": {
-        "en": "Fixed right aligned script names when using multiple instances\nadded fallback for all require calls in scripts",
-        "de": "Behobene recht ausgerichtete Skriptnamen bei Verwendung mehrerer Instanzen\nadd fallback für alle erfordern anrufe in skripten",
-        "ru": "Исправленные правые выровненные имена сценариев при использовании нескольких экземпляров\nдобавочный откат для всех требует звонков в сценариях",
-        "pt": "Corrigido nomes de script alinhados direito ao usar várias instâncias\nadicionado fallback para todos exigem chamadas em scripts",
-        "nl": "Fixed rechts uitgelijnde scriptnamen bij het gebruik van meerdere instanties\ntoegevoegde fallback voor alle vereiste oproepen in scripts",
-        "fr": "Correction des noms de script alignés à droite lors de l'utilisation de plusieurs instances\nrechute ajoutée pour tous les appels requis dans les scripts",
-        "it": "I nomi di script allineati giusti corretti quando si utilizzano più istanze\naggiunto fallback per tutte le chiamate in script",
-        "es": "Nombres de script ajustados correctamente alineados al usar múltiples instancias\nañadida caída para todos requieren llamadas en scripts",
-        "pl": "Naprawiono nazwy skryptów ustawionych w prawo przy użyciu wielu instancji\ndodany odzew dla wszystkich wymagających wywołań w skryptach",
-        "uk": "Виправлено правильні вирівняні імена скриптів при використанні декількох екземплярів\nдодано зворотний зв'язок для всіх потреб дзвінків в скриптах",
-        "zh-cn": "使用多个实例时, 固定的右对齐脚本名称\n为所有人添加后退需要脚本调用"
       }
     },
     "platform": "Javascript/Node.js",
