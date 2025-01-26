@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.9.0",
+    "version": "8.9.1",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.9.1": {
+        "en": "Corrected blockly function editor\nCorrected creation of folders",
+        "de": "Korrigierter blockierender Funktionseditor\nKorrigierte Erstellung von Ordnern",
+        "ru": "Корректированный блокно-функциональный редактор\nИсправлено создание папок",
+        "pt": "Editor de função de bloqueio correto\nCriação correta de pastas",
+        "nl": "Gecorrigeerde functie-editor\nGecorrigeerd aanmaken van mappen",
+        "fr": "Correction de l'éditeur de fonction bloc\nCorrection de la création de dossiers",
+        "it": "Editor corretto funzione blockly\nCreazione corretta di cartelle",
+        "es": "Corregido editor de funciones bloqueadas\nCreación corregida de carpetas",
+        "pl": "Poprawiony edytor funkcji blockly\nSkorygowane tworzenie folderów",
+        "uk": "Виправлений редактор функцій блоку\nВиправлено створення папок",
+        "zh-cn": "纠正块函数编辑器\n修正文件夹的创建"
+      },
       "8.9.0": {
         "en": "Migrated GUI to TypeScript\nAdded count attribute to getHistory in blockly",
         "de": "Migrated GUI zu TypeScript\nZählattribut zu getHistory in blockly hinzugefügt",
@@ -117,19 +130,6 @@
         "pl": "Okno importu stałych skryptów\nPozwól usunąć wszystkie niestandardowe pakiety (pusta lista)",
         "uk": "Виправлено імпорт сценаріїв діалог\nДозволити видалити всі спеціальні пакети (зразковий список)",
         "zh-cn": "固定导入脚本对话框\n允许删除所有自定义软件包( 空列表)"
-      },
-      "8.7.6": {
-        "en": "fix error with subpath imports in scripts",
-        "de": "fehler mit subpfad-importen in skripten beheben",
-        "ru": "исправление ошибки с импортом субпатов в сценариях",
-        "pt": "corrigir erro com subpath importações em scripts",
-        "nl": "fout oplossen met subpath import in scripts",
-        "fr": "corriger l'erreur avec les importations de sous-chemin dans les scripts",
-        "it": "correzione di errore con le importazioni subpath in script",
-        "es": "corregir error con las importaciones de subpatos en scripts",
-        "pl": "naprawić błąd przy importowaniu podścieżki w skryptach",
-        "uk": "виправлено помилку при імпорті підпат в скриптах",
-        "zh-cn": "用脚本中的子路径导入来修正错误"
       }
     },
     "platform": "Javascript/Node.js",
