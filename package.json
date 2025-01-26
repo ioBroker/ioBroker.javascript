@@ -42,8 +42,8 @@
   },
   "dependencies": {
     "@iobroker/adapter-core": "^3.2.3",
-    "@iobroker/types": "^6.0.11",
-    "@types/node": "^22.10.1",
+    "@iobroker/types": "^7.0.6",
+    "@types/node": "^22.10.10",
     "@types/request": "^2.48.12",
     "axios": "^1.7.9",
     "jsonata": "^2.0.6",
@@ -54,7 +54,7 @@
     "request": "^2.88.2",
     "semver": "^7.6.3",
     "suncalc2": "^1.8.1",
-    "typescript": "~5.7.2",
+    "typescript": "~5.7.3",
     "virtual-tsc": "^0.6.2",
     "wake_on_lan": "^1.0.0"
   },
