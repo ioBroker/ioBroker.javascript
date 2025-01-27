@@ -1,0 +1,1 @@
+import"./iobroker_javascript__loadShare__react__loadShare__-6AaN4Fp8.js";import{n as t,u as s,T as m,E as u}from"./createSvgIcon-CiFTwq9H.js";const a=t();function n(e=a){return s(e)}function T(){const e=n(u);return e[m]||e}export{n as a,T as u};
