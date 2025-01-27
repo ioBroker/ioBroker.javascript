@@ -26,6 +26,10 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (@GermanBluefox) Packages were updated
+
 ### 8.9.1 (2025-01-26)
 
 * (@GermanBluefox) Corrected blockly function editor
