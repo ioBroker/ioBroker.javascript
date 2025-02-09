@@ -1358,11 +1358,16 @@ Sends to an adapter the message `unsubscribe` to inform adapter to not poll the 
 
 ### $ - Selector
 ```js
-$(selector).on(function(obj) {});
-$(selector).toArray(); // Requires version >= 8.2.0
-$(selector).each(function(id, i) {});
-$(selector).setState(value, ack);
-$(selector).getState();
+$(selector).on((obj) => {}); // Register a subscription for each matching state
+$(selector).toArray(); // Get all matching object IDs of the selector expression (requires version >= 8.2.0)
+$(selector).each((id, i) => {}); // iterate over all matching states
+$(selector).setState(value, ack, callback); // set state value of all matching object IDs (callback is optional)
+$(selector).setStateAsync(value, ack); // set state value of all matching object IDs - returns a promise
+$(selector).setStateChanged(value, ack, callback); // set state value of all matching object IDs if value has changed (callback is optional)
+$(selector).setStateChangedAsync(value, ack, callback); // set state value of all matching object IDs if value has changed - returns a promise
+$(selector).setStateDelayed(state, isAck, delay, clearRunning, callback); // // set state value of all matching object IDs with a given delay
+$(selector).getState(); // get all states
+$(selector).getStateAsync(); // get all states - returns a promise
 ```
 
 Format of selector:
@@ -2057,14 +2062,14 @@ if (verbose) {
 
 ## Option - "Do not subscribe all states on start"
 There are two modes of subscribing to states:
-- Adapter subscribes to all changes at start and receives all changes of all states (it is easy to use getStates(id), but requires more CPU and RAM):
+
+1. Adapter subscribes to all states at start and receives all changes of all states (it is easy to use getState(id), but requires more CPU and RAM):
 
 ```js
 log(getState('someID').val);
 ```
 
-- Adapter subscribes every time on specified ID if "on/subscribe" called. In this mode, the adapter receives only updates for desired states.
-It is very performed and RAM efficiency, but you cannot access states directly in getState. You must use callback to get the result of state:
+2. Adapter subscribes every time on specified ID when `on/subscribe` is called. In this mode, the adapter receives only updates for desired states. This option requires less RAM and is more efficient, but you cannot access states synchronously via getState. **You must use callbacks or promises to access the states**:
 
 ```js
 getState('someID', (error, state) => {
@@ -2072,7 +2077,7 @@ getState('someID', (error, state) => {
 });
 ```
 
-It is because the adapter does not have the value of state in RAM and must ask central DB for the value.
+Reason: The adapter does not have the state's value in RAM and must request it from the central state database.
 
 ## Scripts activity
 
