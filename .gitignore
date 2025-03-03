@@ -15,3 +15,4 @@ package-lock.json
 /src/dist
 /src-editor/dist
 /src-editor/.__mf__temp
+/src-admin/.__mf__temp
