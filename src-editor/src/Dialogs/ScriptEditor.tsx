@@ -53,7 +53,7 @@ class DialogScriptEditor extends React.Component<DialogScriptEditorProps, Dialog
         super(props);
         this.state = {
             changed: false,
-            source: !this.state.source && this.props.isReturn ? '\nreturn false' : this.props.source,
+            source: !props.source && props.isReturn ? '\nreturn false' : props.source,
         };
     }
 

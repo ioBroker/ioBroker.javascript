@@ -1368,6 +1368,21 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
         this.setState({ copingScript: id || '' });
     }
 
+    onAddNewFolder(e?: React.MouseEvent<any>): void {
+        e?.stopPropagation();
+        let item = this.state.listItems.find(i => i.id === this.state.selected);
+        let parent = ROOT_ID;
+        while (item && item.type !== 'folder') {
+            item = this.state.listItems[item.parentIndex];
+        }
+        if (item) {
+            parent = item.id;
+        }
+
+        this.parent = parent;
+        this.setState({ creatingFolder: true });
+    }
+
     onRename(e: React.MouseEvent): void {
         e?.stopPropagation();
         this.setState({ renaming: this.state.selected });
@@ -1678,7 +1693,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                             ...(this.props.debugMode ? styles.iconButtonsDisabled : undefined),
                         }}
                         style={{ color: reorder ? 'red' : 'inherit' }}
-                        onClick={e => this.onAddNew(e)}
+                        onClick={e => this.onAddNewFolder(e)}
                         size="medium"
                     >
                         <IconAddFolder />
