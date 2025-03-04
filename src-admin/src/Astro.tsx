@@ -26,7 +26,7 @@ import {
 } from 'date-fns/locale';
 
 import { I18n, Theme } from '@iobroker/adapter-react-v5';
-import { ConfigGeneric } from '@iobroker/json-config';
+import { ConfigGeneric, ConfigGenericProps, ConfigGenericState } from '@iobroker/json-config';
 
 import Map from './Components/Map';
 import './astro.css';
@@ -46,7 +46,7 @@ export const localeMap = {
     'zh-cn': cnLocale,
 };
 
-const ATTRIBUTES = [
+const ATTRIBUTES:(keyof AstroState)[] = [
     'useSystemGPS',
     'latitude',
     'longitude',
@@ -60,7 +60,7 @@ const ATTRIBUTES = [
     'sunsetLimitEnd',
 ];
 
-function text2Date(text) {
+function text2Date(text: string) {
     if (!text) {
         return new Date();
     }
@@ -68,11 +68,11 @@ function text2Date(text) {
     return new Date(2000, 0, 1, parseInt(parts[0], 10), parseInt(parts[1], 10));
 }
 
-function date2Text(date) {
+function date2Text(date: Date) {
     return date ? `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}` : '';
 }
 
-function formatTime(date) {
+function formatTime(date: Date) {
     const h = date.getHours().toString().padStart(2, '0');
     const m = date.getMinutes().toString().padStart(2, '0');
     const s = date.getSeconds().toString().padStart(2, '0');
@@ -80,8 +80,35 @@ function formatTime(date) {
     return `${h}:${m}:${s}`;
 }
 
-class Astro extends ConfigGeneric {
-    constructor(props) {
+type Writeable<T extends { [x: string]: any }, K extends string> = {
+    [P in K]: T[P];
+}
+
+type AstroState = ConfigGenericState & {
+    sunsetOffset: number;
+    sunriseOffset: number;
+    sunriseLimitStart: Date | string;
+    sunriseLimitEnd: Date | string;
+    sunsetLimitStart: Date | string;
+    sunsetLimitEnd: Date | string;
+    latitude: number;
+    longitude: number;
+    useSystemGPS: boolean;
+    sunriseEvent: string;
+    sunsetEvent: string;
+    ampm: boolean;
+    nextSunrise: string;
+    nextSunset: string;
+    nextSunriseServer: string;
+    nextSunsetServer: string;
+    theme: string;
+}
+
+class Astro extends ConfigGeneric<ConfigGenericProps, AstroState> {
+    calcTimeout?: ReturnType<typeof setTimeout> | null
+    lastCalc?: string
+
+    constructor(props: ConfigGenericProps) {
         super(props);
         Object.assign(this.state, {
             theme: Theme(this.props.themeName || 'light'),
@@ -90,24 +117,24 @@ class Astro extends ConfigGeneric {
 
     async componentDidMount() {
         super.componentDidMount();
-        const newState = {};
+        const newState: Partial<AstroState> = {};
         ATTRIBUTES.forEach(attr => {
             newState[attr] = ConfigGeneric.getValue(this.props.data, attr);
         });
         newState.sunsetOffset = newState.sunsetOffset || 0;
         newState.sunriseOffset = newState.sunriseOffset || 0;
-        newState.sunriseLimitStart = text2Date(newState.sunriseLimitStart);
-        newState.sunriseLimitEnd = text2Date(newState.sunriseLimitEnd);
-        newState.sunsetLimitStart = text2Date(newState.sunsetLimitStart);
-        newState.sunsetLimitEnd = text2Date(newState.sunsetLimitEnd);
+        newState.sunriseLimitStart = text2Date(newState.sunriseLimitStart as string);
+        newState.sunriseLimitEnd = text2Date(newState.sunriseLimitEnd as string);
+        newState.sunsetLimitStart = text2Date(newState.sunsetLimitStart as string);
+        newState.sunsetLimitEnd = text2Date(newState.sunsetLimitEnd as string);
         if (newState.useSystemGPS) {
-            newState.latitude = this.props.systemConfig.latitude;
-            newState.longitude = this.props.systemConfig.longitude;
+            newState.latitude = this.props.oContext.systemConfig.latitude;
+            newState.longitude = this.props.oContext.systemConfig.longitude;
         }
 
-        newState.ampm = this.props.systemConfig.dateFormat.includes('/');
+        newState.ampm = this.props.oContext.systemConfig.dateFormat.includes('/');
 
-        this.setState(newState, () => this.onChange());
+        this.setState(newState as AstroState, () => this.onAstroChange());
     }
 
     renderMap() {
@@ -115,26 +142,26 @@ class Astro extends ConfigGeneric {
             longitude={this.state.longitude}
             latitude={this.state.latitude}
             readOnly={!!this.state.useSystemGPS}
-            onChange={(latitude, longitude) => this.setState({ latitude, longitude })}
+            onChange={(latitude: number, longitude: number) => this.setState({ latitude, longitude })}
         />;
     }
 
-    onChange(attr, value) {
-        let newState;
+    onAstroChange(attr?: (keyof AstroState) | Partial<AstroState>, value?: any) {
+        let newState: Partial<AstroState> = {};
         if (typeof attr === 'object') {
             newState = attr;
         } else if (attr !== undefined) {
             newState = { [attr]: value };
         }
-        this.setState(newState, () => {
-            const data = {};
+        this.setState(newState as AstroState, () => {
+            const data:Partial<AstroState> = {};
             ATTRIBUTES.forEach(_attr => data[_attr] = this.state[_attr]);
-            data.sunriseLimitStart = date2Text(data.sunriseLimitStart);
-            data.sunriseLimitEnd = date2Text(data.sunriseLimitEnd);
-            data.sunsetLimitStart = date2Text(data.sunsetLimitStart);
-            data.sunsetLimitEnd = date2Text(data.sunsetLimitEnd);
-            data.sunsetOffset = parseInt(data.sunsetOffset, 10) || 0;
-            data.sunriseOffset = parseInt(data.sunriseOffset, 10) || 0;
+            data.sunriseLimitStart = date2Text(data.sunriseLimitStart as Date);
+            data.sunriseLimitEnd = date2Text(data.sunriseLimitEnd as Date);
+            data.sunsetLimitStart = date2Text(data.sunsetLimitStart as Date);
+            data.sunsetLimitEnd = date2Text(data.sunsetLimitEnd as Date);
+            data.sunsetOffset = parseInt(data.sunsetOffset as unknown as string, 10) || 0;
+            data.sunriseOffset = parseInt(data.sunriseOffset as unknown as string, 10) || 0;
 
             this.calculateRiseSet(data);
             const allData = JSON.parse(JSON.stringify(this.props.data));
@@ -143,13 +170,13 @@ class Astro extends ConfigGeneric {
         });
     }
 
-    calculateRiseSet(data) {
+    calculateRiseSet(data: Partial<AstroState>) {
         if (this.props.alive && this.lastCalc !== JSON.stringify(data)) {
             this.lastCalc = JSON.stringify(data);
             this.calcTimeout && clearTimeout(this.calcTimeout);
             this.calcTimeout = setTimeout(async () => {
                 this.calcTimeout = null;
-                const times = await this.props.socket.sendTo(`${this.props.adapterName}.${this.props.instance}`, 'calcAstro', data);
+                const times = await this.props.oContext.socket.sendTo(`${this.props.oContext.adapterName}.${this.props.oContext.instance}`, 'calcAstro', data);
                 if (!times || times.error) {
                     console.error(`Cannot calculate astro times: ${JSON.stringify(times.error)}`);
                     return;
@@ -192,16 +219,16 @@ class Astro extends ConfigGeneric {
                                 checked={!!useSystemGPS}
                                 onChange={e => {
                                     if (!e.target.checked) {
-                                        this.onChange({
+                                        this.onAstroChange({
                                             useSystemGPS: false,
-                                            latitude: latitude || this.props.systemConfig.latitude,
-                                            longitude: longitude || this.props.systemConfig.longitude,
+                                            latitude: latitude || this.props.oContext.systemConfig.latitude,
+                                            longitude: longitude || this.props.oContext.systemConfig.longitude,
                                         });
                                     } else {
-                                        this.onChange({
+                                        this.onAstroChange({
                                             useSystemGPS: true,
-                                            latitude: this.props.systemConfig.latitude,
-                                            longitude: this.props.systemConfig.longitude,
+                                            latitude: this.props.oContext.systemConfig.latitude,
+                                            longitude: this.props.oContext.systemConfig.longitude,
                                         });
                                     }
                                 }}
@@ -214,7 +241,7 @@ class Astro extends ConfigGeneric {
                             style={{ width: 150, marginRight: 10 }}
                             label={I18n.t('Latitude °')}
                             value={(latitude || '').toString()}
-                            onChange={e => this.onChange('latitude', e.target.value)}
+                            onChange={e => this.onAstroChange('latitude', e.target.value)}
                         />}
                         {useSystemGPS ? null : <TextField
                             variant="standard"
@@ -222,15 +249,15 @@ class Astro extends ConfigGeneric {
                             type="text"
                             label={I18n.t('Longitude °')}
                             value={(longitude || '').toString()}
-                            onChange={e => this.onChange('longitude', e.target.value)}
+                            onChange={e => this.onAstroChange('longitude', e.target.value)}
                         />}
                         {useSystemGPS ? null : <div style={{ width: 'calc(100% - 10px)' }}>{I18n.t('Help')}</div>}
                         <h2
                             style={{
                                 width: 'calc(100% - 10px)',
                                 marginTop: 20,
-                                backgroundColor: this.props.themeType === 'dark' ? '#333' : '#ccc',
-                                color: this.props.themeType === 'dark' ? '#FFF' : '#000',
+                                backgroundColor: this.props.oContext.themeType === 'dark' ? '#333' : '#ccc',
+                                color: this.props.oContext.themeType === 'dark' ? '#FFF' : '#000',
                                 padding: '2px 8px',
                                 borderRadius: 3,
                             }}
@@ -243,7 +270,7 @@ class Astro extends ConfigGeneric {
                                 display: 'flex',
                                 gap: 8,
                                 flexWrap: 'wrap',
-                                backgroundColor: this.props.themeType === 'dark' ? '#333' : '#ccc',
+                                backgroundColor: this.props.oContext.themeType === 'dark' ? '#333' : '#ccc',
                                 paddingTop: 8,
                                 paddingLeft: 8,
                                 paddingRight: 8,
@@ -260,7 +287,7 @@ class Astro extends ConfigGeneric {
                                     variant="standard"
                                     value={sunriseEvent || '_'}
                                     onChange={e =>
-                                        this.onChange('sunriseEvent', e.target.value === '_' ? '' : e.target.value)}
+                                        this.onAstroChange('sunriseEvent', e.target.value === '_' ? '' : e.target.value)}
                                 >
                                     <MenuItem value="_">{I18n.t('none')}</MenuItem>
                                     <MenuItem value="nightEnd">{I18n.t('sch_astro_nightEnd')}</MenuItem>
@@ -279,7 +306,7 @@ class Astro extends ConfigGeneric {
                                 label={I18n.t('Offset')}
                                 value={sunriseOffset || 0}
                                 helperText={I18n.t('in minutes')}
-                                onChange={e => this.onChange('sunriseOffset', e.target.value)}
+                                onChange={e => this.onAstroChange('sunriseOffset', e.target.value)}
                             />
                             <FormControl
                                 variant="standard"
@@ -287,13 +314,13 @@ class Astro extends ConfigGeneric {
                             >
                                 <InputLabel shrink>{I18n.t('But not earlier')}</InputLabel>
                                 <TimePicker
-                                    className={`astroToolbarTime ${this.props.themeType}`}
+                                    className={`astroToolbarTime ${this.props.oContext.themeType}`}
                                     disabled={!this.state.sunriseEvent}
                                     ampm={!!this.state.ampm}
                                     views={['hours', 'minutes']}
-                                    value={sunriseLimitStart || new Date(2000, 0, 1, 0, 0)}
+                                    value={sunriseLimitStart as Date || new Date(2000, 0, 1, 0, 0)}
                                     onChange={value =>
-                                        this.onChange('sunriseLimitStart', new Date(value))}
+                                        this.onAstroChange('sunriseLimitStart', new Date(value!))}
                                 />
                             </FormControl>
                             <FormControl
@@ -302,19 +329,19 @@ class Astro extends ConfigGeneric {
                             >
                                 <InputLabel shrink>{I18n.t('And not later')}</InputLabel>
                                 <TimePicker
-                                    className={`astroToolbarTime ${this.props.themeType}`}
+                                    className={`astroToolbarTime ${this.props.oContext.themeType}`}
                                     disabled={!this.state.sunriseEvent}
                                     ampm={!!this.state.ampm}
                                     views={['hours', 'minutes']}
-                                    value={sunriseLimitEnd || new Date(2000, 0, 1, 0, 0)}
+                                    value={sunriseLimitEnd as Date || new Date(2000, 0, 1, 0, 0)}
                                     onChange={value =>
-                                        this.onChange('sunriseLimitEnd', new Date(value))}
+                                        this.onAstroChange('sunriseLimitEnd', new Date(value!))}
                                 />
                             </FormControl>
                         </div>
                         {this.props.alive ? <div
                             style={{
-                                backgroundColor: this.props.themeType === 'dark' ? '#333' : '#ccc',
+                                backgroundColor: this.props.oContext.themeType === 'dark' ? '#333' : '#ccc',
                                 width: 'calc(100% - 10px)',
                                 paddingTop: 20,
                                 paddingLeft: 8,
@@ -336,7 +363,7 @@ class Astro extends ConfigGeneric {
                                 gap: 8,
                                 marginTop: 30,
                                 flexWrap: 'wrap',
-                                backgroundColor: this.props.themeType === 'dark' ? '#333' : '#ccc',
+                                backgroundColor: this.props.oContext.themeType === 'dark' ? '#333' : '#ccc',
                                 paddingTop: 8,
                                 paddingLeft: 8,
                                 paddingRight: 8,
@@ -353,7 +380,7 @@ class Astro extends ConfigGeneric {
                                     variant="standard"
                                     value={sunsetEvent || '_'}
                                     onChange={e =>
-                                        this.onChange('sunsetEvent', e.target.value === '_' ? '' : e.target.value)}
+                                        this.onAstroChange('sunsetEvent', e.target.value === '_' ? '' : e.target.value)}
                                 >
                                     <MenuItem value="_">{I18n.t('none')}</MenuItem>
                                     <MenuItem value="goldenHour">{I18n.t('sch_astro_goldenHour')}</MenuItem>
@@ -372,7 +399,7 @@ class Astro extends ConfigGeneric {
                                 label={I18n.t('Offset')}
                                 value={sunsetOffset || 0}
                                 helperText={I18n.t('in minutes')}
-                                onChange={e => this.onChange('sunsetOffset', e.target.value)}
+                                onChange={e => this.onAstroChange('sunsetOffset', e.target.value)}
                             />
                             <FormControl
                                 variant="standard"
@@ -380,13 +407,13 @@ class Astro extends ConfigGeneric {
                             >
                                 <InputLabel shrink>{I18n.t('But not earlier')}</InputLabel>
                                 <TimePicker
-                                    className={`astroToolbarTime ${this.props.themeType}`}
+                                    className={`astroToolbarTime ${this.props.oContext.themeType}`}
                                     disabled={!this.state.sunsetEvent}
                                     ampm={!!this.state.ampm}
                                     views={['hours', 'minutes']}
-                                    value={sunsetLimitStart || new Date(2000, 0, 1, 0, 0)}
+                                    value={sunsetLimitStart as Date || new Date(2000, 0, 1, 0, 0)}
                                     onChange={value =>
-                                        this.onChange('sunsetLimitStart', new Date(value))}
+                                        this.onAstroChange('sunsetLimitStart', new Date(value!))}
                                 />
                             </FormControl>
                             <FormControl
@@ -395,19 +422,19 @@ class Astro extends ConfigGeneric {
                             >
                                 <InputLabel shrink>{I18n.t('And not later')}</InputLabel>
                                 <TimePicker
-                                    className={`astroToolbarTime ${this.props.themeType}`}
+                                    className={`astroToolbarTime ${this.props.oContext.themeType}`}
                                     disabled={!this.state.sunsetEvent}
                                     ampm={!!this.state.ampm}
                                     views={['hours', 'minutes']}
-                                    value={sunsetLimitEnd || new Date(2000, 0, 1, 0, 0)}
+                                    value={sunsetLimitEnd as Date || new Date(2000, 0, 1, 0, 0)}
                                     onChange={value =>
-                                        this.onChange('sunsetLimitEnd', new Date(value))}
+                                        this.onAstroChange('sunsetLimitEnd', new Date(value!))}
                                 />
                             </FormControl>
                         </div>
                         {this.props.alive ? <div
                             style={{
-                                backgroundColor: this.props.themeType === 'dark' ? '#333' : '#ccc',
+                                backgroundColor: this.props.oContext.themeType === 'dark' ? '#333' : '#ccc',
                                 width: 'calc(100% - 10px)',
                                 paddingTop: 20,
                                 paddingLeft: 8,
@@ -438,18 +465,5 @@ class Astro extends ConfigGeneric {
         </ThemeProvider>;
     }
 }
-
-Astro.propTypes = {
-    socket: PropTypes.object.isRequired,
-    themeType: PropTypes.string,
-    themeName: PropTypes.string,
-    style: PropTypes.object,
-    className: PropTypes.string,
-    data: PropTypes.object.isRequired,
-    attr: PropTypes.string,
-    schema: PropTypes.object,
-    onError: PropTypes.func,
-    onChange: PropTypes.func,
-};
 
 export default Astro;

@@ -1,21 +1,45 @@
 import React, { Component } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 // eslint-disable-next-line import/no-unresolved
-import { useMap } from 'react-leaflet/hooks';
+import { useMap } from 'react-leaflet';
+import { DragEndEvent, DragEndEventHandlerFn, LatLngTuple, Map as LeafletMap } from 'leaflet';
 // import { OpenStreetMapProvider } from 'leaflet-geosearch';
 import 'leaflet/dist/leaflet.css';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import markerRetinaIcon from 'leaflet/dist/images/marker-icon-2x.png';
+import { Marker } from 'leaflet';
 
-function MyMapComponent(props) {
+function MyMapComponent(props: {
+    addMap: (map: LeafletMap) => void;
+}) {
     const map = useMap();
     props.addMap && props.addMap(map);
     return null;
 }
 
-class Map extends Component {
-    constructor(props) {
+interface MapProps {
+    latitude: number;
+    longitude: number;
+    onChange: (latitude: number, longitude: number) => void;
+    readOnly?: boolean;
+}
+
+interface MapState {
+    zoom: number;
+    latitude: number;
+    longitude: number;
+    width: number;
+    height: number;
+}
+
+class Map extends Component<MapProps, MapState> {
+    divRef: React.RefObject<HTMLDivElement>;
+    marker: Marker<any> | null;
+    map?: LeafletMap;
+    latLongTimer?: ReturnType<typeof setTimeout> | null;
+
+    constructor(props: MapProps) {
         super(props);
         this.state = {
             zoom: 14,
@@ -28,12 +52,12 @@ class Map extends Component {
         this.marker = null;
     }
 
-    onMap = map => {
+    onMap = (map: LeafletMap) => {
         if (!this.map || this.map !== map) {
             this.map = map;
-            const center = [
-                parseFloat(this.state.latitude  !== undefined ? this.state.latitude  : 50) || 0,
-                parseFloat(this.state.longitude !== undefined ? this.state.longitude : 10) || 0,
+            const center:LatLngTuple = [
+                parseFloat((this.state.latitude  !== undefined ? this.state.latitude  : 50) as unknown as string) || 0,
+                parseFloat((this.state.longitude !== undefined ? this.state.longitude : 10) as unknown as string) || 0,
             ];
             const customIcon = window.L.icon({
                 iconUrl: markerIcon,
@@ -71,23 +95,23 @@ class Map extends Component {
                 this.latLongTimer && clearTimeout(this.latLongTimer);
                 this.latLongTimer = setTimeout(() => {
                     this.latLongTimer = null;
-                    this.map.flyTo([this.state.latitude, this.state.longitude]);
-                    this.marker.setLatLng([this.state.latitude, this.state.longitude]);
+                    this.map!.flyTo([this.state.latitude, this.state.longitude]);
+                    this.marker!.setLatLng([this.state.latitude, this.state.longitude]);
                 }, 500);
             });
         }
 
         if (this.divRef.current && (this.state.width !== this.divRef.current.clientWidth || this.state.height !== this.divRef.current.clientHeight)) {
             setTimeout(() => {
-                this.setState({ width: this.divRef.current.clientWidth, height: this.divRef.current.clientHeight });
+                this.setState({ width: this.divRef.current!.clientWidth, height: this.divRef.current!.clientHeight });
             }, 100);
         }
     }
 
-    onMarkerDragend = evt => {
+    onMarkerDragend = (evt: DragEndEvent)  => {
         if (this.props.readOnly) {
-            this.map.flyTo([this.state.latitude, this.state.longitude]);
-            this.marker.setLatLng([this.state.latitude, this.state.longitude]);
+            this.map!.flyTo([this.state.latitude, this.state.longitude]);
+            this.marker!.setLatLng([this.state.latitude, this.state.longitude]);
             return;
         }
         const ll = JSON.parse(JSON.stringify(evt.target._latlng));
@@ -96,9 +120,9 @@ class Map extends Component {
     };
 
     render() {
-        const center = [
-            parseFloat(this.props.latitude  !== undefined ? this.props.latitude  : 50) || 0,
-            parseFloat(this.props.longitude !== undefined ? this.props.longitude : 10) || 0,
+        const center: LatLngTuple = [
+            parseFloat((this.props.latitude  !== undefined ? this.props.latitude  : 50) as unknown as string) || 0,
+            parseFloat((this.props.longitude !== undefined ? this.props.longitude : 10) as unknown as string) || 0,
         ];
         const { zoom } = this.state;
 
@@ -119,7 +143,7 @@ class Map extends Component {
                 doubleClickZoom
                 scrollWheelZoom
                 dragging={!this.props.readOnly}
-                animate
+                // animate
                 easeLinearity={0.35}
             >
                 <TileLayer url="https://{s}.tile.osm.org/{z}/{x}/{y}.png" />
