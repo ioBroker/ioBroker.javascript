@@ -28,10 +28,10 @@ function adminClean() {
 
 function adminCopy() {
     copyFiles(
-        ['src-admin/build/static/css/*.css', '!src-admin/build/static/css/src_bootstrap_*.css'],
-        'admin/custom/static/css',
+        ['src-admin/build/assets/*.css', '!src-admin/build/assets/src_bootstrap_*.css'],
+        'admin/custom/assets',
     );
-    copyFiles(['src-admin/build/aseets/*.js'], 'admin/custom/assets');
+    copyFiles(['src-admin/build/assets/*.js'], 'admin/custom/assets');
     copyFiles(['src-admin/build/assets/*.map'], 'admin/custom/assets');
     copyFiles(['src-admin/build/customComponents.js'], 'admin/custom');
     copyFiles(['src-admin/build/customComponents.js.map'], 'admin/custom');
