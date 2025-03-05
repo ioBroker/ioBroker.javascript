@@ -1,1 +1,0 @@
-import{C as n}from"./ConfigCustomJavascriptSet__loadShare__react__loadShare__-DkH1f9nM.js";import{Y as s,b as a,T as o,a7 as r}from"./defaultTheme-BOBUrB9H.js";function u(e){return Object.keys(e).length===0}function m(e=null){const t=n.useContext(s);return!t||u(t)?e:t}const c=a();function h(e=c){return m(e)}function i(){const e=h(r);return e[o]||e}export{i as a,m as b,h as u};
