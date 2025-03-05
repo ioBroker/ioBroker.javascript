@@ -31,8 +31,8 @@ function adminCopy() {
         ['src-admin/build/static/css/*.css', '!src-admin/build/static/css/src_bootstrap_*.css'],
         'admin/custom/static/css',
     );
-    copyFiles(['src-admin/build/static/js/*.js'], 'admin/custom/static/js');
-    copyFiles(['src-admin/build/static/js/*.map'], 'admin/custom/static/js');
+    copyFiles(['src-admin/build/aseets/*.js'], 'admin/custom/assets');
+    copyFiles(['src-admin/build/assets/*.map'], 'admin/custom/assets');
     copyFiles(['src-admin/build/customComponents.js'], 'admin/custom');
     copyFiles(['src-admin/build/customComponents.js.map'], 'admin/custom');
     copyFiles(['src-admin/src/i18n/*.json'], 'admin/custom/i18n');
@@ -480,7 +480,7 @@ if (process.argv.includes('--copy-types')) {
         process.exit(2);
     });
 } else if (process.argv.includes('--admin-2-compile')) {
-    buildReact(`${__dirname}/src-admin/`, { rootDir: __dirname, craco: true, exec: true }).catch(e => {
+    buildReact(`${__dirname}/src-admin/`, { rootDir: __dirname, vite: true, tsc: true, exec: true }).catch(e => {
         console.error(`Cannot build widgets: ${e}`);
         process.exit(2);
     });
@@ -489,7 +489,7 @@ if (process.argv.includes('--copy-types')) {
 } else if (process.argv.includes('--admin-build')) {
     adminClean();
     npmInstall(`${__dirname}/src-admin/`)
-        .then(() => buildReact(`${__dirname}/src-admin/`, { rootDir: __dirname, craco: true, exec: true }))
+        .then(() => buildReact(`${__dirname}/src-admin/`, { rootDir: __dirname, vite: true, tsc: true, exec: true }))
         .then(() => adminCopy())
         .catch(e => {
             console.error(`Cannot build admin controls: ${e}`);
