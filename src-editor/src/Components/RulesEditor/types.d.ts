@@ -369,13 +369,6 @@ export interface RuleBlockConfigActionSayText extends RuleBlockConfig {
     volume: string;
 }
 
-export interface RuleBlockConfigActionSendEmail extends RuleBlockConfig {
-    text: string;
-    instance: string;
-    recipients: string;
-    subject: string;
-}
-
 export interface RuleBlockConfigActionSetState extends RuleBlockConfig {
     oid: string;
     value: string | number | boolean;

@@ -5,8 +5,6 @@ import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
 import { registerRemotes, loadRemote } from '@module-federation/runtime';
 
 import ActionSayText from '../Blocks/ActionSayText';
-import ActionSendEmail from '../Blocks/ActionSendEmail';
-// import ActionTelegram from '../Blocks/ActionTelegram';
 import ActionPushover from '../Blocks/ActionPushover';
 import ActionWhatsappcmb from '../Blocks/ActionWhatsappcmb';
 import ActionPushsafer from '../Blocks/ActionPushsafer';
@@ -15,8 +13,6 @@ import type { GenericBlock } from '../GenericBlock';
 import type { DebugMessage } from '@iobroker/javascript-rules-dev';
 
 const ADAPTERS: Record<string, typeof GenericBlock<any> | null> = {
-    // telegram: ActionTelegram,
-    email: ActionSendEmail,
     sayit: ActionSayText,
     pushover: ActionPushover,
     'whatsapp-cmb': ActionWhatsappcmb,
