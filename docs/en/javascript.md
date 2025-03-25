@@ -1727,7 +1727,7 @@ Same as [wait](#wait)
 
 ### messageTo
 ```js
-messageTo({ instance: 'instance', script: 'script.js.common.scriptName', message: 'messageName' }, data, {timeout: 1000}, result =>
+messageTo({ instance: 'instance', script: 'script.js.common.scriptName', message: 'messageName' }, data, { timeout: 1000 }, result =>
     log(JSON.stringify(result)));
 ```
 
@@ -1738,7 +1738,7 @@ Timeout for callback is 5 seconds by default.
 The target could be shorted to:
 
 ```js
-messageTo('messageName', data, result => {
+messageTo('messageName', data, (result) => {
     log(JSON.stringify(result));
 });
 ```
@@ -1777,7 +1777,9 @@ onMessage('myTopic', async (data, callback) => {
 ### onMessage
 ```js
 onMessage('messageName', (data, callback) => {
-    log(`Received data: ${data}`); callback({ result: Date.now() });
+    log(`Received data: ${data}`);
+
+    callback({ result: Date.now() });
 });
 ```
 
@@ -1808,7 +1810,7 @@ iob message javascript.0 toScript '{"script": "script.js.messagetest", "message"
 ```js
 const id = onMessage('messageName', (data, callback) => {
     log(data);
-    callback(Date.now());
+    callback({ result: Date.now() });
 });
 
 // unsubscribe specific handler
