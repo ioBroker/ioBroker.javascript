@@ -73,7 +73,7 @@
     - [stopScript](#stopscript)
     - [stopScriptAsync](#stopScriptAsync)
     - [isScriptActive](#isscriptactive)
-    - [name](#name)
+    - [name](#scriptName)
     - [instance](#instance)
     - [messageTo](#messageto)
     - [messageToAsync](#messagetoasync)
