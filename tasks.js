@@ -39,18 +39,15 @@ function adminCopy() {
 }
 
 function clean() {
-    deleteFoldersRecursive(`${__dirname}/admin`, ['jsonConfig.json', 'javascript.png', 'vsFont']);
+    deleteFoldersRecursive(`${__dirname}/admin`, ['jsonConfig.json', 'javascript.png', 'javascript.svg', 'vsFont']);
     deleteFoldersRecursive(`${__dirname}/src-editor/build`);
 }
 
 function copyAllFiles() {
-    // deleteFoldersRecursive(`${__dirname}/admin`, ['jsonConfig.json', 'javascript.png']);
-
     copyFiles(
         [
             'src-editor/build/**/*',
             '!src-editor/build/index.html',
-            //             '!src-editor/build/static/js/main.*.chunk.js',
             '!src-editor/build/i18n/**/*',
             '!src-editor/build/i18n',
             '!src-editor/build/google-blockly/blockly-*.*.*.tgz',
@@ -69,13 +66,6 @@ function copyAllFiles() {
     index = index.replace('href="/', 'href="');
     index = index.replace('src="/', 'src="');
     writeFileSync(`${__dirname}/admin/tab.html`, index);
-
-    /*copyFiles(['src-editor/build/static/js/main.*.chunk.js'], 'admin/assets/', {
-        replace: {
-            find: '"/assets',
-            text: '"./assets',
-        },
-    });*/
 }
 
 function replaceScript(text, replaceText) {
