@@ -1,8 +1,8 @@
-import react from '@vitejs/plugin-react';
 import commonjs from 'vite-plugin-commonjs';
 import vitetsConfigPaths from 'vite-tsconfig-paths';
 import { federation } from '@module-federation/vite';
-import { ModuleFederationShared } from './modulefederation.admin.config';
+import { moduleFederationShared } from '@iobroker/adapter-react-v5/modulefederation.admin.config';
+import { readFileSync } from 'node:fs';
 
 const config = {
     plugins: [
@@ -14,7 +14,7 @@ const config = {
                 './Components': './src/Components.tsx',
             },
             remotes: {},
-            shared: ModuleFederationShared,
+            shared: moduleFederationShared(JSON.parse(readFileSync('./package.json').toString())),
         }),
         // react(),
         vitetsConfigPaths(),
@@ -27,19 +27,20 @@ const config = {
             '/adapter': 'http://localhost:8081',
             '/session': 'http://localhost:8081',
             '/log': 'http://localhost:8081',
-            '/lib': 'http://localhost:8081',        },
+            '/lib': 'http://localhost:8081',
+        },
     },
     base: './',
     build: {
         target: 'chrome89',
         outDir: './build',
         rollupOptions: {
-            onwarn(warning, warn) {
-            // Suppress "Module level directives cause errors when bundled" warnings
-            if (warning.code === "MODULE_LEVEL_DIRECTIVE") {
-                return;
-            }
-            warn(warning);
+            onwarn(warning: any, warn: any): void {
+                // Suppress "Module level directives cause errors when bundled" warnings
+                if (warning.code === 'MODULE_LEVEL_DIRECTIVE') {
+                    return;
+                }
+                warn(warning);
             },
         },
     },

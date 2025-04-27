@@ -1,1 +1,0 @@
-import{C as e,i as o}from"./ConfigCustomJavascriptSet__mf_v__runtimeInit__mf_v__-BJ1YU91p.js";const{loadShare:_}=o,{initPromise:r}=e,a=r.then(t=>_("@emotion/react",{customShareInfo:{shareConfig:{singleton:!0,strictVersion:!1,requiredVersion:"*"}}})),i=await a.then(t=>t());var n=i;export{n as C};

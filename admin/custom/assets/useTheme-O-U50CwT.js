@@ -1,1 +1,0 @@
-import"./ConfigCustomJavascriptSet__loadShare__react__loadShare__-DkH1f9nM.js";import{u as m,n as t}from"./createSvgIcon-ZVZv4GUd.js";import{T as o}from"./createTheme-DtEvaGb6.js";function a(){const e=m(t);return e[o]||e}export{a as u};

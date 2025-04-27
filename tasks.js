@@ -561,7 +561,7 @@ if (process.argv.includes('--copy-types')) {
         .then(() => copyAllFiles())
         .then(() => patch())
         .then(() => npmInstall(`${__dirname}/src-admin/`))
-        .then(() => buildReact(`${__dirname}/src-admin/`, { rootDir: __dirname, craco: true, exec: true }))
+        .then(() => buildReact(`${__dirname}/src-admin/`, { rootDir: __dirname, vite: true, exec: true }))
         .then(() => adminCopy())
         .catch(e => {
             console.error(`Cannot build admin controls: ${e}`);

@@ -629,19 +629,19 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             JSON.stringify(this.scripts[id]),
                         ) as ioBroker.ScriptCommon;
 
-                        commonLocal.source = (this.objects[id] as ioBroker.ScriptObject).common.source;
+                        commonLocal.source = this.objects[id].common.source;
 
-                        // if anything except source was changed
+                        // if anything except the source was changed
                         if (JSON.stringify(commonLocal) !== JSON.stringify(this.objects[id].common)) {
                             this.scripts[id] = JSON.parse(JSON.stringify(this.objects[id].common));
                             this.scripts[id].source = oldSource;
                         }
 
-                        if (oldSource !== (this.objects[id] as ioBroker.ScriptObject).common.source) {
-                            // take new script if it not yet changed
+                        if (oldSource !== this.objects[id].common.source) {
+                            // take a new script if it not yet changed
                             if (!this.state.changed[id]) {
                                 // just use new value
-                                this.scripts[id].source = (this.objects[id] as ioBroker.ScriptObject).common.source;
+                                this.scripts[id].source = this.objects[id].common.source;
                             } else {
                                 if (this.objects[id].from?.startsWith('system.adapter.javascript.')) {
                                     this.objects[id].from = 'system.adapter.admin.0';
@@ -1414,7 +1414,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                         onClick={() => {
                             this.setState({ showAstro: true, astroEvents: null });
 
-                            this.props.socket
+                            void this.props.socket
                                 .sendTo(
                                     this.scripts[this.state.selected].engine.replace('system.adapter.', ''),
                                     'calcAstroAll',

@@ -33,7 +33,7 @@ import DialogError from '../../Dialogs/Error';
 import Editor from './Editor';
 import Console from './Console';
 import Stack from './Stack';
-import {
+import type {
     CallFrame,
     DebugVariable,
     DebuggerLocation,

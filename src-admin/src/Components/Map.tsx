@@ -1,20 +1,14 @@
 import React, { Component } from 'react';
-import { MapContainer, TileLayer } from 'react-leaflet';
-// eslint-disable-next-line import/no-unresolved
-import { useMap } from 'react-leaflet';
-import { DragEndEvent, DragEndEventHandlerFn, LatLngTuple, Map as LeafletMap } from 'leaflet';
-// import { OpenStreetMapProvider } from 'leaflet-geosearch';
+import { MapContainer, TileLayer, useMap } from 'react-leaflet';
+import type { DragEndEvent, LatLngTuple, Map as LeafletMap, Marker } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import markerRetinaIcon from 'leaflet/dist/images/marker-icon-2x.png';
-import { Marker } from 'leaflet';
 
-function MyMapComponent(props: {
-    addMap: (map: LeafletMap) => void;
-}) {
+function MyMapComponent(props: { addMap: (map: LeafletMap) => void }): null {
     const map = useMap();
-    props.addMap && props.addMap(map);
+    props.addMap?.(map);
     return null;
 }
 
@@ -52,11 +46,11 @@ class Map extends Component<MapProps, MapState> {
         this.marker = null;
     }
 
-    onMap = (map: LeafletMap) => {
+    onMap = (map: LeafletMap): void => {
         if (!this.map || this.map !== map) {
             this.map = map;
-            const center:LatLngTuple = [
-                parseFloat((this.state.latitude  !== undefined ? this.state.latitude  : 50) as unknown as string) || 0,
+            const center: LatLngTuple = [
+                parseFloat((this.state.latitude !== undefined ? this.state.latitude : 50) as unknown as string) || 0,
                 parseFloat((this.state.longitude !== undefined ? this.state.longitude : 10) as unknown as string) || 0,
             ];
             const customIcon = window.L.icon({
@@ -64,31 +58,30 @@ class Map extends Component<MapProps, MapState> {
                 iconRetinaUrl: markerRetinaIcon,
                 shadowUrl: markerShadow,
 
-                iconSize:    [25, 41],
-                iconAnchor:  [12, 41],
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
                 popupAnchor: [1, -34],
                 tooltipAnchor: [16, -28],
-                shadowSize:  [41, 41],
+                shadowSize: [41, 41],
             });
 
-            this.marker = window.L.marker(
-                center,
-                {
-                    draggable: true,
-                    title: 'Resource location',
-                    alt: 'Resource Location',
-                    riseOnHover: true,
-                    icon: customIcon,
-                },
-            )
+            this.marker = window.L.marker(center, {
+                draggable: true,
+                title: 'Resource location',
+                alt: 'Resource Location',
+                riseOnHover: true,
+                icon: customIcon,
+            })
                 .addTo(map)
                 .bindPopup('Popup for any custom information.')
                 .on({ dragend: evt => this.onMarkerDragend(evt) });
         }
     };
 
-    componentDidUpdate() {
-        if (this.map && this.marker &&
+    componentDidUpdate(): void {
+        if (
+            this.map &&
+            this.marker &&
             (this.props.latitude !== this.state.latitude || this.props.longitude !== this.state.longitude)
         ) {
             this.setState({ latitude: this.props.latitude, longitude: this.props.longitude }, () => {
@@ -101,14 +94,18 @@ class Map extends Component<MapProps, MapState> {
             });
         }
 
-        if (this.divRef.current && (this.state.width !== this.divRef.current.clientWidth || this.state.height !== this.divRef.current.clientHeight)) {
+        if (
+            this.divRef.current &&
+            (this.state.width !== this.divRef.current.clientWidth ||
+                this.state.height !== this.divRef.current.clientHeight)
+        ) {
             setTimeout(() => {
                 this.setState({ width: this.divRef.current!.clientWidth, height: this.divRef.current!.clientHeight });
             }, 100);
         }
     }
 
-    onMarkerDragend = (evt: DragEndEvent)  => {
+    onMarkerDragend = (evt: DragEndEvent): void => {
         if (this.props.readOnly) {
             this.map!.flyTo([this.state.latitude, this.state.longitude]);
             this.marker!.setLatLng([this.state.latitude, this.state.longitude]);
@@ -116,40 +113,48 @@ class Map extends Component<MapProps, MapState> {
         }
         const ll = JSON.parse(JSON.stringify(evt.target._latlng));
         this.setState({ latitude: ll.lat, longitude: ll.lng }, () =>
-            this.props.onChange(this.state.latitude, this.state.longitude));
+            this.props.onChange(this.state.latitude, this.state.longitude),
+        );
     };
 
-    render() {
+    render(): React.JSX.Element {
         const center: LatLngTuple = [
-            parseFloat((this.props.latitude  !== undefined ? this.props.latitude  : 50) as unknown as string) || 0,
+            parseFloat((this.props.latitude !== undefined ? this.props.latitude : 50) as unknown as string) || 0,
             parseFloat((this.props.longitude !== undefined ? this.props.longitude : 10) as unknown as string) || 0,
         ];
         const { zoom } = this.state;
 
         console.log(this.state.width, this.state.height);
-        return <div style={{ width: '100%', height: '100%', minHeight: 350 }} ref={this.divRef}>
-            {this.state.width && this.state.height ? <MapContainer
-                style={{
-                    width: '100%',
-                    height: '100%',
-                    minHeight: 350,
-                    borderRadius: 5,
-                }}
-                center={center}
-                zoom={zoom}
-                maxZoom={18}
-                attributionControl={false}
-                zoomControl
-                doubleClickZoom
-                scrollWheelZoom
-                dragging={!this.props.readOnly}
-                // animate
-                easeLinearity={0.35}
+        return (
+            <div
+                style={{ width: '100%', height: '100%', minHeight: 350 }}
+                ref={this.divRef}
             >
-                <TileLayer url="https://{s}.tile.osm.org/{z}/{x}/{y}.png" />
-                <MyMapComponent addMap={map => this.onMap(map)} />
-            </MapContainer> : null}
-        </div>;
+                {this.state.width && this.state.height ? (
+                    <MapContainer
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            minHeight: 350,
+                            borderRadius: 5,
+                        }}
+                        center={center}
+                        zoom={zoom}
+                        maxZoom={18}
+                        attributionControl={false}
+                        zoomControl
+                        doubleClickZoom
+                        scrollWheelZoom
+                        dragging={!this.props.readOnly}
+                        // animate
+                        easeLinearity={0.35}
+                    >
+                        <TileLayer url="https://{s}.tile.osm.org/{z}/{x}/{y}.png" />
+                        <MyMapComponent addMap={map => this.onMap(map)} />
+                    </MapContainer>
+                ) : null}
+            </div>
+        );
     }
 }
 
