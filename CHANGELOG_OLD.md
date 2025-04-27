@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 8.7.7 (2024-08-04)
+* (@klein0r) Fixed import scripts dialog
+* (@klein0r) Allowed removing all custom packages (empty list)
+
 ## 8.7.6 (2024-07-28)
 * (foxriver76) fix error with subpath imports in scripts
 

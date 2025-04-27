@@ -26,6 +26,11 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### 8.9.1 (2025-01-26)
+
+* (@GermanBluefox) Corrected blockly function editor
+* (@GermanBluefox) Corrected creation of folders
+
 ### 8.9.0 (2025-01-22)
 * (@GermanBluefox) Migrated GUI to TypeScript
 * (@klein0r) Added count attribute to getHistory in blockly
@@ -39,10 +44,6 @@ Executes Javascript, Typescript Scripts.
 ### 8.8.0 (2024-08-05)
 * (@klein0r) Added option to register notifications via scripts
 * (@klein0r) Fixed sendTo block with an empty name list
-
-### 8.7.7 (2024-08-04)
-* (@klein0r) Fixed import scripts dialog
-* (@klein0r) Allowed removing all custom packages (empty list)
 
 ## License
 The MIT License (MIT)
