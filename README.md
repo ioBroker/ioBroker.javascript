@@ -1,4 +1,5 @@
-![Logo](admin/javascript.png)
+<img src="./admin/javascript.svg" alt="ioBroker.javascript" width="100" />
+
 # Javascript Script Engine
 
 ![Number of Installations](http://iobroker.live/badges/javascript-installed.svg)

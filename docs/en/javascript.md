@@ -1980,11 +1980,11 @@ httpPost(
 *Requires version >= 8.3.0*
 
 ```js
-httpGet('https://raw.githubusercontent.com/ioBroker/ioBroker.javascript/master/admin/javascript.png', { responseType: 'arraybuffer' }, async (err, response) => {
+httpGet('https://raw.githubusercontent.com/ioBroker/ioBroker.javascript/master/admin/javascript.svg', { responseType: 'arraybuffer' }, async (err, response) => {
     if (err) {
         console.error(err);
     } else {
-        const tempFilePath = createTempFile('javascript.png', response.data);
+        const tempFilePath = createTempFile('javascript.svg', response.data);
         console.log(`Saved to ${tempFilePath}`);
 
         // Use the new path in other scripts (e.g. sendTo)
