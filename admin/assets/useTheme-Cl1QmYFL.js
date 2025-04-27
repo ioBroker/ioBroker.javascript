@@ -1,0 +1,1 @@
+import"./iobroker_javascript__loadShare__react__loadShare__-BiJPUKBK.js";import{q as t,u as s,T as m,E as u}from"./createSvgIcon-BdRvDw53.js";const a=t();function r(e=a){return s(e)}function T(){const e=r(u);return e[m]||e}export{r as a,T as u};

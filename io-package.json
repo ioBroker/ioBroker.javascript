@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.9.1",
+    "version": "8.9.2",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "8.9.2": {
+        "en": "Updated packages for GUI\nUsed TypeScript for an admin component",
+        "de": "Aktualisierte Pakete für GUI\nGebrauchte TypeScript für eine Admin-Komponente",
+        "ru": "Обновленные пакеты для GUI\nИспользуемый TypeScript для компонента admin",
+        "pt": "Pacotes atualizados para GUI\nTypeScript usado para um componente admin",
+        "nl": "Bijgewerkte pakketten voor GUI\nTypeScript gebruikt voor een admin component",
+        "fr": "Les paquets mis à jour pour GUI\nTypeScript utilisé pour un composant admin",
+        "it": "Pacchetti aggiornati per GUI\nTipoScript usato per un componente amministratore",
+        "es": "Paquetes actualizados para GUI\nTipoScript usado para un componente de administración",
+        "pl": "Aktualizacja pakietów dla GUI\nUżywany TypeScript dla komponentu admin",
+        "uk": "Оновлені пакети для GUI\nВикористовується TypeScript для компонента адміністратора",
+        "zh-cn": "更新的图形用户界面软件包\n管理员组件所用的类型脚本"
+      },
       "8.9.1": {
         "en": "Corrected blockly function editor\nCorrected creation of folders",
         "de": "Korrigierter blockierender Funktionseditor\nKorrigierte Erstellung von Ordnern",
@@ -117,19 +130,6 @@
         "pl": "Dodano opcję rejestracji powiadomień za pomocą skryptów\nPoprawiono wysyłanie Blokowanie z pustą listą nazw",
         "uk": "Додано опцію для реєстрації повідомлень через скрипти\nВиправлена відправка Заблокувати список порожніх імен",
         "zh-cn": "添加通过脚本注册通知的选项\n固定发送 以空名称列表屏蔽"
-      },
-      "8.7.7": {
-        "en": "Fixed import scripts dialog\nAllow to remove all custom packages (empty list)",
-        "de": "Feste Importskripte Dialog\nLassen Sie alle benutzerdefinierte Pakete entfernen (leere Liste)",
-        "ru": "Диалог сценариев импорта\nПозволить удалить все пользовательские пакеты (пустый список)",
-        "pt": "Diálogo de scripts de importação fixos\nPermitir remover todos os pacotes personalizados (lista vazia)",
-        "nl": "Dialoogvenster Vaste importscripts\nAlle aangepaste pakketten verwijderen (lege lijst)",
-        "fr": "Boîte de dialogue d'importation fixe\nPermettre de supprimer tous les paquets personnalisés (liste vide)",
-        "it": "Dialogo di script di importazione fissi\nConsentire di rimuovere tutti i pacchetti personalizzati (elenco vuoto)",
-        "es": "Diálogo de scripts de importación fijos\nPermitir eliminar todos los paquetes personalizados (lista vacía)",
-        "pl": "Okno importu stałych skryptów\nPozwól usunąć wszystkie niestandardowe pakiety (pusta lista)",
-        "uk": "Виправлено імпорт сценаріїв діалог\nДозволити видалити всі спеціальні пакети (зразковий список)",
-        "zh-cn": "固定导入脚本对话框\n允许删除所有自定义软件包( 空列表)"
       }
     },
     "platform": "Javascript/Node.js",
