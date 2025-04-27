@@ -1,5 +1,4 @@
-<img src="./admin/javascript.svg" alt="ioBroker.javascript" width="100" />
-
+![Logo](admin/javascript.png)
 # Javascript Script Engine
 
 ![Number of Installations](http://iobroker.live/badges/javascript-installed.svg)
@@ -27,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 8.9.2 (2025-04-27)
 
 * (@GermanBluefox) Updated packages for GUI
 * (@GermanBluefox) Used TypeScript for an admin component
@@ -46,10 +45,6 @@ Executes Javascript, Typescript Scripts.
 
 ### 8.8.2 (2024-08-07)
 * (bluefox) updated dependencies
-
-### 8.8.0 (2024-08-05)
-* (@klein0r) Added option to register notifications via scripts
-* (@klein0r) Fixed sendTo block with an empty name list
 
 ## License
 The MIT License (MIT)
