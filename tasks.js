@@ -28,29 +28,26 @@ function adminClean() {
 
 function adminCopy() {
     copyFiles(
-        ['src-admin/build/static/css/*.css', '!src-admin/build/static/css/src_bootstrap_*.css'],
-        'admin/custom/static/css',
+        ['src-admin/build/assets/*.css', '!src-admin/build/assets/src_bootstrap_*.css'],
+        'admin/custom/assets',
     );
-    copyFiles(['src-admin/build/static/js/*.js'], 'admin/custom/static/js');
-    copyFiles(['src-admin/build/static/js/*.map'], 'admin/custom/static/js');
+    copyFiles(['src-admin/build/assets/*.js'], 'admin/custom/assets');
+    copyFiles(['src-admin/build/assets/*.map'], 'admin/custom/assets');
     copyFiles(['src-admin/build/customComponents.js'], 'admin/custom');
     copyFiles(['src-admin/build/customComponents.js.map'], 'admin/custom');
     copyFiles(['src-admin/src/i18n/*.json'], 'admin/custom/i18n');
 }
 
 function clean() {
-    deleteFoldersRecursive(`${__dirname}/admin`, ['jsonConfig.json', 'javascript.png', 'vsFont']);
+    deleteFoldersRecursive(`${__dirname}/admin`, ['jsonConfig.json', 'javascript.png', 'javascript.svg', 'vsFont']);
     deleteFoldersRecursive(`${__dirname}/src-editor/build`);
 }
 
 function copyAllFiles() {
-    // deleteFoldersRecursive(`${__dirname}/admin`, ['jsonConfig.json', 'javascript.png']);
-
     copyFiles(
         [
             'src-editor/build/**/*',
             '!src-editor/build/index.html',
-            //             '!src-editor/build/static/js/main.*.chunk.js',
             '!src-editor/build/i18n/**/*',
             '!src-editor/build/i18n',
             '!src-editor/build/google-blockly/blockly-*.*.*.tgz',
@@ -69,13 +66,6 @@ function copyAllFiles() {
     index = index.replace('href="/', 'href="');
     index = index.replace('src="/', 'src="');
     writeFileSync(`${__dirname}/admin/tab.html`, index);
-
-    /*copyFiles(['src-editor/build/static/js/main.*.chunk.js'], 'admin/assets/', {
-        replace: {
-            find: '"/assets',
-            text: '"./assets',
-        },
-    });*/
 }
 
 function replaceScript(text, replaceText) {
@@ -480,7 +470,7 @@ if (process.argv.includes('--copy-types')) {
         process.exit(2);
     });
 } else if (process.argv.includes('--admin-2-compile')) {
-    buildReact(`${__dirname}/src-admin/`, { rootDir: __dirname, craco: true, exec: true }).catch(e => {
+    buildReact(`${__dirname}/src-admin/`, { rootDir: __dirname, vite: true, tsc: true, exec: true }).catch(e => {
         console.error(`Cannot build widgets: ${e}`);
         process.exit(2);
     });
@@ -489,7 +479,7 @@ if (process.argv.includes('--copy-types')) {
 } else if (process.argv.includes('--admin-build')) {
     adminClean();
     npmInstall(`${__dirname}/src-admin/`)
-        .then(() => buildReact(`${__dirname}/src-admin/`, { rootDir: __dirname, craco: true, exec: true }))
+        .then(() => buildReact(`${__dirname}/src-admin/`, { rootDir: __dirname, vite: true, tsc: true, exec: true }))
         .then(() => adminCopy())
         .catch(e => {
             console.error(`Cannot build admin controls: ${e}`);
@@ -561,7 +551,7 @@ if (process.argv.includes('--copy-types')) {
         .then(() => copyAllFiles())
         .then(() => patch())
         .then(() => npmInstall(`${__dirname}/src-admin/`))
-        .then(() => buildReact(`${__dirname}/src-admin/`, { rootDir: __dirname, craco: true, exec: true }))
+        .then(() => buildReact(`${__dirname}/src-admin/`, { rootDir: __dirname, vite: true, exec: true }))
         .then(() => adminCopy())
         .catch(e => {
             console.error(`Cannot build admin controls: ${e}`);

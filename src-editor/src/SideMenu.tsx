@@ -374,7 +374,6 @@ function prepareList(data: Record<string, ioBroker.ScriptObject | ioBroker.Chann
     do {
         modified = false;
         // check if all parents exist
-        // eslint-disable-next-line
         result.forEach(item => {
             if (item.parent) {
                 const parent = result.find(it => it.id === item.parent);
@@ -798,7 +797,6 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
         let el: ListElement | undefined | null =
             typeof selected === 'object' ? selected : listItems.find(it => it.id === selected);
         do {
-            // eslint-disable-next-line
             if (el?.parent) {
                 const parent: string = el.parent;
                 el = listItems.find(it => it.id === parent);
@@ -1402,7 +1400,6 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
             }
         }
 
-        // eslint-disable-next-line
         while (this.state.listItems.find(it => it.id === `${this.parent}.${word.replace(/\.\s/g, '_')}${i}`)) {
             i++;
         }
@@ -1412,7 +1409,6 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
 
     getUniqueFolderName(): string {
         let i = 1;
-        // eslint-disable-next-line
         while (this.state.listItems.find(it => it.id === `${this.parent}.${I18n.t('Folder')}_${i}`)) {
             i++;
         }

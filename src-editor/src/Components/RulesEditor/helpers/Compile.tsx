@@ -1,4 +1,9 @@
-import type { RuleBlockConfig, RuleContext, RuleUserConditionsSaved, RuleUserRules } from '@iobroker/javascript-rules-dev';
+import type {
+    RuleBlockConfig,
+    RuleContext,
+    RuleUserConditionsSaved,
+    RuleUserRules,
+} from '@iobroker/javascript-rules-dev';
 import type { GenericBlock } from '../components/GenericBlock';
 
 export const STANDARD_FUNCTION_STATE = `async function (obj) {
@@ -199,7 +204,6 @@ export function compile(json: RuleUserRules, blocks: (typeof GenericBlock<any>)[
     return compileTriggers(json, null, blocks);
 }
 
-// eslint-disable-next-line no-unused-vars
 export function code2json(code: string): RuleUserRules {
     if (!code) {
         return DEFAULT_RULE;

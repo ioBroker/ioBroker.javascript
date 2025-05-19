@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "composite": true,
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "allowSyntheticDefaultImports": true
+    },
+    "include": ["modulefederation.admin.config.ts", "vite.config.ts", "module-federation/vite-importmap-shim.ts"]
+}

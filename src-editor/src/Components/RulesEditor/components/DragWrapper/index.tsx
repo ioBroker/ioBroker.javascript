@@ -7,7 +7,13 @@ import { filterElement } from '../../helpers/filterElement';
 import { findCard, moveCard } from '../../helpers/cardSort';
 import { ContextWrapperCreate } from '../ContextWrapper';
 import cls from './style.module.scss';
-import type { BlockValue, RuleBlockConfig, RuleBlockDescription, RuleBlockType, RuleUserRules } from '@iobroker/javascript-rules-dev';
+import type {
+    BlockValue,
+    RuleBlockConfig,
+    RuleBlockDescription,
+    RuleBlockType,
+    RuleUserRules,
+} from '@iobroker/javascript-rules-dev';
 
 interface DragWrapperProps {
     typeBlock?: RuleBlockType;
