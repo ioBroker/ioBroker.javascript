@@ -26,6 +26,10 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (@klein0r) Added possibility to escape chars in formatTimeDiff
+
 ### 8.9.2 (2025-04-27)
 
 * (@GermanBluefox) Updated packages for GUI

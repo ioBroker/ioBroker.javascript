@@ -1299,6 +1299,8 @@ formatTimeDiff(milliseconds, format);
 * ss, сс(cyrillic) - full seconds, e.g. "05"
 * s, с(cyrillic) - short seconds, e.g., "5"
 
+You can use escape charachter `\` to avoid the replacement. e.g. `DD \Day\s, h \hour\s, m \minute, ss \second\s`
+
 #### Example
 
 ```js
