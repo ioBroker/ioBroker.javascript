@@ -1946,7 +1946,7 @@ describe.only('Test JS', function () {
                 source:         `createState('test_formatTimeDiff', { type: 'string', role: 'json', read: true, write: false }, () => {\n` +
                                 `    const diff1 = formatTimeDiff(172800000 + 10800000 + 540000 + 15000, 'hh:mm:ss');\n` +
                                 `    const diff2 = formatTimeDiff((172800000 + 10800000 + 540000 + 15000) * -1, 'mm:ss');\n` +
-                                `    const diff3 = formatTimeDiff(374501000, 'DD \\Day\\s, h \\hour\\s, m \\minute, ss \\second\\s');\n` +
+                                `    const diff3 = formatTimeDiff(374501000, 'DD \\\\Day\\\\s, h \\\\hour\\s, m \\\\minute, ss \\\\second\\\\s');\n` +
                                 `    setState('test_formatTimeDiff', { val: JSON.stringify({ diff1, diff2, diff3 }), ack: true });\n` +
                                 `});`,
             },
