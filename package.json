@@ -1,6 +1,6 @@
 {
   "name": "iobroker.javascript",
-  "version": "8.9.1",
+  "version": "8.9.2",
   "description": "Rules Engine for ioBroker",
   "author": "bluefox <dogafox@gmail.com>",
   "contributors": [
@@ -42,10 +42,10 @@
   },
   "dependencies": {
     "@iobroker/adapter-core": "^3.2.3",
-    "@iobroker/types": "^7.0.6",
-    "@types/node": "^22.13.9",
+    "@iobroker/types": "^7.0.7",
+    "@types/node": "^22.10.10",
     "@types/request": "^2.48.12",
-    "axios": "^1.8.1",
+    "axios": "^1.9.0",
     "jsonata": "^2.0.6",
     "jszip": "^3.10.1",
     "node-inspect": "^2.0.0",
@@ -54,7 +54,7 @@
     "request": "^2.88.2",
     "semver": "^7.7.1",
     "suncalc2": "^1.8.1",
-    "typescript": "~5.8.2",
+    "typescript": "~5.7.3",
     "virtual-tsc": "^0.6.2",
     "wake_on_lan": "^1.0.0"
   },
@@ -64,16 +64,14 @@
     "@alcalzone/release-script-plugin-license": "^3.7.0",
     "@iobroker/adapter-dev": "^1.4.0",
     "@iobroker/build-tools": "^2.0.15",
-    "@iobroker/eslint-config": "^2.0.0",
-    "@iobroker/testing": "^5.0.3",
+    "@iobroker/eslint-config": "^2.0.1",
+    "@iobroker/testing": "^5.0.4",
     "@iobroker/vis-2-widgets-react-dev": "^4.0.4",
     "@types/node-schedule": "^2.1.7",
     "@types/nodemailer": "^6.4.17",
     "@types/request": "^2.48.12",
     "@types/suncalc": "^1.9.2",
     "alcalzone-shared": "^5.0.0",
-    "chai": "^4.5.0",
-    "mocha": "^11.1.0",
     "timekeeper": "^2.3.1"
   },
   "bugs": {
@@ -98,7 +96,7 @@
     "//postinstall": "node ./install/installTypings.js",
     "build": "node tasks",
     "release": "release-script --noPush -y --all",
-    "update-packages": "npx -y npm-check-updates --upgrade && cd src-editor && npx -y npm-check-updates --upgrade && cd ../src-admin && npx -y npm-check-updates --upgrade",
+    "update-packages": "ncu --upgrade && cd src && ncu --upgrade && cd ../src-admin && ncu --upgrade",
     "npm": "npm i && cd src-editor && npm i -f && cd ../src-admin && npm i -f",
     "lint": "eslint -c eslint.config.mjs",
     "lint-all": "eslint -c eslint.config.mjs && cd src && eslint -c eslint.config.mjs && cd ../src-admin && eslint -c eslint.config.mjs",

@@ -268,7 +268,7 @@ Do not import any libraries as all functions are already imported.`,
                                 fullWidth
                                 onKeyUp={e => {
                                     if (e.key === 'Enter' && e.ctrlKey) {
-                                        ask();
+                                        void ask();
                                     }
                                 }}
                                 label={I18n.t('Enter your question')}

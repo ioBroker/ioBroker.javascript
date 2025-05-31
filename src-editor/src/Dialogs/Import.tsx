@@ -140,6 +140,7 @@ class DialogImport extends React.Component<DialogImportProps, DialogImportState>
                 if (err || !result) {
                     this.setState({ error: err || 'No data' });
                 } else {
+                    // eslint-disable-next-line @typescript-eslint/no-base-to-string
                     this.setState({ text: result.data?.toString() || '' });
                 }
             },

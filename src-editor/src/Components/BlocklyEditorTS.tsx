@@ -1,4 +1,4 @@
-// This file uses Typescript Blockly from sources. The problem is, all blocks must be rewritten into TS, event dynamical one
+// This file uses TypeScript Blockly from sources. The problem is, all blocks must be rewritten into TS, event dynamical one
 // So this is just a POC
 
 import React from 'react';

@@ -26,6 +26,15 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (@klein0r) Added possibility to escape chars in formatTimeDiff
+
+### 8.9.2 (2025-04-27)
+
+* (@GermanBluefox) Updated packages for GUI
+* (@GermanBluefox) Used TypeScript for an admin component
+
 ### 8.9.1 (2025-01-26)
 
 * (@GermanBluefox) Corrected blockly function editor
@@ -40,10 +49,6 @@ Executes Javascript, Typescript Scripts.
 
 ### 8.8.2 (2024-08-07)
 * (bluefox) updated dependencies
-
-### 8.8.0 (2024-08-05)
-* (@klein0r) Added option to register notifications via scripts
-* (@klein0r) Fixed sendTo block with an empty name list
 
 ## License
 The MIT License (MIT)

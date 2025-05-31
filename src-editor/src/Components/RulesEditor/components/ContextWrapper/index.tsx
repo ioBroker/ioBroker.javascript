@@ -67,8 +67,7 @@ export const ContextWrapper = ({ children, socket }: { socket: AdminConnection; 
             const dynamicRules = instances.filter(obj => obj.common.javascriptRules);
 
             const alreadyCreated: string[] = [];
-            for (const k in dynamicRules) {
-                const obj = dynamicRules[k];
+            for (const obj of dynamicRules) {
                 if (alreadyCreated.includes(obj.common.name) || !obj.common.javascriptRules) {
                     continue;
                 }
@@ -124,7 +123,6 @@ export const ContextWrapper = ({ children, socket }: { socket: AdminConnection; 
                             {
                                 name: obj.common.javascriptRules.name,
                                 entry: url,
-                                // @ts-expect-error defined in js-controller
                                 type: obj.common.javascriptRules.type,
                             },
                         ],
@@ -142,7 +140,7 @@ export const ContextWrapper = ({ children, socket }: { socket: AdminConnection; 
                         ADAPTERS[obj.common.name] = null;
                     }
                 } catch (e) {
-                    console.error(`Cannot load component "${obj.common.javascriptRules!.name}": ${e}`);
+                    console.error(`Cannot load component "${obj.common.javascriptRules.name}": ${e}`);
                 }
             }
 

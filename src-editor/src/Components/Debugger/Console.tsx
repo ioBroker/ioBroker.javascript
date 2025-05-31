@@ -177,6 +177,7 @@ class Console extends React.Component<ConsoleProps, ConsoleState> {
     }
 
     onCopy(): void {
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         Utils.copyToClipboard(this.props.console.join('\n'));
     }
 

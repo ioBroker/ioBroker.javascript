@@ -1,0 +1,1 @@
+import{C as o}from"./ConfigCustomJavascriptSet__loadShare__react__loadShare__-CzzIM-HW.js";import{Y as n}from"./createTheme-BwMO3rTt.js";function r(e){return Object.keys(e).length===0}function m(e=null){const t=o.useContext(n);return!t||r(t)?e:t}export{m as u};

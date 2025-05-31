@@ -1,23 +1,20 @@
-import config, { reactConfig } from '@iobroker/eslint-config';
+// ioBroker eslint template configuration file for js and ts files
+// Please note that esm or react based modules need additional modules loaded.
+import config from '@iobroker/eslint-config';
 
 export default [
     ...config,
-    ...reactConfig,
+
     {
-        languageOptions: {
-            parserOptions: {
-                projectService: {
-                    allowDefaultProject: ['*.js', '*.mjs'],
-                },
-                tsconfigRootDir: import.meta.dirname,
-            },
-        },
+        // specify files to exclude from linting here
+        ignores: ['build/', 'node_modules/', '.__mf__temp/'],
     },
     {
-        // disable temporary the rule 'jsdoc/require-param' and enable 'jsdoc/require-jsdoc'
         rules: {
             'jsdoc/require-jsdoc': 'off',
-            'jsdoc/require-param': 'off',
+            'jsdoc/require-param-description': 'off',
+            'jsdoc/require-returns-description': 'off',
+            'jsdoc/require-returns-check': 'off',
         },
     },
 ];

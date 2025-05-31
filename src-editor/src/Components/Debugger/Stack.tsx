@@ -408,7 +408,14 @@ class Stack extends React.Component<StackProps, StackState> {
                 return JSON.stringify(val);
             }
             if (typeof val === 'string') {
-                return <Box component="span" sx={styles.error}>{val}</Box>;
+                return (
+                    <Box
+                        component="span"
+                        sx={styles.error}
+                    >
+                        {val}
+                    </Box>
+                );
             }
             return (
                 <ReactJson

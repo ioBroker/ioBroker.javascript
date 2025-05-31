@@ -195,7 +195,6 @@ export abstract class GenericBlock<
         // do nothing, but blocks can overwrite it
     }
 
-    // eslint-disable-next-line react/no-unused-class-component-methods
     renderText = (input: RuleInputText, value: string, onChange: (value: string) => void): React.JSX.Element => {
         const { className } = this.props;
         const { attr, frontText, backText, nameBlock, name, doNotTranslate, doNotTranslateBack } = input;
@@ -221,7 +220,6 @@ export abstract class GenericBlock<
         );
     };
 
-    // eslint-disable-next-line react/no-unused-class-component-methods
     renderSwitch = (input: RuleInputSwitch, value: boolean, onChange: (value: boolean) => void): React.JSX.Element => {
         const { className } = this.props;
         const { attr, frontText, backText, nameBlock, doNotTranslate, doNotTranslateBack } = input;
@@ -243,7 +241,7 @@ export abstract class GenericBlock<
         );
     };
 
-    // eslint-disable-next-line react/no-unused-class-component-methods,class-methods-use-this
+    // eslint-disable-next-line class-methods-use-this
     renderNameText = (
         { attr, signature, doNotTranslate, defaultValue }: RuleInputNameText,
         value: string,
@@ -256,7 +254,6 @@ export abstract class GenericBlock<
         </div>
     );
 
-    // eslint-disable-next-line react/no-unused-class-component-methods
     renderNumber = (
         input: RuleInputNumber,
         value: number,
@@ -295,7 +292,6 @@ export abstract class GenericBlock<
         ) : null;
     };
 
-    // eslint-disable-next-line react/no-unused-class-component-methods
     renderColor = (input: RuleInputColor, value: string, onChange: (value: string) => void): React.JSX.Element => {
         const { className } = this.props;
         const { attr, backText, frontText, doNotTranslate, doNotTranslateBack } = input;
@@ -320,7 +316,6 @@ export abstract class GenericBlock<
         );
     };
 
-    // eslint-disable-next-line react/no-unused-class-component-methods
     renderCheckbox = (
         input: RuleInputCheckbox,
         value: boolean,
@@ -364,7 +359,6 @@ export abstract class GenericBlock<
         );
     };
 
-    // eslint-disable-next-line react/no-unused-class-component-methods
     renderSlider = (input: RuleInputSlider, value: number, onChange: (value: number) => void): React.JSX.Element => {
         const { className } = this.props;
         const { attr, frontText, backText, nameBlock, min, max, step, unit, doNotTranslate, doNotTranslateBack } =
@@ -407,7 +401,6 @@ export abstract class GenericBlock<
         );
     };
 
-    // eslint-disable-next-line react/no-unused-class-component-methods
     renderButton = (input: RuleInputButton, value: boolean, onChange: (bValue: boolean) => void): React.JSX.Element => {
         const { className } = this.props;
         const { attr, frontText, backText, doNotTranslate, doNotTranslateBack } = input;
@@ -450,7 +443,6 @@ export abstract class GenericBlock<
         return Promise.resolve(null);
     }
 
-    // eslint-disable-next-line react/no-unused-class-component-methods
     renderObjectID = (
         input: RuleInputObjectID,
         value: string,
@@ -599,7 +591,7 @@ export abstract class GenericBlock<
         );
     };
 
-    // eslint-disable-next-line react/no-unused-class-component-methods,class-methods-use-this
+    // eslint-disable-next-line class-methods-use-this
     renderTime = (input: RuleInputTime, value: string, onChange: (value: string) => void): React.JSX.Element => {
         const { attr, backText, frontText, doNotTranslate, doNotTranslateBack } = input;
         return (
@@ -618,7 +610,6 @@ export abstract class GenericBlock<
         );
     };
 
-    // eslint-disable-next-line react/no-unused-class-component-methods,class-methods-use-this
     renderSelect = (
         input: RuleInputSelect,
         value: any,
@@ -661,7 +652,6 @@ export abstract class GenericBlock<
         );
     };
 
-    // eslint-disable-next-line react/no-unused-class-component-methods
     renderInstance = (
         input: RuleInputInstance,
         value: string,
@@ -698,7 +688,7 @@ export abstract class GenericBlock<
         );
     };
 
-    // eslint-disable-next-line react/no-unused-class-component-methods,class-methods-use-this
+    // eslint-disable-next-line class-methods-use-this
     renderDialog = (input: RuleInputDialog): React.JSX.Element => {
         const { onShowDialog, frontText, backText, attr, icon, doNotTranslate, doNotTranslateBack } = input;
         return (
@@ -718,7 +708,6 @@ export abstract class GenericBlock<
         );
     };
 
-    // eslint-disable-next-line react/no-unused-class-component-methods,class-methods-use-this
     renderModalInput = (
         input: RuleInputModalInput,
         value: string | number,
@@ -770,7 +759,7 @@ export abstract class GenericBlock<
         );
     };
 
-    // eslint-disable-next-line react/no-unused-class-component-methods,class-methods-use-this
+    // eslint-disable-next-line class-methods-use-this
     renderDate = (input: RuleInputDate, value: string, onChange: (value: string) => void): React.JSX.Element => {
         const { attr, backText, frontText, doNotTranslate, doNotTranslateBack } = input;
         return (
@@ -890,7 +879,7 @@ export abstract class GenericBlock<
     }
 
     // will be overwritten
-    // eslint-disable-next-line react/no-unused-class-component-methods,class-methods-use-this
+    // eslint-disable-next-line class-methods-use-this
     getData(): RuleBlockDescription {
         return {
             acceptedBy: 'triggers',

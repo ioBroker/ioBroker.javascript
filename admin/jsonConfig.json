@@ -120,7 +120,8 @@
           "md": 12,
           "lg": 12,
           "url": "custom/customComponents.js",
-          "name": "ConfigCustomJavascriptSet/Components/Astro"
+          "name": "ConfigCustomJavascriptSet/Components/Astro",
+          "bundlerType": "module"
         },
         "createAstroStates": {
           "newLine": true,

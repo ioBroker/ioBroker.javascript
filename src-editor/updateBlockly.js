@@ -14,23 +14,25 @@ function copyFile(fileName, newName) {
     const stat = fs.lstatSync(srcName);
     if (stat.isDirectory()) {
         const files = fs.readdirSync(srcName);
-        files.forEach(file => copyFile(`${fileName}/${file}`))
+        files.forEach(file => copyFile(`${fileName}/${file}`));
     } else {
         fs.writeFileSync(dstName, fs.readFileSync(srcName));
     }
 }
 
-function deleteFolder(path) {
+/*function deleteFolder(path) {
     let files = [];
     if (fs.existsSync(path)) {
         files = fs.readdirSync(path);
 
-        files.forEach(file=> {
+        files.forEach(file => {
             const curPath = `${path}/${file}`;
 
-            if (fs.lstatSync(curPath).isDirectory()) { // recurse
+            if (fs.lstatSync(curPath).isDirectory()) {
+                // recurse
                 deleteFolder(curPath);
-            } else { // delete file
+            } else {
+                // delete file
                 fs.unlinkSync(curPath);
             }
         });
@@ -38,10 +40,10 @@ function deleteFolder(path) {
         fs.rmdirSync(path);
     }
 }
-
+*/
 try {
     cp.execSync('git clone https://github.com/google/blockly.git');
-} catch (e) {
+} catch {
     console.log('Blockly yet cloned');
 }
 

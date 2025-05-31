@@ -134,6 +134,7 @@ class DialogImportFile extends React.Component<DialogImportFileProps, DialogImpo
                 if (err || !result) {
                     this.setState({ error: err || 'No data' });
                 } else {
+                    // eslint-disable-next-line @typescript-eslint/no-base-to-string
                     this.props.onClose(result.data?.toString() || '');
                 }
             },
