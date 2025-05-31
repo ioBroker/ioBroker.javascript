@@ -1,6 +1,11 @@
 import { I18n } from '@iobroker/adapter-react-v5';
 import { GenericBlock } from '../GenericBlock';
-import type { RuleBlockConfigActionSendEmail, RuleBlockDescription, RuleContext, GenericBlockProps } from '@iobroker/javascript-rules-dev';
+import type {
+    RuleBlockConfigActionSendEmail,
+    RuleBlockDescription,
+    RuleContext,
+    GenericBlockProps,
+} from '@iobroker/javascript-rules-dev';
 
 class ActionSendEmail extends GenericBlock<RuleBlockConfigActionSendEmail> {
     constructor(props: GenericBlockProps<RuleBlockConfigActionSendEmail>) {

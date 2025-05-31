@@ -1755,7 +1755,14 @@ class JavaScript extends adapter_core_1.Adapter {
                 source = `(async () => {\n${source}\n${logSubscriptionsText}\n})();`;
             }
             else {
-                source = `${source}\n${logSubscriptionsText}`;
+                if (source.endsWith('export {};\n')) {
+                    // If the source ends with "export {};" place the log subscriptions before it
+                    source = source.slice(0, -11); // remove "export {};\n"
+                    source = `${source}\n${logSubscriptionsText}\nexport {};\n`;
+                }
+                else {
+                    source = `${source}\n${logSubscriptionsText}`;
+                }
             }
         }
         else {

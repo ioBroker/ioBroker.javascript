@@ -1662,6 +1662,7 @@ declare global {
     /**
      * Deletes the state with the given ID
      *
+     * @param id The ID of the state to be deleted
      * @param callback (optional) Is called after the state was deleted (or not).
      */
     function deleteState(id: string, callback?: GenericCallback<boolean>): void;
@@ -1748,6 +1749,9 @@ declare global {
     /**
      * Compares two or more times
      *
+     * @param startTime - The start time to compare with
+     * @param endTime - The end time to compare with
+     * @param operation - The operation to use for comparison. Possible values:
      * @param timeToCompare - The time to compare with startTime and/or endTime. If none is given, the current time is used
      */
     function compareTime(

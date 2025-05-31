@@ -205,7 +205,7 @@ export function resolveTypings(
 }
 
 /**
- * @param s
+ * @param s Statement to check whether it must be hoisted to the top of the file
  * @param isGlobal Whether this is a global script or a normal one
  */
 function mustBeHoisted(s: Statement & { modifiers?: Modifier[] }, isGlobal?: boolean): boolean {

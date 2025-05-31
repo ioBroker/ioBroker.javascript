@@ -4536,7 +4536,12 @@ function sandBox(script, name, verbose, debug, context) {
                 if (sandbox.verbose) {
                     sandbox.log(`extendObject(id=${id}, obj=${JSON.stringify(obj)})`, 'info');
                 }
-                adapter.extendForeignObject(id, JSON.parse(JSON.stringify(obj)), callback);
+                if (callback) {
+                    adapter.extendForeignObject(id, JSON.parse(JSON.stringify(obj)), callback);
+                }
+                else {
+                    void adapter.extendForeignObject(id, JSON.parse(JSON.stringify(obj)));
+                }
             }
         };
         sandbox.deleteObject = function (id, isRecursive, callback) {

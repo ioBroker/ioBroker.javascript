@@ -29,6 +29,8 @@ Executes Javascript, Typescript Scripts.
 ### **WORK IN PROGRESS**
 
 * (@klein0r) Added possibility to escape chars in formatTimeDiff
+* (@GermanBluefox) Backend was migrated to TypeScript
+* (@GermanBluefox) Breaking change: removed "require" module
 
 ### 8.9.2 (2025-04-27)
 

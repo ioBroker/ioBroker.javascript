@@ -16,12 +16,16 @@ export default [
     {
         ignores: [
             'src-admin/**/*',
+            'src-editor/**/*',
+            'install/**/*',
             'admin/**/*',
             'admin-config/**/*',
             'detection/*',
             'lib/**/*',
             'node_modules/**/*',
             'test/**/*',
+            'build-backend/**/*',
+            'tasks.js',
         ],
     },
     {

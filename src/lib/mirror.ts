@@ -219,7 +219,7 @@ export class Mirror {
     updateFolderTime(id: string): void {
         this.dbList[id].ts = Date.now();
         this.dbList[id].from = this.from;
-        this.adapter.setForeignObject(id, this.dbList[id] as ioBroker.Object);
+        void this.adapter.setForeignObject(id, this.dbList[id] as ioBroker.Object);
     }
 
     private _getDiskPath(pathDisk: string[]): string {
@@ -315,7 +315,7 @@ export class Mirror {
                             this.dbList[id].ts = this.diskList[id].ts;
                             this.dbList[id].from = this.from;
                             this.log.debug(`Update DB with ${id}`);
-                            this.adapter.setForeignObject(id, this.dbList[id] as ioBroker.Object);
+                            void this.adapter.setForeignObject(id, this.dbList[id] as ioBroker.Object);
                         }
                         files.splice(f, 1);
                         objects.splice(o, 1);
@@ -364,7 +364,7 @@ export class Mirror {
                 this.log.debug(`Create script in DB with ${id}`);
                 // ensure that every script has a folder and if not, then create it
                 this._checkIfAllFoldersAreExist(id, this.dbList);
-                this.adapter.setForeignObject(id, this.dbList[id] as ioBroker.Object);
+                void this.adapter.setForeignObject(id, this.dbList[id] as ioBroker.Object);
             } else {
                 this.log.warn(`Please delete file ${join(dirDisk, files[f])}`);
             }
@@ -492,7 +492,7 @@ export class Mirror {
                         this.dbList[id].ts = ts;
                         this.log.debug(`Update script ${id} in DB`);
                         this.dbList[id].from = this.from;
-                        this.adapter.setForeignObject(id, this.dbList[id] as ioBroker.Object);
+                        void this.adapter.setForeignObject(id, this.dbList[id] as ioBroker.Object);
                     } else {
                         this.dbList[id].ts = ts;
                     }
@@ -516,7 +516,7 @@ export class Mirror {
                         ts: ts,
                     };
                     this._checkIfAllFoldersAreExist(id, this.dbList);
-                    this.adapter.setForeignObject(id, this.dbList[id] as ioBroker.Object);
+                    void this.adapter.setForeignObject(id, this.dbList[id] as ioBroker.Object);
                 }
             } catch (err: unknown) {
                 this.log.error(`Cannot read file ${file}: ${err as Error}`);

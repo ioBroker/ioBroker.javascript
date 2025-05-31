@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 import { I18n, type IobTheme, type ThemeName, type ThemeType, Utils } from '@iobroker/adapter-react-v5';
+import type { DebugMessage, RuleUserRules } from '@iobroker/javascript-rules-dev';
 
 import cls from './style.module.scss';
 
@@ -13,8 +14,7 @@ import './helpers/stylesVariables.scss';
 
 import DialogExport from '../../Dialogs/Export';
 import DialogImport from '../../Dialogs/Import';
-import type { DebugMessage, RuleUserRules } from '@iobroker/javascript-rules-dev';
-import type { GenericBlock } from '@/Components/RulesEditor/components/GenericBlock';
+import type { GenericBlock } from './components/GenericBlock';
 
 interface RulesEditorProps {
     onChange: (code: string) => void;

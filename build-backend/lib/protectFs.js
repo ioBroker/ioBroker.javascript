@@ -193,7 +193,7 @@ class ProtectFs {
             throw new Error('Permission denied');
         }
         if (!readOnly && filePath.startsWith((0, node_path_1.join)(this.ioBrokerDataDir, 'files'))) {
-            this.log.error(`May not read ${file.toString()} - use ${readOnly ? 'readFile' : 'writeFile'} instead`);
+            this.log.error(`May not read ${file.toString()} - use writeFile instead`);
             throw new Error('Permission denied');
         }
     }

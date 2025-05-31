@@ -540,7 +540,7 @@ class Mirror {
         try {
             if (dirPath && !dirPath.startsWith('.') && (0, node_fs_1.existsSync)(dirPath)) {
                 const files = (0, node_fs_1.readdirSync)(dirPath).filter(name => !name.startsWith('.'));
-                files.forEach(file => {
+                for (const file of files) {
                     const fullName = (0, node_path_1.join)(dirPath, file);
                     const stats = (0, node_fs_1.statSync)(fullName);
                     if (stats.isDirectory()) {
@@ -554,7 +554,7 @@ class Mirror {
                             name: fullName,
                         };
                     }
-                });
+                }
             }
         }
         catch (err) {

@@ -703,7 +703,7 @@ class JavaScript extends Adapter {
             if (oldState) {
                 // enable or disable script
                 if (!state.ack && id.startsWith(this.activeStr) && this.objects[id]?.native?.script) {
-                    this.extendForeignObject(this.objects[id].native.script, {
+                    void this.extendForeignObject(this.objects[id].native.script, {
                         common: { enabled: state.val },
                     });
                 }
@@ -1219,7 +1219,7 @@ class JavaScript extends Adapter {
                 } else {
                     instObj.common.adminUI = { config: 'json' };
                 }
-                this.setForeignObject(instObj._id, instObj);
+                void this.setForeignObject(instObj._id, instObj);
             }
         }
 
@@ -1363,7 +1363,7 @@ class JavaScript extends Adapter {
 
                                         // Store the compiled source and the original source hash, so we don't need to do the work again next time
                                         this.ignoreObjectChange.add(obj._id); // ignore the next change and don't restart scripts
-                                        this.extendForeignObject(obj._id, {
+                                        void this.extendForeignObject(obj._id, {
                                             common: newCommon,
                                         });
                                     } else {
@@ -2109,7 +2109,13 @@ class JavaScript extends Adapter {
             if (wrapAsync) {
                 source = `(async () => {\n${source}\n${logSubscriptionsText}\n})();`;
             } else {
-                source = `${source}\n${logSubscriptionsText}`;
+                if (source.endsWith('export {};\n')) {
+                    // If the source ends with "export {};" place the log subscriptions before it
+                    source = source.slice(0, -11); // remove "export {};\n"
+                    source = `${source}\n${logSubscriptionsText}\nexport {};\n`;
+                } else {
+                    source = `${source}\n${logSubscriptionsText}`;
+                }
             }
         } else {
             if (wrapAsync) {
@@ -2300,7 +2306,7 @@ class JavaScript extends Adapter {
                     this.subscribedPatternsFile[key] -= this.scripts[name].subscribesFile[key];
                     if (this.subscribedPatternsFile[key] <= 0) {
                         const [id, file] = key.split('$%$');
-                        this.unsubscribeForeignFiles(id, file);
+                        void this.unsubscribeForeignFiles(id, file);
                         delete this.subscribedPatternsFile[key];
                     }
                 }

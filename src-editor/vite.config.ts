@@ -38,6 +38,9 @@ export default defineConfig({
     ],
     server: {
         port: 3000,
+        proxy: {
+            '/adapter': 'http://localhost:8081',
+        },
     },
     base: './',
     build: {

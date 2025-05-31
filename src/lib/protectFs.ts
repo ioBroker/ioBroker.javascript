@@ -223,6 +223,7 @@ export default class ProtectFs {
                 },
             ): Promise<Dirent[]> => {
                 this.#checkProtected(path, true);
+                // @ts-expect-error fix later
                 return nodeFS.promises.readdir.call(this, path, options || { encoding: null, withFileTypes: true }); // async function readdir(path, options) {
             },
             lchmod: async (path: PathLike, mode: Mode): Promise<void> => {
