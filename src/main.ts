@@ -14,6 +14,7 @@ import { join, sep, normalize } from 'node:path';
 import { fork, type ForkOptions } from 'node:child_process';
 import { setTypeScriptResolveOptions, Server } from 'virtual-tsc';
 import { isDeepStrictEqual } from 'node:util';
+import prettier from 'prettier';
 
 import * as dgram from 'node:dgram';
 import * as crypto from 'node:crypto';
@@ -1134,6 +1135,46 @@ class JavaScript extends Adapter {
                         },
                         obj.callback,
                     );
+                }
+                break;
+            }
+
+            case 'prettier': {
+                // Format the code with Prettier
+                if (obj.message && typeof obj.message.code === 'string') {
+                    try {
+                        prettier
+                            .format(obj.message.code, {
+                                parser: obj.message.type === 'typescript' ? 'babel-ts' : 'babel',
+                                printWidth: 120,
+                                semi: true,
+                                tabWidth: 4,
+                                useTabs: false,
+                                trailingComma: 'all',
+                                singleQuote: true,
+                                singleAttributePerLine: true,
+                                endOfLine: 'lf',
+                                bracketSpacing: true,
+                                arrowParens: 'avoid',
+                                quoteProps: 'as-needed',
+                            })
+                            .then(formattedCode => {
+                                if (obj.callback) {
+                                    this.sendTo(obj.from, obj.command, { code: formattedCode }, obj.callback);
+                                } else {
+                                    this.logWithLineInfo(`Formatted code:\n${formattedCode}`);
+                                }
+                            })
+                            .catch(e => {
+                                this.logError('Prettier', 'Error formatting code:', e as Error);
+                                this.sendTo(obj.from, obj.command, { error: (e as Error).toString() }, obj.callback);
+                            });
+                    } catch (e) {
+                        this.logError('Prettier', 'Error formatting code:', e as Error);
+                        this.sendTo(obj.from, obj.command, { error: (e as Error).toString() }, obj.callback);
+                    }
+                } else {
+                    this.sendTo(obj.from, obj.command, { error: 'No code provided' }, obj.callback);
                 }
                 break;
             }

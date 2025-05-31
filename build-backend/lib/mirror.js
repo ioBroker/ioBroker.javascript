@@ -176,7 +176,7 @@ class Mirror {
     updateFolderTime(id) {
         this.dbList[id].ts = Date.now();
         this.dbList[id].from = this.from;
-        this.adapter.setForeignObject(id, this.dbList[id]);
+        void this.adapter.setForeignObject(id, this.dbList[id]);
     }
     _getDiskPath(pathDisk) {
         return (0, node_path_1.join)(this.diskRoot, pathDisk.join('/')).replace(/\\/g, '/');
@@ -263,7 +263,7 @@ class Mirror {
                             this.dbList[id].ts = this.diskList[id].ts;
                             this.dbList[id].from = this.from;
                             this.log.debug(`Update DB with ${id}`);
-                            this.adapter.setForeignObject(id, this.dbList[id]);
+                            void this.adapter.setForeignObject(id, this.dbList[id]);
                         }
                         files.splice(f, 1);
                         objects.splice(o, 1);
@@ -307,7 +307,7 @@ class Mirror {
                 this.log.debug(`Create script in DB with ${id}`);
                 // ensure that every script has a folder and if not, then create it
                 this._checkIfAllFoldersAreExist(id, this.dbList);
-                this.adapter.setForeignObject(id, this.dbList[id]);
+                void this.adapter.setForeignObject(id, this.dbList[id]);
             }
             else {
                 this.log.warn(`Please delete file ${(0, node_path_1.join)(dirDisk, files[f])}`);
@@ -428,7 +428,7 @@ class Mirror {
                         this.dbList[id].ts = ts;
                         this.log.debug(`Update script ${id} in DB`);
                         this.dbList[id].from = this.from;
-                        this.adapter.setForeignObject(id, this.dbList[id]);
+                        void this.adapter.setForeignObject(id, this.dbList[id]);
                     }
                     else {
                         this.dbList[id].ts = ts;
@@ -454,7 +454,7 @@ class Mirror {
                         ts: ts,
                     };
                     this._checkIfAllFoldersAreExist(id, this.dbList);
-                    this.adapter.setForeignObject(id, this.dbList[id]);
+                    void this.adapter.setForeignObject(id, this.dbList[id]);
                 }
             }
             catch (err) {

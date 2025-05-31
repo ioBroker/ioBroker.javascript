@@ -83,7 +83,7 @@ function sandBox(script, name, verbose, debug, context) {
                 adapter.subscribeForeignStates(pattern);
                 // request current value to deliver old value on change.
                 if (typeof pattern === 'string' && !pattern.includes('*')) {
-                    adapter.getForeignState(pattern, (_err, state) => {
+                    void adapter.getForeignState(pattern, (_err, state) => {
                         if (state) {
                             states[pattern] = state;
                         }
@@ -129,7 +129,7 @@ function sandBox(script, name, verbose, debug, context) {
         }
         if (!context.subscribedPatternsFile[key]) {
             context.subscribedPatternsFile[key] = 1;
-            adapter.subscribeForeignFiles(id, fileNamePattern);
+            void adapter.subscribeForeignFiles(id, fileNamePattern);
         }
         else {
             context.subscribedPatternsFile[key]++;
@@ -146,7 +146,7 @@ function sandBox(script, name, verbose, debug, context) {
         if (context.subscribedPatternsFile[key]) {
             context.subscribedPatternsFile[key]--;
             if (!context.subscribedPatternsFile[key]) {
-                adapter.unsubscribeForeignFiles(id, fileNamePattern);
+                void adapter.unsubscribeForeignFiles(id, fileNamePattern);
                 delete context.subscribedPatternsFile[key];
             }
         }
@@ -959,8 +959,8 @@ function sandBox(script, name, verbose, debug, context) {
                         sandbox.log('You cannot use this function synchronous', 'error');
                     }
                     else {
-                        adapter.getForeignState(this[0], (err, state) => {
-                            callback(err, context.convertBackStringifiedValues(this[0], state));
+                        void adapter.getForeignState(this[0], (err, state) => {
+                            void callback(err, context.convertBackStringifiedValues(this[0], state));
                         });
                     }
                 }
@@ -992,7 +992,7 @@ function sandBox(script, name, verbose, debug, context) {
                     callback = isAck;
                     isAck = undefined;
                 }
-                result
+                void result
                     .setStateAsync(state, isAck)
                     .then(() => typeof callback === 'function' && callback());
                 return this;
@@ -1007,7 +1007,7 @@ function sandBox(script, name, verbose, debug, context) {
                     callback = isAck;
                     isAck = undefined;
                 }
-                result.setStateChangedAsync(state, isAck).then(() => typeof callback === 'function' && callback());
+                void result.setStateChangedAsync(state, isAck).then(() => typeof callback === 'function' && callback());
                 return this;
             };
             result.setStateChangedAsync = async function (state, isAck) {
@@ -2272,7 +2272,7 @@ function sandBox(script, name, verbose, debug, context) {
                     adapter.getState(id, (err, state) => callback(err, context.convertBackStringifiedValues(id, state)));
                 }
                 else {
-                    adapter.getForeignState(id, (err, state) => callback(err, context.convertBackStringifiedValues(id, state)));
+                    void adapter.getForeignState(id, (err, state) => callback(err, context.convertBackStringifiedValues(id, state)));
                 }
             }
             else {
@@ -2311,13 +2311,13 @@ function sandBox(script, name, verbose, debug, context) {
                 return false;
             }
             if (typeof callback === 'function') {
-                adapter.getForeignObject(id, (err, obj) => {
+                void adapter.getForeignObject(id, (err, obj) => {
                     if (!obj || obj.type !== 'state') {
                         callback(err, false);
                         return;
                     }
                     if (adapter.config.subscribe) {
-                        adapter.getForeignState(id, (err, state) => {
+                        void adapter.getForeignState(id, (err, state) => {
                             callback(err, !!state);
                         });
                     }
@@ -2342,7 +2342,7 @@ function sandBox(script, name, verbose, debug, context) {
                 return false;
             }
             if (typeof callback === 'function') {
-                adapter.getForeignObject(id, (err, obj) => callback(err, !!obj));
+                void adapter.getForeignObject(id, (err, obj) => callback(err, !!obj));
             }
             else {
                 return !!objects[id];
@@ -2373,7 +2373,7 @@ function sandBox(script, name, verbose, debug, context) {
             }
             // with callback
             if (typeof cb === 'function') {
-                adapter.getForeignObject(id, (err, obj) => {
+                void adapter.getForeignObject(id, (err, obj) => {
                     if (obj) {
                         objects[id] = obj;
                     }
@@ -2385,7 +2385,7 @@ function sandBox(script, name, verbose, debug, context) {
                         result = JSON.parse(JSON.stringify(objects[id]));
                     }
                     catch (err) {
-                        adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
+                        void adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
                             val: true,
                             ack: true,
                             c: 'getObject',
@@ -2428,7 +2428,7 @@ function sandBox(script, name, verbose, debug, context) {
                     result = JSON.parse(JSON.stringify(objects[id]));
                 }
                 catch (err) {
-                    adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
+                    void adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
                         val: true,
                         ack: true,
                         c: 'getObject',
@@ -3212,7 +3212,7 @@ function sandBox(script, name, verbose, debug, context) {
             if (sandbox.verbose) {
                 sandbox.log(`registerNotification(msg=${msg}, category=${category})`, 'info');
             }
-            adapter.registerNotification('javascript', category, msg);
+            void adapter.registerNotification('javascript', category, msg);
         },
         setInterval: function (callback, ms, ...args) {
             if (typeof callback === 'function') {
@@ -3626,29 +3626,38 @@ function sandBox(script, name, verbose, debug, context) {
             const day = 24 * hour;
             const neg = diff < 0;
             diff = Math.abs(diff);
-            if (/DD|TT|ДД|D|T|Д/.test(text)) {
+            if (/(?<!\\)(D|T|Д)/.test(text)) {
                 const days = Math.floor(diff / day);
-                text = text.replace(/DD|TT|ДД/, days < 10 ? `0${days}` : days.toString());
-                text = text.replace(/[DTД]/, days.toString());
+                text = text
+                    .replace(/(?<!\\)(DD|TT|ДД)/g, days.toString().padStart(2, '0'))
+                    .replace(/(?<!\\)(D|T|Д)/g, days.toString());
                 if (sandbox.verbose) {
                     sandbox.log(`formatTimeDiff(format=${format}, text=${text}, days=${days})`, 'debug');
                 }
                 diff -= days * day;
             }
-            if (/hh|SS|чч|h|S|ч/.test(text)) {
+            if (/(?<!\\)(h|S|ч)/.test(text)) {
                 const hours = Math.floor(diff / hour);
-                text = text.replace(/hh|SS|чч/, hours < 10 ? `0${hours}` : hours.toString());
-                text = text.replace(/[hSч]/, hours.toString());
+                text = text
+                    .replace(/(?<!\\)(hh|SS|чч)/g, hours.toString().padStart(2, '0'))
+                    .replace(/(?<!\\)(h|S|ч)/g, hours.toString());
                 sandbox.verbose &&
                     sandbox.log(`formatTimeDiff(format=${format}, text=${text}, hours=${hours})`, 'debug');
                 diff -= hours * hour;
             }
-            if (/mm|мм|m|м/.test(text)) {
+            if (/(?<!\\)(m|м)/.test(text)) {
                 const minutes = Math.floor(diff / minute);
-                text = text.replace(/mm|мм/, minutes < 10 ? `0${minutes}` : minutes.toString());
-                text = text.replace(/[mм]/, minutes.toString());
-                sandbox.verbose &&
+                text = text
+                    .replace(/(?<!\\)(mm|мм)/g, minutes.toString().padStart(2, '0'))
+                    .replace(/(?<!\\)(m|м)/g, minutes.toString());
+                text = text
+                    .replace(/\\(D|T|Д)/g, '$1')
+                    .replace(/\\(h|S|ч)/g, '$1')
+                    .replace(/\\(m|м)/g, '$1')
+                    .replace(/\\(s|с)/g, '$1');
+                if (sandbox.verbose) {
                     sandbox.log(`formatTimeDiff(format=${format}, text=${text}, minutes=${minutes})`, 'debug');
+                }
                 diff -= minutes * minute;
             }
             if (/ss|сс|мм|s|с/.test(text)) {
@@ -4152,7 +4161,7 @@ function sandBox(script, name, verbose, debug, context) {
                     obj = JSON.parse(obj);
                 }
                 catch (err) {
-                    adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
+                    void adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
                         val: true,
                         ack: true,
                         c: 'getAttr',
@@ -4421,7 +4430,7 @@ function sandBox(script, name, verbose, debug, context) {
         // internal function to send the block debugging info to the front-end
         _sendToFrontEnd: function (blockId, data) {
             if (context.rulesOpened === sandbox.scriptName) {
-                adapter.setState('debug.rules', JSON.stringify({ ruleId: sandbox.scriptName, blockId, data, ts: Date.now() }), true);
+                void adapter.setState('debug.rules', JSON.stringify({ ruleId: sandbox.scriptName, blockId, data, ts: Date.now() }), true);
             }
         },
         existsStateAsync: function (_id) {

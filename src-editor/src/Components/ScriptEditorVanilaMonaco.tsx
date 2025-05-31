@@ -1,9 +1,9 @@
 import React from 'react';
 import type * as monacoEditor from 'monaco-editor';
 
-import { Fab } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Fab, IconButton, Snackbar } from '@mui/material';
 
-import { MdGTranslate as IconNoCheck } from 'react-icons/md';
+import { MdGTranslate as IconNoCheck, MdClose as Close } from 'react-icons/md';
 
 import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
 import type { DebuggerLocation, SetBreakpointParameterType } from './Debugger/types';
@@ -36,6 +36,7 @@ interface ScriptEditorProps {
     breakpoints?: SetBreakpointParameterType[];
     location?: DebuggerLocation | null;
     onToggleBreakpoint?: (lineNumber: number) => void;
+    triggerPrettier: number;
 }
 
 interface ScriptEditorState {
@@ -47,6 +48,24 @@ interface ScriptEditorState {
     check: boolean;
     searchText: string;
     typingsLoaded: boolean;
+    showError: {
+        title?: string;
+        message?: string;
+        full?: boolean;
+    } | null;
+}
+
+/**
+ * Converts an error message to HTML format, removing ANSI escape sequences and escaping HTML characters.
+ *
+ * @param message The error message to convert.
+ * @returns The HTML formatted error message.
+ */
+function errorMessageToHtml(message: string): string {
+    // ANSI-Escape-Sequenzen entfernen
+    // eslint-disable-next-line no-control-regex
+    const ansiRegex = /\x1b\[[0-9;]*m/g;
+    return message.replace(ansiRegex, '');
 }
 
 class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState> {
@@ -75,6 +94,8 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
 
     private decorations: string[] = [];
 
+    private triggerPrettier: number;
+
     constructor(props: ScriptEditorProps) {
         super(props);
         this.state = {
@@ -86,7 +107,9 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
             check: false,
             searchText: this.props.searchText || '',
             typingsLoaded: false,
+            showError: null,
         };
+        this.triggerPrettier = props.triggerPrettier;
         this.runningInstancesStr = JSON.stringify(this.props.runningInstances);
         this.originalCode = props.code || '';
         this.monacoDiv = React.createRef<HTMLDivElement>();
@@ -115,10 +138,10 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         if (!this.editor) {
             return;
         }
-        runningInstances = runningInstances || this.props.runningInstances;
+        runningInstances ||= this.props.runningInstances;
 
         const scriptAdapterInstance =
-            runningInstances && Object.keys(runningInstances).find(id => runningInstances && runningInstances[id]);
+            runningInstances && Object.keys(runningInstances).find(id => runningInstances?.[id]);
 
         if (scriptAdapterInstance) {
             void this.props.socket
@@ -283,9 +306,42 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
 
     componentWillUnmount(): void {
         if (this.editor) {
-            this.props.onRegisterSelect && this.props.onRegisterSelect(null);
+            this.props.onRegisterSelect?.(null);
             this.editor.dispose();
             this.editor = null;
+        }
+    }
+
+    async doPrettier(): Promise<void> {
+        const scriptAdapterInstance =
+            this.props.runningInstances &&
+            Object.keys(this.props.runningInstances).find(id => this.props.runningInstances?.[id]);
+
+        if (!scriptAdapterInstance) {
+            window.alert(I18n.t('No script adapter instance found to format the code'));
+            return;
+        }
+        const result = await this.props.socket.sendTo(
+            scriptAdapterInstance.replace('system.adapter.', ''),
+            'prettier',
+            {
+                code: this.editor?.getValue(),
+                type: this.state.language,
+            },
+        );
+        if (!result.error) {
+            if (result.code) {
+                this.editor?.setValue(result.code);
+                this.props.onChange?.(result.code);
+                this.showDecorators();
+            }
+        } else {
+            this.setState({
+                showError: {
+                    title: I18n.t('Error formatting code'),
+                    message: errorMessageToHtml(result.error),
+                },
+            });
         }
     }
 
@@ -590,8 +646,68 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
 
     onChange(): void {
         if (!this.props.readOnly && this.editor) {
-            this.props.onChange && this.props.onChange(this.editor.getValue());
+            this.props.onChange?.(this.editor.getValue());
         }
+    }
+
+    renderErrorDialog(): React.JSX.Element | null {
+        if (!this.state.showError) {
+            return null;
+        }
+
+        if (this.state.showError.full) {
+            return (
+                <Dialog
+                    open={!0}
+                    maxWidth="md"
+                    onClose={() => this.setState({ showError: null })}
+                >
+                    <DialogTitle>{this.state.showError.title || I18n.t('Error')}</DialogTitle>
+                    <DialogContent>
+                        <pre>
+                            <code>{this.state.showError.message}</code>
+                        </pre>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button
+                            variant="contained"
+                            startIcon={<Close />}
+                            onClick={() => this.setState({ showError: null })}
+                        >
+                            {I18n.t('Close')}{' '}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            );
+        }
+
+        return (
+            <Snackbar
+                open={!0}
+                autoHideDuration={5000}
+                onClose={() => this.setState({ showError: null })}
+                message={this.state.showError.title}
+                action={
+                    <React.Fragment>
+                        <Button
+                            color="secondary"
+                            size="small"
+                            onClick={() => this.setState({ showError: { ...this.state.showError, full: true } })}
+                        >
+                            {I18n.t('More')}
+                        </Button>
+                        <IconButton
+                            size="small"
+                            aria-label="close"
+                            color="inherit"
+                            onClick={() => this.setState({ showError: null })}
+                        >
+                            <Close fontSize="small" />
+                        </IconButton>
+                    </React.Fragment>
+                }
+            />
+        );
     }
 
     render(): React.JSX.Element | null {
@@ -603,11 +719,17 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
             return null;
         }
 
+        if (this.props.triggerPrettier !== this.triggerPrettier) {
+            this.triggerPrettier = this.props.triggerPrettier;
+            setTimeout(() => this.doPrettier().catch(err => console.error('Error formatting code:', err)), 50);
+        }
+
         return (
             <div
                 ref={this.monacoDiv}
                 style={{ ...this.props.style, width: '100%', height: '100%', overflow: 'hidden', position: 'relative' }}
             >
+                {this.renderErrorDialog()}
                 {!this.state.check && (
                     <Fab
                         size="small"

@@ -51,6 +51,7 @@ const node_path_1 = require("node:path");
 const node_child_process_1 = require("node:child_process");
 const virtual_tsc_1 = require("virtual-tsc");
 const node_util_1 = require("node:util");
+const prettier_1 = __importDefault(require("prettier"));
 const dgram = __importStar(require("node:dgram"));
 const crypto = __importStar(require("node:crypto"));
 const dns = __importStar(require("node:dns"));
@@ -603,7 +604,7 @@ class JavaScript extends adapter_core_1.Adapter {
             if (oldState) {
                 // enable or disable script
                 if (!state.ack && id.startsWith(this.activeStr) && this.objects[id]?.native?.script) {
-                    this.extendForeignObject(this.objects[id].native.script, {
+                    void this.extendForeignObject(this.objects[id].native.script, {
                         common: { enabled: state.val },
                     });
                 }
@@ -902,6 +903,48 @@ class JavaScript extends adapter_core_1.Adapter {
                 }
                 break;
             }
+            case 'prettier': {
+                // Format the code with Prettier
+                if (obj.message && typeof obj.message.code === 'string') {
+                    try {
+                        prettier_1.default
+                            .format(obj.message.code, {
+                            parser: obj.message.type === 'typescript' ? 'babel-ts' : 'babel',
+                            printWidth: 120,
+                            semi: true,
+                            tabWidth: 4,
+                            useTabs: false,
+                            trailingComma: 'all',
+                            singleQuote: true,
+                            singleAttributePerLine: true,
+                            endOfLine: 'lf',
+                            bracketSpacing: true,
+                            arrowParens: 'avoid',
+                            quoteProps: 'as-needed',
+                        })
+                            .then(formattedCode => {
+                            if (obj.callback) {
+                                this.sendTo(obj.from, obj.command, { code: formattedCode }, obj.callback);
+                            }
+                            else {
+                                this.logWithLineInfo(`Formatted code:\n${formattedCode}`);
+                            }
+                        })
+                            .catch(e => {
+                            this.logError('Prettier', 'Error formatting code:', e);
+                            this.sendTo(obj.from, obj.command, { error: e.toString() }, obj.callback);
+                        });
+                    }
+                    catch (e) {
+                        this.logError('Prettier', 'Error formatting code:', e);
+                        this.sendTo(obj.from, obj.command, { error: e.toString() }, obj.callback);
+                    }
+                }
+                else {
+                    this.sendTo(obj.from, obj.command, { error: 'No code provided' }, obj.callback);
+                }
+                break;
+            }
         }
     }
     onLog(msg) {
@@ -970,7 +1013,7 @@ class JavaScript extends adapter_core_1.Adapter {
                 else {
                     instObj.common.adminUI = { config: 'json' };
                 }
-                this.setForeignObject(instObj._id, instObj);
+                void this.setForeignObject(instObj._id, instObj);
             }
         }
         if (webstormDebug) {
@@ -1087,7 +1130,7 @@ class JavaScript extends adapter_core_1.Adapter {
                                         }
                                         // Store the compiled source and the original source hash, so we don't need to do the work again next time
                                         this.ignoreObjectChange.add(obj._id); // ignore the next change and don't restart scripts
-                                        this.extendForeignObject(obj._id, {
+                                        void this.extendForeignObject(obj._id, {
                                             common: newCommon,
                                         });
                                     }
@@ -1939,7 +1982,7 @@ class JavaScript extends adapter_core_1.Adapter {
                     this.subscribedPatternsFile[key] -= this.scripts[name].subscribesFile[key];
                     if (this.subscribedPatternsFile[key] <= 0) {
                         const [id, file] = key.split('$%$');
-                        this.unsubscribeForeignFiles(id, file);
+                        void this.unsubscribeForeignFiles(id, file);
                         delete this.subscribedPatternsFile[key];
                     }
                 }

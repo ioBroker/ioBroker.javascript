@@ -45,6 +45,7 @@ import {
     MdPlayArrow as IconPlay,
     MdPause as IconPause,
     MdBrightness4 as IconAstro,
+    MdCode as IconCode,
 } from 'react-icons/md';
 
 import {
@@ -267,6 +268,7 @@ interface EditorState {
     confirm: string;
     askAboutDebug: boolean;
     menuDebugAnchorEl: null | HTMLElement;
+    triggerPrettier: number;
 }
 
 class Editor extends React.Component<EditorProps, EditorState> {
@@ -336,6 +338,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             menuDebugAnchorEl: null,
             menuOpened: !!this.props.menuOpened,
             menuTabsOpened: false,
+            triggerPrettier: 1,
             rules: null,
             runningInstances: this.props.runningInstances || {},
             searchText: '',
@@ -1334,7 +1337,17 @@ class Editor extends React.Component<EditorProps, EditorState> {
                         </Button>
                     ) : null}
                     <div style={{ flex: 2 }} />
-
+                    {!this.props.debugInstance && !this.state.showCompiledCode && (
+                        <IconButton
+                            style={styles.toolbarButtons}
+                            key="prettier"
+                            title={I18n.t('Prettify the script')}
+                            onClick={() => this.setState({ triggerPrettier: this.state.triggerPrettier + 1 })}
+                            size="medium"
+                        >
+                            <IconCode />
+                        </IconButton>
+                    )}
                     {this.state.blockly && !this.state.showCompiledCode ? (
                         <IconButton
                             key="export"
@@ -1588,6 +1601,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                         isDark={this.state.themeType === 'dark'}
                         socket={this.props.socket}
                         runningInstances={this.state.runningInstances}
+                        triggerPrettier={this.state.triggerPrettier}
                         onChange={newValue => this.onChange({ script: newValue })}
                         language={
                             this.scripts[this.state.selected].engineType === 'TypeScript/ts'

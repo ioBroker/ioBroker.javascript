@@ -763,7 +763,7 @@ declare global {
             /** name is equal or matches to given one */
             name?: string | string[] | RegExp;
             /** type of change */
-            change?: 'eq' | 'ne' | 'gt' | 'ge' | 'lt' | 'le' | 'any';
+            change?: 'eq' | 'ne' | 'gt' | 'ge' | 'lt' | 'le' | 'any' | '*';
             val?: ioBroker.StateValue;
             /** New value must not be equal to given one */
             valNe?: ioBroker.StateValue;
