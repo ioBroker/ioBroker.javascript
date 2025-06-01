@@ -64,7 +64,7 @@
     "@alcalzone/release-script-plugin-license": "^3.7.0",
     "@iobroker/adapter-dev": "^1.4.0",
     "@iobroker/build-tools": "^2.0.15",
-    "@iobroker/eslint-config": "^2.0.1",
+    "@iobroker/eslint-config": "^2.0.2",
     "@iobroker/testing": "^5.0.4",
     "@iobroker/vis-2-widgets-react-dev": "^4.0.4",
     "@types/node-schedule": "^2.1.7",
