@@ -23,7 +23,7 @@
         "@mui/icons-material": "^6.4.11",
         "@mui/material": "^6.4.11",
         "@mui/x-date-pickers": "^7.29.1",
-        "@types/react": "^18.3.20",
+        "@types/react": "^19.1.6",
         "@types/react-dom": "^18.3.6",
         "date-fns": "^4.1.0",
         "leaflet": "^1.9.4",
