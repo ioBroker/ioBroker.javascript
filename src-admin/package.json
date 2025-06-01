@@ -21,7 +21,7 @@
         "@iobroker/adapter-react-v5": "7.6.14",
         "@iobroker/json-config": "7.6.14",
         "@mui/icons-material": "^6.4.11",
-        "@mui/material": "^6.4.11",
+        "@mui/material": "^7.1.0",
         "@mui/x-date-pickers": "^7.29.1",
         "@types/react": "^18.3.20",
         "@types/react-dom": "^18.3.6",
