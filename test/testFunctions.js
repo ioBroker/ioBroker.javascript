@@ -1933,7 +1933,7 @@ describe.only('Test JS', function () {
 
     it('Test JS: test formatTimeDiff', function (done) {
         this.timeout(10000);
-        // add script
+        // add a script
         const script = {
             _id:                'script.js.test_formatTimeDiff',
             type:               'script',
