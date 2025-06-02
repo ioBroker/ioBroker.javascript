@@ -568,7 +568,7 @@ describe.only('Test JS', function () {
 
     it('Test JS: write directly into iobroker-data/files must not work', function (done) {
         this.timeout(3000);
-        // add script
+        // add a script
         const script = {
             _id:                'script.js.test_nodefs_write',
             type:               'script',
@@ -582,7 +582,7 @@ describe.only('Test JS', function () {
                                 `try{\n` +
                                 `    const filesPath = defaultDataDir + '/files/0_userdata.0/nodejswrite.txt';\n` +
                                 `    log('Writing file to path: ' + filesPath);\n` +
-                                `    fs.appendFile(filesPath, 'this is not allowed!');\n` +
+                                `    fs.appendFileSync(filesPath, 'this is not allowed!');\n` +
                                 `} catch (err) {\n` +
                                 `    createState('test_nodefs_write', err.toString());\n` +
                                 `}`,
