@@ -281,7 +281,7 @@ export default class ProtectFs {
             if (
                 typeof (nodeFS as unknown as Record<string, any>)[m] === 'function' &&
                 Object.hasOwn(nodeFS, m) &&
-                !Object.hasOwn(this, m)
+                !Object.hasOwn(Object.getPrototypeOf(this), 'appendFile')
             ) {
                 // console.debug(`Missing function in ProtectFS: ${m} - adding from node:fs`);
                 // @ts-expect-error Elsewise we must implement EVERY function in fs
