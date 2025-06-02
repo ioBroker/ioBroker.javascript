@@ -3660,14 +3660,20 @@ function sandBox(script, name, verbose, debug, context) {
                 }
                 diff -= minutes * minute;
             }
-            if (/ss|сс|мм|s|с/.test(text)) {
+            if (/(?<!\\)(s|с)/.test(text)) {
                 const seconds = Math.floor(diff / second);
-                text = text.replace(/ss|сс/, seconds < 10 ? `0${seconds}` : seconds.toString());
-                text = text.replace(/[sс]/, seconds.toString());
+                text = text
+                    .replace(/(?<!\\)(ss|сс)/g, seconds.toString().padStart(2, '0'))
+                    .replace(/(?<!\\)(s|с)/g, seconds.toString());
                 sandbox.verbose &&
                     sandbox.log(`formatTimeDiff(format=${format}, text=${text}, seconds=${seconds})`, 'debug');
                 // diff -= seconds * second; // no milliseconds
             }
+            text = text
+                .replace(/\\(D|T|Д)/g, '$1')
+                .replace(/\\(h|S|ч)/g, '$1')
+                .replace(/\\(m|м)/g, '$1')
+                .replace(/\\(s|с)/g, '$1');
             if (sandbox.verbose) {
                 sandbox.log(`formatTimeDiff(format=${format}, text=${text})`, 'debug');
             }
