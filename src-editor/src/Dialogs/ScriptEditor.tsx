@@ -115,6 +115,7 @@ class DialogScriptEditor extends React.Component<DialogScriptEditorProps, Dialog
                         </Box>
                     )}
                     <ScriptEditorComponent
+                        triggerPrettier={1}
                         adapterName={this.props.adapterName}
                         runningInstances={this.props.runningInstances}
                         style={{ ...styles.textArea, height: this.props.args ? 'calc(100% - 30px)' : '100%' }}

@@ -48,6 +48,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                 key="scriptEditorDiv2"
             >
                 <ScriptEditorComponent
+                    triggerPrettier={1}
                     key="scriptEditor2"
                     name={this.props.scriptName}
                     adapterName={this.props.adapterName}

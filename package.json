@@ -97,7 +97,7 @@
     "build-backend": "tsc -p tsconfig.build.json",
     "release": "release-script --noPush -y --all",
     "update-packages": "npx -y npm-check-updates --upgrade && cd src-editor && npx -y npm-check-updates --upgrade && cd ../src-admin && npx -y npm-check-updates --upgrade",
-    "npm": "npm i && cd src-editor && npm i -f && cd ../src-admin && npm i -f",
+    "npm": "npm i && cd src-editor && npm i -f && cd ../src-admin && npm i",
     "lint": "eslint -c eslint.config.mjs",
     "lint-all": "eslint -c eslint.config.mjs && cd src-editor && eslint -c eslint.config.mjs && cd ../src-admin && eslint -c eslint.config.mjs",
     "admin-0-clean": "node tasks.js --admin-0-clean",

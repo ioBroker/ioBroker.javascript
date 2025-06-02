@@ -317,6 +317,7 @@ Do not import any libraries as all functions are already imported.`,
                                 <div style={{ color: props.themeType === 'dark' ? '#984242' : '#bb0000' }}>{error}</div>
                             ) : (
                                 <ScriptEditorComponent
+                                    triggerPrettier={1}
                                     adapterName={props.adapterName}
                                     runningInstances={props.runningInstances}
                                     style={{
