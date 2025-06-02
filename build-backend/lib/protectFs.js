@@ -168,7 +168,7 @@ class ProtectFs {
             if (typeof nodeFS[m] === 'function' &&
                 Object.hasOwn(nodeFS, m) &&
                 !Object.hasOwn(Object.getPrototypeOf(this), 'appendFile')) {
-                console.debug(`Missing function in ProtectFS: ${m} - adding from node:fs`);
+                // console.debug(`Missing function in ProtectFS: ${m} - adding from node:fs`);
                 // @ts-expect-error Elsewise we must implement EVERY function in fs
                 this[m] = nodeFS[m];
             }
