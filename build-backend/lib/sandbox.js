@@ -3641,8 +3641,9 @@ function sandBox(script, name, verbose, debug, context) {
                 text = text
                     .replace(/(?<!\\)(hh|SS|чч)/g, hours.toString().padStart(2, '0'))
                     .replace(/(?<!\\)(h|S|ч)/g, hours.toString());
-                sandbox.verbose &&
+                if (sandbox.verbose) {
                     sandbox.log(`formatTimeDiff(format=${format}, text=${text}, hours=${hours})`, 'debug');
+                }
                 diff -= hours * hour;
             }
             if (/(?<!\\)(m|м)/.test(text)) {
@@ -3650,11 +3651,6 @@ function sandBox(script, name, verbose, debug, context) {
                 text = text
                     .replace(/(?<!\\)(mm|мм)/g, minutes.toString().padStart(2, '0'))
                     .replace(/(?<!\\)(m|м)/g, minutes.toString());
-                text = text
-                    .replace(/\\(D|T|Д)/g, '$1')
-                    .replace(/\\(h|S|ч)/g, '$1')
-                    .replace(/\\(m|м)/g, '$1')
-                    .replace(/\\(s|с)/g, '$1');
                 if (sandbox.verbose) {
                     sandbox.log(`formatTimeDiff(format=${format}, text=${text}, minutes=${minutes})`, 'debug');
                 }
