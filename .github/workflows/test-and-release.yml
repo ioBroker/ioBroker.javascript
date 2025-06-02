@@ -6,192 +6,190 @@ name: Test and Release
 # Run this job on all pushes and pull requests
 # as well as tags with a semantic version
 on:
-  push:
-    branches:
-      - '*'
-    tags:
-      # normal versions
-      - "v?[0-9]+.[0-9]+.[0-9]+"
-      # pre-releases
-      - "v?[0-9]+.[0-9]+.[0-9]+-**"
-  pull_request: {}
+    push:
+        branches:
+            - '*'
+        tags:
+            # normal versions
+            - 'v?[0-9]+.[0-9]+.[0-9]+'
+            # pre-releases
+            - 'v?[0-9]+.[0-9]+.[0-9]+-**'
+    pull_request: {}
 
 # Cancel previous PR/branch runs when a new commit is pushed
 concurrency:
-  group: ${{ github.ref }}
-  cancel-in-progress: true
+    group: ${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  # Performs quick checks before the expensive test runs
-  check-and-lint:
-    if: contains(github.event.head_commit.message, '[skip ci]') == false
+    # Performs quick checks before the expensive test runs
+    check-and-lint:
+        if: contains(github.event.head_commit.message, '[skip ci]') == false
 
-    runs-on: ubuntu-latest
+        runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
+        steps:
+            - uses: actions/checkout@v4
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20.x
 
-      - name: Install Dependencies
-        run: npm install
+            - name: Install Dependencies
+              run: npm install
 
-#      - name: Perform a type check
-#        run: npm run check:ts
-#        env:
-#          CI: true
-      # - name: Lint TypeScript code
-      #   run: npm run lint
-#      - name: Test package files
-#        run: npm run test:package
+    #      - name: Perform a type check
+    #        run: npm run check:ts
+    #        env:
+    #          CI: true
+    # - name: Lint TypeScript code
+    #   run: npm run lint
+    #      - name: Test package files
+    #        run: npm run test:package
 
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-      - run: npm i
-      - run: npm run build
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20.x
+            - run: npm i
+            - run: npm run build
 
-  # Runs adapter tests on all supported node versions and OSes
-  adapter-tests:
-    if: contains(github.event.head_commit.message, '[skip ci]') == false
+    # Runs adapter tests on all supported node versions and OSes
+    adapter-tests:
+        if: contains(github.event.head_commit.message, '[skip ci]') == false
 
-    needs: [check-and-lint, build]
+        needs: [check-and-lint, build]
 
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x, 22.x]
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                node-version: [18.x, 20.x, 22.x]
+                os: [ubuntu-latest, windows-latest, macos-latest]
 
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
+        steps:
+            - uses: actions/checkout@v4
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
 
-      - name: Install Dependencies
-        run: npm install
+            - name: Install Dependencies
+              run: npm install
 
-      - name: Run local tests
-        run: npm test
+            - name: Run local tests
+              run: npm test
 
-  # Merges and deploys the final package to NPM
-  auto-merge:
-    needs: [adapter-tests]
+    # Merges and deploys the final package to NPM
+    auto-merge:
+        needs: [adapter-tests]
 
-    if: |
-      always() &&
-      github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+        if: |
+            always() &&
+            github.event_name == 'pull_request'
+        runs-on: ubuntu-latest
+        steps:
+            - id: automerge
+              name: automerge
+              uses: 'pascalgn/automerge-action@v0.16.4'
+              env:
+                  GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+                  MERGE_LABELS: 'automated pr 🔧'
+                  MERGE_FILTER_AUTHOR: 'foxbot76'
+                  MERGE_FORKS: 'false'
+                  MERGE_DELETE_BRANCH: 'false'
+                  UPDATE_LABELS: 'automated pr 🔧'
+                  MERGE_METHOD: 'squash'
+                  MERGE_COMMIT_MESSAGE: 'pull-request-title-and-description'
+                  MERGE_RETRY_SLEEP: 10000
 
-    steps:
-      - id: automerge
-        name: automerge
-        uses: "pascalgn/automerge-action@v0.16.4"
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          MERGE_LABELS: "automated pr 🔧"
-          MERGE_FILTER_AUTHOR: "foxbot76"
-          MERGE_FORKS: "false"
-          MERGE_DELETE_BRANCH: "false"
-          UPDATE_LABELS: "automated pr 🔧"
-          MERGE_METHOD: "squash"
-          MERGE_COMMIT_MESSAGE: "pull-request-title-and-description"
-          MERGE_RETRY_SLEEP: 10000
+            - name: Checkout code
+              if: steps.automerge.outputs.mergeResult == 'merged'
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0 # Fetch the history, or this action won't work
+                  ref: 'master'
 
-      - name: Checkout code
-        if: steps.automerge.outputs.mergeResult == 'merged'
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Fetch the history, or this action won't work
-          ref: 'master'
+            - name: Use Node.js ${{ matrix.node-version }}
+              if: steps.automerge.outputs.mergeResult == 'merged'
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20.x
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        if: steps.automerge.outputs.mergeResult == 'merged'
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
+            - name: Determine version
+              if: steps.automerge.outputs.mergeResult == 'merged'
+              id: version
+              uses: actions/github-script@v7
+              with:
+                  result-encoding: string
+                  script: |
+                      return require('./package.json').version;
 
-      - name: Determine version
-        if: steps.automerge.outputs.mergeResult == 'merged'
-        id: version
-        uses: actions/github-script@v7
-        with:
-          result-encoding: string
-          script: |
-            return require('./package.json').version;
+            - name: Extract the commit body
+              if: steps.automerge.outputs.mergeResult == 'merged'
+              id: extract_release
+              # The body may be multiline, therefore we need to escape some characters
+              run: |
+                  BODY=$(git show -s --format=%b)
+                  BODY="${BODY//'%'/'%25'}"
+                  BODY="${BODY//$'\n'/'%0A'}"
+                  BODY="${BODY//$'\r'/'%0D'}"
+                  echo "::set-output name=BODY::$BODY"
 
+            - name: Install Dependencies
+              if: steps.automerge.outputs.mergeResult == 'merged'
+              run: npm install
 
-      - name: Extract the commit body
-        if: steps.automerge.outputs.mergeResult == 'merged'
-        id: extract_release
-        # The body may be multiline, therefore we need to escape some characters
-        run: |
-          BODY=$(git show -s --format=%b)
-          BODY="${BODY//'%'/'%25'}"
-          BODY="${BODY//$'\n'/'%0A'}"
-          BODY="${BODY//$'\r'/'%0D'}"
-          echo "::set-output name=BODY::$BODY"
+            - name: Build
+              if: steps.automerge.outputs.mergeResult == 'merged'
+              run: npm run build
 
-      - name: Install Dependencies
-        if: steps.automerge.outputs.mergeResult == 'merged'
-        run: npm install
+              # The prepublish script also creates a build
+            - name: Publish package to npm
+              if: steps.automerge.outputs.mergeResult == 'merged'
+              run: |
+                  npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+                  npm whoami
+                  npm publish
 
-      - name: Build
-        if: steps.automerge.outputs.mergeResult == 'merged'
-        run: npm run build
+            - name: Create Github Release
+              if: steps.automerge.outputs.mergeResult == 'merged'
+              uses: ncipollo/release-action@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  tag: v${{ steps.version.outputs.result }}
+                  name: Release v${{ steps.version.outputs.result }}
+                  draft: false
+                  prerelease: ${{ contains(steps.version.outputs.result, '-') }}
+                  body: ${{ steps.extract_release.outputs.BODY }}
 
-        # The prepublish script also creates a build
-      - name: Publish package to npm
-        if: steps.automerge.outputs.mergeResult == 'merged'
-        run: |
-          npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
-          npm whoami
-          npm publish
+            - name: Notify Sentry.io about the release
+              if: steps.automerge.outputs.mergeResult == 'merged'
+              run: |
+                  npm i -g @sentry/cli
+                  export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+                  export SENTRY_URL=https://sentry.iobroker.net
+                  export SENTRY_ORG=iobroker
+                  export SENTRY_PROJECT=iobroker-javascript
+                  export SENTRY_VERSION=iobroker.javascript@${{ steps.version.outputs.result }}
+                  sentry-cli releases new $SENTRY_VERSION
+                  sentry-cli releases set-commits $SENTRY_VERSION --auto
+                  sentry-cli releases finalize $SENTRY_VERSION
 
-      - name: Create Github Release
-        if: steps.automerge.outputs.mergeResult == 'merged'
-        uses: ncipollo/release-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag: v${{ steps.version.outputs.result }}
-          name: Release v${{ steps.version.outputs.result }}
-          draft: false
-          prerelease: ${{ contains(steps.version.outputs.result, '-') }}
-          body: ${{ steps.extract_release.outputs.BODY }}
-
-      - name: Notify Sentry.io about the release
-        if: steps.automerge.outputs.mergeResult == 'merged'
-        run: |
-          npm i -g @sentry/cli
-          export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
-          export SENTRY_URL=https://sentry.iobroker.net
-          export SENTRY_ORG=iobroker
-          export SENTRY_PROJECT=iobroker-javascript
-          export SENTRY_VERSION=iobroker.javascript@${{ steps.version.outputs.result }}
-          sentry-cli releases new $SENTRY_VERSION
-          sentry-cli releases set-commits $SENTRY_VERSION --auto
-          sentry-cli releases finalize $SENTRY_VERSION
-
-        # Add the following line BEFORE finalize if sourcemap uploads are needed
-        # sentry-cli releases files $SENTRY_VERSION upload-sourcemaps build/
-      - name: Notify Sentry.io about the release of frontend
-        if: steps.automerge.outputs.mergeResult == 'merged'
-        run: |
-          npm i -g @sentry/cli
-          export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
-          export SENTRY_URL=https://sentry.iobroker.net
-          export SENTRY_ORG=iobroker
-          export SENTRY_PROJECT=iobroker-javascript-react
-          export SENTRY_VERSION=iobroker.javascript-react@${{ steps.version.outputs.result }}
-          sentry-cli releases new $SENTRY_VERSION
-          sentry-cli releases set-commits $SENTRY_VERSION --auto
-          sentry-cli releases finalize $SENTRY_VERSION
+              # Add the following line BEFORE finalize if sourcemap uploads are needed
+              # sentry-cli releases files $SENTRY_VERSION upload-sourcemaps build/
+            - name: Notify Sentry.io about the release of frontend
+              if: steps.automerge.outputs.mergeResult == 'merged'
+              run: |
+                  npm i -g @sentry/cli
+                  export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+                  export SENTRY_URL=https://sentry.iobroker.net
+                  export SENTRY_ORG=iobroker
+                  export SENTRY_PROJECT=iobroker-javascript-react
+                  export SENTRY_VERSION=iobroker.javascript-react@${{ steps.version.outputs.result }}
+                  sentry-cli releases new $SENTRY_VERSION
+                  sentry-cli releases set-commits $SENTRY_VERSION --auto
+                  sentry-cli releases finalize $SENTRY_VERSION

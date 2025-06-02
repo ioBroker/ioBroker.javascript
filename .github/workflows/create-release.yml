@@ -1,92 +1,92 @@
 name: Official release
 
 on:
-  workflow_dispatch: # Manually on demand
-    inputs:
-      versionBump:
-        description: 'Type of version bump'
-        required: true
-        default: 'patch'
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
+    workflow_dispatch: # Manually on demand
+        inputs:
+            versionBump:
+                description: 'Type of version bump'
+                required: true
+                default: 'patch'
+                type: choice
+                options:
+                    - patch
+                    - minor
+                    - major
 
 jobs:
-  publish-config:
-    runs-on: ubuntu-22.04
+    publish-config:
+        runs-on: ubuntu-22.04
 
-    strategy:
-      matrix:
-        node: [20.x] # This should be LTS
+        strategy:
+            matrix:
+                node: [20.x] # This should be LTS
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Fetch the history, or this action won't work
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0 # Fetch the history, or this action won't work
 
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
+            - name: Use Node.js ${{ matrix.node }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node }}
 
-      - name: Install dependencies
-        run: npm i
+            - name: Install dependencies
+              run: npm i
 
-      - name: Test
-        run: npm test
+            - name: Test
+              run: npm test
 
-      - name: Build
-        run: npm run build
+            - name: Build
+              run: npm run build
 
-      - name: Prepare release
-        env:
-          VERSION_BUMP: ${{ inputs.versionBump }}
-        run: |
-          git config --global user.email "moritz.heusinger@gmail.com"
-          git config --global user.name "Github Action"
-          
-          npm run release -- ${VERSION_BUMP}
+            - name: Prepare release
+              env:
+                  VERSION_BUMP: ${{ inputs.versionBump }}
+              run: |
+                  git config --global user.email "moritz.heusinger@gmail.com"
+                  git config --global user.name "Github Action"
 
-      - name: Determine the version bump
-        id: version
-        uses: actions/github-script@v7
-        with:
-          result-encoding: string
-          script: |
-            const package = require('./package.json');
-            return package.version
+                  npm run release -- ${VERSION_BUMP}
 
-      - name: Extract the commit body
-        id: extract_release
-        # The body may be multiline, therefore we need to escape some characters
-        run: |
-          VERSION="${{ github.ref }}"
-          VERSION=${VERSION##*/v}
-          echo "::set-output name=VERSION::$VERSION"
-          BODY=$(git show -s --format=%b)
-          BODY="${BODY//'%'/'%25'}"
-          BODY="${BODY//$'\n'/'%0A'}"
-          BODY="${BODY//$'\r'/'%0D'}"
-          echo "::set-output name=BODY::$BODY"
+            - name: Determine the version bump
+              id: version
+              uses: actions/github-script@v7
+              with:
+                  result-encoding: string
+                  script: |
+                      const package = require('./package.json');
+                      return package.version
 
-      - name: Create Pull Request
-        id: cpr
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.PR_TOKEN }}
-          commit-message: "[OFFICIAL RELEASE] ${{ steps.version.outputs.result }}"
-          committer: foxbot76 <heusinger.moritz@gmail.com>
-          author: foxbot76 <heusinger.moritz@gmail.com>
-          signoff: false
-          branch: official-release
-          delete-branch: true
-          title: "[OFFICIAL RELEASE] ${{ steps.version.outputs.result }}"
-          body: |
-            ${{ steps.extract_release.outputs.BODY }}
-          labels: |
-            automated pr 🔧
-          assignees: foxbot76
-          draft: false
+            - name: Extract the commit body
+              id: extract_release
+              # The body may be multiline, therefore we need to escape some characters
+              run: |
+                  VERSION="${{ github.ref }}"
+                  VERSION=${VERSION##*/v}
+                  echo "::set-output name=VERSION::$VERSION"
+                  BODY=$(git show -s --format=%b)
+                  BODY="${BODY//'%'/'%25'}"
+                  BODY="${BODY//$'\n'/'%0A'}"
+                  BODY="${BODY//$'\r'/'%0D'}"
+                  echo "::set-output name=BODY::$BODY"
+
+            - name: Create Pull Request
+              id: cpr
+              uses: peter-evans/create-pull-request@v7
+              with:
+                  token: ${{ secrets.PR_TOKEN }}
+                  commit-message: '[OFFICIAL RELEASE] ${{ steps.version.outputs.result }}'
+                  committer: foxbot76 <heusinger.moritz@gmail.com>
+                  author: foxbot76 <heusinger.moritz@gmail.com>
+                  signoff: false
+                  branch: official-release
+                  delete-branch: true
+                  title: '[OFFICIAL RELEASE] ${{ steps.version.outputs.result }}'
+                  body: |
+                      ${{ steps.extract_release.outputs.BODY }}
+                  labels: |
+                      automated pr 🔧
+                  assignees: foxbot76
+                  draft: false

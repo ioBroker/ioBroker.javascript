@@ -3,15 +3,14 @@
 - match:
       # Only merge patches for production dependencies
       dependency_type: production
-      update_type: "semver:patch"
+      update_type: 'semver:patch'
 - match:
       # Except for security fixes, here we allow minor patches
       dependency_type: production
-      update_type: "security:minor"
+      update_type: 'security:minor'
 - match:
       # and development dependencies can have a minor update, too
       dependency_type: development
-      update_type: "semver:minor"
-
+      update_type: 'semver:minor'
 # The syntax is based on the legacy dependabot v1 automerged_updates syntax, see:
 # https://dependabot.com/docs/config-file/#automerged_updates
