@@ -1,0 +1,427 @@
+Comportamiento
+Identificadores de selector
+ejecutivo
+con resultados
+mando
+Ejecuta algún comando
+exec---execute-some-os-command-like-cp-file1-file2
+nivel de registro
+ninguna
+información
+depurar
+advertencia
+error
+solicitud
+URL
+con resultados
+URL de solicitud
+https://github.com/request/request
+nivel de registro
+ninguna
+información
+depurar
+advertencia
+error
+Convertir
+Al numero
+Emitir entrada al número
+toBoolean
+Enviar entrada a boolean
+Encadenar
+Emitir entrada al número
+tipo de
+Devuelve tipo de entrada
+hasta la fecha/hora
+Emitir entrada hasta la fecha
+fecha y hora
+a
+Emitir entrada desde la fecha
+JSON para objetar
+Cadena Parson JSON
+objetar a JSON
+Objeto Strinify
+embellecer
+Expresión JSONata
+aplicar para
+Convertir por expresión JSONata
+Formato de la diferencia de tiempo
+hh:mm:ss
+h:m:s
+hh:mm
+h:m
+m:s
+mm:ss
+formato personalizado
+hh:mm:ss
+Convertir milisegundos en un formato legible
+Enviar a
+mensaje
+enviar a
+Texto a voz
+enviar a
+parámetros
+mando
+parámetro
+Agregar parámetro al objeto sendTo.
+No instances
+nivel de registro
+ninguna
+información
+depurar
+advertencia
+error
+getHistory
+Instancia
+ID del objeto
+De (tiempo)
+Hasta (tiempo)
+Aggregate
+ninguna
+mínimo
+máximo
+cuenta
+promedio
+Paso
+Sra
+segundo
+min
+horas
+días
+Solicitar información de la base de datos
+gethistory
+Sistema
+salida de depuración
+Depurar
+log---gives-out-the-message-into-log
+comentario
+Ingrese un comentario para explicar el código
+ontrol
+Estado de control
+setstate
+con
+con retraso
+Sra
+segundo
+min
+, claro funcionamiento
+palanca
+Alternar el estado
+setstate
+con
+con retraso
+en ms
+, claro funcionamiento
+actualizar
+Actualizar estado
+setstate
+con
+con retraso
+en ms
+enlazar
+Enlazar dos estados entre sí
+setstate
+Object
+solo cambios
+con
+escribir
+Estado de control
+ontrol
+actualizar
+retraso en ms
+valor
+funcionamiento claro
+crear estado
+jsState
+ID del objeto
+Valor init
+Common
+Tipo de estado
+cadena de caracteres
+numero
+booleano
+json
+Es estado legible
+Es el estado escribible
+crear estado
+createstate
+Obtener valor de estado
+de Object ID
+Seleccionar ID de objeto con diálogo
+Gettate
+seleccionar ID
+Valor
+Reconocer
+Marca de tiempo
+Ultimo cambio
+Calidad
+Comentario de valor
+Fuente
+Nombre del objeto
+Descripción del objeto
+unidad estatal
+Rol de objeto
+tipo de estado
+Tipo de objeto
+Es estado legible
+Es el estado escribible
+Obtener valor de estado
+Object
+seleccionar ID
+Obtener desafío de objetos
+getobject
+Seleccionar OID
+ID del objeto
+ID del objeto (meta)
+ID del objeto (script)
+Seleccionar ID de objeto con diálogo
+Obtener atributo
+Atributo
+de Object
+Obtenga el atributo de objeto o JSON por ruta, como: 'attr1.attr'
+getattr
+Nueva línea
+Coloca una nueva línea en el texto
+Redondea
+a
+lugares decimales
+Redondea el valor a n lugares decimales
+Fecha y hora
+Tiempo actual
+Hora personalizada
+es
+hora
+Compara el tiempo
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+El tiempo real es
+Compara la hora actual
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+menos que
+igual o menor que
+mas grande que
+igual o mayor que
+igual a
+Entre
+no entre
+y
+Tiempo real como
+YYYY.MM.DD hh: mm: ss.sss
+todas las instancias
+Enviar mensaje a telegrama
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Objeto de fecha
+milisegundos
+segundos
+minutos
+minutos en el día
+segundos en el día
+horas
+dia del mes
+mes como número
+mes como texto
+mes como texto corto
+año corto
+Año completo
+texto del día de la semana
+día corto de la semana
+día de la semana como número
+formato personalizado
+aaaa.mm.dd
+aaaa/mm/dd
+yy.mm.dd
+aa/mm/dd
+dd.mm.yyyy
+dd/mm/aaaa
+dd.mm.yy
+dd/mm/aa
+mm/dd/aaaa
+mm/dd/aa
+dd.mm.
+dd/mm
+mm.dd
+mm/dd
+hh: mm
+hh: mm: ss
+hh: mm: ss.sss
+Tiempo real de
+Desplazamiento (minutos)
+YYYY.MM.DD hh: mm: ss.sss
+Obtenga tiempo real o
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Tiempo calculado
+Inicio del día
+Fin del día
+Comienzo de la semana
+Fin de semana
+Inicio del mes
+Fin del mes
+Calcular sellos de tiempo
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Calcular tiempo
+basado en
+Sra
+segundo
+min
+horas
+días
+semanas
+Tiempo de adición o subcontrato
+https://github.com/ioBroker/ioBroker.telegram/blob/master/README.md
+Tiempos de espera
+Pausa
+Pausar la ejecución por un tiempo definido
+wait
+Ejecución
+se acabó el tiempo
+en
+Sra
+segundo
+min
+Demora de ejecución
+settimeout
+claro
+Ejecución de retraso claro
+cleartimeout
+se acabó el tiempo
+se acabó el tiempo
+gettimeout
+Ejecución
+intervalo
+cada
+Sra
+Ejecución cíclica
+setinterval
+intervalo claro
+Ejecución de intervalo claro
+clearinterval
+intervalo
+intervalo
+getinterval
+Desencadenar
+fue cambiado
+fue actualizado
+es mayor que el último
+es mayor o igual que el último
+es menos que el último
+es menor o igual que el último
+es lo mismo que el último
+es verdad
+Es falso
+on---subscribe-on-changes-or-updates-of-some-state
+Ack es
+alguna
+actualizar
+mando
+Evento: si los objetos
+Si algún estado cambió o se actualizó
+ID de objeto
+ID del objeto
+desencadenar
+desencadenar
+Evento: si el objeto
+Si algún estado cambió o se actualizó
+obtener
+de gatillo
+Obtener información sobre el evento
+ID de objeto
+nombre
+descripción
+Canal ID
+Nombre del Canal
+ID del dispositivo
+nombre del dispositivo
+valor de estado
+marca de tiempo del estado
+calidad del estado
+origen del valor
+es comando o actualización
+último cambio de estado
+comentario del ultimo estado
+usuario del último estado
+valor anterior
+fecha y hora anterior
+calidad previa
+origen anterior
+comando anterior o actualización
+último cambio anterior
+comentario anterior
+usuario anterior
+Este bloque debe usarse solo dentro del bloque de evento
+programar
+Hacer algo en el cronograma cron
+programar
+astro
+Haz algo en el evento astrológico
+, compensar
+minutos
+amanecer
+salida del sol
+hora dorada
+mediodía solar
+hora dorada
+puesta de sol
+puesta de sol
+oscuridad
+anochecer náutico
+noche
+fin de noche
+amanecer náutico
+amanecer
+nadir
+astro--function
+programar
+programar
+regla cron
+Demora de ejecución
+settimeout
+claro
+Ejecución de retraso claro
+cleartimeout
+CRON
+CRON
+Crear regla CRON con diálogo
+CRON
+CRON
+Crear regla CRON con diálogo
+con segundos
+día de la semana
+mes
+fecha
+hora
+minutos
+segundos
+como línea
+JS function with return
+Javascript function
+Interruptor / caja
+el caso es
+en caso de
+hacer
+Hace algo si la condición es verdadera. Si no hay un caso coincidente, se ejecutará la función predeterminada.
+Esta función se ejecutará si no hay casos coincidentes.
+Esta es una variable para la condición.
+Evento: si el archivo
+patrón de archivo
+Con datos de archivo
+Si algún archivo cambió o actualizó
+onFile
+Cancelar evento de archivo
+Cancelar suscripción en cambio de archivo
+offFile
+Mensaje a otro script
+Instancia
+todas las instancias
+guión
+mensaje
+datos
+otro script
+otro script
+Evento: Mensaje recibido
+mensaje
+mensaje
+onMessage
+Min
+Max
+si un número entre min y max
+si está vacío
+entonces
+comprobar si está vacío
