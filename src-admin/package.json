@@ -21,7 +21,7 @@
         "@types/leaflet": "^1.9.18",
         "@types/react": "^18.3.23",
         "@types/react-dom": "^18.3.7",
-        "@vitejs/plugin-react": "^4.5.0",
+        "@vitejs/plugin-react": "^4.5.1",
         "date-fns": "^4.1.0",
         "leaflet": "^1.9.4",
         "react": "^18.3.1",
