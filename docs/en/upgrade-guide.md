@@ -14,12 +14,15 @@
 
 The script filesystem mirroring will store all source files of the Scripts in your file system and allows you to edit the files in your favorite script editor beside the web editor. All changes are synced in both directions.
 
-When enabling the script files ystem mirroring, please make sure to create a **dedicated new directory** and **do not** use an existing directory with other content. Please also make sure that no other script or process changes files in the provided directory to prevent access issues.
+When enabling the script files system mirroring, please make sure to create a **dedicated new directory** and **do not** use an existing directory with other content.
+Please also make sure that no other script or process changes files in the provided directory to prevent access issues.
 Any location needs to be writable by the "iobroker" user!
 
 ## request to httpGet
 
-**Since v8.0.0 of the JavaScript adapter** the `request` package is deprecated and the usage in your scripts will raise a warning. The JavaScript adpater needs to drop the package at some point. To make the migration as easy as possible, the sandbox provides new function to request HTTP ressources.
+**Since v8.0.0 of the JavaScript adapter** the `request` package is deprecated and the usage in your scripts will raise a warning.
+The JavaScript adapter needs to drop the package at some point.
+To make the migration as easy as possible, the sandbox provides a new function to request HTTP resources.
 
 ### JavaScript
 
