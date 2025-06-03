@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 8.8.2 (2024-08-07)
+* (bluefox) updated dependencies
+
 ## 8.8.0 (2024-08-05)
 * (@klein0r) Added option to register notifications via scripts
 * (@klein0r) Fixed sendTo block with an empty name list

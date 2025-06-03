@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 9.0.0 (2025-06-03)
 
 * (@klein0r) Added possibility to escape chars in formatTimeDiff
 * (@GermanBluefox) Back-end was migrated to TypeScript
@@ -49,9 +49,6 @@ Executes Javascript, Typescript Scripts.
 
 ### 8.8.3 (2024-09-05)
 * (bluefox) Fixed object selector in rules
-
-### 8.8.2 (2024-08-07)
-* (bluefox) updated dependencies
 
 ## License
 The MIT License (MIT)

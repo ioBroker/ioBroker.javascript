@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "8.9.2",
+    "version": "9.0.0",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "9.0.0": {
+        "en": "Added possibility to escape chars in formatTimeDiff\nBack-end was migrated to TypeScript\nBreaking change: removed \"require\" module\nAdded prettier for scripts",
+        "de": "Zusätzliche Möglichkeit, Zeichen im Format zu entkommen TimeDiff\nBackend wurde zu TypeScript migriert\nBruchänderung: entferntes \"erforderliches\" Modul\nHinzugefügt schöner für Scripts",
+        "ru": "Добавлена возможность побега чаров в формате тайм-дифф\nBack-end был перенесен на TypeScript\nПереломное изменение: удален модуль «Требовать»\nДобавлено красивее для сценариев",
+        "pt": "Adicionado possibilidade de escapar de chars em formato Ponto de vista\nO back-end foi migrado para TypeScript\nAlteração de ruptura: módulo \"require\" removido\nAdicionado mais bonito para scripts",
+        "nl": "Toegevoegd mogelijkheid om te ontsnappen tekens in formaat TimeDiff\nBack-end is gemigreerd naar TypeScript\nBreaking change: \"Require\" module verwijderd\nMooier toegevoegd voor scripts",
+        "fr": "Ajout de la possibilité d'échapper aux caractères dans le format TimeDiff\nBack-end a été migré vers TypeScript\nChangement de rupture : a supprimé le module \"requérir\"\nAjout de joli pour les scripts",
+        "it": "Aggiunta possibilità di sfuggire a chars in formato Orario\nBack-end è stato migrato a TypeScript\nCambiamento di rottura: rimosso modulo \"require\"\nAggiunto più bello per gli script",
+        "es": "Añadido posibilidad de escapar de los charcos en formato TimeDiff\nBack-end fue migrado a TipoScript\nCambio de ruptura: módulo \"requiere\" eliminado\nAñadido más alto para scripts",
+        "pl": "Dodano możliwość ucieczki znaków w formacie TimeDiff\nBack- end został przeniesiony do TypeScript\nZmiana łamania: usunięty moduł \"require\"\nDodano ładniejsze dla skryptów",
+        "uk": "Додано можливість втекти chars у форматі Час\nBack-end був мігрований до TypeScript\nЗміна несправностей: видалений модуль \"потрібно\"\nДодано претtier для скриптів",
+        "zh-cn": "添加格式跳过字符的可能性 时间\n后端已迁移到类型脚本\n中断更改: 删除“ 要求” 模块\n为脚本添加更美的"
+      },
       "8.9.2": {
         "en": "Updated packages for GUI\nUsed TypeScript for an admin component",
         "de": "Aktualisierte Pakete für GUI\nGebrauchte TypeScript für eine Admin-Komponente",
@@ -117,19 +130,6 @@
         "pl": "zaktualizowane zależności",
         "uk": "оновлені залежності",
         "zh-cn": "更新的依赖关系"
-      },
-      "8.8.0": {
-        "en": "Added option to register notifications via scripts\nFixed sendTo block with empty name list",
-        "de": "Option hinzugefügt, um Benachrichtigungen über Skripte zu registrieren\nFester Versand Blockieren mit leerer Namensliste",
-        "ru": "Добавлена возможность регистрации уведомлений через скрипты\nFixed send Заблокировать с пустым списком имен",
-        "pt": "Opção adicionada para registrar notificações via scripts\nEnviar fixo Para bloquear com lista de nomes vazia",
-        "nl": "Toegevoegd optie om meldingen te registreren via scripts\nVaste verzending Te blokkeren met lege naamlijst",
-        "fr": "Ajout d'une option pour enregistrer les notifications via des scripts\nEnvoi fixe Pour bloquer avec la liste des noms vides",
-        "it": "Aggiunta opzione per registrare le notifiche tramite script\nInviato fisso Per bloccare con l'elenco dei nomi vuoti",
-        "es": "Opción agregada para registrar notificaciones a través de scripts\nEnvío fijo Para bloquear con lista de nombres vacía",
-        "pl": "Dodano opcję rejestracji powiadomień za pomocą skryptów\nPoprawiono wysyłanie Blokowanie z pustą listą nazw",
-        "uk": "Додано опцію для реєстрації повідомлень через скрипти\nВиправлена відправка Заблокувати список порожніх імен",
-        "zh-cn": "添加通过脚本注册通知的选项\n固定发送 以空名称列表屏蔽"
       }
     },
     "platform": "Javascript/Node.js",
