@@ -642,7 +642,9 @@ describe.only('Test JS', function () {
                     `            const filesPath = defaultDataDir + '/files/0_userdata.0/nodejsread.txt';\n` +
                     `            log('Read file from path: ' + filesPath);\n` +
                     `            const data = fs.readFileSync(filesPath);\n` +
-                    `            setState('test_nodefs_read', { val: data.toString(), ack: true });\n` +
+                    `            fs.readFile(filesPath, 'utf8', (err, dataUtf) => {\n` +
+                    `               setState('test_nodefs_read', { val: data.toString() + dataUtf, ack: true });\n` +
+                    `            });\n` +
                     `        }\n` +
                     `    });\n` +
                     `});`,
@@ -650,7 +652,7 @@ describe.only('Test JS', function () {
             native: {},
         };
         const onStateChanged = function (id, state) {
-            if (id === 'javascript.0.test_nodefs_read' && state.val === 'is allowed') {
+            if (id === 'javascript.0.test_nodefs_read' && state.val === 'is allowedis allowed') {
                 removeStateChangedHandler(onStateChanged);
                 done();
             }
@@ -1889,42 +1891,6 @@ describe.only('Test JS', function () {
 
         const onStateChanged = function (id, state) {
             if (id === 'javascript.0.test_read_userdata' && state.val === 'it works') {
-                removeStateChangedHandler(onStateChanged);
-                done();
-            }
-        };
-        addStateChangedHandler(onStateChanged);
-
-        objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
-        });
-    }).timeout(5000);
-
-    it('Test JS: test readFile from "0_userdata.0" with encoding', function (done) {
-        // add a script
-        const script = {
-            _id: 'script.js.test_read_userdata',
-            type: 'script',
-            common: {
-                name: 'test file read',
-                enabled: true,
-                verbose: true,
-                engine: 'system.adapter.javascript.0',
-                engineType: 'Javascript/js',
-                source:
-                    `createState('test_read_userdata_utf8', '', () => {\n` +
-                    `    readFile('0_userdata.0', 'utf8', 'test.txt', (err, data) => {\n` +
-                    `        if (!err) {\n` +
-                    `            setState('test_read_userdata_utf8', { val: data, ack: true });\n` +
-                    `        }\n` +
-                    `    });\n` +
-                    `});`,
-            },
-            native: {},
-        };
-
-        const onStateChanged = function (id, state) {
-            if (id === 'javascript.0.test_read_userdata_utf8' && state.val === 'it works') {
                 removeStateChangedHandler(onStateChanged);
                 done();
             }
