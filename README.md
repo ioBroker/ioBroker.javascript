@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 9.0.1 (2025-06-04)
 
 * (@klein0r) Added possibility to escape chars in formatTimeDiff
 * (@GermanBluefox) Back-end was migrated to TypeScript

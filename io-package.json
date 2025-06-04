@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "9.0.0",
+    "version": "9.0.1",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "9.0.1": {
+        "en": "Added possibility to escape chars in formatTimeDiff\nBack-end was migrated to TypeScript\nBreaking change: removed \"request\" module\nAdded prettier for scripts",
+        "de": "Zusätzliche Möglichkeit, Zeichen im Format zu entkommen TimeDiff\nBackend wurde zu TypeScript migriert\nBreaking change: entferntes Modul \"Request\"\nHinzugefügt schöner für Scripts",
+        "ru": "Добавлена возможность побега чаров в формате тайм-дифф\nBack-end был перенесен на TypeScript\nПереломное изменение: удален модуль «запрос»\nДобавлено красивее для сценариев",
+        "pt": "Adicionado possibilidade de escapar de chars em formato Ponto de vista\nO back-end foi migrado para TypeScript\nAlteração de ruptura: módulo de \"requisição\" removido\nAdicionado mais bonito para scripts",
+        "nl": "Toegevoegd mogelijkheid om te ontsnappen tekens in formaat TimeDiff\nBack-end is gemigreerd naar TypeScript\nBreaking change: verwijderd \"verzoek\" module\nMooier toegevoegd voor scripts",
+        "fr": "Ajout de la possibilité d'échapper aux caractères dans le format TimeDiff\nBack-end a été migré vers TypeScript\nChangement de rupture: supprimé module \"demande\"\nAjout de joli pour les scripts",
+        "it": "Aggiunta possibilità di sfuggire a chars in formato Orario\nBack-end è stato migrato a TypeScript\nCambiamento di rottura: rimosso modulo \"richiesta\"\nAggiunto più bello per gli script",
+        "es": "Añadido posibilidad de escapar de los charcos en formato TimeDiff\nBack-end fue migrado a TipoScript\nCambio de ruptura: módulo de \"requisición\" eliminado\nAñadido más alto para scripts",
+        "pl": "Dodano możliwość ucieczki znaków w formacie TimeDiff\nBack- end został przeniesiony do TypeScript\nZmiana: usunięty moduł \"request\"\nDodano ładniejsze dla skryptów",
+        "uk": "Додано можливість втекти chars у форматі Час\nBack-end був мігрований до TypeScript\nЗміна несправностей: видалений модуль \"запит\"\nДодано претtier для скриптів",
+        "zh-cn": "添加格式跳过字符的可能性 时间\n后端已迁移到类型脚本\n中断更改: 删除“ 请求” 模块\n为脚本添加更美的"
+      },
       "8.9.2": {
         "en": "Updated packages for GUI\nUsed TypeScript for an admin component",
         "de": "Aktualisierte Pakete für GUI\nGebrauchte TypeScript für eine Admin-Komponente",
