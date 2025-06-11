@@ -24,7 +24,7 @@ const DAYS: number[] = [
     31, // 12
 ];
 
-class ConditionTime extends GenericBlock<RuleBlockConfigConditionTime> {
+export default class ConditionTime extends GenericBlock<RuleBlockConfigConditionTime> {
     constructor(props: GenericBlockProps<RuleBlockConfigConditionTime>) {
         super(props, ConditionTime.getStaticData());
     }
@@ -162,5 +162,3 @@ class ConditionTime extends GenericBlock<RuleBlockConfigConditionTime> {
         return ConditionTime.getStaticData();
     }
 }
-
-export default ConditionTime;

@@ -26,6 +26,11 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (@GermanBluefox) Corrected the rule editor
+* (@GermanBluefox) Removed the unused JS files
+
 ### 9.0.2 (2025-06-04)
 
 * (@klein0r) Added possibility to escape chars in formatTimeDiff

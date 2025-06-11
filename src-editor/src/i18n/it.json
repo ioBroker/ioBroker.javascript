@@ -1,6 +1,7 @@
 {
     "%s not found": "%s non trovato",
     "()": "()",
+    "(at %s)": "(a %s)",
     "(optional)": "(opzionale)",
     "-": "-",
     ".": ".",

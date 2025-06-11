@@ -105,7 +105,10 @@ const CustomSelect = ({
                     return item?.title ? (doNotTranslate ? item?.title : I18n.t(item?.title)) : selected;
                 }}
                 onChange={e => {
-                    !customValue && setInputText(e.target.value);
+                    if (!customValue) {
+                        setInputText(e.target.value);
+                    }
+
                     if (multiple) {
                         const values = e.target.value as string[];
                         const onlyItem = options.find(el => el.only);
@@ -139,8 +142,7 @@ const CustomSelect = ({
                 }
             >
                 {!multiple &&
-                    options &&
-                    options.map(item => (
+                    options?.map(item => (
                         <MenuItem
                             style={{ placeContent: 'space-between' }}
                             key={`key-${item.value}`}

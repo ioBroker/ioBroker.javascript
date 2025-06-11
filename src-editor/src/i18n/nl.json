@@ -1,6 +1,7 @@
 {
     "%s not found": "%s niet gevonden",
     "()": "()",
+    "(at %s)": "(op %s)",
     "(optional)": "(optioneel)",
     "-": "-",
     ".": ".",

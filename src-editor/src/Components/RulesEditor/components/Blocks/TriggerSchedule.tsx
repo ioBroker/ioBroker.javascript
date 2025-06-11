@@ -53,9 +53,15 @@ export interface ScheduleConfig {
 
 interface TriggerScheduleBlockState extends GenericBlockState<RuleBlockConfigTriggerSchedule> {
     openDialog?: boolean;
+    wizardText: string;
+    wizard: string;
+    textCron: string;
 }
 
-class TriggerScheduleBlock extends GenericBlock<RuleBlockConfigTriggerSchedule, TriggerScheduleBlockState> {
+export default class TriggerScheduleBlock extends GenericBlock<
+    RuleBlockConfigTriggerSchedule,
+    TriggerScheduleBlockState
+> {
     private coordinates: { latitude: number; longitude: number } | null = null;
 
     constructor(props: GenericBlockProps<RuleBlockConfigTriggerSchedule>) {
@@ -121,9 +127,9 @@ class TriggerScheduleBlock extends GenericBlock<RuleBlockConfigTriggerSchedule, 
     }
 
     async _setAstro(astro?: string, offset?: boolean, offsetValue?: number): Promise<void> {
-        astro = astro || this.state.settings.astro || 'solarNoon';
-        offset = offset === undefined ? this.state.settings.offset : offset;
-        offsetValue = offsetValue === undefined ? this.state.settings.offsetValue : offsetValue;
+        astro ||= this.state.settings.astro || 'solarNoon';
+        offset ??= this.state.settings.offset;
+        offsetValue ??= this.state.settings.offsetValue;
 
         offsetValue = parseInt(offsetValue as unknown as string, 10) || 0;
 
@@ -165,8 +171,10 @@ class TriggerScheduleBlock extends GenericBlock<RuleBlockConfigTriggerSchedule, 
         let time = '--:--';
         if (astro && sunValue && sunValue[astro]) {
             const astroTime = new Date(sunValue[astro]);
-            offset && astroTime.setMinutes(astroTime.getMinutes() + parseInt(offsetValue as unknown as string, 10));
-            time = `(at ${TriggerScheduleBlock._time2String(astroTime)})`; // translate
+            if (offset) {
+                astroTime.setMinutes(astroTime.getMinutes() + parseInt(offsetValue as unknown as string, 10));
+            }
+            time = I18n.t('(at %s)', TriggerScheduleBlock._time2String(astroTime)); // translate
         }
 
         let inputs: RuleInputAny[];
@@ -179,6 +187,7 @@ class TriggerScheduleBlock extends GenericBlock<RuleBlockConfigTriggerSchedule, 
                     nameRender: 'renderSelect',
                     options,
                     defaultValue: 'solarNoon',
+                    doNotTranslate2: true,
                 },
                 {
                     backText: 'with offset',
@@ -197,6 +206,7 @@ class TriggerScheduleBlock extends GenericBlock<RuleBlockConfigTriggerSchedule, 
                     nameRender: 'renderNameText',
                     attr: 'textTime',
                     defaultValue: time,
+                    doNotTranslate: true,
                 },
             ];
         } else {
@@ -206,6 +216,7 @@ class TriggerScheduleBlock extends GenericBlock<RuleBlockConfigTriggerSchedule, 
                     attr: 'astro',
                     nameRender: 'renderSelect',
                     options,
+                    doNotTranslate2: true,
                     defaultValue: 'solarNoon',
                 },
                 {
@@ -217,6 +228,7 @@ class TriggerScheduleBlock extends GenericBlock<RuleBlockConfigTriggerSchedule, 
                     nameRender: 'renderNameText',
                     attr: 'textTime1',
                     defaultValue: time,
+                    doNotTranslate: true,
                 },
             ];
         }
@@ -288,25 +300,23 @@ class TriggerScheduleBlock extends GenericBlock<RuleBlockConfigTriggerSchedule, 
     }
 
     renderCron(
-        input: RuleInputCron,
+        _input: RuleInputCron,
         value: string,
         onChange: (value: string, attr?: string, cb?: () => void) => void,
     ): React.JSX.Element | null {
         const { className } = this.props;
-        let textCron = '';
-        const { settings } = this.state;
-        const { attr } = input;
+
         return (
-            <div key={attr}>
+            <div key="cron">
                 <div style={{ display: 'flex', alignItems: 'baseline' }}>
                     <div style={{ width: '100%' }}>
                         {this.renderText(
                             {
                                 nameRender: 'renderText',
-                                attr,
+                                attr: 'cron',
                                 defaultValue: value,
                             } as RuleInputText,
-                            (settings as Record<string, any>)[attr] ? (settings as Record<string, any>)[attr] : value,
+                            this.state.settings.cron || value,
                             onChange,
                         )}
                     </div>
@@ -315,24 +325,24 @@ class TriggerScheduleBlock extends GenericBlock<RuleBlockConfigTriggerSchedule, 
                         style={{ marginLeft: 7 }}
                         value="..."
                         className={className}
-                        onClick={() => this.setState({ openDialog: true })}
+                        onClick={() => this.setState({ openDialog: true, textCron: this.state.settings.cron })}
                     />
                 </div>
                 {this.state.openDialog ? (
                     <CustomModal
+                        disabled={this.state.settings.cron === this.state.textCron}
                         onApply={(): void => {
-                            onChange(textCron, attr, () => {
+                            const textCron = this.state.textCron;
+                            onChange(textCron, 'cron', () => {
                                 onChange(convertCronToText(textCron, I18n.getLanguage()), 'addText');
                                 this.setState({ openDialog: false });
                             });
                         }}
-                        onClose={() => this.setState({ openDialog: false })}
+                        onClose={() => this.setState({ openDialog: false, textCron: '' })}
                     >
                         <ComplexCron
-                            cronExpression={
-                                (settings as Record<string, any>)[attr] ? (settings as Record<string, any>)[attr] : ''
-                            }
-                            onChange={el => (textCron = el)}
+                            cronExpression={this.state.settings.cron}
+                            onChange={value => this.setState({ textCron: value })} // textCron
                             language={I18n.getLanguage()}
                         />
                     </CustomModal>
@@ -345,24 +355,21 @@ class TriggerScheduleBlock extends GenericBlock<RuleBlockConfigTriggerSchedule, 
                         signature: true,
                         doNotTranslate: true,
                     } as RuleInputNameText,
-                    settings.addText ? settings.addText : I18n.t('every hour at 0 minutes'),
+                    this.state.settings.addText || I18n.t('every hour at 0 minutes'),
                 )}
             </div>
         );
     }
 
     renderWizard(
-        input: RuleInputWizard,
+        _input: RuleInputWizard,
         value: string,
         onChange: (newData: Record<string, any> | string) => void,
     ): React.JSX.Element {
         const { className } = this.props;
-        const { attr } = input;
-        let wizardText = '';
-        let wizard: string | null = null;
 
         return (
-            <div key={attr}>
+            <div key="wizard">
                 <div style={{ display: 'flex', alignItems: 'center', marginTop: 7 }}>
                     <CustomInput
                         className={className}
@@ -373,7 +380,7 @@ class TriggerScheduleBlock extends GenericBlock<RuleBlockConfigTriggerSchedule, 
                         size="small"
                         multiline
                         rows={2}
-                        value={(this.state.settings as Record<string, any>)[`${attr}Text`]}
+                        value={this.state.settings.wizardText}
                         onChange={el => onChange(el as string)}
                         customValue
                     />
@@ -382,31 +389,37 @@ class TriggerScheduleBlock extends GenericBlock<RuleBlockConfigTriggerSchedule, 
                         style={{ marginLeft: 7 }}
                         value="..."
                         className={className}
-                        onClick={() => this.setState({ openDialog: true })}
+                        onClick={() =>
+                            this.setState({
+                                openDialog: true,
+                                wizard: this.state.settings.wizard,
+                                wizardText: Schedule.state2text(this.state.settings.wizard),
+                            })
+                        }
                     />
                 </div>
                 {this.state.openDialog ? (
                     <CustomModal
+                        disabled={this.state.settings.wizard === this.state.wizard}
                         onApply={() =>
-                            this.setState({ openDialog: false }, () =>
+                            this.setState({ openDialog: false }, () => {
+                                // fill the `from` parameter if not set
+                                const wizardObj: ScheduleConfig = JSON.parse(this.state.wizard) as ScheduleConfig;
+                                wizardObj.valid ||= { from: Schedule.now2string() };
+                                wizardObj.valid.from ||= Schedule.now2string();
+
                                 onChange({
-                                    [`${attr}Text`]: wizardText,
-                                    [attr]: wizard,
-                                }),
-                            )
+                                    wizardText: this.state.wizardText,
+                                    wizard: JSON.stringify(wizardObj),
+                                });
+                            })
                         }
                         onClose={() => this.setState({ openDialog: false })}
                     >
                         <Schedule
                             theme={this.props.theme}
                             schedule={value}
-                            onChange={(schedule, description) => {
-                                wizardText = description || '';
-                                const wizardObj: ScheduleConfig = JSON.parse(schedule) as ScheduleConfig;
-                                wizardObj.valid = wizardObj.valid || {};
-                                wizardObj.valid.from = wizardObj.valid.from || Schedule.now2string();
-                                wizard = JSON.stringify(wizardObj);
-                            }}
+                            onChange={(wizard, wizardText) => this.setState({ wizardText: wizardText || '', wizard })}
                         />
                     </CustomModal>
                 ) : null}
@@ -415,7 +428,7 @@ class TriggerScheduleBlock extends GenericBlock<RuleBlockConfigTriggerSchedule, 
     }
 
     onTagChange(tagCard: RuleTagCardTitle): void {
-        tagCard = tagCard || this.state.settings.tagCard;
+        tagCard ||= this.state.settings.tagCard!;
         switch (tagCard) {
             case 'interval':
                 this._setInterval();
@@ -438,8 +451,8 @@ class TriggerScheduleBlock extends GenericBlock<RuleBlockConfigTriggerSchedule, 
 
             case 'wizard': {
                 const wizard: ScheduleConfig = JSON.parse(DEFAULT_WIZARD);
-                wizard.valid = wizard.valid || {};
-                wizard.valid.from = wizard.valid.from || Schedule.now2string();
+                wizard.valid ||= { from: Schedule.now2string() };
+                wizard.valid.from ||= Schedule.now2string();
 
                 this.setState(
                     {
@@ -523,5 +536,3 @@ class TriggerScheduleBlock extends GenericBlock<RuleBlockConfigTriggerSchedule, 
         return TriggerScheduleBlock.getStaticData();
     }
 }
-
-export default TriggerScheduleBlock;

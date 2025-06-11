@@ -1,6 +1,7 @@
 {
     "%s not found": "%s nicht gefunden",
     "()": "()",
+    "(at %s)": "(um %s)",
     "(optional)": "(optional)",
     "-": "-",
     ".": ".",
@@ -276,7 +277,7 @@
     "all": "alle",
     "and": "und",
     "astro": "Astro",
-    "at": "beim",
+    "at": "um",
     "clear running": "laufende abbrechen",
     "control": "Steuerung",
     "copy": "Kopie",

@@ -15,6 +15,7 @@ interface CustomModalProps {
     className?: string;
     textInput?: boolean;
     defaultValue?: string | number;
+    disabled?: boolean;
 }
 
 const CustomModal = ({
@@ -26,6 +27,7 @@ const CustomModal = ({
     className,
     textInput,
     defaultValue,
+    disabled,
 }: CustomModalProps): React.JSX.Element => {
     const [value, setValue] = useState<string | number>(defaultValue || '');
     const [originalValue] = useState<string | number>(defaultValue || '');
@@ -58,7 +60,7 @@ const CustomModal = ({
             </DialogContent>
             <DialogActions>
                 <Button
-                    disabled={originalValue === value}
+                    disabled={disabled === undefined ? originalValue === value : disabled}
                     onClick={() => onApply(textInput ? value : null)}
                     variant="contained"
                     color="primary"

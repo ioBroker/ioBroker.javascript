@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { Component, Fragment } from 'react';
 import cls from './style.module.scss';
 
 import { Menu, MenuItem, IconButton } from '@mui/material';
@@ -54,7 +54,7 @@ import type {
 export abstract class GenericBlock<
     Settings extends RuleBlockConfig = RuleBlockConfig,
     TState extends GenericBlockState<Settings> = GenericBlockState<Settings>,
-> extends PureComponent<GenericBlockProps<Settings>, TState> {
+> extends Component<GenericBlockProps<Settings>, TState> {
     private debugHideTimeout: ReturnType<typeof setTimeout> | null = null;
 
     private lastObjectIdChange: number = 0;
@@ -77,7 +77,8 @@ export abstract class GenericBlock<
 
     protected constructor(props: GenericBlockProps<Settings>, item: RuleBlockDescription) {
         super(props);
-        item = item || {};
+        item ||= {} as RuleBlockDescription;
+
         const settings: Settings =
             props.settings ||
             ({
@@ -120,28 +121,6 @@ export abstract class GenericBlock<
         } satisfies GenericBlockState<Settings>;
     }
 
-    static getDerivedStateFromProps(
-        nextProps: GenericBlockProps<any>,
-        state: GenericBlockState<any>,
-    ): Partial<GenericBlockState<any>> | null {
-        if (!nextProps || !nextProps.settings) {
-            console.log(JSON.stringify(nextProps));
-            return null;
-        }
-
-        const settings: any = JSON.parse(JSON.stringify(nextProps.settings));
-        if (!settings.tagCard && state.tagCardArray && state.tagCardArray.length) {
-            settings.tagCard =
-                typeof state.tagCardArray[0] !== 'string' ? state.tagCardArray[0].title : state.tagCardArray[0];
-        }
-
-        if (JSON.stringify(settings) !== JSON.stringify(state.settings)) {
-            return { settings };
-        }
-
-        return null;
-    }
-
     componentWillUnmount(): void {
         if (this.debugMessageTimeout) {
             clearTimeout(this.debugMessageTimeout);
@@ -153,7 +132,7 @@ export abstract class GenericBlock<
         }
     }
 
-    // called every time, the tagCard changes or at start
+    // called every time, the tagCard changes or at the start
     onTagChange(
         _tagCard?: RuleTagCardTitle | null,
         cb?: () => void,
@@ -168,18 +147,16 @@ export abstract class GenericBlock<
             const attr: string | undefined = (input as RuleInputAll).attr;
             const defaultValue: any = (input as RuleInputAll).defaultValue;
 
-            if (attr && defaultValue !== undefined) {
-                if (attr && (settings as Record<string, any>)[attr] === undefined) {
-                    changed = true;
-                    (settings as Record<string, any>)[attr] = defaultValue;
-                }
+            if (attr && defaultValue !== undefined && (settings as Record<string, any>)[attr] === undefined) {
+                changed = true;
+                (settings as Record<string, any>)[attr] = defaultValue;
             }
         });
         if (changed) {
-            this.setState({ settings }, () => cb && cb());
+            this.setState({ settings }, () => cb?.());
             this.props.onChange(settings);
-        } else {
-            cb && cb();
+        } else if (cb) {
+            cb();
         }
     }
 
@@ -195,7 +172,7 @@ export abstract class GenericBlock<
         // do nothing, but blocks can overwrite it
     }
 
-    renderText = (input: RuleInputText, value: string, onChange: (value: string) => void): React.JSX.Element => {
+    renderText(input: RuleInputText, value: string, onChange: (value: string) => void): React.JSX.Element {
         const { className } = this.props;
         const { attr, frontText, backText, nameBlock, name, doNotTranslate, doNotTranslateBack } = input;
         return (
@@ -218,9 +195,9 @@ export abstract class GenericBlock<
                 {nameBlock && <div className={cls.nameBlock}>{I18n.t(nameBlock)}</div>}
             </Fragment>
         );
-    };
+    }
 
-    renderSwitch = (input: RuleInputSwitch, value: boolean, onChange: (value: boolean) => void): React.JSX.Element => {
+    renderSwitch(input: RuleInputSwitch, value: boolean, onChange: (value: boolean) => void): React.JSX.Element {
         const { className } = this.props;
         const { attr, frontText, backText, nameBlock, doNotTranslate, doNotTranslateBack } = input;
         return (
@@ -239,26 +216,34 @@ export abstract class GenericBlock<
                 {nameBlock && <div className={cls.nameBlock}>{I18n.t(nameBlock)}</div>}
             </div>
         );
-    };
+    }
 
     // eslint-disable-next-line class-methods-use-this
-    renderNameText = (
+    renderNameText(
         { attr, signature, doNotTranslate, defaultValue }: RuleInputNameText,
         value: string,
-    ): React.JSX.Element => (
-        <div
-            className={Utils.clsx(signature ? cls.displayItalic : cls.displayFlex, cls.blockMarginTop)}
-            key={attr}
-        >
-            {value ? (doNotTranslate ? value : I18n.t(value)) : doNotTranslate ? defaultValue : I18n.t(defaultValue)}
-        </div>
-    );
+    ): React.JSX.Element {
+        return (
+            <div
+                className={Utils.clsx(signature ? cls.displayItalic : cls.displayFlex, cls.blockMarginTop)}
+                key={attr}
+            >
+                {value
+                    ? doNotTranslate
+                        ? value
+                        : I18n.t(value)
+                    : doNotTranslate
+                      ? defaultValue
+                      : I18n.t(defaultValue)}
+            </div>
+        );
+    }
 
-    renderNumber = (
+    renderNumber(
         input: RuleInputNumber,
         value: number,
         onChange: (value: number | string) => void,
-    ): React.JSX.Element | null => {
+    ): React.JSX.Element | null {
         const { className } = this.props;
         const { settings } = this.state;
         const { attr, backText, frontText, openCheckbox, doNotTranslate, doNotTranslateBack } = input;
@@ -290,9 +275,9 @@ export abstract class GenericBlock<
                 {backText && <div className={cls.backText}>{doNotTranslateBack ? backText : I18n.t(backText)}</div>}
             </div>
         ) : null;
-    };
+    }
 
-    renderColor = (input: RuleInputColor, value: string, onChange: (value: string) => void): React.JSX.Element => {
+    renderColor(input: RuleInputColor, value: string, onChange: (value: string) => void): React.JSX.Element {
         const { className } = this.props;
         const { attr, backText, frontText, doNotTranslate, doNotTranslateBack } = input;
         return (
@@ -314,13 +299,9 @@ export abstract class GenericBlock<
                 {backText && <div className={cls.backText}>{doNotTranslateBack ? backText : I18n.t(backText)}</div>}
             </div>
         );
-    };
+    }
 
-    renderCheckbox = (
-        input: RuleInputCheckbox,
-        value: boolean,
-        onChange: (value: boolean) => void,
-    ): React.JSX.Element => {
+    renderCheckbox(input: RuleInputCheckbox, value: boolean, onChange: (value: boolean) => void): React.JSX.Element {
         const { className } = this.props;
         const { settings } = this.state;
         const { attr, backText, frontText, defaultValue, doNotTranslate, doNotTranslateBack } = input;
@@ -357,9 +338,9 @@ export abstract class GenericBlock<
                 )}
             </div>
         );
-    };
+    }
 
-    renderSlider = (input: RuleInputSlider, value: number, onChange: (value: number) => void): React.JSX.Element => {
+    renderSlider(input: RuleInputSlider, value: number, onChange: (value: number) => void): React.JSX.Element {
         const { className } = this.props;
         const { attr, frontText, backText, nameBlock, min, max, step, unit, doNotTranslate, doNotTranslateBack } =
             input;
@@ -399,9 +380,9 @@ export abstract class GenericBlock<
                 {nameBlock && <div className={cls.nameBlock}>{I18n.t(nameBlock)}</div>}
             </div>
         );
-    };
+    }
 
-    renderButton = (input: RuleInputButton, value: boolean, onChange: (bValue: boolean) => void): React.JSX.Element => {
+    renderButton(input: RuleInputButton, value: boolean, onChange: (bValue: boolean) => void): React.JSX.Element {
         const { className } = this.props;
         const { attr, frontText, backText, doNotTranslate, doNotTranslateBack } = input;
         return (
@@ -419,35 +400,38 @@ export abstract class GenericBlock<
                 {backText && <div className={cls.backText}>{doNotTranslateBack ? backText : I18n.t(backText)}</div>}
             </div>
         );
-    };
+    }
 
-    findIcon(obj: ioBroker.Object | null | undefined): Promise<string | null> {
+    async findIcon(obj: ioBroker.Object | null | undefined): Promise<string | null> {
         if (!obj) {
-            return Promise.resolve(null);
+            return null;
         }
 
         if (obj.common?.icon) {
-            return Promise.resolve(getSelectIdIcon(obj, '../..'));
+            return getSelectIdIcon(obj, '../..');
         }
 
         if (obj.type === 'state' || obj.type === 'channel') {
+            // get parent
             const parts = obj._id.split('.');
             parts.pop();
             const newId = parts.join('.');
 
-            return this.props.socket
-                .getObject(newId)
-                .then(o => this.findIcon(o))
-                .catch(() => null);
+            try {
+                const o = await this.props.socket.getObject(newId);
+                return await this.findIcon(o);
+            } catch {
+                return null;
+            }
         }
-        return Promise.resolve(null);
+        return null;
     }
 
-    renderObjectID = (
+    renderObjectID(
         input: RuleInputObjectID,
         value: string,
         onChange: (value: Record<string, any>, cb: () => void) => void,
-    ): React.JSX.Element | null => {
+    ): React.JSX.Element | null {
         const { attr, openCheckbox, checkReadOnly } = input;
         const { settings } = this.state;
         const showSelectId = (this.state as Record<string, any>)[`showSelectId${attr}`];
@@ -570,9 +554,9 @@ export abstract class GenericBlock<
                 ) : null}
             </div>
         ) : null;
-    };
+    }
 
-    renderIconTag = (): React.JSX.Element => {
+    renderIconTag(): React.JSX.Element {
         return (
             <div
                 className={cls.iconTag}
@@ -589,10 +573,10 @@ export abstract class GenericBlock<
                 {this.state.settings.tagCard}
             </div>
         );
-    };
+    }
 
     // eslint-disable-next-line class-methods-use-this
-    renderTime = (input: RuleInputTime, value: string, onChange: (value: string) => void): React.JSX.Element => {
+    renderTime(input: RuleInputTime, value: string, onChange: (value: string) => void): React.JSX.Element {
         const { attr, backText, frontText, doNotTranslate, doNotTranslateBack } = input;
         return (
             <div
@@ -608,13 +592,9 @@ export abstract class GenericBlock<
                 {backText && <div className={cls.backText}>{doNotTranslateBack ? backText : I18n.t(backText)}</div>}
             </div>
         );
-    };
+    }
 
-    renderSelect = (
-        input: RuleInputSelect,
-        value: any,
-        onChange: (value: any, attr: string) => void,
-    ): React.JSX.Element => {
+    renderSelect(input: RuleInputSelect, value: any, onChange: (value: any, attr: string) => void): React.JSX.Element {
         const { className, style } = this.props;
         const {
             name,
@@ -650,13 +630,13 @@ export abstract class GenericBlock<
                 {backText && <div className={cls.backText}>{doNotTranslateBack ? backText : I18n.t(backText)}</div>}
             </div>
         );
-    };
+    }
 
-    renderInstance = (
+    renderInstance(
         input: RuleInputInstance,
         value: string,
         onChange: (value: string) => void,
-    ): React.JSX.Element | null => {
+    ): React.JSX.Element | null {
         const { socket } = this.props;
         const { name, frontText, backText, attr, adapter, doNotTranslate, doNotTranslateBack } = input;
         if (this.state.hideAttributes.includes(attr)) {
@@ -686,10 +666,10 @@ export abstract class GenericBlock<
                 {backText && <div className={cls.backText}>{doNotTranslateBack ? backText : I18n.t(backText)}</div>}
             </div>
         );
-    };
+    }
 
     // eslint-disable-next-line class-methods-use-this
-    renderDialog = (input: RuleInputDialog): React.JSX.Element => {
+    renderDialog(input: RuleInputDialog): React.JSX.Element {
         const { onShowDialog, frontText, backText, attr, icon, doNotTranslate, doNotTranslateBack } = input;
         return (
             <div
@@ -706,13 +686,13 @@ export abstract class GenericBlock<
                 {backText && <div className={cls.backText}>{doNotTranslateBack ? backText : I18n.t(backText)}</div>}
             </div>
         );
-    };
+    }
 
-    renderModalInput = (
+    renderModalInput(
         input: RuleInputModalInput,
         value: string | number,
         onChange: (value: string | number) => void,
-    ): React.JSX.Element => {
+    ): React.JSX.Element {
         const { openModal } = this.state;
         const { className } = this.props;
         const { attr, nameBlock, frontText, backText, noTextEdit, doNotTranslate, doNotTranslateBack } = input;
@@ -757,10 +737,10 @@ export abstract class GenericBlock<
                 {nameBlock && <div className={cls.nameBlock}>{I18n.t(nameBlock)}</div>}
             </div>
         );
-    };
+    }
 
     // eslint-disable-next-line class-methods-use-this
-    renderDate = (input: RuleInputDate, value: string, onChange: (value: string) => void): React.JSX.Element => {
+    renderDate(input: RuleInputDate, value: string, onChange: (value: string) => void): React.JSX.Element {
         const { attr, backText, frontText, doNotTranslate, doNotTranslateBack } = input;
         return (
             <div
@@ -776,7 +756,7 @@ export abstract class GenericBlock<
                 {backText && <div className={cls.backText}>{doNotTranslateBack ? backText : I18n.t(backText)}</div>}
             </div>
         );
-    };
+    }
 
     static getReplacesInText(context: RuleContext): string {
         let value = '';
@@ -845,22 +825,25 @@ export abstract class GenericBlock<
                                     selected={tag === tagCard}
                                     className={`tag-card-${tag}`}
                                     style={{ placeContent: 'space-between' }}
-                                    onClick={() => {
-                                        const settings = { ...this.state.settings, tagCard: tag };
-                                        this.setState({ openTagMenu: null, settings }, () => {
-                                            this.props.onChange(settings);
-                                            this.onTagChange(tag);
-                                        });
-                                        this.props.isTourOpen &&
+                                    onClick={e => {
+                                        e.stopPropagation();
+
+                                        if (
+                                            this.props.isTourOpen &&
                                             (this.props.tourStep === STEPS.openTagsMenu ||
                                                 this.props.tourStep === STEPS.selectIntervalTag) &&
-                                            tag === 'interval' &&
-                                            setTimeout(
-                                                () =>
-                                                    this.props.setTourStep &&
-                                                    this.props.setTourStep(STEPS.selectActions),
-                                                500,
-                                            );
+                                            tag === 'interval'
+                                        ) {
+                                            setTimeout(() => this.props.setTourStep?.(STEPS.selectActions), 500);
+                                        }
+
+                                        const settings: Settings = JSON.parse(JSON.stringify(this.state.settings));
+                                        settings.tagCard = tag;
+
+                                        this.setState({ openTagMenu: null, settings }, () => {
+                                            this.props.onChange(this.state.settings);
+                                            this.onTagChange(this.state.settings.tagCard);
+                                        });
                                     }}
                                 >
                                     {tag.search(/>|<|<>|<=|>=|=/) !== -1 ? tag : I18n.t(tag)}
@@ -888,12 +871,13 @@ export abstract class GenericBlock<
         };
     }
 
-    onChangeTag = (): void => {
+    onChangeTag(): void {
         const {
             tagCardArray,
             settings,
             settings: { tagCard },
         } = this.state;
+
         let newTagCardArray: RuleTagCardTitle[];
         if (typeof tagCardArray[0] !== 'string') {
             newTagCardArray = (tagCardArray as RuleTagCard[]).map(el => el.title);
@@ -910,12 +894,12 @@ export abstract class GenericBlock<
                 this.onTagChange(newTagCard);
             });
         }
-    };
+    }
 
-    componentDidMount = (): void => {
+    componentDidMount(): void {
         this.onTagChange();
         // detect changes
-    };
+    }
 
     componentDidUpdate(): void {
         if (this.props.acceptedBy !== 'triggers' && this.props.onUpdate) {
@@ -923,7 +907,7 @@ export abstract class GenericBlock<
         }
     }
 
-    onChangeInput = (attribute: string): ((value: any, attr?: string | (() => void), cb?: () => void) => void) => {
+    onChangeInput(attribute: string): (value: any, attr?: string | (() => void), cb?: () => void) => void {
         return (value: any, attr?: string | (() => void), cb?: () => void): void => {
             const settings = JSON.parse(JSON.stringify(this.state.settings));
 
@@ -943,10 +927,10 @@ export abstract class GenericBlock<
             this.setState({ settings }, () => {
                 this.onValueChanged(value, (attr as string) || attribute);
                 this.props.onChange(settings);
-                cb && cb();
+                cb?.();
             });
         };
-    };
+    }
 
     // eslint-disable-next-line class-methods-use-this
     renderSpecific(): React.JSX.Element | null {
@@ -1012,7 +996,7 @@ export abstract class GenericBlock<
                 return <div key={`invalid_${index}`}>{I18n.t('Invalid renderTime')}</div>;
 
             case 'renderNameText':
-                return this.renderNameText(input as RuleInputNameText, value);
+                return this.renderNameText(input as RuleInputNameText, defaultValue as string);
 
             case 'renderSelect':
                 if (attr) {
@@ -1113,6 +1097,18 @@ export abstract class GenericBlock<
         } = this.state;
         const { socket, notFound } = this.props;
 
+        // Detect empty tag
+        if (this.state.settings && !this.state.settings.tagCard && this.state.tagCardArray?.length) {
+            setTimeout(() => {
+                const settings: Settings = JSON.parse(JSON.stringify(this.state.settings));
+                settings.tagCard =
+                    typeof this.state.tagCardArray[0] !== 'string'
+                        ? this.state.tagCardArray[0].title
+                        : this.state.tagCardArray[0];
+                this.setState({ settings });
+            }, 50);
+        }
+
         // Detect changing of simulation
         if (this.state.enableSimulation !== this.props.enableSimulation && !this.enableSimulationProcessing) {
             this.enableSimulationProcessing = true;
@@ -1123,7 +1119,7 @@ export abstract class GenericBlock<
             }, 50);
         }
 
-        // Try to find latest message for this block
+        // Try to find the latest message for this block
         let debugMsg;
         if (this.props.onDebugMessage) {
             for (let d = this.props.onDebugMessage.length - 1; d >= 0; d--) {

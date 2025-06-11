@@ -41,7 +41,7 @@ const CustomSwitch = ({
                     size={size || 'medium'}
                 />
             }
-            label={label || 'all'}
+            label={label ?? 'all'}
         />
     );
 };
