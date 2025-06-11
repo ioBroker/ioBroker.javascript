@@ -53,9 +53,6 @@ class Scheduler {
             info: function (text) {
                 console.log(text);
             },
-            log: function (text) {
-                console.log(text);
-            },
             warn: function (text) {
                 console.warn(text);
             },

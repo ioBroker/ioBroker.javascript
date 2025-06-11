@@ -15,8 +15,8 @@ getState('id').ts;
 
 setState('id', 1);
 setState('id', 1, true);
-setState('id', 1, id => {
-    id && id.toLowerCase();
+setState('id', 1, (error, id) => {
+    id?.toLowerCase();
 });
 
 const selected = $('selector');

@@ -195,9 +195,6 @@ export class Scheduler {
             info: function (text: string): void {
                 console.log(text);
             },
-            log: function (text: string): void {
-                console.log(text);
-            },
             warn: function (text: string): void {
                 console.warn(text);
             },

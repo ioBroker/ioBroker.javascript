@@ -62,17 +62,13 @@ export const patternCompareFunctions = {
             case 'ne':
                 return (event: EventObj): boolean => event.newState.val !== event.oldState.val;
             case 'gt':
-                // @ts-expect-error we assume it could be null
-                return (event: EventObj): boolean => event.newState.val > event.oldState.val;
+                return (event: EventObj): boolean => (event.newState.val ?? 0) > (event.oldState.val ?? 0);
             case 'ge':
-                // @ts-expect-error we assume it could be null
-                return (event: EventObj): boolean => event.newState.val >= event.oldState.val;
+                return (event: EventObj): boolean => (event.newState.val ?? 0) >= (event.oldState.val ?? 0);
             case 'lt':
-                // @ts-expect-error we assume it could be null
-                return (event: EventObj): boolean => event.newState.val < event.oldState.val;
+                return (event: EventObj): boolean => (event.newState.val ?? 0) < (event.oldState.val ?? 0);
             case 'le':
-                // @ts-expect-error we assume it could be null
-                return (event: EventObj): boolean => event.newState.val <= event.oldState.val;
+                return (event: EventObj): boolean => (event.newState.val ?? 0) <= (event.oldState.val ?? 0);
             default:
                 return (_event: EventObj): boolean => true;
             // on any other logic, just signal about a message
@@ -107,23 +103,19 @@ export const patternCompareFunctions = {
     },
     valGt: (pattern: Pattern): PatternEventCompareFunction => {
         const pValGt = pattern.valGt;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.newState.val > pValGt;
+        return (event: EventObj): boolean => (event.newState.val ?? 0) > (pValGt ?? 0);
     },
     valGe: (pattern: Pattern): PatternEventCompareFunction => {
         const pValGe = pattern.valGe;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.newState.val >= pValGe;
+        return (event: EventObj): boolean => (event.newState.val ?? 0) >= (pValGe ?? 0);
     },
     valLt: (pattern: Pattern): PatternEventCompareFunction => {
         const pValLt = pattern.valLt;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.newState.val < pValLt;
+        return (event: EventObj): boolean => (event.newState.val ?? 0) < (pValLt ?? 0);
     },
     valLe: (pattern: Pattern): PatternEventCompareFunction => {
         const pValLe = pattern.valLe;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.newState.val <= pValLe;
+        return (event: EventObj): boolean => (event.newState.val ?? 0) <= (pValLe ?? 0);
     },
     valNe: (pattern: Pattern): PatternEventCompareFunction => {
         const pValNe = pattern.valNe;
@@ -136,23 +128,19 @@ export const patternCompareFunctions = {
     },
     oldValGt: (pattern: Pattern): PatternEventCompareFunction => {
         const pOldValGt = pattern.oldValGt;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.val > pOldValGt;
+        return (event: EventObj): boolean => (event.oldState.val ?? 0) > (pOldValGt ?? 0);
     },
     oldValGe: (pattern: Pattern): PatternEventCompareFunction => {
         const pOldValGe = pattern.oldValGe;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.val >= pOldValGe;
+        return (event: EventObj): boolean => (event.oldState.val ?? 0) >= (pOldValGe ?? 0);
     },
     oldValLt: (pattern: Pattern): PatternEventCompareFunction => {
         const pOldValLt = pattern.oldValLt;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.val < pOldValLt;
+        return (event: EventObj): boolean => (event.oldState.val ?? 0) < (pOldValLt ?? 0);
     },
     oldValLe: (pattern: Pattern): PatternEventCompareFunction => {
         const pOldValLe = pattern.oldValLe;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.val <= pOldValLe;
+        return (event: EventObj): boolean => (event.oldState.val ?? 0) <= (pOldValLe ?? 0);
     },
     oldValNe: (pattern: Pattern): PatternEventCompareFunction => {
         const pOldValNe = pattern.oldValNe;
@@ -165,23 +153,19 @@ export const patternCompareFunctions = {
     },
     tsGt: (pattern: Pattern): PatternEventCompareFunction => {
         const ptsGt = pattern.tsGt;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.newState.ts > ptsGt;
+        return (event: EventObj): boolean => event.newState.ts > (ptsGt ?? 0);
     },
     tsGe: (pattern: Pattern): PatternEventCompareFunction => {
         const ptsGe = pattern.tsGe;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.newState.ts >= ptsGe;
+        return (event: EventObj): boolean => event.newState.ts >= (ptsGe ?? 0);
     },
     tsLt: (pattern: Pattern): PatternEventCompareFunction => {
         const ptsLt = pattern.tsLt;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.newState.ts < ptsLt;
+        return (event: EventObj): boolean => event.newState.ts < (ptsLt ?? 0);
     },
     tsLe: (pattern: Pattern): PatternEventCompareFunction => {
         const ptsLe = pattern.tsLe;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.newState.ts <= ptsLe;
+        return (event: EventObj): boolean => event.newState.ts <= (ptsLe ?? 0);
     },
 
     oldTs: (pattern: Pattern): PatternEventCompareFunction => {
@@ -190,23 +174,19 @@ export const patternCompareFunctions = {
     },
     oldTsGt: (pattern: Pattern): PatternEventCompareFunction => {
         const pOldTsGt = pattern.oldTsGt;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.ts > pOldTsGt;
+        return (event: EventObj): boolean => event.oldState.ts > (pOldTsGt ?? 0);
     },
     oldTsGe: (pattern: Pattern): PatternEventCompareFunction => {
         const pOldTsGe = pattern.oldTsGe;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.ts >= pOldTsGe;
+        return (event: EventObj): boolean => event.oldState.ts >= (pOldTsGe ?? 0);
     },
     oldTsLt: (pattern: Pattern): PatternEventCompareFunction => {
         const pOldTsLt = pattern.oldTsLt;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.ts < pOldTsLt;
+        return (event: EventObj): boolean => event.oldState.ts < (pOldTsLt ?? 0);
     },
     oldTsLe: (pattern: Pattern): PatternEventCompareFunction => {
         const pOldTsLe = pattern.oldTsLe;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.ts <= pOldTsLe;
+        return (event: EventObj): boolean => event.oldState.ts <= (pOldTsLe ?? 0);
     },
 
     lc: (pattern: Pattern): PatternEventCompareFunction => {
@@ -215,23 +195,19 @@ export const patternCompareFunctions = {
     },
     lcGt: (pattern: Pattern): PatternEventCompareFunction => {
         const plcGt = pattern.lcGt;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.newState.lc > plcGt;
+        return (event: EventObj): boolean => event.newState.lc > (plcGt ?? 0);
     },
     lcGe: (pattern: Pattern): PatternEventCompareFunction => {
         const plcGe = pattern.lcGe;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.newState.lc >= plcGe;
+        return (event: EventObj): boolean => event.newState.lc >= (plcGe ?? 0);
     },
     lcLt: (pattern: Pattern): PatternEventCompareFunction => {
         const plcLt = pattern.lcLt;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.newState.lc < plcLt;
+        return (event: EventObj): boolean => event.newState.lc < (plcLt ?? 0);
     },
     lcLe: (pattern: Pattern): PatternEventCompareFunction => {
         const plcLe = pattern.lcLe;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.newState.lc <= plcLe;
+        return (event: EventObj): boolean => event.newState.lc <= (plcLe ?? 0);
     },
 
     oldLc: (pattern: Pattern): PatternEventCompareFunction => {
@@ -240,23 +216,19 @@ export const patternCompareFunctions = {
     },
     oldLcGt: (pattern: Pattern): PatternEventCompareFunction => {
         const pOldLcGt = pattern.oldLcGt;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.lc > pOldLcGt;
+        return (event: EventObj): boolean => event.oldState.lc > (pOldLcGt ?? 0);
     },
     oldLcGe: (pattern: Pattern): PatternEventCompareFunction => {
         const pOldLcGe = pattern.oldLcGe;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.lc >= pOldLcGe;
+        return (event: EventObj): boolean => event.oldState.lc >= (pOldLcGe ?? 0);
     },
     oldLcLt: (pattern: Pattern): PatternEventCompareFunction => {
         const pOldLcLt = pattern.oldLcLt;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.lc < pOldLcLt;
+        return (event: EventObj): boolean => event.oldState.lc < (pOldLcLt ?? 0);
     },
     oldLcLe: (pattern: Pattern): PatternEventCompareFunction => {
         const pOldLcLe = pattern.oldLcLe;
-        // @ts-expect-error we assume it could be null
-        return (event: EventObj): boolean => event.oldState.lc <= pOldLcLe;
+        return (event: EventObj): boolean => event.oldState.lc <= (pOldLcLe ?? 0);
     },
 
     from: (pattern: Pattern): PatternEventCompareFunction =>
