@@ -2,7 +2,7 @@ const os = require('node:os');
 const path = require('node:path');
 const fs = require('node:fs');
 const expect = require('chai').expect;
-const Mirror = require('../lib/mirror');
+const Mirror = require('../build-backend/lib/mirror');
 
 describe('Mirror', () => {
     describe('File system watcher', () => {

@@ -1,7 +1,7 @@
 const expect = require('chai').expect;
 const tk = require('timekeeper');
 const suncalc = require('suncalc2');
-const Scheduler = require('../lib/scheduler');
+const Scheduler = require('../build-backend/lib/scheduler');
 
 describe('Test Scheduler', function () {
     it('Test Scheduler: Should trigger on 23:59 every year', function (done) {
