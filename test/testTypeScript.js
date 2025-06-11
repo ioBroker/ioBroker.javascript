@@ -152,7 +152,7 @@ export {};`
 describe('TypeScript compilation regression tests (non-global scripts)', () => {
     const tsServer = new tsc.Server(tsCompilerOptions, undefined);
     const tsAmbient = {
-        'javascript.d.ts': fs.readFileSync(path.join(__dirname, '../lib/javascript.d.ts'), 'utf8'),
+        'javascript.d.ts': fs.readFileSync(path.join(__dirname, '../src/lib/javascript.d.ts'), 'utf8'),
         'fs.d.ts': `declare module "fs" { }`,
     };
     tsServer.provideAmbientDeclarations(tsAmbient);
@@ -222,7 +222,7 @@ await bar();
 describe('TypeScript compilation regression tests (global scripts)', () => {
     const tsServer = new tsc.Server(tsCompilerOptions, undefined);
     const tsAmbient = {
-        'javascript.d.ts': fs.readFileSync(path.join(__dirname, '../lib/javascript.d.ts'), 'utf8'),
+        'javascript.d.ts': fs.readFileSync(path.join(__dirname, '../src/lib/javascript.d.ts'), 'utf8'),
         'fs.d.ts': `declare module "fs" { }`,
         'otherglobal.d.ts': `
 declare global {

@@ -3,7 +3,7 @@
 */
 
 {
-    "files": ["../../../lib/javascript.d.ts", "./testDeclarations.js"],
+    "files": ["../../../src/lib/javascript.d.ts", "./testDeclarations.js"],
     "compilerOptions": {
         "allowJs": true,
         "checkJs": true,
