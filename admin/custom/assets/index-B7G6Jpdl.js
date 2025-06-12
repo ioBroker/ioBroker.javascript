@@ -1,0 +1,1 @@
+import{C as e}from"./ConfigCustomJavascriptSet__loadShare__react__loadShare__-CzzIM-HW.js";import{j as a}from"./jsx-runtime-o-xyxrOj.js";const r=e.createContext();function u({value:t,...o}){return a.jsx(r.Provider,{value:t??!0,...o})}const l=()=>e.useContext(r)??!1;export{u as R,l as u};

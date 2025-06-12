@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "9.0.2",
+    "version": "9.0.3",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "9.0.3": {
+        "en": "Corrected the rule editor\nRemoved the unused JS files",
+        "de": "Korrektur des Regeleditors\nEntfernen der ungenutzten JS-Dateien",
+        "ru": "Исправлен редактор правил\nУдаление неиспользуемых файлов JS",
+        "pt": "Corrigido o editor de regras\nRemoveu os arquivos JS não utilizados",
+        "nl": "De regelbewerker gecorrigeerd\nVerwijderde de ongebruikte JS-bestanden",
+        "fr": "Correction de l'éditeur de règles\nSupprimé les fichiers JS inutilisés",
+        "it": "Corretto l'editor delle regole\nRimuovi i file JS non utilizzati",
+        "es": "Corregido el editor de reglas\nEliminar los archivos JS no utilizados",
+        "pl": "Poprawiono edytor zasad\nUsunięto niewykorzystane pliki JS",
+        "uk": "Виправлено редактор правила\nВидалити невикористані файли JS",
+        "zh-cn": "更正规则编辑器\n删除未使用的 JS 文件"
+      },
       "9.0.2": {
         "en": "Added possibility to escape chars in formatTimeDiff\nBack-end was migrated to TypeScript\nBreaking change: removed \"request\" module\nAdded prettier for scripts",
         "de": "Zusätzliche Möglichkeit, Zeichen im Format zu entkommen TimeDiff\nBackend wurde zu TypeScript migriert\nBreaking change: entferntes Modul \"Request\"\nHinzugefügt schöner für Scripts",
@@ -106,19 +119,6 @@
         "zh-cn": "规则中的固定对象选择器"
       },
       "8.8.2": {
-        "en": "updated dependencies",
-        "de": "aktualisierte abhängigkeiten",
-        "ru": "обновленные зависимости",
-        "pt": "dependências atualizadas",
-        "nl": "bijgewerkte afhankelijkheden",
-        "fr": "dépendances actualisées",
-        "it": "dipendenze aggiornate",
-        "es": "dependencias actualizadas",
-        "pl": "zaktualizowane zależności",
-        "uk": "оновлені залежності",
-        "zh-cn": "更新的依赖关系"
-      },
-      "8.8.1": {
         "en": "updated dependencies",
         "de": "aktualisierte abhängigkeiten",
         "ru": "обновленные зависимости",

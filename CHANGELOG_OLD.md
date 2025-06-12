@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 8.8.3 (2024-09-05)
+* (bluefox) Fixed object selector in rules
+
 ## 8.8.2 (2024-08-07)
 * (bluefox) updated dependencies
 

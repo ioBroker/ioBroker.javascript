@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 9.0.3 (2025-06-12)
 
 * (@GermanBluefox) Corrected the rule editor
 * (@GermanBluefox) Removed the unused JS files
@@ -51,9 +51,6 @@ Executes Javascript, Typescript Scripts.
 ### 8.9.0 (2025-01-22)
 * (@GermanBluefox) Migrated GUI to TypeScript
 * (@klein0r) Added count attribute to getHistory in blockly
-
-### 8.8.3 (2024-09-05)
-* (bluefox) Fixed object selector in rules
 
 ## License
 The MIT License (MIT)
