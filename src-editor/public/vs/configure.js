@@ -6,34 +6,35 @@
 // Set the correct root path
 require.config({ paths: { 'vs': 'vs' }});
 
-// Allow localisation
+// Allow localization
 
 // All languages in monaco-editor
-var availableLanguages = ['de', 'en', 'fr', 'es', 'it', 'ja', 'ru', 'ko', 'zh-tw', 'zh-cn'];
+const availableLanguages = ['de', 'en', 'fr', 'es', 'it', 'ru', 'zh-cn'];
 
 // find the best match
 function findLanguage() {
-    if (window.sysLang !== undefined) {
+    if (window.sysLang !== undefined && availableLanguages.includes(window.sysLang)) {
         return window.sysLang; // this variable will be set via info.js
     }
     if (navigator.languages && Array.isArray(navigator.languages)) {
-        return navigator.languages.find(function (lang) {return availableLanguages.indexOf(lang) > -1});
+        return navigator.languages.find(lang => availableLanguages.includes(lang)) || 'en';
     }
-    var lang = navigator.language || navigator.userLanguage;
+    let lang = navigator.language || navigator.userLanguage;
     if (typeof lang === 'string') {
         // first try the long version
-        if (availableLanguages.indexOf(lang) > -1) {
+        if (availableLanguages.includes(lang)) {
             return lang;
         }
         // then the short one
-        lang = lang.substr(0, 2);
-        if (availableLanguages.indexOf(lang) > -1) {
+        lang = lang.substring(0, 2);
+        if (availableLanguages.includes(lang)) {
             return lang;
         }
     }
+    return 'en';
 }
 
-var language = findLanguage();
+const language = findLanguage();
 // if we have a match, configure the editor
 if (language !== undefined && language !== null && language !== 'en') {
     require.config({

@@ -129,8 +129,8 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
             if (this.monacoCounter >= 20) {
                 console.error('Cannot load monaco!');
             }
-        } else {
-            cb && cb();
+        } else if (cb) {
+            cb();
         }
     }
 
@@ -173,17 +173,15 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         }
         if (!this.editor && monacoLoaded && this.monaco) {
             console.log('Init editor');
-            if (this.props.onRegisterSelect) {
-                this.props.onRegisterSelect((): string | undefined => {
-                    if (this.editor) {
-                        const selection = this.editor.getSelection();
-                        if (selection) {
-                            return this.editor.getModel()?.getValueInRange(selection);
-                        }
+            this.props.onRegisterSelect?.((): string | undefined => {
+                if (this.editor) {
+                    const selection = this.editor.getSelection();
+                    if (selection) {
+                        return this.editor.getModel()?.getValueInRange(selection);
                     }
-                    return undefined;
-                });
-            }
+                }
+                return undefined;
+            });
             // For some reason, we have to get the original compiler options
             // and assign new properties one by one
             const compilerOptions = this.monaco.languages.typescript.typescriptDefaults.getCompilerOptions();
