@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 8.9.0 (2025-01-22)
+* (@GermanBluefox) Migrated GUI to TypeScript
+* (@klein0r) Added count attribute to getHistory in blockly
+
 ## 8.8.3 (2024-09-05)
 * (bluefox) Fixed object selector in rules
 
