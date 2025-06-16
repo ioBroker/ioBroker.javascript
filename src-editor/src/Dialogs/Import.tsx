@@ -6,15 +6,18 @@ import { Button, DialogTitle, DialogContent, DialogActions, Dialog } from '@mui/
 import { Check as IconOk, Cancel as IconCancel } from '@mui/icons-material';
 import { MdFileUpload as IconUpload, MdCancel as IconNo, MdAdd as IconPlus } from 'react-icons/md';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n, type ThemeType } from '@iobroker/adapter-react-v5';
 
 const styles: Record<string, React.CSSProperties> = {
     textArea: {
         width: 'calc(100% - 10px)',
-        height: '80%',
+        height: 'calc(80% - 20px)',
         resize: 'none',
         fontFamily: 'monospace',
         fontSize: '1em',
+        backgroundColor: 'transparent',
+        borderRadius: 4,
+        outline: 'none',
     },
     dropzone: {
         marginTop: 20,
@@ -40,8 +43,9 @@ const styles: Record<string, React.CSSProperties> = {
         borderColor: '#17cd02',
     },
     icon: {
-        height: '30%',
-        width: '30%',
+        height: '80%',
+        width: '80%',
+        opacity: 0.3,
         color: '#eeeeee',
         position: 'absolute',
         top: '50%',
@@ -74,6 +78,7 @@ const styles: Record<string, React.CSSProperties> = {
 
 interface DialogImportProps {
     onClose: (text?: string) => void;
+    themeType: ThemeType;
 }
 
 interface DialogImportState {
@@ -183,7 +188,11 @@ class DialogImport extends React.Component<DialogImportProps, DialogImportState>
                     <textarea
                         autoFocus
                         id="import-text-area"
-                        style={styles.textArea}
+                        placeholder={I18n.t('Paste your blocks here')}
+                        style={{
+                            ...styles.textArea,
+                            color: this.props.themeType === 'dark' ? '#ffffff' : '#000000',
+                        }}
                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => this.onChange(e)}
                         value={this.state.text}
                     />

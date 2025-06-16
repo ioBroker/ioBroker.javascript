@@ -42,6 +42,7 @@ export interface BlocklyType {
         blockToDom: (block: BlockType, opt_noId?: boolean) => Element | DocumentFragment;
         domToPrettyText: (dom: Node) => string;
         domToWorkspace: (xml: Element, workspace: WorkspaceSvg) => string[];
+        appendDomToWorkspace: (xml: Element, workspace: WorkspaceSvg) => string[];
     };
     svgResize: (workspace: WorkspaceSvg) => void;
     INPUT_VALUE: ConnectionType.INPUT_VALUE;

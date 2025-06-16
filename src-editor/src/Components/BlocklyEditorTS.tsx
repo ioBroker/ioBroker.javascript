@@ -4,14 +4,16 @@
 import React from 'react';
 
 import { I18n, Message as DialogMessage, type ThemeType } from '@iobroker/adapter-react-v5';
-import DialogError from '../Dialogs/Error';
-import DialogExport from '../Dialogs/Export';
-import DialogImport from '../Dialogs/Import';
+
 import * as BlocklyTS from 'blockly/core';
 import type { WorkspaceSvg } from 'blockly/core/workspace_svg';
 import type { BlockSvg } from 'blockly/core/block_svg';
 import { javascriptGenerator } from 'blockly/javascript';
 import type { FlyoutDefinition } from 'blockly/core/utils/toolbox';
+
+import DialogError from '../Dialogs/Error';
+import DialogExport from '../Dialogs/Export';
+import DialogImport from '../Dialogs/Import';
 
 let languageBlocklyLoaded = false;
 let languageOwnLoaded = false;
@@ -496,11 +498,9 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
                 const xmlBlocks = BlocklyTS.utils.xml.textToDom(xml);
                 if (xmlBlocks.nodeName === 'xml') {
                     for (let b = 0; b < xmlBlocks.children.length; b++) {
-                        // @ts-expect-error fix later
                         this.blocklyWorkspace.paste(xmlBlocks.children[b]);
                     }
                 } else {
-                    // @ts-expect-error fix later
                     this.blocklyWorkspace.paste(xmlBlocks);
                 }
 
@@ -626,7 +626,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
 
             if (
                 [BlocklyTS.Events.UI, BlocklyTS.Events.CREATE, BlocklyTS.Events.VIEWPORT_CHANGE].includes(
-                    masterEvent.type,
+                    masterEvent.type as EventType,
                 )
             ) {
                 return; // Don't mirror UI events.

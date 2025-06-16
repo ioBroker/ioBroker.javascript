@@ -483,12 +483,10 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
                 const xmlBlocks = BlocklyEditor.Blockly.utils.xml.textToDom(xml);
                 if (xmlBlocks.nodeName === 'xml') {
                     for (let b = 0; b < xmlBlocks.children.length; b++) {
-                        // @ts-expect-error fix later
-                        this.blocklyWorkspace.paste(xmlBlocks.children[b]);
+                        BlocklyEditor.Blockly.Xml.appendDomToWorkspace(xmlBlocks, this.blocklyWorkspace);
                     }
                 } else {
-                    // @ts-expect-error fix later
-                    this.blocklyWorkspace.paste(xmlBlocks);
+                    BlocklyEditor.Blockly.Xml.appendDomToWorkspace(xmlBlocks, this.blocklyWorkspace);
                 }
 
                 window.scripts.loading = false;
@@ -729,6 +727,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         return this.state.importText ? (
             <DialogImport
                 key="dialogImport"
+                themeType={this.props.themeType}
                 onClose={(text: string | undefined) => {
                     this.setState({ importText: false });
                     this.onImportBlocks(text);
