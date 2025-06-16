@@ -2,7 +2,12 @@
 // this has a nice side effect that we may augment the global scope
 import type * as os from 'node:os';
 import type { ChildProcess, ExecException } from 'node:child_process';
-import type { SubscribeObject } from '../types';
+
+type SubscribeObject = {
+    name: string;
+    pattern: string;
+    callback: (id: string, obj?: ioBroker.Object | null) => void;
+};
 
 type EmptyCallback = () => void | Promise<void>;
 type ErrorCallback = (err?: Error) => void | Promise<void>;

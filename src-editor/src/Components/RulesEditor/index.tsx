@@ -222,6 +222,7 @@ const RulesEditor = ({
                     />
                 ) : (
                     <DialogImport
+                        themeType={themeType}
                         onClose={text => {
                             setModal(false);
                             if (text) {
