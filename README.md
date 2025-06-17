@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 9.0.5 (2025-06-17)
 * (@GermanBluefox) Speed-up loading of GUI
 
 ### 9.0.4 (2025-06-16)
@@ -50,11 +50,6 @@ Executes Javascript, Typescript Scripts.
 
 * (@GermanBluefox) Updated packages for GUI
 * (@GermanBluefox) Used TypeScript for an admin component
-
-### 8.9.1 (2025-01-26)
-
-* (@GermanBluefox) Corrected blockly function editor
-* (@GermanBluefox) Corrected creation of folders
 
 ## License
 The MIT License (MIT)

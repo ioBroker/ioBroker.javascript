@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "9.0.4",
+    "version": "9.0.5",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "9.0.5": {
+        "en": "Speed-up loading of GUI",
+        "de": "Beschleunigung der GUI",
+        "ru": "Ускоренная загрузка GUI",
+        "pt": "Carregamento acelerado da GUI",
+        "nl": "Versnelling laden van GUI",
+        "fr": "Accélération du chargement de l'interface utilisateur",
+        "it": "Caricamento rapido della GUI",
+        "es": "Carga rápida de GUI",
+        "pl": "Szybkie załadowanie GUI",
+        "uk": "Швидкість завантаження GUI",
+        "zh-cn": "快速装入图形界面"
+      },
       "9.0.4": {
         "en": "Corrected script editor for Polish language\nCorrected import of Blockly blocks\nCorrected editing of Blockly",
         "de": "Korrigierter Skripteditor für polnische Sprache\nKorrigierter Import von Blockly Blöcken\nKorrigierte Bearbeitung von Blockly",
@@ -117,19 +130,6 @@
         "pl": "Migrated GUI to TypeScript\nDodano atrybut liczenia do getHistory w blockly",
         "uk": "Мігрований графічний інтерфейс на TypeScript\nДодано атрибут підрахунку для getHistory в блоклі",
         "zh-cn": "将图形界面切换到类型脚本\n添加计数属性以块化获取历史"
-      },
-      "8.8.3": {
-        "en": "Fixed object selector in rules",
-        "de": "Behobene Objektauswahl in Regeln",
-        "ru": "Фиксированный селектор объекта в правилах",
-        "pt": "Seletor de objetos fixos em regras",
-        "nl": "Objectselectie vast in regels",
-        "fr": "Sélecteur d'objet fixe dans les règles",
-        "it": "Selettore di oggetti fissi nelle regole",
-        "es": "Selector de objeto fijo en las reglas",
-        "pl": "Naprawiono wybór obiektu w zasadach",
-        "uk": "Фіксований вибір об'єкта в правилах",
-        "zh-cn": "规则中的固定对象选择器"
       }
     },
     "platform": "Javascript/Node.js",

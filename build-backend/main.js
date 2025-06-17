@@ -698,8 +698,7 @@ class JavaScript extends adapter_core_1.Adapter {
                                 }
                                 // Exclude event if own directory is included but not inside own node_modules
                                 const ownNodeModulesDir = (0, node_path_1.join)(__dirname, 'node_modules');
-                                if (!eventData.stacktrace.frames.find(frame => frame.filename &&
-                                    frame.filename.includes(__dirname) &&
+                                if (!eventData.stacktrace.frames.find(frame => frame.filename?.includes(__dirname) &&
                                     !frame.filename.includes(ownNodeModulesDir))) {
                                     return null;
                                 }

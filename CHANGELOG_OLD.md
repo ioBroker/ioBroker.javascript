@@ -1,4 +1,9 @@
 The newest change log is in README.md
+## 8.9.1 (2025-01-26)
+
+* (@GermanBluefox) Corrected blockly function editor
+* (@GermanBluefox) Corrected creation of folders
+
 ## 8.9.0 (2025-01-22)
 * (@GermanBluefox) Migrated GUI to TypeScript
 * (@klein0r) Added count attribute to getHistory in blockly
