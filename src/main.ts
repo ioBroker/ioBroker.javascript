@@ -817,8 +817,7 @@ class JavaScript extends Adapter {
                                 if (
                                     !eventData.stacktrace.frames.find(
                                         frame =>
-                                            frame.filename &&
-                                            frame.filename.includes(__dirname) &&
+                                            frame.filename?.includes(__dirname) &&
                                             !frame.filename.includes(ownNodeModulesDir),
                                     )
                                 ) {
