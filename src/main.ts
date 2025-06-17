@@ -793,10 +793,9 @@ class JavaScript extends Adapter {
             const sentryInstance: InstanceType<typeof SentryPlugin> = this.getPluginInstance('sentry') as InstanceType<
                 typeof SentryPlugin
             >;
-            if (sentryInstance?.getSentryObject) {
+            if (sentryInstance) {
                 const Sentry = sentryInstance.getSentryObject();
-                if (Sentry) {
-                    const scope = Sentry.getCurrentScope();
+                Sentry?.withScope(scope => {
                     scope.addEventProcessor((event, _hint) => {
                         if (event.exception?.values?.[0]) {
                             const eventData = event.exception.values[0];
@@ -813,7 +812,7 @@ class JavaScript extends Adapter {
                                 ) {
                                     return null;
                                 }
-                                //Exclude event if own directory is included but not inside own node_modules
+                                // Exclude event if own directory is included but not inside own node_modules
                                 const ownNodeModulesDir = join(__dirname, 'node_modules');
                                 if (
                                     !eventData.stacktrace.frames.find(
@@ -833,7 +832,7 @@ class JavaScript extends Adapter {
                         // No exception in it ... do not report
                         return null;
                     });
-                }
+                });
             }
         }
 

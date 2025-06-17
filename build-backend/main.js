@@ -683,10 +683,9 @@ class JavaScript extends adapter_core_1.Adapter {
         this.config.maxTriggersPerScript = parseInt(this.config.maxTriggersPerScript, 10) || 100;
         if (this.supportsFeature?.('PLUGINS')) {
             const sentryInstance = this.getPluginInstance('sentry');
-            if (sentryInstance?.getSentryObject) {
+            if (sentryInstance) {
                 const Sentry = sentryInstance.getSentryObject();
-                if (Sentry) {
-                    const scope = Sentry.getCurrentScope();
+                Sentry?.withScope(scope => {
                     scope.addEventProcessor((event, _hint) => {
                         if (event.exception?.values?.[0]) {
                             const eventData = event.exception.values[0];
@@ -697,7 +696,7 @@ class JavaScript extends adapter_core_1.Adapter {
                                 if (eventData.stacktrace.frames.find(frame => frame.filename?.includes(SCRIPT_CODE_MARKER))) {
                                     return null;
                                 }
-                                //Exclude event if own directory is included but not inside own node_modules
+                                // Exclude event if own directory is included but not inside own node_modules
                                 const ownNodeModulesDir = (0, node_path_1.join)(__dirname, 'node_modules');
                                 if (!eventData.stacktrace.frames.find(frame => frame.filename &&
                                     frame.filename.includes(__dirname) &&
@@ -711,7 +710,7 @@ class JavaScript extends adapter_core_1.Adapter {
                         // No exception in it ... do not report
                         return null;
                     });
-                }
+                });
             }
         }
         await this.main();

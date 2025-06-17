@@ -12,25 +12,26 @@ function stringify(data) {
         result = JSON.stringify(obj, null, 2);
     }
     else if (data.data.type === 'script') {
+        const objScript = obj;
         id = `${id.replace(/\./g, '/').substring('script.js.'.length)}.json`;
-        if (obj.common?.source) {
-            const source = obj.common.source;
-            if (obj.common.enabled) {
+        if (objScript.common?.source) {
+            const source = objScript.common.source;
+            if (objScript.common.enabled) {
                 // @ts-expect-error We do not use it
-                delete obj.common.enabled;
+                delete objScript.common.enabled;
             }
-            if (obj.common.engine === 'system.adapter.javascript.0') {
+            if (objScript.common.engine === 'system.adapter.javascript.0') {
                 // @ts-expect-error We do not use it
-                delete obj.common.engine;
+                delete objScript.common.engine;
             }
-            if (obj.common.engineType === 'Javascript/js') {
+            if (objScript.common.engineType === 'Javascript/js') {
                 // @ts-expect-error We do not use it
-                delete obj.common.engineType;
+                delete objScript.common.engineType;
             }
             // @ts-expect-error We do not use it
-            delete obj.common.name;
+            delete objScript.common.name;
             // @ts-expect-error We do not use it
-            delete obj.common.source;
+            delete objScript.common.source;
             if (JSON.stringify(obj.common) !== '{}') {
                 result = `/* -- do not edit following lines - START --\n${JSON.stringify(obj.common, null, 2)}\n-- do not edit previous lines - END --*/\n${source}`;
             }

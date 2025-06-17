@@ -43,8 +43,8 @@
   "dependencies": {
     "@iobroker/adapter-core": "^3.2.3",
     "@iobroker/types": "^7.0.7",
-    "@types/node": "^22.15.29",
-    "axios": "^1.9.0",
+    "@types/node": "^24.0.3",
+    "axios": "^1.10.0",
     "jsonata": "^2.0.6",
     "jszip": "^3.10.1",
     "node-inspect": "^2.0.0",
