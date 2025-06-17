@@ -6,7 +6,7 @@ import { Save as IconSave, Cancel as IconCancel } from '@mui/icons-material';
 
 import { type AdminConnection, I18n, type IobTheme, type ThemeType } from '@iobroker/adapter-react-v5';
 
-import ScriptEditorComponent from '../Components/ScriptEditorVanilaMonaco';
+import ScriptEditorComponent from '../Components/ScriptEditorVanillaMonaco';
 
 const styles: Record<string, any> = {
     textArea: {

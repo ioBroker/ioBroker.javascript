@@ -10,25 +10,26 @@ export function stringify(data: { data: ioBroker.ScriptObject | ioBroker.Channel
         id = `${id.replace(/\./g, '/').substring('script.js.'.length)}/_dir.json`;
         result = JSON.stringify(obj, null, 2);
     } else if (data.data.type === 'script') {
+        const objScript = obj as ioBroker.ScriptObject;
         id = `${id.replace(/\./g, '/').substring('script.js.'.length)}.json`;
-        if ((obj as ioBroker.ScriptObject).common?.source) {
-            const source = (obj as ioBroker.ScriptObject).common.source;
-            if ((obj as ioBroker.ScriptObject).common.enabled) {
+        if (objScript.common?.source) {
+            const source = objScript.common.source;
+            if (objScript.common.enabled) {
                 // @ts-expect-error We do not use it
-                delete (obj as ioBroker.ScriptObject).common.enabled;
+                delete objScript.common.enabled;
             }
-            if ((obj as ioBroker.ScriptObject).common.engine === 'system.adapter.javascript.0') {
+            if (objScript.common.engine === 'system.adapter.javascript.0') {
                 // @ts-expect-error We do not use it
-                delete (obj as ioBroker.ScriptObject).common.engine;
+                delete objScript.common.engine;
             }
-            if ((obj as ioBroker.ScriptObject).common.engineType === 'Javascript/js') {
+            if (objScript.common.engineType === 'Javascript/js') {
                 // @ts-expect-error We do not use it
-                delete (obj as ioBroker.ScriptObject).common.engineType;
+                delete objScript.common.engineType;
             }
             // @ts-expect-error We do not use it
-            delete (obj as ioBroker.ScriptObject).common.name;
+            delete objScript.common.name;
             // @ts-expect-error We do not use it
-            delete (obj as ioBroker.ScriptObject).common.source;
+            delete objScript.common.source;
             if (JSON.stringify(obj.common) !== '{}') {
                 result = `/* -- do not edit following lines - START --\n${JSON.stringify(obj.common, null, 2)}\n-- do not edit previous lines - END --*/\n${source}`;
             } else {

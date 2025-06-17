@@ -26,6 +26,9 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Speed-up loading of GUI
+
 ### 9.0.4 (2025-06-16)
 * (@GermanBluefox) Corrected script editor for Polish language
 * (@GermanBluefox) Corrected import of Blockly blocks

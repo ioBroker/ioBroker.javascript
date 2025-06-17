@@ -681,9 +681,9 @@ class JavaScript extends adapter_core_1.Adapter {
         this.context.errorLogFunction = this.log;
         this.config.maxSetStatePerMinute = parseInt(this.config.maxSetStatePerMinute, 10) || 1000;
         this.config.maxTriggersPerScript = parseInt(this.config.maxTriggersPerScript, 10) || 100;
-        if (this.supportsFeature && this.supportsFeature('PLUGINS')) {
+        if (this.supportsFeature?.('PLUGINS')) {
             const sentryInstance = this.getPluginInstance('sentry');
-            if (sentryInstance) {
+            if (sentryInstance?.getSentryObject) {
                 const Sentry = sentryInstance.getSentryObject();
                 if (Sentry) {
                     const scope = Sentry.getCurrentScope();

@@ -789,11 +789,11 @@ class JavaScript extends Adapter {
         this.config.maxSetStatePerMinute = parseInt(this.config.maxSetStatePerMinute as unknown as string, 10) || 1000;
         this.config.maxTriggersPerScript = parseInt(this.config.maxTriggersPerScript as unknown as string, 10) || 100;
 
-        if (this.supportsFeature && this.supportsFeature('PLUGINS')) {
+        if (this.supportsFeature?.('PLUGINS')) {
             const sentryInstance: InstanceType<typeof SentryPlugin> = this.getPluginInstance('sentry') as InstanceType<
                 typeof SentryPlugin
             >;
-            if (sentryInstance) {
+            if (sentryInstance?.getSentryObject) {
                 const Sentry = sentryInstance.getSentryObject();
                 if (Sentry) {
                     const scope = Sentry.getCurrentScope();
