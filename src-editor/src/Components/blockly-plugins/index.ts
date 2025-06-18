@@ -257,4 +257,18 @@ export function initBlockly(): void {
             ]),
         );
     }
+
+    // migrate old registry Blockly.JavaScript.my_block to new registry Blockly.JavaScript.forBlock.my_block
+    const blocklyObject: Record<string, any> = window.Blockly.JavaScript;
+    if (blocklyObject.forBlock) {
+        Object.keys(blocklyObject).forEach(key => {
+            if (typeof blocklyObject[key] === 'function') {
+                if (!blocklyObject.forBlock[key]) {
+                    console.log(`Migrating Blockly.JavaScript.${key} to Blockly.JavaScript.forBlock.${key}`);
+                    blocklyObject.forBlock[key] = blocklyObject[key];
+                    delete blocklyObject[key];
+                }
+            }
+        });
+    }
 }
