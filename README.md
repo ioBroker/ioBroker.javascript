@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 9.0.6 (2025-06-18)
 * (@GermanBluefox) Speed-up loading of GUI
 * (@GermanBluefox) Migrating old blocks to new format
 

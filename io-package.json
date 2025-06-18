@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "9.0.5",
+    "version": "9.0.6",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "9.0.6": {
+        "en": "Speed-up loading of GUI\nMigrating old blocks to new format",
+        "de": "Beschleunigung der GUI\nAlte Blöcke in neues Format migrieren",
+        "ru": "Ускоренная загрузка GUI\nПеренос старых блоков в новый формат",
+        "pt": "Carregamento acelerado da GUI\nMigrando blocos antigos para um novo formato",
+        "nl": "Versnelling laden van GUI\nOude blokken migreren naar nieuw formaat",
+        "fr": "Accélération du chargement de l'interface utilisateur\nMigrer les vieux blocs vers un nouveau format",
+        "it": "Caricamento rapido della GUI\nMigrare vecchi blocchi a nuovo formato",
+        "es": "Carga rápida de GUI\nMigrando viejos bloques a nuevo formato",
+        "pl": "Szybkie załadowanie GUI\nMigracja starych bloków do nowego formatu",
+        "uk": "Швидкість завантаження GUI\nМіграція старих блоків до нового формату",
+        "zh-cn": "快速装入图形界面\n将旧块迁移到新格式"
+      },
       "9.0.5": {
         "en": "Speed-up loading of GUI",
         "de": "Beschleunigung der GUI",
@@ -117,19 +130,6 @@
         "pl": "Poprawiony edytor funkcji blockly\nSkorygowane tworzenie folderów",
         "uk": "Виправлений редактор функцій блоку\nВиправлено створення папок",
         "zh-cn": "纠正块函数编辑器\n修正文件夹的创建"
-      },
-      "8.9.0": {
-        "en": "Migrated GUI to TypeScript\nAdded count attribute to getHistory in blockly",
-        "de": "Migrated GUI zu TypeScript\nZählattribut zu getHistory in blockly hinzugefügt",
-        "ru": "Мигрированный графический интерфейс к TypeScript\nДобавлено значение атрибута getHistory в блокно",
-        "pt": "GUI migrada para TypeScript\nAdicionado atributo contagem para getHistory em blockly",
-        "nl": "GUI naar TypeScript migreren\nToevoegen telattribuut aan getHistory in blokly",
-        "fr": "L'interface graphique a migré vers TypeScript\nAjout de l'attribut count pour obtenir l'historique en bloc",
-        "it": "GUI migrata a TypeScript\nAggiunto conteggio attributo per ottenereHistory in blocco",
-        "es": "GUI migrado a TipoScript\nAtributo de cuenta añadido para conseguirHistoria en bloque",
-        "pl": "Migrated GUI to TypeScript\nDodano atrybut liczenia do getHistory w blockly",
-        "uk": "Мігрований графічний інтерфейс на TypeScript\nДодано атрибут підрахунку для getHistory в блоклі",
-        "zh-cn": "将图形界面切换到类型脚本\n添加计数属性以块化获取历史"
       }
     },
     "platform": "Javascript/Node.js",
