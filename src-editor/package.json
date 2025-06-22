@@ -1,6 +1,6 @@
 {
     "name": "js",
-    "version": "9.0.5",
+    "version": "9.0.6",
     "private": true,
     "type": "module",
     "dependencies": {
@@ -8,7 +8,7 @@
         "@blockly/field-multilineinput": "^5.0.17",
         "@blockly/theme-dark": "^7.0.12",
         "@devbookhq/splitter": "^1.4.2",
-        "@iobroker/adapter-react-v5": "^7.6.20",
+        "@iobroker/adapter-react-v5": "^7.7.1",
         "@iobroker/javascript-rules-dev": "^0.0.6",
         "@iobroker/type-detector": "^4.5.0",
         "@iobroker/types": "^7.0.7",

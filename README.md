@@ -26,6 +26,9 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Fixing some blocks in blockly: time, function
+
 ### 9.0.6 (2025-06-18)
 * (@GermanBluefox) Speed-up loading of GUI
 * (@GermanBluefox) Migrating old blocks to new format

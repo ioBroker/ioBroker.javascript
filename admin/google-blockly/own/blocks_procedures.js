@@ -192,16 +192,22 @@ Blockly.JavaScript.forBlock['procedures_defreturn'] = function (block) {
             Blockly.JavaScript.INDENT,
         );
     }
-    const branch = Blockly.JavaScript.statementToCode(block, 'STACK');
-    let returnValue = Blockly.JavaScript.valueToCode(block, 'RETURN', Blockly.JavaScript.ORDER_NONE) || '';
+    let returnValue = '';
     let xfix2 = '';
-    if (branch && returnValue) {
-        // After executing the function body, revisit this block for the return.
-        xfix2 = xfix1;
+    const branch = Blockly.JavaScript.statementToCode(block, 'STACK');
+    try {
+        returnValue = Blockly.JavaScript.valueToCode(block, 'RETURN', Blockly.JavaScript.ORDER_NONE) || '';
+        if (branch && returnValue) {
+            // After executing the function body, revisit this block for the return.
+            xfix2 = xfix1;
+        }
+        if (returnValue) {
+            returnValue = Blockly.JavaScript.INDENT + 'return ' + returnValue + ';\n';
+        }
+    } catch (e) {
+        // This function is without a return value.
     }
-    if (returnValue) {
-        returnValue = Blockly.JavaScript.INDENT + 'return ' + returnValue + ';\n';
-    }
+
     const args = [];
     const variables = block.getVars();
     for (let i = 0; i < variables.length; i++) {
@@ -210,7 +216,7 @@ Blockly.JavaScript.forBlock['procedures_defreturn'] = function (block) {
     let code = 'async function ' + funcName + '(' + args.join(', ') + ') {\n' + xfix1 +
         loopTrap + branch + xfix2 + returnValue + '}';
     code = Blockly.JavaScript.scrub_(block, code);
-    // Add % so as not to collide with helper functions in definitions list.
+    // Add % so as not to collide with helper functions in the definitions list.
     Blockly.JavaScript.definitions_['%' + funcName] = code;
     return null;
 };

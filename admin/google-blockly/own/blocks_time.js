@@ -152,11 +152,20 @@ Blockly.Blocks['time_compare_ex'] = {
 Blockly.JavaScript.forBlock['time_compare_ex'] = function (block) {
     const fOption = block.getFieldValue('OPTION');
     const vStartTime = Blockly.JavaScript.valueToCode(block, 'START_TIME', Blockly.JavaScript.ORDER_ATOMIC);
-    let vEndTime = Blockly.JavaScript.valueToCode(block, 'END_TIME', Blockly.JavaScript.ORDER_ATOMIC);
-    vEndTime = vEndTime || null;
-
-    let vCustomTime = Blockly.JavaScript.valueToCode(block, 'CUSTOM_TIME', Blockly.JavaScript.ORDER_ATOMIC);
-    vCustomTime = vCustomTime || null;
+    let vEndTime = null;
+    try {
+        vEndTime = Blockly.JavaScript.valueToCode(block, 'END_TIME', Blockly.JavaScript.ORDER_ATOMIC);
+        vEndTime = vEndTime || null;
+    } catch (e) {
+        // Ignore
+    }
+    let vCustomTime = null;
+    try {
+        vCustomTime = Blockly.JavaScript.valueToCode(block, 'CUSTOM_TIME', Blockly.JavaScript.ORDER_ATOMIC);
+        vCustomTime = vCustomTime || null;
+    } catch (e) {
+        // Ignore
+    }
 
     return [`compareTime(${vStartTime}, ${vEndTime}, '${fOption}', ${vCustomTime})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
@@ -235,7 +244,12 @@ Blockly.Blocks['time_compare'] = {
 Blockly.JavaScript.forBlock['time_compare'] = function (block) {
     const fOption = block.getFieldValue('OPTION');
     const fStartTime = block.getFieldValue('START_TIME');
-    const fEndTime = block.getFieldValue('END_TIME');
+    let fEndTime = null;
+    try {
+        fEndTime = block.getFieldValue('END_TIME');
+    } catch (e) {
+
+    }
 
     return [`compareTime(${Blockly.JavaScript.quote_(fStartTime)}, ${fEndTime ? Blockly.JavaScript.quote_(fEndTime) : 'null'}, ${Blockly.JavaScript.quote_(fOption)})`, Blockly.JavaScript.ORDER_ATOMIC];
 };

@@ -16,7 +16,7 @@ updates:
       open-pull-requests-limit: 5
       versioning-strategy: increase
       ignore:
-          # Typescript should not be updated automatically, except patch updates
+          # TypeScript should not be updated automatically, except patch updates
           # it does not follow semver and minor updates are usually breaking
           - dependency-name: 'typescript'
             update-types: ['version-update:semver-minor', 'version-update:semver-major']
@@ -26,7 +26,7 @@ updates:
             update-types: ['version-update:semver-major']
 
     - package-ecosystem: npm
-      directory: '/src'
+      directory: '/src-editor'
       schedule:
           interval: monthly
           time: '04:00'
