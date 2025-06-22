@@ -23,7 +23,7 @@
         "@types/react-dom": "^18.3.7",
         "@types/reactour": "^1.18.5",
         "@vitejs/plugin-react": "^4.5.2",
-        "blockly": "^11.2.2",
+        "blockly": "^12.1.0",
         "file-selector": "^2.1.2",
         "lodash": "^4.17.21",
         "monaco-editor": "~0.52.2",
