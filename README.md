@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 9.0.7 (2025-06-29)
 * (@GermanBluefox) Fixing some blocks in blockly: time, function
 
 ### 9.0.6 (2025-06-18)
@@ -49,11 +49,6 @@ Executes Javascript, Typescript Scripts.
 * (@GermanBluefox) Back-end was migrated to TypeScript
 * (@GermanBluefox) Breaking change: removed "request" module
 * (@GermanBluefox) Added prettier for scripts
-
-### 8.9.2 (2025-04-27)
-
-* (@GermanBluefox) Updated packages for GUI
-* (@GermanBluefox) Used TypeScript for an admin component
 
 ## License
 The MIT License (MIT)

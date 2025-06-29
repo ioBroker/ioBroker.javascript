@@ -1,4 +1,9 @@
 The newest change log is in README.md
+## 8.9.2 (2025-04-27)
+
+* (@GermanBluefox) Updated packages for GUI
+* (@GermanBluefox) Used TypeScript for an admin component
+
 ## 8.9.1 (2025-01-26)
 
 * (@GermanBluefox) Corrected blockly function editor

@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "9.0.6",
+    "version": "9.0.7",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "9.0.7": {
+        "en": "Fixing some blocks in blockly: time, function",
+        "de": "Einige Blocks blockieren: Zeit, Funktion",
+        "ru": "Блокировка блоков: время, функция",
+        "pt": "Corrigindo alguns blocos em bloco: tempo, função",
+        "nl": "Het repareren van enkele blokken in blokjes: tijd, functie",
+        "fr": "Correction de quelques blocs en bloc : temps, fonction",
+        "it": "Fissare alcuni blocchi in blocco: tempo, funzione",
+        "es": "Arreglar algunos bloques en bloque: tiempo, función",
+        "pl": "Ustawianie niektórych bloków w blokowanych: czas, funkcja",
+        "uk": "Виправлення деяких блоків в блокноті: час, функція",
+        "zh-cn": "以块状修复一些块: 时间, 功能"
+      },
       "9.0.6": {
         "en": "Speed-up loading of GUI\nMigrating old blocks to new format",
         "de": "Beschleunigung der GUI\nAlte Blöcke in neues Format migrieren",
@@ -117,19 +130,6 @@
         "pl": "Aktualizacja pakietów dla GUI\nUżywany TypeScript dla komponentu admin",
         "uk": "Оновлені пакети для GUI\nВикористовується TypeScript для компонента адміністратора",
         "zh-cn": "更新的图形用户界面软件包\n管理员组件所用的类型脚本"
-      },
-      "8.9.1": {
-        "en": "Corrected blockly function editor\nCorrected creation of folders",
-        "de": "Korrigierter blockierender Funktionseditor\nKorrigierte Erstellung von Ordnern",
-        "ru": "Корректированный блокно-функциональный редактор\nИсправлено создание папок",
-        "pt": "Editor de função de bloqueio correto\nCriação correta de pastas",
-        "nl": "Gecorrigeerde functie-editor\nGecorrigeerd aanmaken van mappen",
-        "fr": "Correction de l'éditeur de fonction bloc\nCorrection de la création de dossiers",
-        "it": "Editor corretto funzione blockly\nCreazione corretta di cartelle",
-        "es": "Corregido editor de funciones bloqueadas\nCreación corregida de carpetas",
-        "pl": "Poprawiony edytor funkcji blockly\nSkorygowane tworzenie folderów",
-        "uk": "Виправлений редактор функцій блоку\nВиправлено створення папок",
-        "zh-cn": "纠正块函数编辑器\n修正文件夹的创建"
       }
     },
     "platform": "Javascript/Node.js",
