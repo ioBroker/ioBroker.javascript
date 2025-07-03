@@ -59,3 +59,46 @@ Blockly.JavaScript.forBlock['text_contains'] = function (block) {
 
     return [`String(${vValue}).includes(${vFind})`, Blockly.JavaScript.ORDER_ATOMIC];
 };
+
+// --- Text formatValue --------------------------------------------------
+
+Blockly.Blocks['text_format_value'] = {
+    // Checkbox.
+    init: function () {
+        this.appendValueInput('VALUE')
+            .appendField(Blockly.Translate('text_format_value'))
+            .setCheck(null);
+
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('text_format_value_format'))
+            .appendField(new Blockly.FieldDropdown([
+                ['System', 'system'],
+                ['.,', '.,'],
+                [',.', ',.'],
+                [' .', ' .'],
+            ]), 'FORMAT');
+
+        this.appendValueInput('DECIMALS')
+            .appendField(Blockly.Translate('text_format_value_decimals'));
+
+
+        this.setInputsInline(true);
+        this.setOutput(true, 'String');
+
+        this.setColour('%{BKY_TEXTS_HUE}');
+
+        //this.setTooltip(Blockly.Translate('text_format_value_tooltip'));
+    },
+};
+
+Blockly.JavaScript.forBlock['text_format_value'] = function (block) {
+    const vValue = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+    const vDecimals = Blockly.JavaScript.valueToCode(block, 'DECIMALS', Blockly.JavaScript.ORDER_ATOMIC);
+    const fFormat = block.getFieldValue('FORMAT');
+
+    if (fFormat !== 'system') {
+        return [`formatValue(parseFloat(${vValue}), ${vDecimals}, '${fFormat}')`, Blockly.JavaScript.ORDER_ATOMIC];
+    }
+
+    return [`formatValue(parseFloat(${vValue}), ${vDecimals})`, Blockly.JavaScript.ORDER_ATOMIC];
+};
