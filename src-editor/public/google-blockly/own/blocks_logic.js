@@ -115,7 +115,7 @@ Blockly.Blocks['logic_multi_and'] = {
 
         // Disconnect any children that don't belong.
         for (let k = 0; k < this.itemCount_; k++) {
-            const connection = this.getInput('AND' + k).connection.targetConnection;
+            const connection = this.getInput(`AND${k}`).connection.targetConnection;
             if (connection && !connections.includes(connection)) {
                 connection.disconnect();
             }
@@ -142,11 +142,16 @@ Blockly.Blocks['logic_multi_and'] = {
         let i = 0;
 
         while (itemBlock) {
-            const input = this.getInput('AND' + i);
-            itemBlock.valueConnection_ = input && input.connection.targetConnection;
+            let input;
+            try {
+                input = this.getInput('AND' + i);
+            } catch (e) {
+                // If the input does not exist, it means that the block has been removed.
+                input = null;
+            }
+            itemBlock.valueConnection_ = input?.connection.targetConnection;
             i++;
-            itemBlock = itemBlock.nextConnection &&
-                itemBlock.nextConnection.targetBlock();
+            itemBlock = itemBlock.nextConnection?.targetBlock();
         }
     },
     /**
@@ -157,7 +162,14 @@ Blockly.Blocks['logic_multi_and'] = {
     updateShape_: function () {
         // Add new inputs.
         for (let i = 0; i < this.itemCount_; i++) {
-            if (!this.getInput('AND' + i)) {
+            let input;
+            try {
+                input = this.getInput('AND' + i);
+            } catch (e) {
+                // If the input does not exist, it means that the block has been removed.
+                input = null;
+            }
+            if (!input) {
                 const input = this.appendValueInput('AND' + i).setAlign(Blockly.ALIGN_RIGHT);
                 if (i > 0) {
                     input.appendField(Blockly.Translate('logic_multi_and_and'));
@@ -165,8 +177,13 @@ Blockly.Blocks['logic_multi_and'] = {
             }
         }
         // Remove deleted inputs.
-        for (let i = this.itemCount_; this.getInput('AND' + i); i++) {
-            this.removeInput('AND' + i);
+        try {
+            for (let i = this.itemCount_; this.getInput('AND' + i); i++) {
+                this.removeInput('AND' + i);
+            }
+        } catch (e) {
+            // If the input does not exist, it means that the block has been removed.
+            // Do nothing.
         }
     },
 };
@@ -321,11 +338,16 @@ Blockly.Blocks['logic_multi_or'] = {
         let i = 0;
 
         while (itemBlock) {
-            const input = this.getInput('OR' + i);
-            itemBlock.valueConnection_ = input && input.connection.targetConnection;
+            let input;
+            try {
+                input = this.getInput('OR' + i);
+            } catch (e) {
+                // If the input does not exist, it means that the block has been removed.
+                input = null;
+            }
+            itemBlock.valueConnection_ = input?.connection.targetConnection;
             i++;
-            itemBlock = itemBlock.nextConnection &&
-                itemBlock.nextConnection.targetBlock();
+            itemBlock = itemBlock.nextConnection?.targetBlock();
         }
     },
     /**
@@ -336,7 +358,13 @@ Blockly.Blocks['logic_multi_or'] = {
     updateShape_: function () {
         // Add new inputs.
         for (let i = 0; i < this.itemCount_; i++) {
-            if (!this.getInput('OR' + i)) {
+            let input;
+            try {
+                input = this.getInput('OR' + i);
+            } catch (e) {
+                input = null;
+            }
+            if (!input) {
                 const input = this.appendValueInput('OR' + i).setAlign(Blockly.ALIGN_RIGHT);
                 if (i > 0) {
                     input.appendField(Blockly.Translate('logic_multi_or_or'));
@@ -344,8 +372,13 @@ Blockly.Blocks['logic_multi_or'] = {
             }
         }
         // Remove deleted inputs.
-        for (let i = this.itemCount_; this.getInput('OR' + i); i++) {
-            this.removeInput('OR' + i);
+        try {
+            for (let i = this.itemCount_; this.getInput('OR' + i); i++) {
+                this.removeInput('OR' + i);
+            }
+        } catch (e) {
+            // If the input does not exist, it means that the block has been removed.
+            // Do nothing.
         }
     },
 };

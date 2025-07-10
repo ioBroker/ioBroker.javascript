@@ -178,11 +178,15 @@ Blockly.Blocks['object_new'] = {
         let i = 0;
 
         while (itemBlock) {
-            const input = this.getInput('ATTR_' + i);
-            itemBlock.valueConnection_ = input && input.connection.targetConnection;
+            let input;
+            try {
+                input = this.getInput('ATTR_' + i);
+            } catch (e) {
+                input = null;
+            }
+            itemBlock.valueConnection_ = input?.connection.targetConnection;
             i++;
-            itemBlock = itemBlock.nextConnection &&
-                itemBlock.nextConnection.targetBlock();
+            itemBlock = itemBlock.nextConnection?.targetBlock();
         }
     },
     /**
@@ -195,7 +199,12 @@ Blockly.Blocks['object_new'] = {
 
         // Add new inputs.
         for (let i = 0; i < this.itemCount_; i++) {
-            let input = this.getInput('ATTR_' + i);
+            let input;
+            try {
+                input = this.getInput(`ATTR_${i}`);
+            } catch (e) {
+                input = null;
+            }
 
             if (!input) {
                 input = this.appendValueInput('ATTR_' + i).setAlign(Blockly.ALIGN_RIGHT);
@@ -215,8 +224,12 @@ Blockly.Blocks['object_new'] = {
             }, 100, input);
         }
         // Remove deleted inputs.
-        for (let i = this.itemCount_; this.getInput('ATTR_' + i); i++) {
-            this.removeInput('ATTR_' + i);
+        try {
+            for (let i = this.itemCount_; this.getInput('ATTR_' + i); i++) {
+                this.removeInput('ATTR_' + i);
+            }
+        } catch (e) {
+            // Ignore error if input does not exist
         }
     },
 };

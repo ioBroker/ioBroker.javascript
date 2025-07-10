@@ -140,9 +140,13 @@ Blockly.Blocks['on_ext'] = {
 
         // Disconnect any children that don't belong.
         for (let k = 0; k < this.itemCount_; k++) {
-            const connection = this.getInput('OID' + k).connection.targetConnection;
-            if (connection && connections.indexOf(connection) === -1) {
-                connection.disconnect();
+            try {
+                const connection = this.getInput('OID' + k).connection.targetConnection;
+                if (connection && !connections.includes(connection)) {
+                    connection.disconnect();
+                }
+            } catch (e) {
+                // Do nothing, input does not exist
             }
         }
 
@@ -167,11 +171,15 @@ Blockly.Blocks['on_ext'] = {
         let i = 0;
 
         while (itemBlock) {
-            const input = this.getInput('OID' + i);
-            itemBlock.valueConnection_ = input && input.connection.targetConnection;
+            let input;
+            try {
+                input = this.getInput('OID' + i);
+            } catch (e) {
+                input = null;
+            }
+            itemBlock.valueConnection_ = input?.connection.targetConnection;
             i++;
-            itemBlock = itemBlock.nextConnection &&
-                itemBlock.nextConnection.targetBlock();
+            itemBlock = itemBlock.nextConnection?.targetBlock();
         }
     },
     /**
@@ -181,15 +189,24 @@ Blockly.Blocks['on_ext'] = {
      */
     updateShape_: function () {
         let conditionValue = undefined;
-        if (this.getInput('CONDITION')) {
-            conditionValue = this.getFieldValue('CONDITION');
-            this.removeInput('CONDITION');
+        try {
+            if (this.getInput('CONDITION')) {
+                conditionValue = this.getFieldValue('CONDITION');
+                this.removeInput('CONDITION');
+            }
+        } catch (e) {
+            // Do nothing, input does not exist
         }
 
+
         let conditionAckValue = undefined;
-        if (this.getInput('ACK_CONDITION')) {
-            conditionAckValue = this.getFieldValue('ACK_CONDITION');
-            this.removeInput('ACK_CONDITION');
+        try {
+            if (this.getInput('ACK_CONDITION')) {
+                conditionAckValue = this.getFieldValue('ACK_CONDITION');
+                this.removeInput('ACK_CONDITION');
+            }
+        } catch (e) {
+            // Do nothing, input does not exist
         }
 
         let input;
@@ -206,7 +223,12 @@ Blockly.Blocks['on_ext'] = {
 
         let i;
         for (i = 0; i < this.itemCount_; i++) {
-            let _input = this.getInput('OID' + i);
+            let _input;
+            try {
+                _input = this.getInput('OID' + i);
+            } catch (e) {
+                // Do nothing, input does not exist
+            }
             if (!_input) {
                 _input = this.appendValueInput('OID' + i);
 
@@ -236,9 +258,13 @@ Blockly.Blocks['on_ext'] = {
         }
 
         // Remove deleted inputs.
-        while (this.getInput('OID' + i)) {
-            this.removeInput('OID' + i);
-            i++;
+        try {
+            while (this.getInput('OID' + i)) {
+                this.removeInput('OID' + i);
+                i++;
+            }
+        } catch (e) {
+            // Do nothing, input does not exist
         }
 
         this.appendDummyInput('CONDITION')
@@ -1154,7 +1180,12 @@ Blockly.Blocks['cron_builder'] = {
     updateShape_: function (withSeconds) {
         this.seconds_ = withSeconds;
         // Add or remove a statement Input.
-        const inputExists = this.getInput('SECONDS');
+        let inputExists;
+        try {
+            inputExists = this.getInput('SECONDS');
+        } catch (e) {
+            inputExists = null;
+        }
 
         if (withSeconds) {
             if (!inputExists) {
