@@ -161,13 +161,12 @@ Blockly.Blocks['logic_switch_case'] = {
                     } catch (e) {
                         // ignore
                     }
-                    caseBlock.satementConnection_ = defaultInput?.connection.targetConnection;
+                    caseBlock.statementConnection_ = defaultInput?.connection.targetConnection;
                     break;
                 default:
                     throw 'Unknown block type';
             }
-            caseBlock = caseBlock.nextConnection &&
-                caseBlock.nextConnection.targetBlock();
+            caseBlock = caseBlock.nextConnection?.targetBlock();
         }
     },
 };
