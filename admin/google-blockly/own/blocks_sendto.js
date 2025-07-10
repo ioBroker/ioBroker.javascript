@@ -228,9 +228,14 @@ Blockly.Blocks['sendto_custom'] = {
         let itemBlock = containerBlock.getInputTargetBlock('STACK');
         let i = 0;
         while (itemBlock) {
-            const input = this.getInput('ARG' + i);
-            itemBlock.valueConnection_ = input && input.connection.targetConnection;
-            itemBlock = itemBlock.nextConnection && itemBlock.nextConnection.targetBlock();
+            let input;
+            try {
+                input = this.getInput('ARG' + i);
+            } catch (e) {
+                // if the input does not exist, it means that the block was deleted
+            }
+            itemBlock.valueConnection_ = input?.connection.targetConnection;
+            itemBlock = itemBlock.nextConnection?.targetBlock();
             i++;
         }
     },
@@ -244,7 +249,12 @@ Blockly.Blocks['sendto_custom'] = {
 
         // Add new inputs.
         for (let i = 0; i < this.itemCount_; i++) {
-            let input = this.getInput('ARG' + i);
+            let input;
+            try {
+                input = this.getInput('ARG' + i);
+            } catch (e) {
+                input = null;
+            }
 
             if (!input) {
                 input = this.appendValueInput('ARG' + i).setAlign(Blockly.ALIGN_RIGHT);
@@ -264,16 +274,27 @@ Blockly.Blocks['sendto_custom'] = {
             }, 100, input);
         }
         // Remove deleted inputs.
-        for (let i = this.itemCount_; this.getInput('ARG' + i); i++) {
-            this.removeInput('ARG' + i);
+        try {
+            for (let i = this.itemCount_; this.getInput('ARG' + i); i++) {
+                this.removeInput('ARG' + i);
+            }
+        } catch (e) {
+            // if the input does not exist, it means that the block was deleted
         }
+
 
         if (withStatement === undefined) {
             withStatement = this.getFieldValue('WITH_STATEMENT');
             withStatement = withStatement === true || withStatement === 'true' || withStatement === 'TRUE';
         }
 
-        this.getInput('STATEMENT') && this.removeInput('STATEMENT');
+        try {
+            if (this.getInput('STATEMENT')) {
+                this.removeInput('STATEMENT');
+            }
+        } catch (e) {
+            // if the input does not exist, it means that the block was deleted
+        }
 
         // Add or remove a statement Input.
         if (withStatement) {
@@ -429,7 +450,12 @@ Blockly.Blocks['sendto_otherscript'] = {
 
         // Add new inputs.
         for (let i = 0; i < this.itemCount_; i++) {
-            let input = this.getInput('ARG' + i);
+            let input;
+            try {
+                input = this.getInput('ARG' + i);
+            } catch (e) {
+                input = null;
+            }
 
             if (!input) {
                 input = this.appendValueInput('ARG' + i).setAlign(Blockly.ALIGN_RIGHT);
@@ -449,16 +475,27 @@ Blockly.Blocks['sendto_otherscript'] = {
             }, 100, input);
         }
         // Remove deleted inputs.
-        for (let i = this.itemCount_; this.getInput('ARG' + i); i++) {
-            this.removeInput('ARG' + i);
+        try {
+            for (let i = this.itemCount_; this.getInput('ARG' + i); i++) {
+                this.removeInput('ARG' + i);
+            }
+        } catch (e) {
+            // if the input does not exist, it means that the block was deleted
         }
+
 
         if (withStatement === undefined) {
             withStatement = this.getFieldValue('WITH_STATEMENT');
             withStatement = withStatement === true || withStatement === 'true' || withStatement === 'TRUE';
         }
 
-        this.getInput('STATEMENT') && this.removeInput('STATEMENT');
+        try {
+            if (this.getInput('STATEMENT')) {
+                this.removeInput('STATEMENT');
+            }
+        } catch (e) {
+            // if the input does not exist, it means that the block was deleted
+        }
 
         // Add or remove a statement Input.
         if (withStatement) {

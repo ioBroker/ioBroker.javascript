@@ -217,7 +217,12 @@ Blockly.Blocks.convert_from_date = {
     },
     updateShape_: function (isFormat, isLanguage) {
         // Add or remove a delay Input.
-        let inputExists = this.getInput('FORMAT');
+        let inputExists;
+        try {
+            inputExists = this.getInput('FORMAT');
+        } catch (e) {
+            inputExists = null;
+        }
 
         if (isFormat) {
             if (!inputExists) {
@@ -229,7 +234,11 @@ Blockly.Blocks.convert_from_date = {
             this.removeInput('FORMAT');
         }
 
-        inputExists = this.getInput('LANGUAGE');
+        try {
+            inputExists = this.getInput('LANGUAGE');
+        } catch (e) {
+            inputExists = null;
+        }
 
         if (isLanguage) {
             if (!inputExists) {
@@ -349,7 +358,12 @@ Blockly.Blocks.convert_time_difference = {
         this.updateShape_(format === true || format === 'true' || format === 'TRUE');
     },
     updateShape_: function (isFormat, isLanguage) {
-        let inputExists = this.getInput('FORMAT');
+        let inputExists;
+        try {
+            inputExists = this.getInput('FORMAT');
+        } catch (e) {
+            inputExists = null;
+        }
 
         if (isFormat) {
             if (!inputExists) {

@@ -75,7 +75,12 @@ Blockly.Blocks['exec'] = {
     },
     updateShape_: function (withStatement) {
         // Add or remove a statement Input.
-        const inputExists = this.getInput('STATEMENT');
+        let inputExists;
+        try {
+            inputExists = this.getInput('STATEMENT');
+        } catch (e) {
+            // Input does not exist
+        }
 
         if (withStatement) {
             if (!inputExists) {
@@ -721,7 +726,12 @@ Blockly.Blocks['request'] = {
     },
     updateShape_: function (withStatement) {
         // Add or remove a statement Input.
-        const inputExists = this.getInput('STATEMENT');
+        let inputExists;
+        try {
+            inputExists = this.getInput('STATEMENT');
+        } catch (e) {
+            // Input does not exist
+        }
 
         if (withStatement) {
             if (!inputExists) {

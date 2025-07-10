@@ -85,11 +85,20 @@ Blockly.Blocks['time_compare_ex'] = {
             isBetween = this.getFieldValue('OPTION') === 'between' || this.getFieldValue('OPTION') === 'not between';
         }
         // Add or remove a delay Input.
-        let inputExists = this.getInput('END_TIME');
+        let inputExists;
+        try {
+            inputExists = this.getInput('END_TIME');
+        } catch (e) {
+            inputExists = null;
+        }
 
         if (isBetween) {
             if (!inputExists) {
-                inputExists = this.getInput('CUSTOM_TIME');
+                try {
+                    inputExists = this.getInput('CUSTOM_TIME');
+                } catch (e) {
+                    inputExists = null;
+                }
 
                 if (inputExists) {
                     this.removeInput('CUSTOM_TIME');
@@ -130,7 +139,11 @@ Blockly.Blocks['time_compare_ex'] = {
         }
 
         useActualTime = useActualTime === 'true' || useActualTime === 'TRUE' || useActualTime === true;
-        inputExists = this.getInput('CUSTOM_TIME');
+        try {
+            inputExists = this.getInput('CUSTOM_TIME');
+        } catch (e) {
+            inputExists = null;
+        }
 
         if (!useActualTime) {
             this.getInput('TIME_TEXT').fieldRow[0].setValue(Blockly.Translate('time_compare_custom_ex'));
@@ -224,7 +237,12 @@ Blockly.Blocks['time_compare'] = {
     },
     updateShape_: function (isBetween) {
         // Add or remove a delay Input.
-        const inputExists = this.getInput('END_TIME');
+        let inputExists;
+        try {
+            inputExists = this.getInput('END_TIME');
+        } catch (e) {
+            inputExists = null;
+        }
 
         if (isBetween) {
             if (!inputExists) {
@@ -347,7 +365,12 @@ Blockly.Blocks['time_get'] = {
     },
     updateShape_: function (isFormat, isLanguage) {
         // Add or remove a delay Input.
-        let inputExists = this.getInput('FORMAT');
+        let inputExists;
+        try {
+            inputExists = this.getInput('FORMAT');
+        } catch (e) {
+            inputExists = null;
+        }
 
         if (isFormat) {
             if (!inputExists) {
@@ -359,7 +382,11 @@ Blockly.Blocks['time_get'] = {
             this.removeInput('FORMAT');
         }
 
-        inputExists = this.getInput('LANGUAGE');
+        try {
+            inputExists = this.getInput('LANGUAGE');
+        } catch (e) {
+            inputExists = null;
+        }
 
         if (isLanguage) {
             if (!inputExists) {

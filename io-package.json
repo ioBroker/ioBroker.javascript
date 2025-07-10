@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "9.0.7",
+    "version": "9.0.8",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "9.0.8": {
+        "en": "Added Blockly block to format a numeric value\nFixing some blocks in blockly: cron, time",
+        "de": "Hinzugefügt Blockly Block, um einen numerischen Wert zu formatieren\nEinige Blöcke blockweise fixieren: cron, time",
+        "ru": "Добавлен блок Blockly для форматирования числового значения\nПочинка блоков в блоке: крон, время",
+        "pt": "Adicionado Bloco para formatar um valor numérico\nConsertando alguns blocos em bloco: cron, tempo",
+        "nl": "Blockly blok toegevoegd om een numerieke waarde te formatteren\nHet repareren van wat blokken in blokjes: cron, tijd",
+        "fr": "Ajout d'un bloc bloc bloc pour formater une valeur numérique\nCorrection de quelques blocs en bloc : cron, temps",
+        "it": "Aggiunto Blockly per formattare un valore numerico\nFissare alcuni blocchi in blocco: cron, tempo",
+        "es": "Añadido Bloqueo bloqueado para formatear un valor numérico\nArreglar algunos bloques en bloque: cron, tiempo",
+        "pl": "Dodano Blockly bloku do formatu wartości liczbowej\nNaprawianie niektórych bloków w blokowanych: cron, czas",
+        "uk": "Додано блокнот для форматування числового значення\nВиправлення деяких блоків в блокноті: cron, час",
+        "zh-cn": "添加块格式化一个数值\n整顿一些街区: cron, time"
+      },
       "9.0.7": {
         "en": "Fixing some blocks in blockly: time, function",
         "de": "Einige Blocks blockieren: Zeit, Funktion",
@@ -117,19 +130,6 @@
         "pl": "Dodano możliwość ucieczki znaków w formacie TimeDiff\nBack- end został przeniesiony do TypeScript\nZmiana: usunięty moduł \"request\"\nDodano ładniejsze dla skryptów",
         "uk": "Додано можливість втекти chars у форматі Час\nBack-end був мігрований до TypeScript\nЗміна несправностей: видалений модуль \"запит\"\nДодано претtier для скриптів",
         "zh-cn": "添加格式跳过字符的可能性 时间\n后端已迁移到类型脚本\n中断更改: 删除“ 请求” 模块\n为脚本添加更美的"
-      },
-      "8.9.2": {
-        "en": "Updated packages for GUI\nUsed TypeScript for an admin component",
-        "de": "Aktualisierte Pakete für GUI\nGebrauchte TypeScript für eine Admin-Komponente",
-        "ru": "Обновленные пакеты для GUI\nИспользуемый TypeScript для компонента admin",
-        "pt": "Pacotes atualizados para GUI\nTypeScript usado para um componente admin",
-        "nl": "Bijgewerkte pakketten voor GUI\nTypeScript gebruikt voor een admin component",
-        "fr": "Les paquets mis à jour pour GUI\nTypeScript utilisé pour un composant admin",
-        "it": "Pacchetti aggiornati per GUI\nTipoScript usato per un componente amministratore",
-        "es": "Paquetes actualizados para GUI\nTipoScript usado para un componente de administración",
-        "pl": "Aktualizacja pakietów dla GUI\nUżywany TypeScript dla komponentu admin",
-        "uk": "Оновлені пакети для GUI\nВикористовується TypeScript для компонента адміністратора",
-        "zh-cn": "更新的图形用户界面软件包\n管理员组件所用的类型脚本"
       }
     },
     "platform": "Javascript/Node.js",

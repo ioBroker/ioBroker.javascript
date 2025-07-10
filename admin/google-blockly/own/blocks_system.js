@@ -167,7 +167,12 @@ Blockly.Blocks['control'] = {
     },
     updateShape_: function (delayInput) {
         // Add or remove a delay Input.
-        let inputExists = this.getInput('DELAY');
+        let inputExists;
+        try {
+            inputExists = this.getInput('DELAY');
+        } catch (e) {
+            // ignore
+        }
 
         if (delayInput) {
             if (!inputExists) {
@@ -184,7 +189,11 @@ Blockly.Blocks['control'] = {
             this.removeInput('DELAY');
         }
 
-        inputExists = this.getInput('CLEAR_RUNNING_INPUT');
+        try {
+            inputExists = this.getInput('CLEAR_RUNNING_INPUT');
+        } catch (e) {
+            inputExists = null;
+        }
 
         if (delayInput) {
             if (!inputExists) {
@@ -277,7 +286,12 @@ Blockly.Blocks['toggle'] = {
     },
     updateShape_: function (delayInput) {
         // Add or remove a delay Input.
-        let inputExists = this.getInput('DELAY');
+        let inputExists;
+        try {
+            inputExists = this.getInput('DELAY');
+        } catch (e) {
+            inputExists = null;
+        }
 
         if (delayInput) {
             if (!inputExists) {
@@ -295,7 +309,11 @@ Blockly.Blocks['toggle'] = {
             this.removeInput('DELAY');
         }
 
-        inputExists = this.getInput('CLEAR_RUNNING_INPUT');
+        try {
+            inputExists = this.getInput('CLEAR_RUNNING_INPUT');
+        } catch (e) {
+            inputExists = null;
+        }
 
         if (delayInput) {
             if (!inputExists) {
@@ -413,7 +431,12 @@ Blockly.Blocks['update'] = {
     },
     updateShape_: function (delayInput) {
         // Add or remove a delay Input.
-        let inputExists = this.getInput('DELAY');
+        let inputExists;
+        try {
+            inputExists = this.getInput('DELAY');
+        } catch (e){
+            inputExists = null;
+        }
 
         if (delayInput) {
             if (!inputExists) {
@@ -431,7 +454,11 @@ Blockly.Blocks['update'] = {
             this.removeInput('DELAY');
         }
 
-        inputExists = this.getInput('CLEAR_RUNNING_INPUT');
+        try {
+            inputExists = this.getInput('CLEAR_RUNNING_INPUT');
+        } catch (e) {
+            inputExists = null;
+        }
 
         if (delayInput) {
             if (!inputExists) {

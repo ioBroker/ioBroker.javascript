@@ -1,4 +1,11 @@
 The newest change log is in README.md
+## 9.0.2 (2025-06-04)
+
+* (@klein0r) Added possibility to escape chars in formatTimeDiff
+* (@GermanBluefox) Back-end was migrated to TypeScript
+* (@GermanBluefox) Breaking change: removed "request" module
+* (@GermanBluefox) Added prettier for scripts
+
 ## 8.9.2 (2025-04-27)
 
 * (@GermanBluefox) Updated packages for GUI

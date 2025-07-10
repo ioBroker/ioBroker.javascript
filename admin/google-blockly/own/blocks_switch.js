@@ -142,21 +142,31 @@ Blockly.Blocks['logic_switch_case'] = {
         while (caseBlock) {
             switch (caseBlock.type) {
                 case'case_incaseof':
-                    const caseconditionInput = this.getInput('CASECONDITION' + x);
-                    const caseInput = this.getInput('CASE' + x);
-                    caseBlock.valueConnection_ = caseconditionInput && caseconditionInput.connection.targetConnection;
-                    caseBlock.statementConnection_ = caseInput && caseInput.connection.targetConnection;
+                    let caseconditionInput;
+                    let caseInput;
+                    try {
+                        caseconditionInput = this.getInput('CASECONDITION' + x);
+                        caseInput = this.getInput('CASE' + x);
+                    } catch (e) {
+                        // ignore
+                    }
+                    caseBlock.valueConnection_ = caseconditionInput?.connection.targetConnection;
+                    caseBlock.statementConnection_ = caseInput?.connection.targetConnection;
                     x++;
                     break;
                 case'case_default':
-                    const defaultInput = this.getInput('ONDEFAULT');
-                    caseBlock.satementConnection_ = defaultInput && defaultInput.connection.targetConnection;
+                    let defaultInput;
+                    try {
+                        defaultInput = this.getInput('ONDEFAULT');
+                    } catch (e) {
+                        // ignore
+                    }
+                    caseBlock.statementConnection_ = defaultInput?.connection.targetConnection;
                     break;
                 default:
                     throw 'Unknown block type';
             }
-            caseBlock = caseBlock.nextConnection &&
-                caseBlock.nextConnection.targetBlock();
+            caseBlock = caseBlock.nextConnection?.targetBlock();
         }
     },
 };
