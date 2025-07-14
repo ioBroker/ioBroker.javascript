@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### 9.0.8 (2025-07-10)
+### **WORK IN PROGRESS**
 * (@klein0r) Added Blockly block to format a numeric value
 * (@GermanBluefox) Fixing some blocks in blockly: cron, time
 

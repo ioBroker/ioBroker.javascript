@@ -1154,7 +1154,7 @@ Blockly.Blocks['cron_builder'] = {
         this.setTooltip(Blockly.Translate('field_cron_tooltip'));
     },
     /**
-     * Create XML to represent number of text inputs.
+     * Create XML to represent the number of text inputs.
      * @return {!Element} XML storage element.
      * @this Blockly.Block
      */
@@ -1215,8 +1215,15 @@ Blockly.JavaScript.forBlock['cron_builder'] = function (block) {
     const vDays = Blockly.JavaScript.valueToCode(block, 'DAYS', Blockly.JavaScript.ORDER_ATOMIC);
     const vHours = Blockly.JavaScript.valueToCode(block, 'HOURS', Blockly.JavaScript.ORDER_ATOMIC);
     const vMinutes = Blockly.JavaScript.valueToCode(block, 'MINUTES', Blockly.JavaScript.ORDER_ATOMIC);
-    const vSeconds = Blockly.JavaScript.valueToCode(block, 'SECONDS', Blockly.JavaScript.ORDER_ATOMIC);
     const fWithSeconds = block.getFieldValue('WITH_SECONDS');
+    let vSeconds = '0';
+    if (fWithSeconds) {
+        try {
+            vSeconds = Blockly.JavaScript.valueToCode(block, 'SECONDS', Blockly.JavaScript.ORDER_ATOMIC);
+        } catch (e) {
+            // If no seconds input exists, we set it to an empty string
+        }
+    }
 
     const code =
         (fWithSeconds === 'TRUE' || fWithSeconds === 'true' || fWithSeconds === true ?
@@ -1441,7 +1448,7 @@ Blockly.JavaScript.forBlock['onFile'] = function (block) {
             objectName = objectName[systemLang] || objectName.en;
         }
     } catch (error) {
-        
+
     }
 
     return `onFile(${vObjId}${objectName ? ` /* ${objectName} */` : ''}, ${vFile}, ${fWithFile === 'TRUE' ? 'true' : 'false'}, ` +
@@ -1574,7 +1581,7 @@ Blockly.JavaScript.forBlock['offFile'] = function (block) {
             objectName = objectName[systemLang] || objectName.en;
         }
     } catch (error) {
-        
+
     }
 
     return `offFile(${vObjId}${objectName ? ` /* ${objectName} */` : ''}, ${vFile});\n`;
