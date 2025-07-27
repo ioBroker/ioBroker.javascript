@@ -753,6 +753,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
                     <TextField
                         variant="standard"
                         fullWidth
+                        autoFocus
                         value={this.state.showInputPrompt.value}
                         onKeyUp={e => {
                             if (e.key === 'Enter') {
