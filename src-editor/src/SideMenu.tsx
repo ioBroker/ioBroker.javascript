@@ -17,24 +17,24 @@ import {
 } from '@mui/material';
 
 import {
-    MdMoreVert as IconMore,
-    MdContentCopy as IconCopy,
-    MdDelete as IconDelete,
-    MdInput as IconDoEdit,
-    MdClose as IconClear,
-    MdFormatClear as IconClose,
-    MdPlayArrow as IconPlay,
-    MdAdd as IconAdd,
-    MdCreateNewFolder as IconAddFolder,
-    MdPause as IconPause,
-    MdSwapVert as IconReorder,
-    MdEdit as IconEdit,
-    MdSearch as IconFind,
-    MdPalette as IconDark,
-    MdUnfoldMore as IconExpandAll,
-    MdUnfoldLess as IconCollapseAll,
-    MdBugReport as IconDebug,
-} from 'react-icons/md';
+    MoreVert as IconMore,
+    ContentCopy as IconCopy,
+    Delete as IconDelete,
+    Input as IconDoEdit,
+    Close as IconClear,
+    FormatClear as IconClose,
+    PlayArrow as IconPlay,
+    Add as IconAdd,
+    CreateNewFolder as IconAddFolder,
+    Pause as IconPause,
+    SwapVert as IconReorder,
+    Edit as IconEdit,
+    Search as IconFind,
+    Palette as IconDark,
+    UnfoldMore as IconExpandAll,
+    UnfoldLess as IconCollapseAll,
+    BugReport as IconDebug,
+} from '@mui/icons-material';
 
 import {
     FaFolder as IconFolder,
@@ -993,7 +993,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
             ];
         }
         if (this.state.width > NARROW_WIDTH) {
-            if (item.id !== ROOT_ID && item.id !== COMMON_ID && item.id !== GLOBAL_ID && children?.length) {
+            if (item.id !== ROOT_ID && item.id !== COMMON_ID && item.id !== GLOBAL_ID && !children?.length) {
                 return (
                     <IconButton
                         style={this.props.debugMode ? styles.iconButtonsDisabled : undefined}
@@ -1821,6 +1821,14 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
             <Box
                 key="filterByRunning"
                 sx={styles.footerButtons}
+                title={I18n.t('Show only running scripts')}
+                onClick={event => {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    const statusFilter = this.state.statusFilter === 'running' ? '' : 'running';
+                    window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter);
+                    this.setState({ statusFilter });
+                }}
             >
                 <IconPause
                     style={{
@@ -1828,31 +1836,23 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                         opacity: this.state.statusFilter === 'running' ? 1 : 0.3,
                         background: this.state.statusFilter === 'running' ? 'gray' : 'inherit',
                     }}
-                    title={I18n.t('Show only running scripts')}
-                    onClick={event => {
-                        event.stopPropagation();
-                        event.preventDefault();
-                        const statusFilter = this.state.statusFilter === 'running' ? '' : 'running';
-                        window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter);
-                        this.setState({ statusFilter });
-                    }}
                 />
             </Box>,
             <Box
                 key="filterByPaused"
                 sx={styles.footerButtons}
+                title={I18n.t('Show only paused scripts')}
+                onClick={() => {
+                    const statusFilter = this.state.statusFilter === 'paused' ? '' : 'paused';
+                    window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter);
+                    this.setState({ statusFilter });
+                }}
             >
                 <IconPlay
-                    title={I18n.t('Show only paused scripts')}
                     style={{
                         color: COLOR_PAUSE,
                         opacity: this.state.statusFilter === 'paused' ? 1 : 0.3,
                         background: this.state.statusFilter === 'paused' ? 'gray' : 'inherit',
-                    }}
-                    onClick={() => {
-                        const statusFilter = this.state.statusFilter === 'paused' ? '' : 'paused';
-                        window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter);
-                        this.setState({ statusFilter });
                     }}
                 />
             </Box>,
@@ -1860,18 +1860,18 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                 sx={styles.footerButtons}
                 style={{ marginRight: 16 }}
                 key="filterByProblem"
+                title={I18n.t('Show only scripts with problems')}
+                onClick={() => {
+                    const statusFilter = this.state.statusFilter === 'problems' ? '' : 'problems';
+                    window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter);
+                    this.setState({ statusFilter });
+                }}
             >
                 <IconPause
-                    title={I18n.t('Show only scripts with problems')}
                     style={{
                         color: COLOR_PROBLEM,
                         opacity: this.state.statusFilter === 'problems' ? 1 : 0.3,
                         background: this.state.statusFilter === 'problems' ? 'gray' : 'inherit',
-                    }}
-                    onClick={() => {
-                        const statusFilter = this.state.statusFilter === 'problems' ? '' : 'problems';
-                        window.localStorage && window.localStorage.setItem('SideMenu.statusFilter', statusFilter);
-                        this.setState({ statusFilter });
                     }}
                 />
             </Box>,
@@ -1954,23 +1954,19 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
             <Box
                 key="expandAll"
                 sx={styles.footerButtons}
+                onClick={() => this.onExpandAll()}
+                title={I18n.t('Expand all')}
             >
-                <IconExpandAll
-                    style={styles.footerButtonsRight}
-                    title={I18n.t('Expand all')}
-                    onClick={() => this.onExpandAll()}
-                />
+                <IconExpandAll style={styles.footerButtonsRight} />
             </Box>,
             this.state.expanded.length ? (
                 <Box
                     key="collapseAll"
                     sx={styles.footerButtons}
+                    onClick={() => this.onCollapseAll()}
+                    title={I18n.t('Collapse all')}
                 >
-                    <IconCollapseAll
-                        style={styles.footerButtonsRight}
-                        title={I18n.t('Collapse all')}
-                        onClick={() => this.onCollapseAll()}
-                    />
+                    <IconCollapseAll style={styles.footerButtonsRight} />
                 </Box>
             ) : (
                 <div style={{ height: 22, width: 24 }} />
