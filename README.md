@@ -31,6 +31,7 @@ Executes Javascript, Typescript Scripts.
 * (@GermanBluefox) Fixing some blocks in blockly: cron, time
 * (@GermanBluefox) Added new block: "unconditional return"
 * (@GermanBluefox) Type definitions for TypeScript were updated
+* (@GermanBluefox) Corrected bug with deleting of sub-folders
 
 ### 9.0.7 (2025-06-29)
 * (@GermanBluefox) Fixing some blocks in blockly: time, function
