@@ -95,6 +95,14 @@ Blockly.Procedures.flyoutCategoryNew = function (workspace) {
 
         xmlList.push(block);
     }
+    if (Blockly.Blocks['procedures_return']) {
+        // <block type="procedures_ifreturn" gap="16"></block>
+        const block = utils.createElement('block');
+        block.setAttribute('type', 'procedures_return');
+        block.setAttribute('gap', '16');
+
+        xmlList.push(block);
+    }
     if (Blockly.Blocks['procedures_defcustomnoreturn']) {
         // <block type="procedures_defcustomnoreturn" gap="16">
         //     <field name="NAME">do something</field>
@@ -440,6 +448,26 @@ Blockly.Blocks['procedures_callcustomreturn'] = {
 Blockly.JavaScript.forBlock['procedures_callcustomreturn'] = Blockly.JavaScript.forBlock['procedures_callreturn'];
 
 // ---------------------- custom function with no return ------------------------------
+// This was modified, so the shadow condition block is created in the init function
+Blockly.Blocks['procedures_ifreturn'].init = function () {
+    const __input = this.appendValueInput('CONDITION')
+        .setCheck('Boolean')
+        .appendField(Blockly.Msg['CONTROLS_IF_MSG_IF']);
+
+    const _shadow = this.workspace.newBlock('logic_boolean');
+    _shadow.setShadow(true);
+    _shadow.setFieldValue('TRUE', 'BOOL');
+    _shadow.outputConnection.connect(__input.connection);
+
+    this.appendValueInput('VALUE').appendField(Blockly.Msg['PROCEDURES_DEFRETURN_RETURN']);
+    this.setInputsInline(true);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setStyle('procedure_blocks');
+    this.setTooltip(Blockly.Msg['PROCEDURES_IFRETURN_TOOLTIP']);
+    this.setHelpUrl(Blockly.Msg['PROCEDURES_IFRETURN_HELPURL']);
+    this.hasReturnValue_ = true;
+};
 
 Blockly.Blocks['procedures_defcustomnoreturn'] = {
     getProcedureModel() {
@@ -523,4 +551,138 @@ Blockly.JavaScript.forBlock['procedures_callcustomnoreturn'] = function (block) 
     // function call as a value, with the addition of line ending.
     const tuple = Blockly.JavaScript.forBlock['procedures_callcustomreturn'](block);
     return tuple[0] + ';\n';
+};
+
+Blockly.Blocks['procedures_return'] = {
+    /**
+     * Block for conditionally returning a value from a procedure.
+     */
+    init: function () {
+        this.appendValueInput('VALUE').appendField(
+            Blockly.Msg['PROCEDURES_DEFRETURN_RETURN'],
+        );
+        this.setInputsInline(true);
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+        this.setStyle('procedure_blocks');
+        this.setTooltip(Blockly.Msg['PROCEDURES_IFRETURN_TOOLTIP']);
+        this.setHelpUrl(Blockly.Msg['PROCEDURES_IFRETURN_HELPURL']);
+        this.hasReturnValue_ = true;
+    },
+    /**
+     * Create XML to represent whether this block has a return value.
+     *
+     * @returns XML storage element.
+     */
+    mutationToDom: function () {
+        const utils = Blockly.Xml.utils ? Blockly.Xml.utils : Blockly.utils.xml;
+        const container = utils.createElement('mutation');
+        container.setAttribute('value', String(Number(this.hasReturnValue_)));
+        return container;
+    },
+    /**
+     * Parse XML to restore whether this block has a return value.
+     *
+     * @param xmlElement XML storage element.
+     */
+    domToMutation: function (xmlElement) {
+        const value = xmlElement.getAttribute('value');
+        this.hasReturnValue_ = value === '1';
+        if (!this.hasReturnValue_) {
+            this.removeInput('VALUE');
+            this.appendDummyInput('VALUE').appendField(
+                Blockly.Msg['PROCEDURES_DEFRETURN_RETURN'],
+            );
+        }
+    },
+
+    // This block does not need JSO serialization hooks (saveExtraState and
+    // loadExtraState) because the state of this block is already encoded in the
+    // block's position in the workspace.
+    // XML hooks are kept for backwards compatibility.
+
+    /**
+     * Called whenever anything on the workspace changes.
+     * Add warning if this flow block is not nested inside a loop.
+     *
+     * @param e Move event.
+     */
+    onchange: function (e) {
+        if (
+            (this.workspace.isDragging && this.workspace.isDragging()) ||
+            (e.type !== 'move' && e.type !== 'create')
+        ) {
+            return; // Don't change state at the start of a drag.
+        }
+        let legal = false;
+        // Is the block nested in a procedure?
+        let block = this; // eslint-disable-line @typescript-eslint/no-this-alias
+        do {
+            if (this.FUNCTION_TYPES.includes(block.type)) {
+                legal = true;
+                break;
+            }
+            block = block.getSurroundParent();
+        } while (block);
+        if (legal) {
+            // If needed, toggle whether this block has a return value.
+            if (block.type === 'procedures_defnoreturn' && this.hasReturnValue_) {
+                this.removeInput('VALUE');
+                this.appendDummyInput('VALUE').appendField(
+                    Blockly.Msg['PROCEDURES_DEFRETURN_RETURN'],
+                );
+                this.hasReturnValue_ = false;
+            } else if (
+                block.type === 'procedures_defreturn' &&
+                !this.hasReturnValue_
+            ) {
+                this.removeInput('VALUE');
+                this.appendValueInput('VALUE').appendField(
+                    Blockly.Msg['PROCEDURES_DEFRETURN_RETURN'],
+                );
+                this.hasReturnValue_ = true;
+            }
+            this.setWarningText(null);
+        } else {
+            this.setWarningText(Blockly.Msg['PROCEDURES_IFRETURN_WARNING']);
+        }
+
+        if (!this.isInFlyout) {
+            // const utils = Blockly.Xml.utils ? Blockly.Xml.utils : Blockly.utils.xml;
+            try {
+                // There is no need to record the enable/disable change on the undo/redo
+                // list since the change will be automatically recreated when replayed.
+                //utils.setRecordUndo(false);
+                this.setDisabledReason(!legal, 'UNPARENTED_IFRETURN');
+            } finally {
+                //utils.setRecordUndo(true);
+            }
+        }
+    },
+    /**
+     * List of block types that are functions and thus do not need warnings.
+     * To add a new function type add this to your code:
+     * Blocks['procedures_ifreturn'].FUNCTION_TYPES.push('custom_func');
+     */
+    FUNCTION_TYPES: ['procedures_defnoreturn', 'procedures_defreturn', 'procedures_defcustomreturn', 'procedures_defcustomnoreturn'],
+};
+
+Blockly.JavaScript.forBlock['procedures_return'] = function (block, generator) {
+    // Conditionally return value from a procedure.
+    let code = '';
+    if (generator.STATEMENT_SUFFIX) {
+        // Inject any statement suffix here since the regular one at the end
+        // will not get executed if the return is triggered.
+        code += generator.prefixLines(
+            generator.injectId(generator.STATEMENT_SUFFIX, block),
+            generator.INDENT,
+        );
+    }
+    if (block.hasReturnValue_) {
+        const value = generator.valueToCode(block, 'VALUE', 99 /* Order.NONE */) || 'null';
+        code += generator.INDENT + 'return ' + value + ';\n';
+    } else {
+        code += generator.INDENT + 'return;\n';
+    }
+    return code;
 };

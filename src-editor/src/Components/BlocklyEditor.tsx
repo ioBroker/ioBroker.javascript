@@ -606,7 +606,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         });
         this.loadCode();
         this.onResize();
-        // Move toolbar to the valid position
+        // Move the toolbar to the valid position
         const toolbar = document.getElementsByClassName('blocklyToolboxDiv')[0];
         this.blockly.appendChild(toolbar);
 
