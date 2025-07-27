@@ -481,13 +481,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
                 window.scripts.loading = true;
 
                 const xmlBlocks = BlocklyEditor.Blockly.utils.xml.textToDom(xml);
-                if (xmlBlocks.nodeName === 'xml') {
-                    for (let b = 0; b < xmlBlocks.children.length; b++) {
-                        BlocklyEditor.Blockly.Xml.appendDomToWorkspace(xmlBlocks, this.blocklyWorkspace);
-                    }
-                } else {
-                    BlocklyEditor.Blockly.Xml.appendDomToWorkspace(xmlBlocks, this.blocklyWorkspace);
-                }
+                BlocklyEditor.Blockly.Xml.appendDomToWorkspace(xmlBlocks, this.blocklyWorkspace);
 
                 window.scripts.loading = false;
 
