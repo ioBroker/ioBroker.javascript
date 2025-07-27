@@ -586,7 +586,7 @@ Blockly.JavaScript.forBlock['control_ex'] = function (block) {
     fType = fType === true || fType === 'true' || fType === 'TRUE';
 
     let expire = '';
-    if (vExpire > 0) {
+    if (vExpire) {
         expire = `, expire: ${vExpire}`;
     }
 
