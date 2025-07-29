@@ -1948,6 +1948,7 @@ declare global {
 
         interface TypedState<T extends iobJS.StateValue = any> extends iobJS.State {
             val: T;
+            notExist?: true;
         }
 
         interface AbsentState extends Omit<iobJS.State, 'ack' | 'from' | 'ts' | 'lc'> {
@@ -2207,7 +2208,7 @@ declare global {
              * Otherwise, you need to provide a callback.
              */
             getState<T extends iobJS.StateValue = any>(callback: GetStateCallback<T>): void;
-            getState<T extends iobJS.StateValue = any>(): TypedState<T> | null | undefined;
+            getState<T extends iobJS.StateValue = any>(): TypedState<T> | iobJS.AbsentState | null | undefined;
             getStateAsync<T extends iobJS.StateValue = any>(): Promise<
                 TypedState<T> | iobJS.AbsentState | null | undefined
             >;
