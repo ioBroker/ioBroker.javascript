@@ -95,8 +95,8 @@ type AnyOf<
         ? O[K] extends any[]
             ? O[K]
             : O[K] extends Record<any, any>
-                ? CombineObjectUnion<O[K]>
-                : O[K]
+              ? CombineObjectUnion<O[K]>
+              : O[K]
         : never;
 }>;
 
@@ -526,10 +526,10 @@ declare global {
         type GetObjectsCallback3<T extends BaseObject> = (err?: Error | null, result?: T[]) => void;
 
         type SecondParameterOf<T extends (...args: any[]) => any> = T extends (
-                arg0: any,
-                arg1: infer R,
-                ...args: any[]
-            ) => any
+            arg0: any,
+            arg1: infer R,
+            ...args: any[]
+        ) => any
             ? R
             : never;
         /** Infers the return type from a callback-style API and strips out null and undefined */
@@ -768,43 +768,43 @@ declare global {
         }
 
         type ObjectIdToObjectType<T extends string, Read extends 'read' | 'write' = 'read'> =
-        // State must come before Adapter or system.adapter.admin.0.foobar will resolve to AdapterObject
+            // State must come before Adapter or system.adapter.admin.0.foobar will resolve to AdapterObject
             T extends ObjectIDs.State
                 ? StateObject
                 : // Instance and Adapter must come before meta or `system.adapter.admin` will resolve to MetaObject
-                T extends ObjectIDs.Instance
-                    ? InstanceObject
-                    : T extends ObjectIDs.Adapter
-                        ? AdapterObject
-                        : T extends ObjectIDs.Channel
-                            ? ChannelObject
-                            : T extends ObjectIDs.Meta
-                                ? MetaObject
-                                : T extends ObjectIDs.Misc
-                                    ? AdapterScopedObject
-                                    : T extends ObjectIDs.ScriptOrChannel
-                                        ? ScriptObject | ChannelObject
-                                        : T extends ObjectIDs.Enum
-                                            ? EnumObject
-                                            : T extends ObjectIDs.Group
-                                                ? GroupObject
-                                                : T extends ObjectIDs.User
-                                                    ? UserObject
-                                                    : T extends ObjectIDs.Host
-                                                        ? HostObject
-                                                        : T extends ObjectIDs.Design
-                                                            ? DesignObject
-                                                            : T extends ObjectIDs.Repository
-                                                                ? RepositoryObject
-                                                                : T extends ObjectIDs.SystemConfig
-                                                                    ? SystemConfigObject
-                                                                    : T extends ObjectIDs.Config
-                                                                        ? OtherObject & { type: 'config' }
-                                                                        : T extends ObjectIDs.AdapterScoped
-                                                                            ? AdapterScopedObject
-                                                                            : Read extends 'read'
-                                                                                ? iobJS.Object
-                                                                                : AnyObject;
+                  T extends ObjectIDs.Instance
+                  ? InstanceObject
+                  : T extends ObjectIDs.Adapter
+                    ? AdapterObject
+                    : T extends ObjectIDs.Channel
+                      ? ChannelObject
+                      : T extends ObjectIDs.Meta
+                        ? MetaObject
+                        : T extends ObjectIDs.Misc
+                          ? AdapterScopedObject
+                          : T extends ObjectIDs.ScriptOrChannel
+                            ? ScriptObject | ChannelObject
+                            : T extends ObjectIDs.Enum
+                              ? EnumObject
+                              : T extends ObjectIDs.Group
+                                ? GroupObject
+                                : T extends ObjectIDs.User
+                                  ? UserObject
+                                  : T extends ObjectIDs.Host
+                                    ? HostObject
+                                    : T extends ObjectIDs.Design
+                                      ? DesignObject
+                                      : T extends ObjectIDs.Repository
+                                        ? RepositoryObject
+                                        : T extends ObjectIDs.SystemConfig
+                                          ? SystemConfigObject
+                                          : T extends ObjectIDs.Config
+                                            ? OtherObject & { type: 'config' }
+                                            : T extends ObjectIDs.AdapterScoped
+                                              ? AdapterScopedObject
+                                              : Read extends 'read'
+                                                ? iobJS.Object
+                                                : AnyObject;
 
         type Languages = 'en' | 'de' | 'ru' | 'pt' | 'nl' | 'fr' | 'it' | 'es' | 'pl' | 'uk' | 'zh-cn';
         type Translated = { en: string } & { [lang in Languages]?: string };
@@ -867,9 +867,9 @@ declare global {
                 id:
                     | string
                     | {
-                    read: string;
-                    write: string;
-                };
+                          read: string;
+                          write: string;
+                      };
                 /** An optional conversion function when reading, e.g. `"(val − 32) * 5/9"` */
                 read?: string;
                 /** An optional conversion function when reading, e.g. `"(val * 9/5) + 32"` */
@@ -924,11 +924,11 @@ declare global {
                 | false
                 | string
                 | ({ [lang in Languages]?: string } & {
-                /** Which kind of device it is */
-                smartType?: string | null;
-                /** Which value to set when the ON command is issued */
-                byON?: string | null;
-            });
+                      /** Which kind of device it is */
+                      smartType?: string | null;
+                      /** Which value to set when the ON command is issued */
+                      byON?: string | null;
+                  });
         }
 
         interface ChannelCommon extends ObjectCommon {
@@ -1127,12 +1127,12 @@ declare global {
         type WelcomeScreenEntry =
             | string
             | {
-            link: string;
-            name: string;
-            img: string;
-            color: string;
-            order?: number;
-        };
+                  link: string;
+                  name: string;
+                  img: string;
+                  color: string;
+                  order?: number;
+              };
 
         /**
          * Object which defines if the adapter supports receiving messages via sendTo.
@@ -1911,9 +1911,9 @@ declare global {
         // In set[Foreign]Object[NotExists] methods, the ID and acl of the object is optional
         type SettableObjectWorker<T> = T extends AnyObject
             ? Omit<T, '_id' | 'acl'> & {
-            _id?: T['_id'];
-            acl?: T['acl'];
-        }
+                  _id?: T['_id'];
+                  acl?: T['acl'];
+              }
             : never;
         // in extend[Foreign]Object, most properties are optional
         type PartialObjectWorker<T> = T extends AnyObject ? AnyPartialObject & { type?: T['type'] } : never;
@@ -1925,41 +1925,41 @@ declare global {
             ? View extends 'host'
                 ? HostObject
                 : View extends 'adapter'
-                    ? AdapterObject
-                    : View extends 'instance'
-                        ? InstanceObject
-                        : View extends 'meta'
-                            ? MetaObject
-                            : View extends 'device'
-                                ? DeviceObject
-                                : View extends 'channel'
-                                    ? ChannelObject
-                                    : View extends 'state'
-                                        ? StateObject
-                                        : View extends 'folder'
-                                            ? FolderObject
-                                            : View extends 'enum'
-                                                ? EnumObject
-                                                : View extends 'script'
-                                                    ? ScriptObject
-                                                    : View extends 'group'
-                                                        ? GroupObject
-                                                        : View extends 'user'
-                                                            ? UserObject
-                                                            : View extends 'chart'
-                                                                ? ChartObject
-                                                                : View extends 'schedule'
-                                                                    ? ScheduleObject
-                                                                    : View extends 'config'
-                                                                        ?
-                                                                        | RepositoryObject
-                                                                        | SystemConfigObject
-                                                                        | (OtherObject & {
-                                                                        type: 'config';
-                                                                    })
-                                                                        : View extends 'custom'
-                                                                            ? NonNullable<StateObject['common']['custom']>
-                                                                            : iobJS.Object
+                  ? AdapterObject
+                  : View extends 'instance'
+                    ? InstanceObject
+                    : View extends 'meta'
+                      ? MetaObject
+                      : View extends 'device'
+                        ? DeviceObject
+                        : View extends 'channel'
+                          ? ChannelObject
+                          : View extends 'state'
+                            ? StateObject
+                            : View extends 'folder'
+                              ? FolderObject
+                              : View extends 'enum'
+                                ? EnumObject
+                                : View extends 'script'
+                                  ? ScriptObject
+                                  : View extends 'group'
+                                    ? GroupObject
+                                    : View extends 'user'
+                                      ? UserObject
+                                      : View extends 'chart'
+                                        ? ChartObject
+                                        : View extends 'schedule'
+                                          ? ScheduleObject
+                                          : View extends 'config'
+                                            ?
+                                                  | RepositoryObject
+                                                  | SystemConfigObject
+                                                  | (OtherObject & {
+                                                        type: 'config';
+                                                    })
+                                            : View extends 'custom'
+                                              ? NonNullable<StateObject['common']['custom']>
+                                              : iobJS.Object
             : any;
 
         enum StateQuality {
@@ -2057,25 +2057,25 @@ declare global {
         ) => void | Promise<void>;
 
         type FileChangeHandler<WithFile extends boolean> =
-        // Variant 1: WithFile is false, data/mimeType is definitely not there
+            // Variant 1: WithFile is false, data/mimeType is definitely not there
             [WithFile] extends [false]
                 ? (
-                    id: string,
-                    fileName: string,
-                    size: number,
-                    data?: undefined,
-                    mimeType?: undefined,
-                ) => void | Promise<void>
+                      id: string,
+                      fileName: string,
+                      size: number,
+                      data?: undefined,
+                      mimeType?: undefined,
+                  ) => void | Promise<void>
                 : // Variant 2: WithFile is true, data (and mimeType?) is definitely there
-                [WithFile] extends [true]
-                    ? (
+                  [WithFile] extends [true]
+                  ? (
                         id: string,
                         fileName: string,
                         size: number,
                         data: Buffer | string,
                         mimeType?: string,
                     ) => void | Promise<void>
-                    : // Variant 3: WithFile is not known, data/mimeType might be there
+                  : // Variant 3: WithFile is not known, data/mimeType might be there
                     (
                         id: string,
                         fileName: string,
