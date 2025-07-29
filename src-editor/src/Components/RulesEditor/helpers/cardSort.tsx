@@ -1,7 +1,50 @@
-import _ from 'lodash';
 import type { BlockValue, RuleBlockConfig, RuleBlockType, RuleUserRules } from '@iobroker/javascript-rules-dev';
 
-const funcSet = _.throttle((setCards, userRules) => setCards(userRules), 0);
+export function throttle<F extends (...args: any[]) => void>(func: F, wait: number): F {
+    let lastCall = 0;
+    let timeout: ReturnType<typeof setTimeout> | null = null;
+    let lastArgs: any;
+
+    return function (this: any, ...args: any[]) {
+        const now = Date.now();
+        lastArgs = args;
+        if (now - lastCall >= wait) {
+            lastCall = now;
+            func.apply(this, args);
+        } else if (!timeout) {
+            timeout = setTimeout(
+                () => {
+                    lastCall = Date.now();
+                    timeout = null;
+                    func.apply(this, lastArgs);
+                },
+                wait - (now - lastCall),
+            );
+        }
+    } as F;
+}
+
+export function clone<T = any>(value: T): T {
+    if (Array.isArray(value)) {
+        return value.map(par => clone(par)) as T;
+    }
+
+    if (typeof value === 'function') {
+        return value.bind(null) as T; // Return a bound function to preserve context
+    }
+
+    if (value && typeof value === 'object') {
+        const newObj: T = {} as T;
+        Object.keys(value).forEach(key => {
+            (newObj as any)[key] = clone((value as Record<string, any>)[key]);
+        });
+        return newObj;
+    }
+
+    return value;
+}
+
+const funcSet = throttle((setCards, userRules) => setCards(userRules), 0);
 
 export function findCard(id: number, cards: RuleBlockConfig[]): { card: RuleBlockConfig | undefined; index: number } {
     const card = cards.find(c => c._id === id);
@@ -31,10 +74,10 @@ export function moveCard(
         return;
     }
     if (card && index !== atIndex) {
-        const copyCard = _.clone(cards);
+        const copyCard = clone<RuleBlockConfig[]>(cards);
         copyCard.splice(index, 1);
         copyCard.splice(atIndex, 0, card);
-        const newUserRules = _.clone(userRules);
+        const newUserRules = clone<RuleUserRules>(userRules);
         switch (acceptedBy) {
             case 'actions':
                 newUserRules.actions[additionally as 'else' | 'then'] = copyCard;

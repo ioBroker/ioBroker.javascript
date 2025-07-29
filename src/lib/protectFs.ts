@@ -102,9 +102,13 @@ export default class ProtectFs {
         rmdir: (path: PathLike, options?: RmDirOptions) => Promise<void>;
     };
     public readonly constants: Record<string, number>;
+    static log: ioBroker.Logger | null = null;
+    static staticIoBrokerDataDir: string = '';
 
     constructor(log: ioBroker.Logger, ioBrokerDataDir: string) {
         this.ioBrokerDataDir = ioBrokerDataDir;
+        ProtectFs.staticIoBrokerDataDir = ioBrokerDataDir;
+
         this.log = log || {
             silly: (message: string): void => console.log(message),
             debug: (message: string): void => console.debug(message),
@@ -114,14 +118,16 @@ export default class ProtectFs {
             level: 'info',
         };
 
+        ProtectFs.log = this.log;
+
         this.promises = {
             access: async (path: PathLike, mode?: number): Promise<void> => {
-                this.#checkProtected(path, true);
+                ProtectFs.checkProtected(path, true);
                 return nodeFS.promises.access(path, mode);
             },
             cp: async (source: string | URL, destination: string | URL, opts?: CopyOptions): Promise<void> => {
-                this.#checkProtected(source, false);
-                this.#checkProtected(destination, false);
+                ProtectFs.checkProtected(source, false);
+                ProtectFs.checkProtected(destination, false);
                 return nodeFS.promises.cp(source, destination, opts);
             },
             readFile: async (
@@ -133,16 +139,16 @@ export default class ProtectFs {
                       } & Abortable)
                     | BufferEncoding,
             ): Promise<string> => {
-                this.#checkProtected(path, true);
+                ProtectFs.checkProtected(path, true);
                 return nodeFS.promises.readFile(path, options); // async function readFile(path, options) {
             },
             readlink: async (path: PathLike, options: BufferEncodingOption): Promise<Buffer> => {
-                this.#checkProtected(path, true);
+                ProtectFs.checkProtected(path, true);
                 return nodeFS.promises.readlink(path, options); // async function readlink(path, options) {
             },
             symlink: async (target: PathLike, path: PathLike, type?: string | null): Promise<void> => {
-                this.#checkProtected(target, true);
-                this.#checkProtected(path, false);
+                ProtectFs.checkProtected(target, true);
+                ProtectFs.checkProtected(path, false);
                 return nodeFS.promises.symlink(target, path, type); // async function symlink(target, path, type_) {
             },
             writeFile: async (
@@ -168,11 +174,11 @@ export default class ProtectFs {
                     | BufferEncoding
                     | null,
             ): Promise<void> => {
-                this.#checkProtected(file, true);
+                ProtectFs.checkProtected(file, true);
                 return nodeFS.promises.writeFile.call(this, file, data, options); // async function writeFile(path, data, options) {
             },
             unlink: async (path: PathLike): Promise<void> => {
-                this.#checkProtected(path, false);
+                ProtectFs.checkProtected(path, false);
                 return nodeFS.promises.unlink.call(this, path); // async function unlink(path) {
             },
             appendFile: async (
@@ -183,38 +189,38 @@ export default class ProtectFs {
                     | BufferEncoding
                     | null,
             ): Promise<void> => {
-                this.#checkProtected(path, false);
+                ProtectFs.checkProtected(path, false);
                 return nodeFS.promises.appendFile.call(this, path, data, options); // async function appendFile(path, data, options) {
             },
             chmod: async (path: PathLike, mode: Mode): Promise<void> => {
-                this.#checkProtected(path, false);
+                ProtectFs.checkProtected(path, false);
                 return nodeFS.promises.chmod.call(this, path, mode); // async function chmod(path, mode) {
             },
             copyFile: async (src: PathLike, dest: PathLike, mode?: number): Promise<void> => {
-                this.#checkProtected(src, false);
-                this.#checkProtected(dest, false);
+                ProtectFs.checkProtected(src, false);
+                ProtectFs.checkProtected(dest, false);
                 return nodeFS.promises.copyFile.call(this, src, dest, mode); // async function copyFile(src, dest, mode) {
             },
             rename: async (oldPath: PathLike, newPath: PathLike): Promise<void> => {
-                this.#checkProtected(oldPath, false);
-                this.#checkProtected(newPath, false);
+                ProtectFs.checkProtected(oldPath, false);
+                ProtectFs.checkProtected(newPath, false);
                 return nodeFS.promises.rename.call(this, oldPath, newPath); // async function rename(oldPath, newPath) {
             },
             open: async (path: PathLike, flags?: string | number, mode?: Mode): Promise<FileHandle> => {
-                this.#checkProtected(path, true);
+                ProtectFs.checkProtected(path, true);
                 return nodeFS.promises.open.call(this, path, flags, mode); // async function open(path, flags, mode) {
             },
             truncate: async (path: PathLike, len?: number): Promise<void> => {
-                this.#checkProtected(path, false);
+                ProtectFs.checkProtected(path, false);
                 return nodeFS.promises.truncate.call(this, path, len); // async function truncate(path, len = 0) {
             },
             stat: async (path: PathLike, opts?: StatOptions): Promise<Stats> => {
-                this.#checkProtected(path, true);
+                ProtectFs.checkProtected(path, true);
                 const result = await nodeFS.promises.stat.call(this, path, opts); // async function stat(path, options = { bigint: false }) {
                 return result as Stats;
             },
             utimes: async (path: PathLike, atime: TimeLike, mtime: TimeLike): Promise<void> => {
-                this.#checkProtected(path, false);
+                ProtectFs.checkProtected(path, false);
                 return nodeFS.promises.utimes.call(this, path, atime, mtime); // async function utimes(path, atime, mtime) {
             },
             readdir: async (
@@ -224,53 +230,53 @@ export default class ProtectFs {
                     recursive?: boolean | undefined;
                 },
             ): Promise<Dirent[]> => {
-                this.#checkProtected(path, true);
+                ProtectFs.checkProtected(path, true);
                 // @ts-expect-error fix later
                 return nodeFS.promises.readdir.call(this, path, options || { encoding: null, withFileTypes: true }); // async function readdir(path, options) {
             },
             lchmod: async (path: PathLike, mode: Mode): Promise<void> => {
-                this.#checkProtected(path, false);
+                ProtectFs.checkProtected(path, false);
                 return nodeFS.promises.lchmod.call(this, path, mode); // async function lchmod(path, mode) {
             },
             lchown: async (path: PathLike, uid: number, gid: number): Promise<void> => {
-                this.#checkProtected(path, false);
+                ProtectFs.checkProtected(path, false);
                 return nodeFS.promises.lchown.call(this, path, uid, gid); // async function lchown(path, uid, gid) {
             },
             link: async (existingPath: PathLike, newPath: PathLike): Promise<void> => {
-                this.#checkProtected(existingPath, false);
-                this.#checkProtected(newPath, false);
+                ProtectFs.checkProtected(existingPath, false);
+                ProtectFs.checkProtected(newPath, false);
                 return nodeFS.promises.link.call(this, existingPath, newPath); // async function link(existingPath, newPath) {
             },
             lstat: async (path: PathLike, opts?: StatOptions): Promise<Stats> => {
-                this.#checkProtected(path, true);
+                ProtectFs.checkProtected(path, true);
                 const res = await nodeFS.promises.lstat.call(this, path, opts); // async function lstat(path, options = { bigint: false }) {
                 return res as Stats;
             },
             lutimes: async (path: PathLike, atime: TimeLike, mtime: TimeLike): Promise<void> => {
-                this.#checkProtected(path, false);
+                ProtectFs.checkProtected(path, false);
                 return nodeFS.promises.lutimes.call(this, path, atime, mtime); // async function lutimes(path, atime, mtime) {
             },
             mkdir: async (
                 path: PathLike,
                 options?: Mode | MakeDirectoryOptions | null,
             ): Promise<string | undefined> => {
-                this.#checkProtected(path, false);
+                ProtectFs.checkProtected(path, false);
                 return nodeFS.promises.mkdir.call(this, path, options); // async function mkdir(path, options) {
             },
             mkdtemp: async (
                 prefix: string,
                 options?: ObjectEncodingOptions | BufferEncoding | null,
             ): Promise<string> => {
-                this.#checkProtected(prefix, false);
+                ProtectFs.checkProtected(prefix, false);
                 const tmp = await nodeFS.promises.mkdtemp.call(this, prefix, options); // async function mkdtemp(prefix, options) {
                 return tmp.toString();
             },
             rm: async (path: PathLike, options?: RmOptions): Promise<void> => {
-                this.#checkProtected(path, false);
+                ProtectFs.checkProtected(path, false);
                 return nodeFS.promises.rm.call(this, path, options); // async function rm(path, options) {
             },
             rmdir: async (path: PathLike, options?: RmDirOptions): Promise<void> => {
-                this.#checkProtected(path, false);
+                ProtectFs.checkProtected(path, false);
                 return nodeFS.promises.rmdir.call(this, path, options); // async function rmdir(path, options) {
             },
         };
@@ -304,25 +310,28 @@ export default class ProtectFs {
         }
     }
 
-    #checkProtected(file: PathLike | FileHandle, readOnly: boolean): void {
+    static checkProtected(file: PathLike | FileHandle, readOnly: boolean): void {
         if ((file as FileHandle).fd) {
             return;
         }
         const filePath = normalize((file as PathLike).toString());
 
-        // todo: protect against file://...
         if (filePath.endsWith(`-data${sep}objects.json`) || filePath.endsWith(`-data${sep}objects.jsonl`)) {
-            this.log.error(`May not read ${(file as PathLike).toString()}`);
+            ProtectFs.log?.error(`May not read ${(file as PathLike).toString()}`);
             throw new Error('Permission denied');
         }
-        if (!readOnly && filePath.startsWith(join(this.ioBrokerDataDir, 'files'))) {
-            this.log.error(`May not read ${(file as PathLike).toString()} - use writeFile instead`);
+        if (!readOnly && filePath.startsWith(join(ProtectFs.staticIoBrokerDataDir, 'files'))) {
+            ProtectFs.log?.error(`May not read ${(file as PathLike).toString()} - use writeFile instead`);
+            throw new Error('Permission denied');
+        }
+        if (!readOnly && filePath.startsWith(`file://${join(ProtectFs.staticIoBrokerDataDir, 'files')}`)) {
+            ProtectFs.log?.error(`May not read ${(file as PathLike).toString()} - use writeFile instead`);
             throw new Error('Permission denied');
         }
     }
 
     access(path: PathLike, mode?: number | NoParamCallback, callback?: NoParamCallback): void {
-        this.#checkProtected(path, true);
+        ProtectFs.checkProtected(path, true);
         if (typeof callback === 'function') {
             return nodeFS.access(path, mode as number | undefined, callback);
         }
@@ -330,7 +339,7 @@ export default class ProtectFs {
     }
 
     accessSync(path: PathLike, mode?: number): void {
-        this.#checkProtected(path, true);
+        ProtectFs.checkProtected(path, true);
         return nodeFS.accessSync(path, mode);
     }
 
@@ -340,8 +349,8 @@ export default class ProtectFs {
         opts?: CopyOptions | ((err: NodeJS.ErrnoException | null) => void),
         callback?: (err: NodeJS.ErrnoException | null) => void,
     ): void {
-        this.#checkProtected(source, false);
-        this.#checkProtected(destination, false);
+        ProtectFs.checkProtected(source, false);
+        ProtectFs.checkProtected(destination, false);
         if (callback) {
             return nodeFS.cp(source, destination, opts as CopyOptions, callback);
         }
@@ -352,8 +361,8 @@ export default class ProtectFs {
     }
 
     cpSync(source: string | URL, destination: string | URL, opts?: CopySyncOptions): void {
-        this.#checkProtected(source, false);
-        this.#checkProtected(destination, false);
+        ProtectFs.checkProtected(source, false);
+        ProtectFs.checkProtected(destination, false);
         return nodeFS.cpSync.call(this, source, destination, opts);
     }
 
@@ -370,7 +379,7 @@ export default class ProtectFs {
         callback?: (err: NodeJS.ErrnoException | null, data: string | NonSharedBuffer) => void,
     ): void {
         if (typeof path !== 'number') {
-            this.#checkProtected(path, true);
+            ProtectFs.checkProtected(path, true);
         }
         if (typeof callback === 'function') {
             return nodeFS.readFile.call(
@@ -404,7 +413,7 @@ export default class ProtectFs {
             | BufferEncoding,
     ): string | Buffer {
         if (typeof path !== 'number') {
-            this.#checkProtected(path, true);
+            ProtectFs.checkProtected(path, true);
         }
         return nodeFS.readFileSync.call(this, path, options);
     }
@@ -414,7 +423,7 @@ export default class ProtectFs {
         options: EncodingOption | ((err: NodeJS.ErrnoException | null, linkString: string | Buffer) => void),
         callback?: (err: NodeJS.ErrnoException | null, linkString: string | Buffer) => void,
     ): void {
-        this.#checkProtected(path, true);
+        ProtectFs.checkProtected(path, true);
         if (typeof callback === 'function') {
             // @ts-expect-error should work
             return nodeFS.readlink.call(this, path, options, callback); //
@@ -427,7 +436,7 @@ export default class ProtectFs {
     }
 
     readlinkSync(path: PathLike, options?: EncodingOption): string | Buffer {
-        this.#checkProtected(path, true);
+        ProtectFs.checkProtected(path, true);
         return nodeFS.readlinkSync.call(this, path, options);
     }
 
@@ -437,8 +446,8 @@ export default class ProtectFs {
         type?: 'dir' | 'file' | 'junction' | null | NoParamCallback,
         callback?: NoParamCallback,
     ): void {
-        this.#checkProtected(target, true);
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(target, true);
+        ProtectFs.checkProtected(path, false);
         if (typeof callback === 'function') {
             // @ts-expect-error should work
             return nodeFS.symlink.call(this, target, path, type as 'dir' | 'file' | 'junction' | null, callback);
@@ -447,8 +456,8 @@ export default class ProtectFs {
     }
 
     symlinkSync(target: PathLike, path: PathLike, type?: 'dir' | 'file' | 'junction' | null): void {
-        this.#checkProtected(target, true);
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(target, true);
+        ProtectFs.checkProtected(path, false);
         return nodeFS.symlinkSync.call(this, target, path, type);
     }
 
@@ -459,7 +468,7 @@ export default class ProtectFs {
         callback?: NoParamCallback,
     ): void {
         if (typeof file !== 'number') {
-            this.#checkProtected(file, false);
+            ProtectFs.checkProtected(file, false);
         }
         if (typeof callback === 'function') {
             // @ts-expect-error should work
@@ -470,18 +479,18 @@ export default class ProtectFs {
 
     writeFileSync(file: PathLike | number, data: string | NodeJS.ArrayBufferView, options?: WriteFileOptions): void {
         if (typeof file !== 'number') {
-            this.#checkProtected(file, false);
+            ProtectFs.checkProtected(file, false);
         }
         return nodeFS.writeFileSync.call(this, file, data, options);
     }
 
     unlink(path: PathLike, callback?: NoParamCallback): void {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         return nodeFS.unlink.call(this, path, callback || ((_err: NodeJS.ErrnoException | null) => {}));
     }
 
     unlinkSync(path: PathLike): void {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         return nodeFS.unlinkSync.call(this, path);
     }
 
@@ -492,7 +501,7 @@ export default class ProtectFs {
         callback?: NoParamCallback,
     ): void {
         if (typeof file !== 'number') {
-            this.#checkProtected(file, false);
+            ProtectFs.checkProtected(file, false);
         }
         if (typeof callback === 'function') {
             // @ts-expect-error should work
@@ -503,83 +512,83 @@ export default class ProtectFs {
 
     appendFileSync(file: PathLike | number, data: string | Uint8Array, options?: WriteFileOptions): void {
         if (typeof file !== 'number') {
-            this.#checkProtected(file, false);
+            ProtectFs.checkProtected(file, false);
         }
         return nodeFS.appendFileSync.call(this, file, data, options);
     }
 
     chmod(path: PathLike, mode: Mode, callback?: NoParamCallback): void {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         return nodeFS.chmod.call(this, path, mode, callback || ((_err: NodeJS.ErrnoException | null) => {}));
     }
 
     chmodSync(path: PathLike, mode: Mode): void {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         return nodeFS.chmodSync.call(this, path, mode);
     }
 
     chown(path: PathLike, uid: number, gid: number, callback?: NoParamCallback): void {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         return nodeFS.chown.call(this, path, uid, gid, callback || ((_err: NodeJS.ErrnoException | null) => {}));
     }
 
     chownSync(path: PathLike, uid: number, gid: number): void {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         return nodeFS.chownSync.call(this, path, uid, gid);
     }
 
     copyFile(src: PathLike, dest: PathLike, mode: number | NoParamCallback, callback?: NoParamCallback): void {
-        this.#checkProtected(src, true);
-        this.#checkProtected(dest, false);
+        ProtectFs.checkProtected(src, true);
+        ProtectFs.checkProtected(dest, false);
         // @ts-expect-error should work
         return nodeFS.copyFile.call(this, src, dest, mode, callback);
     }
 
     copyFileSync(src: PathLike, dest: PathLike, mode?: number): void {
-        this.#checkProtected(src, true);
-        this.#checkProtected(dest, false);
+        ProtectFs.checkProtected(src, true);
+        ProtectFs.checkProtected(dest, false);
         return nodeFS.copyFileSync.call(this, src, dest, mode);
     }
 
     rename(oldPath: PathLike, newPath: PathLike, callback?: NoParamCallback): void {
-        this.#checkProtected(oldPath, false);
-        this.#checkProtected(newPath, false);
+        ProtectFs.checkProtected(oldPath, false);
+        ProtectFs.checkProtected(newPath, false);
         return nodeFS.rename.call(this, oldPath, newPath, callback || ((_err: NodeJS.ErrnoException | null) => {}));
     }
 
     renameSync(oldPath: PathLike, newPath: PathLike): void {
-        this.#checkProtected(oldPath, false);
-        this.#checkProtected(newPath, false);
+        ProtectFs.checkProtected(oldPath, false);
+        ProtectFs.checkProtected(newPath, false);
         return nodeFS.renameSync.call(this, oldPath, newPath);
     }
 
     open(path: PathLike, callback: (err: NodeJS.ErrnoException | null, fd: number) => void): void {
-        this.#checkProtected(path, true);
+        ProtectFs.checkProtected(path, true);
         return nodeFS.open.call(this, path, callback);
     }
 
     openSync(path: PathLike, flags: OpenMode, mode?: Mode | null): number {
-        this.#checkProtected(path, true);
+        ProtectFs.checkProtected(path, true);
         return nodeFS.openSync.call(this, path, flags, mode);
     }
 
     truncate(path: PathLike, callback?: NoParamCallback): void {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         return nodeFS.truncate.call(this, path, callback || ((_err: NodeJS.ErrnoException | null) => {}));
     }
 
     truncateSync(path: PathLike): void {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         return nodeFS.truncateSync.call(this, path);
     }
 
     exists(path: PathLike, callback: (exists: boolean) => void): void {
-        this.#checkProtected(path, true);
+        ProtectFs.checkProtected(path, true);
         return nodeFS.exists.call(this, path, callback);
     }
 
     existsSync(path: PathLike): boolean {
-        this.#checkProtected(path, true);
+        ProtectFs.checkProtected(path, true);
         return nodeFS.existsSync.call(this, path);
     }
 
@@ -588,7 +597,7 @@ export default class ProtectFs {
         options: StatOptions | undefined | ((err: NodeJS.ErrnoException | null, stats: Stats) => void),
         callback?: (err: NodeJS.ErrnoException | null, stats: Stats) => void,
     ): void {
-        this.#checkProtected(path, true);
+        ProtectFs.checkProtected(path, true);
         if (typeof callback === 'function') {
             // @ts-expect-error should work
             return nodeFS.stat.call(this, path, options as StatOptions | undefined, callback);
@@ -598,17 +607,17 @@ export default class ProtectFs {
     }
 
     statSync(path: PathLike, options?: StatOptions): Stats {
-        this.#checkProtected(path, true);
+        ProtectFs.checkProtected(path, true);
         return nodeFS.statSync.call(this, path, options);
     }
 
     utimes(path: PathLike, atime: TimeLike, mtime: TimeLike, callback?: NoParamCallback): void {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         return nodeFS.utimes.call(this, path, atime, mtime, callback || ((_err: NodeJS.ErrnoException | null) => {}));
     }
 
     utimesSync(path: PathLike, atime: TimeLike, mtime: TimeLike): void {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         return nodeFS.utimesSync.call(this, path, atime, mtime);
     }
 
@@ -622,7 +631,7 @@ export default class ProtectFs {
             | ((err: NodeJS.ErrnoException | null, files: Dirent<Buffer | string>[][]) => void),
         callback?: (err: NodeJS.ErrnoException | null, files: Dirent<Buffer | string>[]) => void,
     ): void {
-        this.#checkProtected(path, true);
+        ProtectFs.checkProtected(path, true);
         if (typeof callback === 'function') {
             return nodeFS.readdir.call(
                 this,
@@ -646,50 +655,50 @@ export default class ProtectFs {
             recursive?: boolean | undefined;
         },
     ): Dirent<Buffer | string>[] {
-        this.#checkProtected(path, true);
+        ProtectFs.checkProtected(path, true);
         // @ts-expect-error should work
         return nodeFS.readdirSync.call(this, path, options);
     }
 
     createReadStream(path: PathLike, options?: BufferEncoding): ReadStream {
-        this.#checkProtected(path, true);
+        ProtectFs.checkProtected(path, true);
         return nodeFS.createReadStream.call(this, path, options);
     }
 
     createWriteStream(path: PathLike, options?: BufferEncoding): WriteStream {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         return nodeFS.createWriteStream.call(this, path, options);
     }
 
     lchmod(path: PathLike, mode: Mode, callback?: NoParamCallback): void {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         return nodeFS.lchmod.call(this, path, mode, callback || ((_err: NodeJS.ErrnoException | null) => {}));
     }
 
     lchmodSync(path: PathLike, mode: Mode): void {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         return nodeFS.lchmodSync.call(this, path, mode);
     }
 
     lchown(path: PathLike, uid: number, gid: number, callback?: NoParamCallback): void {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         return nodeFS.lchown.call(this, path, uid, gid, callback || ((_err: NodeJS.ErrnoException | null) => {}));
     }
 
     lchownSync(path: PathLike, uid: number, gid: number): void {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         return nodeFS.lchownSync.call(this, path, uid, gid);
     }
 
     link(existingPath: PathLike, newPath: PathLike, callback?: NoParamCallback): void {
-        this.#checkProtected(existingPath, false);
-        this.#checkProtected(newPath, false);
+        ProtectFs.checkProtected(existingPath, false);
+        ProtectFs.checkProtected(newPath, false);
         return nodeFS.link.call(this, existingPath, newPath, callback || ((_err: NodeJS.ErrnoException | null) => {}));
     }
 
     linkSync(existingPath: PathLike, newPath: PathLike): void {
-        this.#checkProtected(existingPath, false);
-        this.#checkProtected(newPath, false);
+        ProtectFs.checkProtected(existingPath, false);
+        ProtectFs.checkProtected(newPath, false);
         return nodeFS.linkSync.call(this, existingPath, newPath);
     }
 
@@ -698,7 +707,7 @@ export default class ProtectFs {
         options: StatOptions | undefined | ((err: NodeJS.ErrnoException | null, stats: Stats) => void),
         callback?: (err: NodeJS.ErrnoException | null, stats: Stats) => void,
     ): void {
-        this.#checkProtected(path, true);
+        ProtectFs.checkProtected(path, true);
         if (typeof callback === 'function') {
             // @ts-expect-error should work
             return nodeFS.lstat.call(this, path, options as StatOptions | undefined, callback);
@@ -708,17 +717,17 @@ export default class ProtectFs {
     }
 
     lstatSync(path: PathLike, options?: StatOptions): Stats {
-        this.#checkProtected(path, true);
+        ProtectFs.checkProtected(path, true);
         return nodeFS.lstatSync.call(this, path, options);
     }
 
     lutimes(path: PathLike, atime: TimeLike, mtime: TimeLike, callback?: NoParamCallback): void {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         return nodeFS.lutimes.call(this, path, atime, mtime, callback || ((_err: NodeJS.ErrnoException | null) => {}));
     }
 
     lutimesSync(path: PathLike, atime: TimeLike, mtime: TimeLike): void {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         return nodeFS.lutimesSync.call(this, path, atime, mtime);
     }
 
@@ -734,7 +743,7 @@ export default class ProtectFs {
             | ((err: NodeJS.ErrnoException | null, path?: string) => void),
         callback?: (err: NodeJS.ErrnoException | null, path?: string) => void,
     ): void {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         if (typeof callback === 'function') {
             // @ts-expect-error should work
             return nodeFS.mkdir.call(this, path, options as MakeDirectoryOptions & { recursive?: boolean }, callback);
@@ -748,7 +757,7 @@ export default class ProtectFs {
             recursive: true;
         },
     ): string | undefined {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         return nodeFS.mkdirSync.call(this, path, options);
     }
 
@@ -757,7 +766,7 @@ export default class ProtectFs {
         options: EncodingOption | ((err: NodeJS.ErrnoException | null, folder: string) => void),
         callback?: (err: NodeJS.ErrnoException | null, folder: string) => void,
     ): void {
-        this.#checkProtected(prefix, false);
+        ProtectFs.checkProtected(prefix, false);
         if (typeof callback === 'function') {
             // @ts-expect-error should work
             return nodeFS.mkdtemp.call(this, prefix, options, callback);
@@ -770,12 +779,12 @@ export default class ProtectFs {
     }
 
     mkdtempSync(prefix: string, options?: EncodingOption): string | Buffer {
-        this.#checkProtected(prefix, false);
+        ProtectFs.checkProtected(prefix, false);
         return nodeFS.mkdtempSync.call(this, prefix, options);
     }
 
     rm(path: PathLike, options?: RmOptions | NoParamCallback, callback?: NoParamCallback): void {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         if (typeof callback === 'function') {
             return nodeFS.rm.call(this, path, options as RmOptions, callback);
         }
@@ -784,12 +793,12 @@ export default class ProtectFs {
     }
 
     rmSync(path: PathLike, options?: RmOptions): void {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         return nodeFS.rmSync.call(this, path, options);
     }
 
     rmdir(path: PathLike, options?: RmDirOptions | NoParamCallback, callback?: NoParamCallback): void {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         if (typeof callback === 'function') {
             return nodeFS.rmdir.call(this, path, options as RmDirOptions, callback);
         }
@@ -798,7 +807,7 @@ export default class ProtectFs {
     }
 
     rmdirSync(path: PathLike, options?: RmDirOptions): void {
-        this.#checkProtected(path, false);
+        ProtectFs.checkProtected(path, false);
         return nodeFS.rmdirSync.call(this, path, options);
     }
 
@@ -812,7 +821,7 @@ export default class ProtectFs {
             | WatchListener<string>,
         listener?: WatchListener<string>,
     ): FSWatcher {
-        this.#checkProtected(filename, true);
+        ProtectFs.checkProtected(filename, true);
         if (typeof listener === 'function') {
             // @ts-expect-error should work
             return nodeFS.watch.call(this, filename, options as WatchOptions & { encoding: 'buffer' }, listener);
@@ -822,12 +831,12 @@ export default class ProtectFs {
     }
 
     watchFile(filename: PathLike, listener: StatsListener): StatWatcher {
-        this.#checkProtected(filename, true);
+        ProtectFs.checkProtected(filename, true);
         return nodeFS.watchFile.call(this, filename, listener);
     }
 
     unwatchFile(filename: PathLike, listener: StatsListener | BigIntStatsListener): void {
-        this.#checkProtected(filename, true);
+        ProtectFs.checkProtected(filename, true);
         return nodeFS.unwatchFile.call(this, filename, listener as BigIntStatsListener);
     }
 }
