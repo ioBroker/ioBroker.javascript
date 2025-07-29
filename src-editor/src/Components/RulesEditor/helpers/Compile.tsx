@@ -181,14 +181,16 @@ function compileConditions(
     let i = 0;
     conditions?.forEach(ors => {
         const _ors: string[] = [];
-        ors?.forEach(block => {
-            const found = findBlock(block.id, blocks);
-            if (found) {
-                context.condition.index = i++;
-                _ors.push(found.compile(block, context));
-            }
-        });
-        result.push(`(${_ors.join(') &&\n                  (')})`);
+        if (ors?.length) {
+            ors.forEach(block => {
+                const found = findBlock(block.id, blocks);
+                if (found) {
+                    context.condition.index = i++;
+                    _ors.push(found.compile(block, context));
+                }
+            });
+            result.push(`(${_ors.join(') &&\n                  (')})`);
+        }
     });
 
     if (!result.length) {
