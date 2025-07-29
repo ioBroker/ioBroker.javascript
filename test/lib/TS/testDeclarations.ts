@@ -26,7 +26,7 @@ setState('id', 1, (error: Error | null | undefined, id?: string): void => {
 });
 
 const selected = $('selector');
-selected.getState<number>()!.val.toFixed();
+selected.getState<number>()!.val?.toFixed();
 
 // Repro from #539
 $('*').setState(1);
