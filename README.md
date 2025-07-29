@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 9.0.11 (2025-07-29)
 * (@GermanBluefox) Corrected the rule editor if the condition is empty
 * (@GermanBluefox) Corrected types for TypeScript
 
@@ -48,11 +48,6 @@ Executes Javascript, Typescript Scripts.
 * (@GermanBluefox) Corrected script editor for Polish language
 * (@GermanBluefox) Corrected import of Blockly blocks
 * (@GermanBluefox) Corrected editing of Blockly
-
-### 9.0.3 (2025-06-12)
-
-* (@GermanBluefox) Corrected the rule editor
-* (@GermanBluefox) Removed the unused JS files
 
 ## License
 The MIT License (MIT)

@@ -1,4 +1,9 @@
 The newest change log is in README.md
+## 9.0.3 (2025-06-12)
+
+* (@GermanBluefox) Corrected the rule editor
+* (@GermanBluefox) Removed the unused JS files
+
 ## 9.0.2 (2025-06-04)
 
 * (@klein0r) Added possibility to escape chars in formatTimeDiff

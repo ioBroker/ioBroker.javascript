@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "9.0.10",
+    "version": "9.0.11",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "9.0.11": {
+        "en": "Corrected the rule editor if the condition is empty\nCorrected types for TypeScript",
+        "de": "Korrektur des Regeleditors, wenn die Bedingung leer ist\nKorrigierte Typen für TypeScript",
+        "ru": "Исправлен редактор правил, если условие пусто\nИсправленные типы для TypeScript",
+        "pt": "Corrigido o editor de regras se a condição estiver vazia\nTipos corrigidos para TypeScript",
+        "nl": "De regelbewerker corrigeren als de voorwaarde leeg is\nGecorrigeerde types voor TypeScript",
+        "fr": "Correction de l'éditeur de règles si la condition est vide\nTypes corrigés pour TypeScript",
+        "it": "Corretto l'editor di regola se la condizione è vuota\nTipi corretti per TypeScript",
+        "es": "Corregido el editor de reglas si la condición está vacía\nTipos corregidos para TipoScript",
+        "pl": "Poprawiono edytor zasad, jeśli warunek jest pusty\nPoprawione typy dla TypeScript",
+        "uk": "Виправлено редактор правила, якщо стан порожній\nВиправлені типи для TypeScript",
+        "zh-cn": "如果条件为空, 更正规则编辑器\n类型脚本的校正类型"
+      },
       "9.0.7": {
         "en": "Fixing some blocks in blockly: time, function",
         "de": "Einige Blocks blockieren: Zeit, Funktion",
