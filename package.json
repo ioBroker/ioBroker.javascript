@@ -94,7 +94,7 @@
     "translate": "translate-adapter",
     "//postinstall": "node ./install/installTypings.js",
     "build": "npm run build-backend && node tasks",
-    "build-backend": "tsc -p tsconfig.build.json",
+    "build-backend": "tsc -p tsconfig.build.json && node tasks --copy-types",
     "release": "release-script --noPush -y --all",
     "update-packages": "npx -y npm-check-updates --upgrade && cd src-editor && npx -y npm-check-updates --upgrade && cd ../src-admin && npx -y npm-check-updates --upgrade",
     "npm": "npm i && cd src-editor && npm i -f && cd ../src-admin && npm i",

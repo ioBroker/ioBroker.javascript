@@ -2,7 +2,34 @@
 // this has a nice side effect that we may augment the global scope
 import type * as os from 'node:os';
 import type { ChildProcess, ExecException } from 'node:child_process';
-import type fs from 'node:fs';
+
+export interface FsStats {
+    isFile(): boolean;
+    isDirectory(): boolean;
+    isBlockDevice(): boolean;
+    isCharacterDevice(): boolean;
+    isSymbolicLink(): boolean;
+    isFIFO(): boolean;
+    isSocket(): boolean;
+    dev: number;
+    ino: number;
+    mode: number;
+    nlink: number;
+    uid: number;
+    gid: number;
+    rdev: number;
+    size: number;
+    blksize: number;
+    blocks: number;
+    atimeMs: number;
+    mtimeMs: number;
+    ctimeMs: number;
+    birthtimeMs: number;
+    atime: Date;
+    mtime: Date;
+    ctime: Date;
+    birthtime: Date;
+}
 
 declare const __brand: unique symbol;
 type Brand<B> = { [__brand]: B };
@@ -54,7 +81,7 @@ type CombineObjectUnion<
 > = Simplify<{ [K in Keys]: K extends keyof O ? O[K] : never }>;
 
 /**
- * Takes a union of iobJS Object types and returns a combined object type
+ * Takes a union of ioBroker Object types and returns a combined object type
  * which has all properties that could exist on at least one of the objects.
  *
  * Note: This is not entirely sound to work with, but better for JS and working with read objects
@@ -331,7 +358,7 @@ declare global {
             _id: number;
         }
 
-        type Log = any; // TODO: define this https://github.com/iobJS/iobJS.js-controller/blob/master/lib/states/statesInMemServer.js#L873
+        type Log = any; // TODO: define this https://github.com/ioBroker/ioBroker.js-controller/blob/master/lib/states/statesInMemServer.js#L873
 
         type EnumList = string | string[];
 
@@ -339,7 +366,7 @@ declare global {
 
         interface DirectoryEntry {
             file: string;
-            stats: fs.Stats;
+            stats: FsStats;
             isDir: boolean;
             acl: any; // access control list object
             modifiedAt: number;
@@ -540,7 +567,7 @@ declare global {
             /** Name of the file or directory */
             file: string;
             /** File system stats */
-            stats: Partial<fs.Stats>;
+            stats: Partial<FsStats>;
             /** Whether this is a directory or a file */
             isDir: boolean;
             /** Access rights */
@@ -567,7 +594,7 @@ declare global {
             /** Name of the file or directory */
             file: string;
             /** File system stats */
-            stats: fs.Stats;
+            stats: FsStats;
             /** Whether this is a directory or a file */
             isDir: boolean;
             /** Access rights */
@@ -661,7 +688,7 @@ declare global {
             state: number;
         }
 
-        /** Defines the existing object types in iobJS */
+        /** Defines the existing object types in ioBroker */
         type ObjectType =
             | 'state'
             | 'channel'
@@ -811,7 +838,7 @@ declare global {
         }
 
         interface StateCommon extends ObjectCommon {
-            /** Type of this state. See https://github.com/iobJS/iobJS/blob/master/doc/SCHEMA.md#state-commonrole for a detailed description */
+            /** Type of this state. See https://github.com/ioBroker/ioBroker/blob/master/doc/SCHEMA.md#state-commonrole for a detailed description */
             type: CommonType;
             /** minimum value */
             min?: number;
@@ -864,7 +891,7 @@ declare global {
              * [ "value 1", "value 2", // ... ]
              * ```
              *
-             * In old iobJS versions, this could also be a string of the form
+             * In old ioBroker versions, this could also be a string of the form
              * `"val1:text1;val2:text2"` (now deprecated)
              */
             states?: Record<string, string> | string[] | string;
@@ -1115,7 +1142,7 @@ declare global {
         interface SupportedMessages {
             /** If custom messages are supported (same as legacy messagebox) */
             custom?: boolean;
-            /** If notification handling is supported, for information, see https://github.com/foxriver76/iobJS.notification-manager#requirements-for-messaging-adapters */
+            /** If notification handling is supported, for information, see https://github.com/foxriver76/ioBroker.notification-manager#requirements-for-messaging-adapters */
             notifications?: boolean;
             /** If adapter supports signal stopInstance. Use number if you need more than 1000 ms for stop routine. The signal will be sent before stop to the adapter. (used if problems occurred with SIGTERM). */
             stopInstance?: boolean | number;
@@ -1241,7 +1268,7 @@ declare global {
                 /** Order number in admin tabs */
                 order?: number;
             };
-            /** If the mode is `schedule`, start one time adapter by iobJS start, or by the configuration changes */
+            /** If the mode is `schedule`, start one time adapter by ioBroker start, or by the configuration changes */
             allowInit?: boolean;
             /** If the adapter should be automatically upgraded and which version ranges are supported */
             automaticUpgrade?: AutoUpgradePolicy;
@@ -1259,9 +1286,9 @@ declare global {
             dataFolder?: string;
             /** How the adapter will mainly receive its data. Set this together with @see connectionType */
             dataSource?: 'poll' | 'push' | 'assumption';
-            /** A record of iobJS adapters (including "js-controller") and version ranges which are required for this adapter on the same host. */
+            /** A record of ioBroker adapters (including "js-controller") and version ranges which are required for this adapter on the same host. */
             dependencies?: Dependencies;
-            /** A record of iobJS adapters (including "js-controller") and version ranges which are required for this adapter in the whole system. */
+            /** A record of ioBroker adapters (including "js-controller") and version ranges which are required for this adapter in the whole system. */
             globalDependencies?: Dependencies;
             /** Similar to `dependencies`, but only checked if the specified adapter is already installed. If the adapter is not installed, the version check will pass */
             ifInstalledDependencies?: { [adapterName: string]: string };
@@ -1283,7 +1310,7 @@ declare global {
             installedFrom?: InstalledFrom;
             /** Shows which version of this adapter is installed */
             installedVersion: string;
-            /** Keywords are used by search in admin. Do not write iobJS here */
+            /** Keywords are used by search in admin. Do not write ioBroker here */
             keywords?: string[];
             /** A dictionary of links to web services this adapter provides */
             localLinks?: Record<string, string | LocalLink>;
@@ -1305,7 +1332,7 @@ declare global {
             supportedMessages?: SupportedMessages;
             /** Running mode: `none`, `daemon`, `schedule`, `once`, `extension` */
             mode: InstanceMode;
-            /** Name of the adapter (without leading `iobJS.`) */
+            /** Name of the adapter (without leading `ioBroker.`) */
             name: string;
             /** News per version in i18n */
             news?: { [version: string]: Translated };
@@ -1313,7 +1340,7 @@ declare global {
             noConfig?: true;
             /** If `true`, this adapter's instances will not be shown in the admin overview screen. Useful for icon sets and widgets... */
             noIntro?: true;
-            /** Set to `true` if the adapter is not available in the official iobJS repositories. */
+            /** Set to `true` if the adapter is not available in the official ioBroker repositories. */
             noRepository?: true;
             /** If `true`, manual installation from GitHub is not possible */
             nogit?: true;
@@ -1350,7 +1377,7 @@ declare global {
             singleton?: boolean;
             /** Whether the adapter must be stopped before an update */
             stopBeforeUpdate?: boolean;
-            /** Overrides the default timeout that iobJS will wait before force-stopping the adapter */
+            /** Overrides the default timeout that ioBroker will wait before force-stopping the adapter */
             stopTimeout?: number;
             /** This adapter supports a special mode: if someone subscribes on its states, it starts to read them. It is done to save the bandwidth or load of the slave device */
             subscribable?: boolean;
@@ -1394,7 +1421,7 @@ declare global {
                 | 'weather';
             /** If `true`, the `npm` package must be installed with the `--unsafe-perm` flag */
             unsafePerm?: true;
-            /** The available version in the iobJS repo. */
+            /** The available version in the ioBroker repo. */
             version: string;
             /** Definition of the vis-2 widgets */
             visWidgets?: Record<string, VisWidget>;
@@ -1410,7 +1437,7 @@ declare global {
             webservers?: string[];
             /** @deprecated (use localLinks) A list of pages that should be shown on the "web" index page */
             welcomeScreen?: WelcomeScreenEntry[];
-            /** @deprecated (use localLinks) A list of pages that should be shown on the iobJS cloud index page */
+            /** @deprecated (use localLinks) A list of pages that should be shown on the ioBroker cloud index page */
             welcomeScreenPro?: WelcomeScreenEntry[];
             /** @deprecated (rename the `www` folder in e.g. `adminWww`) If true, the `www` folder will be not uploaded into DB */
             wwwDontUpload?: boolean;
@@ -1516,7 +1543,7 @@ declare global {
         }
 
         /**
-         * iobJS has built-in protection for specific attributes of objects. If this protection is installed in the object, then the protected attributes of an object cannot be changed by the user without a valid password.
+         * ioBroker has built-in protection for specific attributes of objects. If this protection is installed in the object, then the protected attributes of an object cannot be changed by the user without a valid password.
          * To protect the properties from change, the special attribute "nonEdit" must be added to the object. This attribute contains the password, which is required to change the object.
          * If an object does not have "nonEdit" attribute, so the hash will be saved into "nonEdit.passHash". After that, if someone changes the object, he must provide the password in "nonEdit.password".
          * If the password is correct, the object attributes will be updated. If the password is wrong, the object will not be changed.
@@ -2447,12 +2474,12 @@ declare global {
     /**
      * Queries all states with the given selector
      *
-     * @param selector See @link{https://github.com/iobJS/iobJS.javascript#---selector} for a description
+     * @param selector See @link{https://github.com/ioBroker/ioBroker.javascript#---selector} for a description
      */
     function $(selector: string): iobJS.QueryResult;
 
     /**
-     * Prints a message in the iobJS log
+     * Prints a message in the ioBroker log
      *
      * @param message The message to print
      * @param severity (optional) severity of the message. default = "info"
@@ -2658,7 +2685,7 @@ declare global {
 
     /**
      * Calculates the astro time which corresponds to the given pattern.
-     * For valid patterns, see @link{https://github.com/iobJS/iobJS.javascript/blob/master/docs/en/javascript.md#astro-function}
+     * For valid patterns, see @link{https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#astro-function}
      *
      * @param pattern One of predefined patterns, like: sunrise, sunriseEnd, ...
      * @param date (optional) The date for which the astro time should be calculated. Default = today

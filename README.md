@@ -28,6 +28,7 @@ Executes Javascript, Typescript Scripts.
 -->
 ### **WORK IN PROGRESS**
 * (@GermanBluefox) Corrected the rule editor if the condition is empty
+* (@GermanBluefox) Corrected types for TypeScript
 
 ### 9.0.10 (2025-07-27)
 * (@klein0r) Added Blockly block to format a numeric value
