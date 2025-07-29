@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "9.0.9",
+    "version": "9.0.10",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "9.0.10": {
+        "en": "Added Blockly block to format a numeric value\nFixing some blocks in blockly: cron, time\nAdded new block: \"unconditional return\"\nType definitions for TypeScript were updated\nCorrected bug with deleting of sub-folders",
+        "de": "Hinzugefügt Blockly Block, um einen numerischen Wert zu formatieren\nEinige Blöcke blockweise fixieren: cron, time\nNeuer Block hinzugefügt: \"bedingungslose Rückkehr\"\nTypdefinitionen für TypeScript wurden aktualisiert\nFehler behoben mit Löschen von Unterordner",
+        "ru": "Добавлен блок Blockly для форматирования числового значения\nПочинка блоков в блоке: крон, время\nДобавлен новый блок: \"безусловный возврат\"\nОбновлены определения типов для TypeScript\nИсправлена ошибка с удалением подпапок",
+        "pt": "Adicionado Bloco para formatar um valor numérico\nConsertando alguns blocos em bloco: cron, tempo\nAdicionado novo bloco: \"retorno incondicional\"\nAs definições de tipo para TypeScript foram atualizadas\nErro corrigido com a exclusão de subpastas",
+        "nl": "Blockly blok toegevoegd om een numerieke waarde te formatteren\nHet repareren van wat blokken in blokjes: cron, tijd\nToegevoegd nieuw blok: \"onvoorwaardelijke terugkeer\"\nTypedefinities voor TypeScript zijn bijgewerkt\nGecorrigeerde bug met verwijderen van submappen",
+        "fr": "Ajout d'un bloc bloc bloc pour formater une valeur numérique\nCorrection de quelques blocs en bloc : cron, temps\nAjout d'un nouveau bloc : « retour inconditionnel »\nLes définitions de type pour TypeScript ont été mises à jour\nCorrection du bogue avec suppression des sous-dossiers",
+        "it": "Aggiunto Blockly per formattare un valore numerico\nFissare alcuni blocchi in blocco: cron, tempo\nAggiunto nuovo blocco: \"ritorno incondizionato\"\nLe definizioni di tipo per TypeScript sono state aggiornate\nCorretto bug con cancellazione di sotto-cartelle",
+        "es": "Añadido Bloqueo bloqueado para formatear un valor numérico\nArreglar algunos bloques en bloque: cron, tiempo\nNuevo bloque añadido: \"retorno incondicional\"\nSe actualizaron las definiciones de tipo para TipoScript\nError corregido con eliminación de subcarpetas",
+        "pl": "Dodano Blockly bloku do formatu wartości liczbowej\nNaprawianie niektórych bloków w blokowanych: cron, czas\nDodano nowy blok: \"bezwarunkowy powrót\"\nDefinicje typu dla TypeScript zostały zaktualizowane\nPoprawiony błąd z usuwaniem podfolderów",
+        "uk": "Додано блокнот для форматування числового значення\nВиправлення деяких блоків в блокноті: cron, час\nДодано новий блок: \"безумовне повернення\"\nОновлено тип визначення для TypeScript\nВиправлена помилка з видаленням підпапок",
+        "zh-cn": "添加块格式化一个数值\n整顿一些街区: cron, time\n新增块:\"无条件返回\"\n更新了 TypeScript 的类型定义\n删除子文件夹纠正错误"
+      },
       "9.0.7": {
         "en": "Fixing some blocks in blockly: time, function",
         "de": "Einige Blocks blockieren: Zeit, Funktion",

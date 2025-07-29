@@ -77,8 +77,10 @@ class ConditionState extends GenericBlock<RuleBlockConfigActionActionState, Cond
 
         let result;
         if (config.tagCard === '()') {
-            context.prelines = context.prelines || [];
-            !context.prelines.find(item => item !== HYSTERESIS) && context.prelines.push(HYSTERESIS);
+            context.prelines ||= [];
+            if (!context.prelines.find(item => item !== HYSTERESIS)) {
+                context.prelines.push(HYSTERESIS);
+            }
             if (config.useTrigger) {
                 debugValue = 'obj.state.val';
                 if (value === '') {
