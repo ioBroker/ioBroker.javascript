@@ -1667,7 +1667,7 @@ declare global {
             version: string;
             /** Array of blocked versions, each entry represents a semver range */
             blockedVersions: string[];
-            /** If true the unsafe perm flag is needed on install */
+            /** If true, the unsafe perm flag is needed on install */
             unsafePerm?: boolean;
             /** If given, the packet name differs from the adapter name, e.g. because it is a scoped package */
             packetName?: string;
@@ -1979,6 +1979,7 @@ declare global {
 
         interface TypedState<T extends iobJS.StateValue = any> extends iobJS.State {
             val: T;
+            notExist?: true;
         }
 
         interface AbsentState extends Omit<iobJS.State, 'ack' | 'from' | 'ts' | 'lc'> {
@@ -2238,7 +2239,7 @@ declare global {
              * Otherwise, you need to provide a callback.
              */
             getState<T extends iobJS.StateValue = any>(callback: GetStateCallback<T>): void;
-            getState<T extends iobJS.StateValue = any>(): TypedState<T> | null | undefined;
+            getState<T extends iobJS.StateValue = any>(): TypedState<T> | iobJS.AbsentState | null | undefined;
             getStateAsync<T extends iobJS.StateValue = any>(): Promise<
                 TypedState<T> | iobJS.AbsentState | null | undefined
             >;
@@ -2403,13 +2404,6 @@ declare global {
             pattern?: string;
             scriptName: string;
             id: string;
-        }
-
-        interface LogMessage {
-            severity: LogLevel; // severity
-            ts: number; // timestamp as Date.now()
-            message: string; // message
-            from: string; // origin of the message
         }
 
         type SchedulePattern = ScheduleRule | ScheduleRuleConditional | Date | string | number;
