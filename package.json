@@ -67,7 +67,7 @@
     "@iobroker/plugin-sentry": "^2.0.4",
     "@iobroker/testing": "^5.0.4",
     "@iobroker/vis-2-widgets-react-dev": "^4.0.4",
-    "@types/node-schedule": "^2.1.7",
+    "@types/node-schedule": "^2.1.8",
     "@types/nodemailer": "^6.4.17",
     "@types/request": "^2.48.12",
     "@types/suncalc": "^1.9.2",
