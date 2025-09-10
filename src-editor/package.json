@@ -15,7 +15,7 @@
         "@module-federation/runtime": "^0.15.0",
         "@module-federation/vite": "^1.4.1",
         "@mui/icons-material": "^6.4.12",
-        "@mui/material": "^6.4.12",
+        "@mui/material": "^7.3.2",
         "@mui/x-date-pickers": "^7.29.4",
         "@sentry/browser": "^9.30.0",
         "@types/lodash": "^4.17.17",
