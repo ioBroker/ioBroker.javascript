@@ -33,6 +33,7 @@ export interface JavaScriptAdapterConfig {
     maxSetStatePerMinute: number;
     maxTriggersPerScript: number;
     gptKey: string;
+    password?: string;
 }
 
 export type CommonAlias = {

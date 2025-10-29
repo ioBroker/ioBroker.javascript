@@ -75,8 +75,9 @@ import {
 } from '@iobroker/adapter-react-v5';
 
 import steps, { STEPS } from './Components/RulesEditor/helpers/Tour';
-import type { AstroTimes, ScriptType } from '@/types';
+import type { AstroTimes, ScriptType } from './types';
 import Connecting from './Components/Connecting';
+import { decryptText, encryptText } from './Components/crypto';
 
 const BlocklyEditor = React.lazy(() => import('./Components/BlocklyEditor'));
 const RulesEditor = React.lazy(() => import('./Components/RulesEditor'));
@@ -142,6 +143,7 @@ const styles: Record<string, any> = {
         marginRight: 10,
         minHeight: 24,
         padding: '6px 16px',
+        height: 32,
     },
     saveButton: {
         background: '#ff9900',
@@ -255,6 +257,9 @@ interface EditorProps {
     expertMode: boolean;
     isAnyRulesExists: number;
     resizing: boolean;
+    onChangedChanged: (changed: { [id: string]: boolean }) => void;
+    password: string;
+    scriptsHash: number;
 }
 
 interface EditorState {
@@ -295,6 +300,7 @@ interface EditorState {
 
 class Editor extends React.Component<EditorProps, EditorState> {
     private getSelect: (() => string | undefined) | null = null;
+    private changedMirror: { [id: string]: boolean } = {};
 
     private cron: { initValue: string | null; callback: null | ((selected: string) => void); type?: string } = {
         initValue: null,
@@ -332,7 +338,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
     constructor(props: EditorProps) {
         super(props);
 
-        const selected = window.localStorage.getItem('Editor.selected') || '';
+        let selected = window.localStorage.getItem('Editor.selected') || '';
         const editingStr = window.localStorage.getItem('Editor.editing') || '[]';
         let editing: string[];
         try {
@@ -342,6 +348,18 @@ class Editor extends React.Component<EditorProps, EditorState> {
         }
         if (selected && !editing.includes(selected)) {
             editing.push(selected);
+        }
+
+        if (selected && !this.props.password && this.props.objects[selected]?.native?.protected) {
+            // get another tab
+            selected = editing.find(id => !this.props.objects[id]?.native?.protected) || '';
+        }
+        if (!selected && editing.length) {
+            if (this.props.password) {
+                selected = editing[0];
+            } else {
+                selected = editing.find(id => !this.props.objects[id]?.native?.protected) || '';
+            }
         }
 
         this.state = {
@@ -388,8 +406,8 @@ class Editor extends React.Component<EditorProps, EditorState> {
             getObject: (id: string, cb: (err: null | Error | undefined, obj?: ioBroker.Object | null) => void) =>
                 this.props.socket
                     .getObject(id)
-                    .then(obj => cb && cb(null, obj))
-                    .catch(err => cb && cb(err)),
+                    .then(obj => cb?.(null, obj))
+                    .catch(err => cb?.(err)),
             instances: [],
             selectIdDialog: (
                 initValue: string | null,
@@ -428,10 +446,6 @@ class Editor extends React.Component<EditorProps, EditorState> {
 
         this.scripts = {};
 
-        if (!this.state.selected && this.state.editing.length) {
-            Object.assign(this.state, { selected: this.state.editing[0] });
-        }
-
         void this.getAllAdapterInstances().then(() => {
             // to enable logging
             if (this.props.onSelectedChange && this.state.selected) {
@@ -440,17 +454,16 @@ class Editor extends React.Component<EditorProps, EditorState> {
         });
     }
 
-    getAllAdapterInstances(): Promise<void> {
-        return this.props.socket.getAdapterInstances(true).then(instanceObjects => {
-            const objects: Record<string, ioBroker.InstanceObject> = {};
-            const instances = instanceObjects.map(obj => {
-                objects[obj._id] = obj;
-                return obj._id;
-            });
-            window.main.objects = objects;
-            window.main.instances = instances;
-            this.setState({ instancesLoaded: true });
+    async getAllAdapterInstances(): Promise<void> {
+        const instanceObjects = await this.props.socket.getAdapterInstances(true);
+        const objects: Record<string, ioBroker.InstanceObject> = {};
+        const instances = instanceObjects.map(obj => {
+            objects[obj._id] = obj;
+            return obj._id;
         });
+        window.main.objects = objects;
+        window.main.instances = instances;
+        this.setState({ instancesLoaded: true });
     }
 
     static onInstanceChanged(id: string, obj: ioBroker.Object | null | undefined): void {
@@ -462,7 +475,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             delete window.main.objects[id];
             const pos = window.main.instances.indexOf(id);
             window.main.instances.splice(pos, 1);
-        } else if (obj && obj.type === 'instance') {
+        } else if (obj?.type === 'instance') {
             // update instances
             if (!window.main.instances.includes(id)) {
                 window.main.instances.push(id);
@@ -474,6 +487,18 @@ class Editor extends React.Component<EditorProps, EditorState> {
 
     setChangedInAdmin(): void {
         const isChanged = Object.keys(this.state.changed).find(id => this.state.changed[id]);
+
+        // Sync this.state.changed and this.changedMirror
+        Object.keys(this.state.changed).forEach(id => {
+            this.changedMirror[id] = this.state.changed[id];
+        });
+        Object.keys(this.changedMirror).forEach(id => {
+            if (this.state.changed[id] === undefined) {
+                delete this.changedMirror[id];
+            }
+        });
+
+        this.props.onChangedChanged(this.changedMirror);
 
         if (typeof window.parent !== 'undefined' && window.parent) {
             // @ts-expect-error by design
@@ -493,7 +518,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
 
     onBrowserClose = (e: BeforeUnloadEvent): string | void => {
         const isChanged = Object.keys(this.scripts).find(
-            id => JSON.stringify(this.scripts[id]) !== JSON.stringify(this.props.objects[id].common),
+            id => JSON.stringify(this.scripts[id]) !== JSON.stringify(this.getScriptFromObject(id)),
         );
 
         if (isChanged) {
@@ -520,7 +545,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
 
             if (isAnyNonExists) {
                 // remove non-existing scripts
-                const editing = JSON.parse(JSON.stringify(this.state.editing));
+                const editing: string[] = [...this.state.editing];
                 for (let i = editing.length - 1; i >= 0; i--) {
                     if (!this.objects[editing[i]]) {
                         _changed = true;
@@ -592,7 +617,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             this.objects = nextProps.objects;
             window.main.objects = nextProps.objects;
 
-            // update all scripts
+            // update all scripts, but keep source
             Object.keys(this.scripts).forEach(id => {
                 const source = this.scripts[id].source;
                 this.scripts[id] = JSON.parse(JSON.stringify(this.objects[id].common));
@@ -601,9 +626,9 @@ class Editor extends React.Component<EditorProps, EditorState> {
 
             // if a script is blockly
             if (this.state.selected && this.objects[this.state.selected]) {
-                this.scripts[this.state.selected] =
-                    this.scripts[this.state.selected] ||
-                    JSON.parse(JSON.stringify(this.objects[this.state.selected].common));
+                this.scripts[this.state.selected] ||= JSON.parse(
+                    JSON.stringify(this.objects[this.state.selected].common),
+                ) as ioBroker.ScriptCommon;
                 if (this.state.blockly !== (this.scripts[this.state.selected].engineType === 'Blockly')) {
                     newState.blockly = this.scripts[this.state.selected].engineType === 'Blockly';
                     _changed = true;
@@ -623,13 +648,13 @@ class Editor extends React.Component<EditorProps, EditorState> {
             }
 
             // remove non-existing scripts
-            const editing = JSON.parse(JSON.stringify(this.state.editing));
+            const editing: string[] = [...this.state.editing];
             for (let i = editing.length - 1; i >= 0; i--) {
                 if (!this.objects[editing[i]]) {
                     _changed = true;
                     editing.splice(i, 1);
                     if (this.state.changed[editing[i]] !== undefined) {
-                        newState.changed = newState.changed || JSON.parse(JSON.stringify(this.state.changed));
+                        newState.changed ||= { ...this.state.changed };
                         if (newState.changed) {
                             delete newState.changed[editing[i]];
                         }
@@ -667,7 +692,14 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             // take a new script if it not yet changed
                             if (!this.state.changed[id]) {
                                 // just use new value
-                                this.scripts[id].source = this.objects[id].common.source;
+                                if (this.props.password && this.objects[id].native.protected) {
+                                    this.scripts[id].source = decryptText(
+                                        this.props.password,
+                                        this.objects[id].common.source,
+                                    );
+                                } else {
+                                    this.scripts[id].source = this.objects[id].common.source;
+                                }
                             } else {
                                 if (this.objects[id].from?.startsWith('system.adapter.javascript.')) {
                                     this.objects[id].from = 'system.adapter.admin.0';
@@ -679,7 +711,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             }
                         } else {
                             if (this.state.changed[id]) {
-                                newState.changed = newState.changed || JSON.parse(JSON.stringify(this.state.changed));
+                                newState.changed ||= { ...this.state.changed };
                                 if (newState.changed) {
                                     newState.changed[id] = false;
                                 }
@@ -691,7 +723,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                     delete this.scripts[id];
                     if (this.state.selected === id) {
                         if (this.state.editing.indexOf(id) !== -1) {
-                            const editing = JSON.parse(JSON.stringify(this.state.editing));
+                            const editing: string[] = [...this.state.editing];
                             const pos = editing.indexOf(id);
                             if (pos !== -1) {
                                 editing.splice(pos, 1);
@@ -706,30 +738,23 @@ class Editor extends React.Component<EditorProps, EditorState> {
             }
         }
 
-        if (this.state.selected !== nextProps.selected && nextProps.selected) {
-            if (nextProps.selected) {
-                this.scripts[nextProps.selected] =
-                    this.scripts[nextProps.selected] ||
-                    JSON.parse(JSON.stringify(this.props.objects[nextProps.selected].common));
-            }
-
-            const nextCommon = this.props.objects[nextProps.selected] && this.props.objects[nextProps.selected].common;
+        if (nextProps.selected && this.state.selected !== nextProps.selected) {
+            const nextCommon = this.getScriptFromObject(nextProps.selected);
+            this.scripts[nextProps.selected] ||= nextCommon!;
 
             const changed =
                 nextCommon && JSON.stringify(this.scripts[nextProps.selected]) !== JSON.stringify(nextCommon);
 
-            const editing = JSON.parse(JSON.stringify(this.state.editing));
-            if (nextProps.selected && editing.indexOf(nextProps.selected) === -1) {
+            const editing = [...this.state.editing];
+            if (nextProps.selected && !editing.includes(nextProps.selected)) {
                 editing.push(nextProps.selected);
                 this.props.onSelectedChange(nextProps.selected, editing);
-                window.localStorage && window.localStorage.setItem('Editor.editing', JSON.stringify(editing));
+                window.localStorage.setItem('Editor.editing', JSON.stringify(editing));
             }
 
             _changed = true;
-            newState.changed = newState.changed || JSON.parse(JSON.stringify(this.state.changed));
-            if (newState.changed) {
-                newState.changed[nextProps.selected] = changed;
-            }
+            newState.changed ||= { ...this.state.changed };
+            newState.changed[nextProps.selected] = !!changed;
             newState.editing = editing;
             newState.selected = nextProps.selected;
             newState.blockly = this.scripts[nextProps.selected].engineType === 'Blockly';
@@ -744,17 +769,23 @@ class Editor extends React.Component<EditorProps, EditorState> {
             newState.visible = nextProps.visible;
         }
 
-        _changed && this.setState(newState as EditorState, () => this.setChangedInAdmin());
+        if (_changed) {
+            this.setState(newState as EditorState, () => this.setChangedInAdmin());
+        }
     }
 
     onRestart(): void {
-        this.props.onRestart && this.props.onRestart(this.state.selected);
+        this.props.onRestart?.(this.state.selected);
     }
 
     onStartStop(): void {
-        const common = JSON.parse(JSON.stringify(this.scripts[this.state.selected]));
+        const common: ioBroker.ScriptCommon = JSON.parse(JSON.stringify(this.scripts[this.state.selected]));
         common.enabled = !common.enabled;
-        this.props.onChange && this.props.onChange(this.state.selected, common);
+        if (this.props.password && this.props.objects[this.state.selected].native?.protected) {
+            common.source = encryptText(this.props.password, common.source);
+        }
+
+        this.props.onChange?.(this.state.selected, common);
     }
 
     onSave(): void {
@@ -764,21 +795,29 @@ class Editor extends React.Component<EditorProps, EditorState> {
         }
 
         if (this.state.changed[this.state.selected]) {
-            const changed = JSON.parse(JSON.stringify(this.state.changed));
+            const changed: Record<string, boolean> = { ...this.state.changed };
             changed[this.state.selected] = false;
             this.setState({ changed }, () => {
                 this.setChangedInAdmin();
-                this.props.onChange && this.props.onChange(this.state.selected, this.scripts[this.state.selected]);
+                const common: ioBroker.ScriptCommon = JSON.parse(JSON.stringify(this.scripts[this.state.selected]));
+                if (this.props.password && this.props.objects[this.state.selected].native?.protected) {
+                    common.source = encryptText(this.props.password, common.source);
+                }
+                this.props.onChange?.(this.state.selected, common);
             });
         }
     }
 
     onSaveAll(): void {
-        const changed = JSON.parse(JSON.stringify(this.state.changed));
+        const changed: Record<string, boolean> = { ...this.state.changed };
         Object.keys(changed).forEach(id => {
             if (changed[id]) {
                 changed[id] = false;
-                this.props.onChange && this.props.onChange(id, this.scripts[id]);
+                const common: ioBroker.ScriptCommon = JSON.parse(JSON.stringify(this.scripts[id]));
+                if (this.props.password && this.props.objects[id].native?.protected) {
+                    common.source = encryptText(this.props.password, common.source);
+                }
+                this.props.onChange?.(id, common);
             }
         });
 
@@ -786,9 +825,9 @@ class Editor extends React.Component<EditorProps, EditorState> {
     }
 
     onCancel(): void {
-        this.scripts[this.state.selected] = JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
+        this.scripts[this.state.selected] = this.getScriptFromObject(this.state.selected)!;
 
-        const changed = JSON.parse(JSON.stringify(this.state.changed));
+        const changed: { [id: string]: boolean } = { ...this.state.changed };
         changed[this.state.selected] = false;
 
         this.setState({ changed }, () => this.setChangedInAdmin());
@@ -808,7 +847,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                 this.scripts[this.state.selected].source = lines.join('\n');
                 const nowSelected = this.state.selected;
 
-                const changed = JSON.parse(JSON.stringify(this.state.changed));
+                const changed: { [id: string]: boolean } = { ...this.state.changed };
                 changed[this.state.selected] = true;
 
                 this.setState({ changed, blockly: false, selected: '' }, () => {
@@ -820,24 +859,25 @@ class Editor extends React.Component<EditorProps, EditorState> {
         });
     }
 
-    onChange(options?: { script?: string; debug?: boolean; verbose?: boolean }): void {
-        options = options || {};
-        if (options) {
-            if (options.script !== undefined) {
-                this.scripts[this.state.selected].source = options.script;
+    onChange(options: { script?: string; debug?: boolean; verbose?: boolean }): void {
+        if (options.script !== undefined) {
+            if (options.script === this.scripts[this.state.selected].source) {
+                return;
             }
-            if (options.debug !== undefined) {
-                this.scripts[this.state.selected].debug = options.debug;
-            }
-            if (options.verbose !== undefined) {
-                this.scripts[this.state.selected].verbose = options.verbose;
-            }
+            this.scripts[this.state.selected].source = options.script;
+        }
+        if (options.debug !== undefined) {
+            this.scripts[this.state.selected].debug = options.debug;
+        }
+        if (options.verbose !== undefined) {
+            this.scripts[this.state.selected].verbose = options.verbose;
         }
         const _changed =
             JSON.stringify(this.scripts[this.state.selected]) !==
-            JSON.stringify(this.props.objects[this.state.selected].common);
-        if (_changed !== (this.state.changed[this.state.selected] || false)) {
-            const changed = JSON.parse(JSON.stringify(this.state.changed));
+            JSON.stringify(this.getScriptFromObject(this.state.selected));
+
+        if (_changed !== !!this.state.changed[this.state.selected]) {
+            const changed: { [id: string]: boolean } = { ...this.state.changed };
             changed[this.state.selected] = _changed;
             this.objects[this.state.selected].from = 'system.adapter.admin.0';
             this.setState({ changed }, () => this.setChangedInAdmin());
@@ -848,8 +888,8 @@ class Editor extends React.Component<EditorProps, EditorState> {
         if (this.props.debugMode) {
             return;
         }
-        window.localStorage && window.localStorage.setItem('Editor.selected', selected);
-        const common = this.scripts[selected] || (this.props.objects[selected] && this.props.objects[selected].common);
+        window.localStorage.setItem('Editor.selected', selected);
+        const common = this.scripts[selected] || this.getScriptFromObject(selected);
         this.setState({
             selected,
             rules: common.engineType === 'Rules',
@@ -858,14 +898,14 @@ class Editor extends React.Component<EditorProps, EditorState> {
             verboseEnabled: common.verbose,
             debugEnabled: common.debug,
         });
-        this.props.onSelectedChange && this.props.onSelectedChange(selected, this.state.editing);
+        this.props.onSelectedChange?.(selected, this.state.editing);
     }
 
     isScriptChanged(id: string): boolean {
         return !!(
             this.scripts[id] &&
             this.props.objects[id] &&
-            JSON.stringify(this.scripts[id]) !== JSON.stringify(this.props.objects[id].common)
+            JSON.stringify(this.scripts[id]) !== JSON.stringify(this.getScriptFromObject(id))
         );
     }
 
@@ -882,7 +922,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                     }
                 });
             } else {
-                const editing = JSON.parse(JSON.stringify(this.state.editing));
+                const editing = [...this.state.editing];
                 editing.splice(pos, 1);
                 const newState: Partial<EditorState> = { editing };
                 if (id === this.state.selected) {
@@ -898,20 +938,18 @@ class Editor extends React.Component<EditorProps, EditorState> {
                 } else if (this.state.selected && !editing.length) {
                     newState.selected = '';
                 }
-                window.localStorage && window.localStorage.setItem('Editor.editing', JSON.stringify(editing));
+                window.localStorage.setItem('Editor.editing', JSON.stringify(editing));
                 if (newState.selected !== undefined) {
-                    newState.changed = newState.changed || JSON.parse(JSON.stringify(this.state.changed)) || {};
-                    if (newState.changed) {
-                        newState.changed[newState.selected] = this.isScriptChanged(newState.selected);
-                    }
-                    const common =
-                        newState.selected &&
-                        (this.scripts[newState.selected] ||
-                            (this.props.objects[newState.selected] && this.props.objects[newState.selected].common));
-                    newState.blockly = common ? common.engineType === 'Blockly' : false;
-                    newState.rules = common ? common.engineType === 'Rules' : false;
-                    newState.verboseEnabled = common ? common.verbose : false;
-                    newState.debugEnabled = common ? common.debug : false;
+                    newState.changed ||= { ...this.state.changed };
+                    newState.changed[newState.selected] = this.isScriptChanged(newState.selected);
+                    const common = newState.selected
+                        ? this.scripts[newState.selected] || this.getScriptFromObject(newState.selected)
+                        : undefined;
+
+                    newState.blockly = common?.engineType === 'Blockly';
+                    newState.rules = common?.engineType === 'Rules';
+                    newState.verboseEnabled = !!common?.verbose;
+                    newState.debugEnabled = !!common?.debug;
                     newState.showCompiledCode = false;
                 }
 
@@ -919,12 +957,10 @@ class Editor extends React.Component<EditorProps, EditorState> {
                     this.setChangedInAdmin();
 
                     if (newState.selected !== undefined) {
-                        this.props.onSelectedChange &&
-                            this.props.onSelectedChange(newState.selected, this.state.editing);
-                        window.localStorage && window.localStorage.setItem('Editor.selected', newState.selected);
+                        this.props.onSelectedChange?.(newState.selected, this.state.editing);
+                        window.localStorage.setItem('Editor.selected', newState.selected);
                     } else {
-                        this.props.onSelectedChange &&
-                            this.props.onSelectedChange(this.state.selected, this.state.editing);
+                        this.props.onSelectedChange?.(this.state.selected, this.state.editing);
                     }
                 });
             }
@@ -959,7 +995,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
         let _id = 'script.js';
         for (let i = 0; i < parts.length; i++) {
             _id += `.${parts[i]}`;
-            if (this.props.objects[_id] && this.props.objects[_id].common) {
+            if (this.props.objects[_id]?.common) {
                 result.push(Editor.getText(this.props.objects[_id].common.name));
             } else {
                 result.push(parts[i]);
@@ -1019,15 +1055,18 @@ class Editor extends React.Component<EditorProps, EditorState> {
                                 />
                             );
                         }
+                        if (!this.props.password && this.props.objects[id].native.protected) {
+                            return null;
+                        }
+
                         let text = Editor.getText(this.props.objects[id].common.name) || '';
                         const title = this.getScriptFullName(id);
                         if (text.length > 18) {
                             text = `${text.substring(0, 15)}...`;
                         }
-                        const changed =
-                            this.scripts[id] &&
-                            this.props.objects[id].common &&
-                            (this.props.objects[id].common as ioBroker.ScriptCommon).source !== this.scripts[id].source;
+                        const source = this.getScriptFromObject(id)?.source;
+                        const changed = this.scripts[id] && source !== this.scripts[id].source;
+
                         const label = [
                             <Box
                                 key="text"
@@ -1116,14 +1155,12 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             Object.keys(this.scripts).forEach(
                                 id =>
                                     id !== this.state.selected &&
-                                    JSON.stringify(this.scripts[id]) !==
-                                        JSON.stringify(this.props.objects[id].common) &&
+                                    JSON.stringify(this.scripts[id]) !== JSON.stringify(this.getScriptFromObject(id)) &&
                                     editing.push(id),
                             );
 
-                            window.localStorage &&
-                                window.localStorage.setItem('Editor.editing', JSON.stringify(editing));
-                            this.setState({ menuTabsOpened: false, editing: editing });
+                            window.localStorage.setItem('Editor.editing', JSON.stringify(editing));
+                            this.setState({ menuTabsOpened: false, editing });
                         }}
                         size="medium"
                     >
@@ -1280,15 +1317,10 @@ class Editor extends React.Component<EditorProps, EditorState> {
     getToolbar(): React.JSX.Element | null {
         const isInstanceRunning = !!(
             this.state.selected &&
-            this.scripts[this.state.selected] &&
-            this.scripts[this.state.selected].engine &&
+            this.scripts[this.state.selected]?.engine &&
             this.state.runningInstances[this.scripts[this.state.selected].engine]
         );
-        const isScriptRunning = !!(
-            this.state.selected &&
-            this.scripts[this.state.selected] &&
-            this.scripts[this.state.selected].enabled
-        );
+        const isScriptRunning = !!(this.state.selected && this.scripts[this.state.selected]?.enabled);
 
         if (this.state.selected) {
             const changedAll = Object.keys(this.state.changed).filter(id => this.state.changed[id]).length;
@@ -1619,9 +1651,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             (!this.state.blockly || this.state.showCompiledCode) &&
             (!this.state.rules || this.state.showCompiledCode)
         ) {
-            this.scripts[this.state.selected] =
-                this.scripts[this.state.selected] ||
-                JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
+            this.scripts[this.state.selected] ||= this.getScriptFromObject(this.state.selected)!;
 
             return (
                 <Box
@@ -1669,9 +1699,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             !this.state.showCompiledCode &&
             this.state.visible
         ) {
-            this.scripts[this.state.selected] =
-                this.scripts[this.state.selected] ||
-                JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
+            this.scripts[this.state.selected] ||= this.getScriptFromObject(this.state.selected)!;
 
             return (
                 <Box
@@ -1705,9 +1733,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             !this.state.showCompiledCode &&
             this.state.visible
         ) {
-            this.scripts[this.state.selected] =
-                this.scripts[this.state.selected] ||
-                JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
+            this.scripts[this.state.selected] ||= this.getScriptFromObject(this.state.selected)!;
             const isInstanceRunning: boolean =
                 !!this.state.selected &&
                 !!this.scripts[this.state.selected]?.engine &&
@@ -2000,7 +2026,11 @@ class Editor extends React.Component<EditorProps, EditorState> {
                 open={!!this.state.toast}
                 autoHideDuration={6000}
                 onClose={() => this.setState({ toast: '' })}
-                ContentProps={{ 'aria-describedby': 'message-id' }}
+                slotProps={{
+                    content: {
+                        'aria-describedby': 'message-id',
+                    },
+                }}
                 message={<span id="message-id">{this.state.toast}</span>}
                 action={[
                     <IconButton
@@ -2039,7 +2069,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                         window.localStorage.setItem('tour', 'true');
                         void this.props.socket.setState('javascript.0.variables.rulesTour', { val: true, ack: true });
                     }}
-                    //getCurrentStep={tourStep => this.setTourStep(tourStep)}
+                    // getCurrentStep={tourStep => this.setTourStep(tourStep)}
                     goToStep={this.state.tourStep}
                 />
             );
@@ -2076,6 +2106,17 @@ class Editor extends React.Component<EditorProps, EditorState> {
         return null;
     }
 
+    getScriptFromObject(id: string): ioBroker.ScriptCommon | undefined {
+        if (!this.props.objects[id]?.common) {
+            return undefined;
+        }
+        const result = JSON.parse(JSON.stringify(this.props.objects[id].common)) as ioBroker.ScriptCommon;
+        if (this.props.objects[id].native.protected && this.props.password) {
+            result.source = decryptText(this.props.password, result.source);
+        }
+        return result;
+    }
+
     render(): (React.JSX.Element | null | (React.JSX.Element | null)[])[] | React.JSX.Element {
         if (
             this.state.selected &&
@@ -2083,9 +2124,8 @@ class Editor extends React.Component<EditorProps, EditorState> {
             this.state.blockly === null &&
             this.state.rules === null
         ) {
-            this.scripts[this.state.selected] =
-                this.scripts[this.state.selected] ||
-                JSON.parse(JSON.stringify(this.props.objects[this.state.selected].common));
+            this.scripts[this.state.selected] ||= this.getScriptFromObject(this.state.selected)!;
+
             setTimeout(() => {
                 const newState = {
                     blockly: this.scripts[this.state.selected].engineType === 'Blockly',
@@ -2099,6 +2139,37 @@ class Editor extends React.Component<EditorProps, EditorState> {
                 this.removeNonExistingScripts(null, newState);
                 this.setState(newState);
             }, 100);
+        }
+
+        // if expert mode disabled, but the active script is protected
+        if (this.state.selected && !this.props.password && this.props.objects[this.state.selected]?.native?.protected) {
+            setTimeout(() => {
+                // get another tab
+                const selected = this.state.editing.find(id => !this.props.objects[id]?.native?.protected) || '';
+                // remove all protected scripts
+                Object.keys(this.scripts).forEach(id => {
+                    if (this.props.objects[id]?.native?.protected) {
+                        delete this.scripts[id];
+                    }
+                });
+                this.setState({ selected }, () => {
+                    this.props.onSelectedChange?.(selected, this.state.editing);
+                    if (this.state.selected) {
+                        window.localStorage.setItem('Editor.selected', this.state.selected);
+                    } else {
+                        window.localStorage.removeItem('Editor.selected');
+                    }
+                });
+            }, 50);
+        }
+        if (!this.state.selected && this.props.password && this.state.editing.length) {
+            setTimeout(() => {
+                const selected = this.state.editing[0];
+                this.setState({ selected }, () => {
+                    this.props.onSelectedChange?.(selected, this.state.editing);
+                    window.localStorage.setItem('Editor.selected', this.state.selected);
+                });
+            }, 50);
         }
 
         return [

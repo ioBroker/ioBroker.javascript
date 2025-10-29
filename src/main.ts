@@ -73,6 +73,7 @@ import type {
     DebugState,
 } from './types';
 import type { PatternEventCompareFunction } from './lib/patternCompareFunctions';
+import { decryptText } from './lib/crypto';
 
 type MODULES = {
     fs: ProtectFs;
@@ -298,6 +299,7 @@ class JavaScript extends Adapter {
     private readonly _enums: string[] = [];
     private readonly names: { [name: string]: string | string[] } = {}; // name: id
     private readonly scripts: Record<string, JsScript> = {};
+    private password: string = '';
     private readonly messageBusHandlers: Record<
         string,
         Record<string, { id: number; sandbox: SandboxType; cb: (data: any, result: any) => void }[]>
@@ -1589,12 +1591,12 @@ class JavaScript extends Adapter {
                     const parts = id.split('.');
                     parts.pop();
                     const chn = parts.join('.');
-                    this.context.channels[chn] = this.context.channels[chn] || [];
+                    this.context.channels[chn] ||= [];
                     this.context.channels[chn].push(id);
 
                     parts.pop();
                     const dev = parts.join('.');
-                    this.context.devices[dev] = this.context.devices[dev] || [];
+                    this.context.devices[dev] ||= [];
                     this.context.devices[dev].push(id);
                 }
             }
@@ -1808,6 +1810,9 @@ class JavaScript extends Adapter {
                 this.addGetProperty(this.objects);
 
                 const systemConfig = this.objects['system.config'];
+                this.password = systemConfig?.native?.javascriptPassword
+                    ? this.decrypt(systemConfig?.native.javascriptPassword)
+                    : '';
 
                 // set language for debug messages
                 if (systemConfig?.common?.language) {
@@ -1848,15 +1853,15 @@ class JavaScript extends Adapter {
                     );
                 }
 
-                this.config.sunriseEvent = this.config.sunriseEvent || 'nightEnd';
-                this.config.sunriseOffset = this.config.sunriseOffset || 0;
-                this.config.sunriseLimitStart = this.config.sunriseLimitStart || '06:00';
-                this.config.sunriseLimitEnd = this.config.sunriseLimitEnd || '12:00';
+                this.config.sunriseEvent ||= 'nightEnd';
+                this.config.sunriseOffset ||= 0;
+                this.config.sunriseLimitStart ||= '06:00';
+                this.config.sunriseLimitEnd ||= '12:00';
 
-                this.config.sunsetEvent = this.config.sunsetEvent || 'dusk';
-                this.config.sunsetOffset = this.config.sunsetOffset || 0;
-                this.config.sunsetLimitStart = this.config.sunsetLimitStart || '18:00';
-                this.config.sunsetLimitEnd = this.config.sunsetLimitEnd || '23:00';
+                this.config.sunsetEvent ||= 'dusk';
+                this.config.sunsetOffset ||= 0;
+                this.config.sunsetLimitStart ||= '18:00';
+                this.config.sunsetLimitEnd ||= '23:00';
 
                 this.objectsInitDone = true;
                 this.log.info('received all objects');
@@ -2440,6 +2445,10 @@ class JavaScript extends Adapter {
         ) {
             const name = obj._id;
 
+            if (this.password && obj.native?.protected) {
+                obj.common.source = decryptText(this.password, obj.common.source);
+            }
+
             const nameId = name.substring(SCRIPT_CODE_MARKER.length);
             if (!nameId.length || nameId.endsWith('.')) {
                 this.log.error(`${name}: Script name "${name}" is invalid!`);
@@ -2454,7 +2463,7 @@ class JavaScript extends Adapter {
                 );
             }
             await this.setState(idActive, true, true);
-            obj.common.engineType = obj.common.engineType || '';
+            obj.common.engineType ||= '' as 'TypeScript/ts' | 'Blockly' | 'Rules' | 'Javascript/js';
 
             if (
                 (obj.common.engineType as ScriptType).toLowerCase().startsWith('javascript') ||
@@ -2983,7 +2992,7 @@ class JavaScript extends Adapter {
                 this.debugState.endTimeout = null;
                 this.debugState.child?.kill('SIGTERM');
             }, 500);
-            this.debugState.promiseOnEnd = this.debugState.promiseOnEnd || Promise.resolve(0);
+            this.debugState.promiseOnEnd ||= Promise.resolve(0);
         } else {
             this.debugState.promiseOnEnd = Promise.resolve(0);
         }

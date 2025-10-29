@@ -34,6 +34,7 @@ import {
     UnfoldMore as IconExpandAll,
     UnfoldLess as IconCollapseAll,
     BugReport as IconDebug,
+    Lock as IconProtected,
 } from '@mui/icons-material';
 
 import {
@@ -66,6 +67,7 @@ import DialogNew from './Dialogs/New';
 import DialogError from './Dialogs/Error';
 import DialogAdapterDebug from './Dialogs/AdapterDebug';
 import type { ScriptType } from '@/types';
+import { decryptText, encryptText } from './Components/crypto';
 
 const MENU_ITEM_HEIGHT = 48;
 const COLOR_RUN = green[400];
@@ -500,6 +502,7 @@ interface SideDrawerProps {
     themeName: ThemeName;
     width: number;
     debugMode: boolean;
+    password: string;
     version: string;
     selectId: string;
     scriptsHash: number;
@@ -515,6 +518,7 @@ interface SideDrawerProps {
         source?: string,
     ) => void;
     onDebugInstance: (data: { instance: string; adapter: string }) => void;
+    changedScripts: { [id: string]: boolean };
 }
 
 interface SideDrawerState {
@@ -547,17 +551,12 @@ interface SideDrawerState {
     isAllZeroInstances: boolean;
 }
 
-class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
+export default class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
     private readonly inputRef: React.RefObject<HTMLInputElement>;
-
     private filterTimer: ReturnType<typeof setTimeout> | null;
-
     private problems: string[] | null;
-
     private problemsTimer: ReturnType<typeof setTimeout> | null;
-
     private readonly onProblemUpdatedBound: (id: string, state: ioBroker.State | null | undefined) => void;
-
     private parent: string | null = null;
 
     constructor(props: SideDrawerProps) {
@@ -1083,6 +1082,10 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
             return true;
         }
 
+        if (!this.state.expertMode && this.props.scripts[item.id]?.native?.protected) {
+            return true;
+        }
+
         if (
             this.state.statusFilter &&
             item.type !== 'folder' &&
@@ -1211,6 +1214,9 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                 onDoubleClick={e => this.onDblClick(item, e)}
                 secondaryAction={this.renderItemButtonsOnEnd(item, children)}
             >
+                {this.props.scripts[item.id].native?.protected ? (
+                    <IconProtected style={{ color: 'orange', position: 'absolute', right: 5, width: 10, height: 10 }} />
+                ) : null}
                 <ListItemIcon style={styles.listItemIcon}>
                     {item.type === 'folder' ? (
                         reorder || isExpanded ? (
@@ -1432,6 +1438,13 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
     */
 
     getMainMenu(children: ListElement[] | undefined, selectedItem: ListElement | undefined): React.JSX.Element {
+        // any protected is not saved
+        const disableExpertModeNotActive =
+            this.state.expertMode &&
+            !!Object.keys(this.props.changedScripts).find(
+                id => this.props.changedScripts[id] && this.props.scripts[id]?.native?.protected,
+            );
+
         return (
             <Menu
                 key="menu"
@@ -1477,7 +1490,7 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                 ) : null}
                 <MenuItem
                     key="expertMode"
-                    disabled={this.props.debugMode}
+                    disabled={this.props.debugMode || disableExpertModeNotActive}
                     selected={this.state.expertMode}
                     onClick={event => {
                         event.stopPropagation();
@@ -1562,6 +1575,54 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
                         {I18n.t('Debug instance')}
                     </MenuItem>
                 )}
+                {this.state.selected &&
+                this.props.password &&
+                this.props.scripts[this.state.selected].type === 'script' ? (
+                    <MenuItem
+                        disabled={this.props.debugMode || this.props.changedScripts[this.state.selected]}
+                        key="encrypt"
+                        onClick={event => {
+                            event.stopPropagation();
+                            event.preventDefault();
+                            this.onCloseMenu(async (): Promise<void> => {
+                                const obj = await this.props.socket.getObject(this.state.selected!);
+                                if (obj) {
+                                    if (obj.native?.protected) {
+                                        // unprotect
+                                        delete obj.native.protected;
+                                        obj.common.source = decryptText(this.props.password, obj.common.source || '');
+                                    } else {
+                                        // protect
+                                        obj.native ||= {};
+                                        obj.native.protected = true;
+                                        obj.common.source = encryptText(this.props.password, obj.common.source || '');
+                                    }
+                                    await this.props.socket.setObject(obj._id, obj);
+                                }
+                            });
+                        }}
+                    >
+                        <IconProtected
+                            style={{
+                                ...styles.iconDropdownMenu,
+                                color: 'orange',
+                            }}
+                        />
+                        {!this.props.scripts[this.state.selected].native?.protected ? (
+                            I18n.t('Protect script')
+                        ) : (
+                            <span
+                                style={{
+                                    color: this.props.scripts[this.state.selected].native?.protected
+                                        ? 'orange'
+                                        : undefined,
+                                }}
+                            >
+                                {I18n.t('Unprotect script')}
+                            </span>
+                        )}
+                    </MenuItem>
+                ) : null}
             </Menu>
         );
     }
@@ -2131,5 +2192,3 @@ class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
         ];
     }
 }
-
-export default SideDrawer;

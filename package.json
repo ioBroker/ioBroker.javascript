@@ -77,10 +77,10 @@
   "bugs": {
     "url": "https://github.com/ioBroker/ioBroker.javascript/issues"
   },
-  "main": "build-backend/main.js",
+  "main": "build/main.js",
   "files": [
     "admin/",
-    "build-backend/",
+    "build/",
     "docs/",
     "install/",
     "io-package.json",
@@ -89,7 +89,8 @@
   ],
   "scripts": {
     "test:declarations": "tsc -p test/lib/TS/tsconfig.json && tsc -p test/lib/JS/tsconfig.json",
-    "test:javascript": "node node_modules/mocha/bin/mocha --exit",
+    "test:javascript": "mocha --exit",
+    "test:scheduler": "mocha test/testScheduler.js --exit",
     "test": "npm run test:declarations && npm run test:javascript",
     "translate": "translate-adapter",
     "//postinstall": "node ./install/installTypings.js",

@@ -1,4 +1,34 @@
+import type { AstroEvent } from '../../src/lib/consts';
+
 export type ScriptType = 'Javascript/js' | 'TypeScript/ts' | 'Blockly' | 'Rules';
+
+export interface JavaScriptAdapterConfig {
+    latitude: number;
+    longitude: number;
+    enableSetObject: boolean;
+    enableSendToHost: boolean;
+    enableExec: boolean;
+    libraries: string;
+    libraryTypings: string;
+    subscribe: boolean;
+    useSystemGPS: true;
+    mirrorPath: string;
+    mirrorInstance: number;
+    allowSelfSignedCerts: boolean;
+    sunriseEvent: AstroEvent;
+    sunriseOffset: number;
+    sunriseLimitStart: string;
+    sunriseLimitEnd: string;
+    sunsetEvent: AstroEvent;
+    sunsetOffset: number;
+    sunsetLimitStart: string;
+    sunsetLimitEnd: string;
+    createAstroStates: boolean;
+    maxSetStatePerMinute: number;
+    maxTriggersPerScript: number;
+    gptKey: string;
+    password?: string;
+}
 
 export type LogMessage = {
     message: string;

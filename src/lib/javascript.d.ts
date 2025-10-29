@@ -1826,6 +1826,9 @@ declare global {
         interface ScriptObject extends BaseObject {
             type: 'script';
             common: ScriptCommon;
+            native: {
+                encrypted?: boolean;
+            };
         }
 
         interface PartialScriptObject extends Partial<Omit<ScriptObject, 'common'>> {
