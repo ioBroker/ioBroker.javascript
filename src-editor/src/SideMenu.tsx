@@ -79,11 +79,6 @@ const GLOBAL_ID = `${ROOT_ID}.global`;
 const NARROW_WIDTH = 350;
 const LEVEL_PADDING = 16;
 
-const SELECTED_STYLE: React.CSSProperties = {
-    background: '#164477',
-    color: 'white',
-};
-
 const styles: Record<string, any> = {
     drawerPaper: {
         position: 'relative',
@@ -192,7 +187,15 @@ const styles: Record<string, any> = {
         width: 37,
         height: 37,
     },
-    selected: SELECTED_STYLE,
+    selected: window.vendorPrefix
+        ? (theme: IobTheme): any => ({
+              backgroundColor: theme.palette.primary.main,
+              color: theme.palette.text.primary,
+          })
+        : {
+              backgroundColor: '#164477',
+              color: 'white',
+          },
     instances: {
         color: 'gray',
         fontSize: 'smaller',
@@ -1143,14 +1146,11 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
         }
         const reorder = this.state.reorder && !this.props.debugMode;
 
-        const style = Object.assign(
-            {
-                marginLeft: depthPx,
-                cursor: item.type === 'folder' && reorder ? 'default' : 'inherit',
-                width: `calc(100% - ${depthPx}px)`,
-            },
-            item.id === this.state.selected && !reorder ? SELECTED_STYLE : undefined,
-        );
+        const style: React.CSSProperties = {
+            marginLeft: depthPx,
+            cursor: item.type === 'folder' && reorder ? 'default' : 'inherit',
+            width: `calc(100% - ${depthPx}px)`,
+        };
 
         if (!reorder) {
             style.opacity = item.filteredPartly ? 0.5 : 1;
@@ -1206,6 +1206,7 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
             <ListItem
                 key={item.id}
                 style={combinedStyle}
+                sx={item.id === this.state.selected && !reorder ? styles.selected : undefined}
                 className={Utils.clsx(
                     reorder && item.type === 'folder' && 'folder-reorder',
                     reorder && item.type !== 'folder' && 'script-reorder',
