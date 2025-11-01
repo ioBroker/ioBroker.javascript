@@ -28,7 +28,7 @@ jobs:
                   fetch-depth: 0 # Fetch the history, or this action won't work
 
             - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@v5
+              uses: actions/setup-node@v6
               with:
                   node-version: ${{ matrix.node }}
 
