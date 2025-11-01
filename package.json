@@ -64,7 +64,7 @@
     "@iobroker/adapter-dev": "^1.5.0",
     "@iobroker/build-tools": "^2.0.15",
     "@iobroker/eslint-config": "^2.0.2",
-    "@iobroker/plugin-sentry": "^2.0.4",
+    "@iobroker/plugin-sentry": "^3.0.0",
     "@iobroker/testing": "^5.1.1",
     "@iobroker/vis-2-widgets-react-dev": "^4.0.4",
     "@types/node-schedule": "^2.1.8",
