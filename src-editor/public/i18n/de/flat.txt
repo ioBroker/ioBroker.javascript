@@ -152,7 +152,7 @@ ID auswählen
 Wert
 bestätigt
 Zeitstempel
-Letze Änderung
+Letzte Änderung
 Qualität
 Wertkommentar
 Quelle

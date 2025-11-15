@@ -1,7 +1,8 @@
 const expect = require('chai').expect;
 const tk = require('timekeeper');
 const suncalc = require('suncalc2');
-const Scheduler = require('../build-backend/lib/scheduler');
+const { Scheduler } = require('../build/lib/scheduler');
+const { encryptText, decryptText } = require('../build/lib/crypto');
 
 describe('Test Scheduler', function () {
     it('Test Scheduler: Should trigger on 23:59 every year', function (done) {
@@ -99,4 +100,13 @@ describe('Test Scheduler', function () {
         });
         setTimeout(done, 5000);
     }).timeout(65000);
+
+    it.only('Must encrypt and decrypt correctly', function (done) {
+        let plainText = 'This is a test!';
+        let encrypted = encryptText('password', plainText);
+        console.log(`Encrypted text: ${encrypted}`);
+        let decrypted = decryptText('password', encrypted);
+        expect(decrypted).to.equal(plainText);
+        done();
+    });
 });
