@@ -22,12 +22,18 @@ const ADAPTERS: Record<string, typeof GenericBlock<any> | null> = {
 interface RuleContext {
     blocks: (typeof GenericBlock<any>)[] | null;
     socket: AdminConnection | null;
+
     onUpdate: boolean;
     setOnUpdate: (value: boolean) => void;
+
     onDebugMessage: DebugMessage[];
     setOnDebugMessage: (message: DebugMessage[]) => void;
+
     enableSimulation: boolean;
     setEnableSimulation: (enableSimulation: boolean) => void;
+
+    changedScripts: { [scriptId: string]: boolean };
+    setChangedScripts: (changedScripts: { [scriptId: string]: boolean }) => void;
 }
 
 export const ContextWrapperCreate = createContext<RuleContext>({
@@ -42,6 +48,9 @@ export const ContextWrapperCreate = createContext<RuleContext>({
 
     enableSimulation: false,
     setEnableSimulation: (_enableSimulation: boolean): void => {},
+
+    changedScripts: {},
+    setChangedScripts: (_changedScripts: { [scriptId: string]: boolean }): void => {},
 });
 
 export const ContextWrapper = ({ children, socket }: { socket: AdminConnection; children: any }): React.JSX.Element => {
@@ -49,6 +58,7 @@ export const ContextWrapper = ({ children, socket }: { socket: AdminConnection; 
     const [onUpdate, setOnUpdate] = useState(false);
     const [onDebugMessage, setOnDebugMessage] = useState<DebugMessage[]>([]);
     const [enableSimulation, setEnableSimulation] = useState(false);
+    const [changedScripts, setChangedScripts] = useState<{ [scriptId: string]: boolean }>({});
 
     useEffect(() => {
         onUpdate && setOnUpdate(false);
@@ -158,12 +168,18 @@ export const ContextWrapper = ({ children, socket }: { socket: AdminConnection; 
             value={{
                 blocks,
                 socket,
+
                 onUpdate,
                 setOnUpdate,
+
                 onDebugMessage,
                 setOnDebugMessage,
+
                 enableSimulation,
                 setEnableSimulation,
+
+                changedScripts,
+                setChangedScripts,
             }}
         >
             {children}
