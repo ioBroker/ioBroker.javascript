@@ -2,14 +2,14 @@ const tsc = require('virtual-tsc');
 const fs = require('node:fs');
 const path = require('node:path');
 const { EOL } = require('node:os');
-const { tsCompilerOptions } = require('../build-backend/lib/typescriptSettings');
+const { tsCompilerOptions } = require('../build/lib/typescriptSettings');
 
 const { expect } = require('chai');
 const {
     scriptIdToTSFilename,
     transformScriptBeforeCompilation,
     transformGlobalDeclarations,
-} = require('../build-backend/lib/typescriptTools');
+} = require('../build/lib/typescriptTools');
 
 describe('TypeScript tools', () => {
     describe('transformScriptBeforeCompilation', () => {

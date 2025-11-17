@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
+import { Box } from '@mui/material';
 
 import {
     I18n,
@@ -24,7 +25,6 @@ import DialogError from './Dialogs/Error';
 import DialogImportFile from './Dialogs/ImportFile';
 import BlocklyEditor from './Components/BlocklyEditor';
 import { ContextWrapper } from './Components/RulesEditor/components/ContextWrapper';
-import { Box } from '@mui/material';
 
 import enLang from './i18n/en.json';
 import deLang from './i18n/de.json';
@@ -38,6 +38,7 @@ import ruLang from './i18n/ru.json';
 import ukLang from './i18n/uk.json';
 import zhCnLang from './i18n/zh-cn.json';
 import type { ScriptType } from '@/types';
+import PasswordDialog from '@/Dialogs/Password';
 
 const styles: Record<string, any> = {
     root: {
@@ -158,16 +159,17 @@ interface AppState extends GenericAppState {
     debugInstance: { adapter?: string; instance?: string } | null;
     splitSizes: [number, number];
     logSizes: [number, number];
+    showPasswordDialog: boolean;
+    password: string;
 }
 
-class App extends GenericApp<AppProps, AppState> {
+export default class App extends GenericApp<AppProps, AppState> {
     private hosts: string[] = [];
-
     private importFile: string | null = null;
-
     private scripts: Record<string, ioBroker.ScriptObject | ioBroker.ChannelObject> = {};
-
     private confirmCallback: null | ((result: boolean) => void) = null;
+    private changedScripts: { [id: string]: boolean } = {};
+    private javascriptPassword: string = '';
 
     constructor(props: AppProps) {
         super(props, {
@@ -213,7 +215,11 @@ class App extends GenericApp<AppProps, AppState> {
                 // ignore
             }
         }
-        Object.assign(this.state, { splitSizes, logSizes });
+        this.state = {
+            ...this.state,
+            splitSizes,
+            logSizes,
+        };
 
         window.alert = (message: string): void => {
             console.error(message);
@@ -325,6 +331,7 @@ class App extends GenericApp<AppProps, AppState> {
                 debugMode: false,
                 debugInstance: null,
                 splitSizes: [20, 80],
+                password: '',
             },
             async (): Promise<void> => {
                 const newState: Partial<AppState> = {};
@@ -335,6 +342,8 @@ class App extends GenericApp<AppProps, AppState> {
                 newState.instances = instancesResult.instances;
                 newState.runningInstances = instancesResult.runningInstances;
 
+                this.javascriptPassword = this.socket.systemConfig?.native.javascriptPassword || '';
+
                 await this.readAdaptersWithBlockly();
                 const hosts = await this.socket.getHosts();
                 this.hosts = hosts.map(obj => obj._id);
@@ -342,7 +351,8 @@ class App extends GenericApp<AppProps, AppState> {
                 const scripts = await this.readAllScripts();
                 if (
                     window.localStorage.getItem('App.expertMode') !== 'true' &&
-                    window.localStorage.getItem('App.expertMode') !== 'false'
+                    window.localStorage.getItem('App.expertMode') !== 'false' &&
+                    !this.javascriptPassword
                 ) {
                     // detect if some global scripts exists
                     if (
@@ -352,6 +362,8 @@ class App extends GenericApp<AppProps, AppState> {
                     ) {
                         newState.expertMode = true;
                     }
+                } else if (this.javascriptPassword) {
+                    newState.expertMode = false;
                 }
                 this.scripts = scripts;
 
@@ -420,10 +432,6 @@ class App extends GenericApp<AppProps, AppState> {
         }
     };
 
-    onToggleExpertMode(expertMode: boolean): void {
-        this.onExpertModeChange(expertMode);
-    }
-
     compareScripts(newScripts: Record<string, ioBroker.ScriptObject | ioBroker.ChannelObject>): boolean {
         const oldIds = Object.keys(this.scripts);
         const newIds = Object.keys(newScripts);
@@ -439,7 +447,18 @@ class App extends GenericApp<AppProps, AppState> {
             const oldScript = this.scripts[oldIds[i]].common;
             const newScript = newScripts[oldIds[i]].common;
 
+            const oldScriptNative: { protected: boolean } | undefined = this.scripts[oldIds[i]].native as {
+                protected: boolean;
+            };
+            const newScriptNative: { protected: boolean } | undefined = newScripts[oldIds[i]].native as {
+                protected: boolean;
+            };
+
             if (oldScript.name !== newScript.name) {
+                this.scripts = newScripts;
+                return true;
+            }
+            if ((oldScript as ioBroker.ScriptCommon).source !== (newScript as ioBroker.ScriptCommon).source) {
                 this.scripts = newScripts;
                 return true;
             }
@@ -452,6 +471,10 @@ class App extends GenericApp<AppProps, AppState> {
                 return true;
             }
             if ((oldScript as ioBroker.ScriptCommon).enabled !== (newScript as ioBroker.ScriptCommon).enabled) {
+                this.scripts = newScripts;
+                return true;
+            }
+            if (!!oldScriptNative?.protected !== !!newScriptNative?.protected) {
                 this.scripts = newScripts;
                 return true;
             }
@@ -470,7 +493,7 @@ class App extends GenericApp<AppProps, AppState> {
 
         try {
             if (this.scripts[oldId]?.type === 'script') {
-                const common = JSON.parse(JSON.stringify(this.scripts[oldId].common));
+                const common: ioBroker.ScriptCommon = JSON.parse(JSON.stringify(this.scripts[oldId].common));
                 common.name = newName || common.name;
                 if (newInstance !== undefined) {
                     common.engine = `system.adapter.javascript.${newInstance}`;
@@ -559,11 +582,15 @@ class App extends GenericApp<AppProps, AppState> {
         }
     }
 
-    onUpdateScript(id: string, common: ioBroker.ScriptCommon): void {
-        if (this.scripts[id] && this.scripts[id].type === 'script') {
-            this.updateScript(id, id, common)
-                .then(() => {})
-                .catch(err => !(err as Error).toString().includes('canceled') && this.showJsError(err));
+    async onUpdateScript(id: string, common: ioBroker.ScriptCommon): Promise<void> {
+        if (this.scripts[id]?.type === 'script') {
+            try {
+                await this.updateScript(id, id, common);
+            } catch (err) {
+                if (!(err as Error).toString().includes('canceled')) {
+                    this.showJsError(err as Error);
+                }
+            }
         }
     }
 
@@ -575,10 +602,48 @@ class App extends GenericApp<AppProps, AppState> {
         }
     }
 
+    renderPasswordDialog(): React.JSX.Element | null {
+        if (!this.state.showPasswordDialog) {
+            return null;
+        }
+        return (
+            <PasswordDialog
+                key="passwordDialog"
+                socket={this.socket}
+                systemConfig={this.socket.systemConfig!}
+                onEntered={(password: string | null): void => {
+                    if (password === null) {
+                        this.setState({ showPasswordDialog: false, expertMode: false, password: '' });
+                    } else if (password) {
+                        this.setState({ expertMode: true, showPasswordDialog: false, password });
+                    } else {
+                        this.setState({
+                            showPasswordDialog: false,
+                            expertMode: false,
+                            message: I18n.t('Wrong password'),
+                            password: '',
+                        });
+                    }
+                }}
+            />
+        );
+    }
+
     onExpertModeChange(expertMode: boolean): void {
         if (this.state.expertMode !== expertMode) {
-            window.localStorage.setItem('App.expertMode', expertMode ? 'true' : 'false');
-            this.setState({ expertMode });
+            if (expertMode && this.javascriptPassword) {
+                this.setState({ showPasswordDialog: true });
+            } else {
+                let selected = this.state.selected;
+                if (selected && !expertMode && this.scripts[selected].native?.protected) {
+                    // select another unprotected script
+                    selected =
+                        this.state.editing.find(id => this.scripts[id] && !this.scripts[id].native?.protected) || null;
+                }
+
+                window.localStorage.setItem('App.expertMode', expertMode ? 'true' : 'false');
+                this.setState({ expertMode, password: '', selected });
+            }
         }
     }
 
@@ -692,14 +757,11 @@ class App extends GenericApp<AppProps, AppState> {
                 }
             }
             obj.type = 'script';
-            return this.socket.extendObject(oldId, obj);
+            await this.socket.extendObject(oldId, obj);
+            return;
         }
-        // let prefix;
 
-        // let parts = _obj.common.engineType.split('/');
-
-        // prefix = 'script.' + (parts[1] || parts[0]) + '.';
-
+        // name changed or id changed
         if (_obj?.common) {
             _obj.common.engineType = newCommon.engineType || _obj.common.engineType || 'Javascript/js';
             await this.socket.delObject(oldId);
@@ -746,7 +808,7 @@ class App extends GenericApp<AppProps, AppState> {
         _obj.type = 'script';
         _obj._id = newId; // prefix + newCommon.name.replace(/[\s"']/g, '_');
 
-        return this.socket.setObject(newId, _obj);
+        await this.socket.setObject(newId, _obj);
     }
 
     onEnableDisable(id: string, enabled: boolean): void {
@@ -882,6 +944,7 @@ class App extends GenericApp<AppProps, AppState> {
         return (
             <Editor
                 key="editor"
+                scriptsHash={this.state.scriptsHash}
                 debugMode={this.state.debugMode}
                 onDebugModeChange={value => {
                     if (!value) {
@@ -894,6 +957,7 @@ class App extends GenericApp<AppProps, AppState> {
                 socket={this.socket}
                 adapterName={this.adapterName}
                 onLocate={menuSelectId => this.setState({ menuSelectId })}
+                password={this.state.password}
                 runningInstances={this.state.runningInstances}
                 menuOpened={this.state.menuOpened}
                 searchText={this.state.searchText}
@@ -913,20 +977,21 @@ class App extends GenericApp<AppProps, AppState> {
                     }
                     if (JSON.stringify(editing) !== JSON.stringify(this.state.editing)) {
                         changed = true;
-                        newState.editing = JSON.parse(JSON.stringify(editing));
+                        newState.editing = [...editing];
                     }
-                    changed && this.setState(newState as AppState);
+                    if (changed) {
+                        this.setState(newState as AppState);
+                    }
                 }}
                 onRestart={id => this.socket.extendObject(id, { common: { enabled: true } })}
                 selected={
-                    this.state.selected &&
-                    this.scripts[this.state.selected] &&
-                    this.scripts[this.state.selected].type === 'script'
+                    this.state.selected && this.scripts[this.state.selected]?.type === 'script'
                         ? this.state.selected
                         : ''
                 }
                 objects={this.scripts}
                 resizing={this.state.resizing}
+                onChangedChanged={changed => (this.changedScripts = changed)}
             />
         );
     }
@@ -958,7 +1023,7 @@ class App extends GenericApp<AppProps, AppState> {
         ) : null;
     }
 
-    renderMain(): (React.JSX.Element | null)[] | null {
+    renderMain(): React.JSX.Element {
         let content;
         if (this.state.debugMode || this.state.hideLog) {
             content = (
@@ -999,32 +1064,7 @@ class App extends GenericApp<AppProps, AppState> {
             );
         }
 
-        return [
-            this.state.message ? (
-                <DialogMessage
-                    key="dialogMessage"
-                    onClose={() => this.setState({ message: '' })}
-                    text={this.state.message}
-                />
-            ) : null,
-            this.renderErrorDialog(),
-            this.state.importFile ? (
-                <DialogImportFile
-                    key="dialogImportFile"
-                    onClose={data => this.onImport(data)}
-                />
-            ) : null,
-            this.state.confirm ? (
-                <DialogConfirm
-                    key="dialogConfirm"
-                    onClose={result => {
-                        this.state.confirm && this.setState({ confirm: '' });
-                        this.confirmCallback && this.confirmCallback(result);
-                        this.confirmCallback = null;
-                    }}
-                    text={this.state.confirm}
-                />
-            ) : null,
+        return (
             <Box
                 sx={styles.content}
                 className="iobVerticalSplitter"
@@ -1041,9 +1081,35 @@ class App extends GenericApp<AppProps, AppState> {
                 >
                     {this.state.menuOpened ? <IconMenuOpened /> : <IconMenuClosed />}
                 </Box>
+                {this.state.message ? (
+                    <DialogMessage
+                        key="dialogMessage"
+                        onClose={() => this.setState({ message: '' })}
+                        text={this.state.message}
+                    />
+                ) : null}
+                {this.renderErrorDialog()}
+                {this.state.importFile ? (
+                    <DialogImportFile
+                        key="dialogImportFile"
+                        onClose={data => this.onImport(data)}
+                    />
+                ) : null}
+                {this.state.confirm ? (
+                    <DialogConfirm
+                        key="dialogConfirm"
+                        onClose={result => {
+                            this.state.confirm && this.setState({ confirm: '' });
+                            this.confirmCallback && this.confirmCallback(result);
+                            this.confirmCallback = null;
+                        }}
+                        text={this.state.confirm}
+                    />
+                ) : null}
+                {this.renderPasswordDialog()}
                 {content}
-            </Box>,
-        ];
+            </Box>
+        );
     }
 
     render(): React.JSX.Element {
@@ -1076,6 +1142,7 @@ class App extends GenericApp<AppProps, AppState> {
                         key="menu"
                     >
                         <SideMenu
+                            password={this.state.password}
                             debugMode={this.state.debugMode}
                             onDebugInstance={data => this.setState({ debugInstance: data, debugMode: !!data })}
                             key="sidemenu"
@@ -1094,7 +1161,7 @@ class App extends GenericApp<AppProps, AppState> {
                                 this.setState({ themeName, themeType }, () => this.toggleTheme(themeName));
                             }}
                             runningInstances={this.state.runningInstances}
-                            onExpertModeChange={this.onExpertModeChange.bind(this)}
+                            onExpertModeChange={(expertMode: boolean): void => this.onExpertModeChange(expertMode)}
                             onDelete={this.onDelete.bind(this)}
                             onAddNew={this.onAddNew.bind(this)}
                             onEnableDisable={this.onEnableDisable.bind(this)}
@@ -1103,6 +1170,7 @@ class App extends GenericApp<AppProps, AppState> {
                             onImport={() => this.setState({ importFile: true })}
                             onSearch={searchText => this.setState({ searchText })}
                             version={this.props.version}
+                            changedScripts={this.changedScripts}
                         />
                     </div>
                     {this.renderMain()}
@@ -1123,5 +1191,3 @@ class App extends GenericApp<AppProps, AppState> {
         );
     }
 }
-
-export default App;

@@ -1,7 +1,7 @@
 {
     "name": "iobroker-admin-component-backitup",
     "private": true,
-    "version": "9.0.10",
+    "version": "9.0.11",
     "type": "module",
     "scripts": {
         "start": "vite --port 4173",
@@ -11,7 +11,7 @@
         "npm": "npm i -f"
     },
     "devDependencies": {
-        "@iobroker/adapter-react-v5": "7.6.20",
+        "@iobroker/adapter-react-v5": "8.0.7",
         "@iobroker/json-config": "7.6.20",
         "@module-federation/runtime": "^0.15.0",
         "@module-federation/vite": "^1.4.1",
@@ -27,10 +27,10 @@
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
         "react-leaflet": "^4.2.1",
-        "react-refresh": "^0.17.0",
-        "vite": "6.3.5",
+        "react-refresh": "^0.18.0",
+        "vite": "7.1.12",
         "vite-plugin-commonjs": "^0.10.4",
-        "vite-plugin-svgr": "^4.3.0",
+        "vite-plugin-svgr": "^4.5.0",
         "vite-tsconfig-paths": "^5.1.4"
     },
     "browserslist": {

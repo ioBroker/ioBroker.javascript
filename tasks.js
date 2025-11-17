@@ -482,8 +482,8 @@ if (typeof module !== 'undefined' && typeof module.parent !== 'undefined') {
 }
 
 if (process.argv.includes('--copy-types')) {
-    copyFileSync(`${__dirname}/src/types.d.ts`, `${__dirname}/build-backend/types.d.ts`);
-    copyFileSync(`${__dirname}/src/lib/javascript.d.ts`, `${__dirname}/build-backend/lib/javascript.d.ts`);
+    copyFileSync(`${__dirname}/src/types.d.ts`, `${__dirname}/build/types.d.ts`);
+    copyFileSync(`${__dirname}/src/lib/javascript.d.ts`, `${__dirname}/build/lib/javascript.d.ts`);
 } else if (process.argv.includes('--admin-0-clean')) {
     adminClean();
 } else if (process.argv.includes('--admin-1-npm')) {

@@ -24,7 +24,7 @@ export default [
             'lib/**/*',
             'node_modules/**/*',
             'test/**/*',
-            'build-backend/**/*',
+            'build/**/*',
             'tasks.js',
         ],
     },

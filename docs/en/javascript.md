@@ -1785,7 +1785,7 @@ onMessage('messageName', (data, callback) => {
 });
 ```
 
-Subscribes on javascript adapter message bus and delivers response via callback.
+Subscribes on `javascript` adapter message bus and delivers response via callback.
 The response from script which sends response as first will be accepted as answer, all other answers will be ignored.
 
 To send a message to a JavaScript script which is then received by this handler, use [messageTo](#messageTo).

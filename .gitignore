@@ -16,3 +16,6 @@ package-lock.json
 /src-editor/dist
 /src-editor/.__mf__temp
 /src-admin/.__mf__temp
+
+#ignore .commitinfo created by ioBroker release script
+.commitinfo

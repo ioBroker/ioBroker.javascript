@@ -27,7 +27,7 @@
 
         <script>
             const head = document.getElementsByTagName('head')[0];
-            window.registerSocketOnLoad = (cb) => {
+            window.registerSocketOnLoad = cb => {
                 window.socketLoadedHandler = cb;
             };
 
@@ -146,12 +146,9 @@
     </head>
     <body>
         <noscript> You need to enable JavaScript to run this app. </noscript>
-        <script
-            type="module"
-            src="/src/index.tsx"
-        ></script>
+        <script type="module" src="/src/index.tsx"></script>
         <script>
-            if ((window.localStorage && window.localStorage.getItem('App.theme')) === 'dark') {
+            if (window.localStorage.getItem('App.theme') === 'dark' && !window.vendorPrefix) {
                 window.document.body.style.background = 'black';
             }
 
@@ -169,9 +166,6 @@
         </script>
 
         <div id="root"></div>
-        <script>
-
-        </script>
         <xml
             id="toolbox"
             style="display: none"
