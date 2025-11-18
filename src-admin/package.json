@@ -16,7 +16,7 @@
         "@module-federation/runtime": "^0.15.0",
         "@module-federation/vite": "^1.4.1",
         "@mui/icons-material": "^6.4.12",
-        "@mui/material": "^6.4.12",
+        "@mui/material": "^7.3.5",
         "@mui/x-date-pickers": "^7.29.4",
         "@types/leaflet": "^1.9.18",
         "@types/react": "^18.3.23",
