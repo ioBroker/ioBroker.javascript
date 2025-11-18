@@ -68,7 +68,7 @@
         "@iobroker/testing": "^5.2.2",
         "@iobroker/vis-2-widgets-react-dev": "^4.0.4",
         "@types/node-schedule": "^2.1.8",
-        "@types/nodemailer": "^7.0.3",
+        "@types/nodemailer": "^7.0.4",
         "@types/request": "^2.48.13",
         "@types/suncalc": "^1.9.2",
         "alcalzone-shared": "^5.0.0",
