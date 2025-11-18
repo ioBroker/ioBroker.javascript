@@ -14,7 +14,7 @@
         "@iobroker/adapter-react-v5": "8.0.7",
         "@iobroker/json-config": "7.6.20",
         "@module-federation/runtime": "^0.15.0",
-        "@module-federation/vite": "^1.4.1",
+        "@module-federation/vite": "^1.9.0",
         "@mui/icons-material": "^6.4.12",
         "@mui/material": "^6.4.12",
         "@mui/x-date-pickers": "^7.29.4",
