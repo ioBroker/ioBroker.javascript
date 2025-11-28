@@ -19,7 +19,7 @@
         "@mui/x-date-pickers": "^7.29.4",
         "@sentry/browser": "^10.22.0",
         "@types/lodash": "^4.17.20",
-        "@types/react": "^18.3.23",
+        "@types/react": "^19.2.7",
         "@types/react-dom": "^18.3.7",
         "@types/reactour": "^1.18.5",
         "@vitejs/plugin-react": "^5.1.0",
