@@ -19,7 +19,7 @@
         "@mui/material": "^6.4.12",
         "@mui/x-date-pickers": "^7.29.4",
         "@types/leaflet": "^1.9.18",
-        "@types/react": "^18.3.23",
+        "@types/react": "^19.2.7",
         "@types/react-dom": "^18.3.7",
         "@vitejs/plugin-react": "^4.5.2",
         "date-fns": "^4.1.0",
