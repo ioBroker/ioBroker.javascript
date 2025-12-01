@@ -1,4 +1,9 @@
 The newest change log is in README.md
+## 9.0.4 (2025-06-16)
+* (@GermanBluefox) Corrected script editor for Polish language
+* (@GermanBluefox) Corrected import of Blockly blocks
+* (@GermanBluefox) Corrected editing of Blockly
+
 ## 9.0.3 (2025-06-12)
 
 * (@GermanBluefox) Corrected the rule editor

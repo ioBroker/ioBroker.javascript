@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "9.0.11",
+    "version": "9.0.12",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "9.0.12": {
+        "en": "Added possibility to encrypt scripts with password (only for vendors)",
+        "de": "Zusätzliche Möglichkeit, Skripte mit Passwort zu verschlüsseln (nur für Hersteller)",
+        "ru": "Добавлена возможность шифрования скриптов с помощью пароля (только для продавцов)",
+        "pt": "Adicionada possibilidade de criptografar scripts com senha (somente para fornecedores)",
+        "nl": "Toegevoegd mogelijkheid om scripts te versleutelen met wachtwoord (alleen voor leveranciers)",
+        "fr": "Ajout de la possibilité de chiffrer les scripts avec le mot de passe (seulement pour les fournisseurs)",
+        "it": "Aggiunta possibilità di crittografare gli script con password (solo per i fornitori)",
+        "es": "Añadido posibilidad de cifrar scripts con contraseña (sólo para proveedores)",
+        "pl": "Dodano możliwość szyfrowania skryptów hasłem (tylko dla sprzedawców)",
+        "uk": "Додана можливість шифрування сценаріїв з паролем (тільки для постачальників)",
+        "zh-cn": "添加使用密码加密脚本的可能性( 只针对供应商)"
+      },
       "9.0.11": {
         "en": "Corrected the rule editor if the condition is empty\nCorrected types for TypeScript",
         "de": "Korrektur des Regeleditors, wenn die Bedingung leer ist\nKorrigierte Typen für TypeScript",
@@ -117,19 +130,6 @@
         "pl": "Poprawiono edytor zasad\nUsunięto niewykorzystane pliki JS",
         "uk": "Виправлено редактор правила\nВидалити невикористані файли JS",
         "zh-cn": "更正规则编辑器\n删除未使用的 JS 文件"
-      },
-      "9.0.2": {
-        "en": "Added possibility to escape chars in formatTimeDiff\nBack-end was migrated to TypeScript\nBreaking change: removed \"request\" module\nAdded prettier for scripts",
-        "de": "Zusätzliche Möglichkeit, Zeichen im Format zu entkommen TimeDiff\nBackend wurde zu TypeScript migriert\nBreaking change: entferntes Modul \"Request\"\nHinzugefügt schöner für Scripts",
-        "ru": "Добавлена возможность побега чаров в формате тайм-дифф\nBack-end был перенесен на TypeScript\nПереломное изменение: удален модуль «запрос»\nДобавлено красивее для сценариев",
-        "pt": "Adicionado possibilidade de escapar de chars em formato Ponto de vista\nO back-end foi migrado para TypeScript\nAlteração de ruptura: módulo de \"requisição\" removido\nAdicionado mais bonito para scripts",
-        "nl": "Toegevoegd mogelijkheid om te ontsnappen tekens in formaat TimeDiff\nBack-end is gemigreerd naar TypeScript\nBreaking change: verwijderd \"verzoek\" module\nMooier toegevoegd voor scripts",
-        "fr": "Ajout de la possibilité d'échapper aux caractères dans le format TimeDiff\nBack-end a été migré vers TypeScript\nChangement de rupture: supprimé module \"demande\"\nAjout de joli pour les scripts",
-        "it": "Aggiunta possibilità di sfuggire a chars in formato Orario\nBack-end è stato migrato a TypeScript\nCambiamento di rottura: rimosso modulo \"richiesta\"\nAggiunto più bello per gli script",
-        "es": "Añadido posibilidad de escapar de los charcos en formato TimeDiff\nBack-end fue migrado a TipoScript\nCambio de ruptura: módulo de \"requisición\" eliminado\nAñadido más alto para scripts",
-        "pl": "Dodano możliwość ucieczki znaków w formacie TimeDiff\nBack- end został przeniesiony do TypeScript\nZmiana: usunięty moduł \"request\"\nDodano ładniejsze dla skryptów",
-        "uk": "Додано можливість втекти chars у форматі Час\nBack-end був мігрований до TypeScript\nЗміна несправностей: видалений модуль \"запит\"\nДодано претtier для скриптів",
-        "zh-cn": "添加格式跳过字符的可能性 时间\n后端已迁移到类型脚本\n中断更改: 删除“ 请求” 模块\n为脚本添加更美的"
       }
     },
     "platform": "Javascript/Node.js",
