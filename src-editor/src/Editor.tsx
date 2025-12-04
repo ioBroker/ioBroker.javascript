@@ -692,7 +692,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             // take a new script if it not yet changed
                             if (!this.state.changed[id]) {
                                 // just use new value
-                                if (this.props.password && this.objects[id].native.protected) {
+                                if (this.props.password && this.objects[id].native?.protected) {
                                     this.scripts[id].source = decryptText(
                                         this.props.password,
                                         this.objects[id].common.source,
@@ -1055,7 +1055,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                                 />
                             );
                         }
-                        if (!this.props.password && this.props.objects[id].native.protected) {
+                        if (!this.props.password && this.props.objects[id].native?.protected) {
                             return null;
                         }
 
@@ -2111,7 +2111,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             return undefined;
         }
         const result = JSON.parse(JSON.stringify(this.props.objects[id].common)) as ioBroker.ScriptCommon;
-        if (this.props.objects[id].native.protected && this.props.password) {
+        if (this.props.objects[id].native?.protected && this.props.password) {
             result.source = decryptText(this.props.password, result.source);
         }
         return result;
