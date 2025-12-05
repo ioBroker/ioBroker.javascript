@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "9.0.12",
+    "version": "9.0.13",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "9.0.13": {
+        "en": "Added possibility to encrypt scripts with password (only for vendors)",
+        "de": "Zusätzliche Möglichkeit, Skripte mit Passwort zu verschlüsseln (nur für Hersteller)",
+        "ru": "Добавлена возможность шифрования скриптов с помощью пароля (только для продавцов)",
+        "pt": "Adicionada possibilidade de criptografar scripts com senha (somente para fornecedores)",
+        "nl": "Toegevoegd mogelijkheid om scripts te versleutelen met wachtwoord (alleen voor leveranciers)",
+        "fr": "Ajout de la possibilité de chiffrer les scripts avec le mot de passe (seulement pour les fournisseurs)",
+        "it": "Aggiunta possibilità di crittografare gli script con password (solo per i fornitori)",
+        "es": "Añadido posibilidad de cifrar scripts con contraseña (sólo para proveedores)",
+        "pl": "Dodano możliwość szyfrowania skryptów hasłem (tylko dla sprzedawców)",
+        "uk": "Додана можливість шифрування сценаріїв з паролем (тільки для постачальників)",
+        "zh-cn": "添加使用密码加密脚本的可能性( 只针对供应商)"
+      },
       "9.0.11": {
         "en": "Corrected the rule editor if the condition is empty\nCorrected types for TypeScript",
         "de": "Korrektur des Regeleditors, wenn die Bedingung leer ist\nKorrigierte Typen für TypeScript",

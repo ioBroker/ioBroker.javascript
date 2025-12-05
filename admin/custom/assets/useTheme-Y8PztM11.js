@@ -1,1 +1,0 @@
-import{X as n,f as o}from"./createTheme-LEFpI6rM.js";import{C as r}from"./ConfigCustomJavascriptSet__loadShare__react__loadShare__-BNbscXK6.js";function s(e){return Object.keys(e).length===0}function a(e=null){const t=r.useContext(n);return!t||s(t)?e:t}const m=o();function h(e=m){return a(e)}export{a,h as u};
