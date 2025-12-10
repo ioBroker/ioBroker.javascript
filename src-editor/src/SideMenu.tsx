@@ -1215,7 +1215,7 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
                 onDoubleClick={e => this.onDblClick(item, e)}
                 secondaryAction={this.renderItemButtonsOnEnd(item, children)}
             >
-                {this.props.scripts[item.id].native?.protected ? (
+                {this.props.scripts[item.id]?.native?.protected ? (
                     <IconProtected style={{ color: 'orange', position: 'absolute', right: 5, width: 10, height: 10 }} />
                 ) : null}
                 <ListItemIcon style={styles.listItemIcon}>
@@ -1609,12 +1609,12 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
                                 color: 'orange',
                             }}
                         />
-                        {!this.props.scripts[this.state.selected].native?.protected ? (
+                        {!this.props.scripts[this.state.selected]?.native?.protected ? (
                             I18n.t('Protect script')
                         ) : (
                             <span
                                 style={{
-                                    color: this.props.scripts[this.state.selected].native?.protected
+                                    color: this.props.scripts[this.state.selected]?.native?.protected
                                         ? 'orange'
                                         : undefined,
                                 }}

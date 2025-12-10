@@ -1,1 +1,0 @@
-const _="__mf_init____mf__virtual/ConfigCustomJavascriptSet__mf_v__runtimeInit__mf_v__.js__";if(!globalThis[_]){let i,t;const e=new Promise((o,s)=>{i=o,t=s});globalThis[_]={initPromise:e,initResolve:i,initReject:t}}var n=globalThis[_];export{n as C};
