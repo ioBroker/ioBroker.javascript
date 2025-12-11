@@ -1,0 +1,1 @@
+import{g as o}from"./_commonjsHelpers-CE1G-McA.js";import{C as e}from"./ConfigCustomJavascriptSet__mf_v__runtimeInit__mf_v__-D9gOPE2D.js";const{initPromise:r}=e,a=r.then(t=>t.loadShare("react-dom",{customShareInfo:{shareConfig:{singleton:!0,strictVersion:!1,requiredVersion:"*"}}})),s=await a.then(t=>t());var _=s;const m=o(_);export{_ as C,m as R};

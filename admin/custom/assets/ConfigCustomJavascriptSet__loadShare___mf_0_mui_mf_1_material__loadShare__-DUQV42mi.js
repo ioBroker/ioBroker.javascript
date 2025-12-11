@@ -1,0 +1,1 @@
+import{C as e}from"./ConfigCustomJavascriptSet__mf_v__runtimeInit__mf_v__-D9gOPE2D.js";const{initPromise:_}=e,r=_.then(t=>t.loadShare("@mui/material",{customShareInfo:{shareConfig:{singleton:!0,strictVersion:!1,requiredVersion:"*"}}})),a=await r.then(t=>t());var i=a;export{i as C};

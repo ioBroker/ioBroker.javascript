@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 9.0.14 (2025-12-11)
 * (@GermanBluefox) Added possibility to encrypt scripts with password (only for vendors)
 
 ### 9.0.11 (2025-07-29)

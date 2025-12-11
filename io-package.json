@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "9.0.13",
+    "version": "9.0.14",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "9.0.14": {
+        "en": "Added possibility to encrypt scripts with password (only for vendors)",
+        "de": "Zusätzliche Möglichkeit, Skripte mit Passwort zu verschlüsseln (nur für Hersteller)",
+        "ru": "Добавлена возможность шифрования скриптов с помощью пароля (только для продавцов)",
+        "pt": "Adicionada possibilidade de criptografar scripts com senha (somente para fornecedores)",
+        "nl": "Toegevoegd mogelijkheid om scripts te versleutelen met wachtwoord (alleen voor leveranciers)",
+        "fr": "Ajout de la possibilité de chiffrer les scripts avec le mot de passe (seulement pour les fournisseurs)",
+        "it": "Aggiunta possibilità di crittografare gli script con password (solo per i fornitori)",
+        "es": "Añadido posibilidad de cifrar scripts con contraseña (sólo para proveedores)",
+        "pl": "Dodano możliwość szyfrowania skryptów hasłem (tylko dla sprzedawców)",
+        "uk": "Додана можливість шифрування сценаріїв з паролем (тільки для постачальників)",
+        "zh-cn": "添加使用密码加密脚本的可能性( 只针对供应商)"
+      },
       "9.0.13": {
         "en": "Added possibility to encrypt scripts with password (only for vendors)",
         "de": "Zusätzliche Möglichkeit, Skripte mit Passwort zu verschlüsseln (nur für Hersteller)",
@@ -117,19 +130,6 @@
         "pl": "Poprawiony edytor skryptów dla języka polskiego\nSkorygowany import bloków blokujących\nPoprawiona edycja Blockly",
         "uk": "Виправлений редактор сценаріїв для польської мови\nВиправлено імпорт блокнотів\nВиправлено редагування Blockly",
         "zh-cn": "波兰语校正脚本编辑器\n已更正的块导入\n已更正的 Blockly 编辑"
-      },
-      "9.0.3": {
-        "en": "Corrected the rule editor\nRemoved the unused JS files",
-        "de": "Korrektur des Regeleditors\nEntfernen der ungenutzten JS-Dateien",
-        "ru": "Исправлен редактор правил\nУдаление неиспользуемых файлов JS",
-        "pt": "Corrigido o editor de regras\nRemoveu os arquivos JS não utilizados",
-        "nl": "De regelbewerker gecorrigeerd\nVerwijderde de ongebruikte JS-bestanden",
-        "fr": "Correction de l'éditeur de règles\nSupprimé les fichiers JS inutilisés",
-        "it": "Corretto l'editor delle regole\nRimuovi i file JS non utilizzati",
-        "es": "Corregido el editor de reglas\nEliminar los archivos JS no utilizados",
-        "pl": "Poprawiono edytor zasad\nUsunięto niewykorzystane pliki JS",
-        "uk": "Виправлено редактор правила\nВидалити невикористані файли JS",
-        "zh-cn": "更正规则编辑器\n删除未使用的 JS 文件"
       }
     },
     "platform": "Javascript/Node.js",
