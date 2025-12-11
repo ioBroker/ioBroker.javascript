@@ -29,23 +29,12 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - uses: actions/checkout@v6
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v6
+            - uses: ioBroker/testing-action-check@v1
               with:
-                  node-version: 20.x
-
-            - name: Install Dependencies
-              run: npm install
-
-    #      - name: Perform a type check
-    #        run: npm run check:ts
-    #        env:
-    #          CI: true
-    # - name: Lint TypeScript code
-    #   run: npm run lint
-    #      - name: Test package files
-    #        run: npm run test:package
+                  node-version: '22.x'
+                  # Uncomment the following line if your adapter cannot be installed using 'npm ci'
+                  install-command: 'npm install'
+                  lint: true
 
     build:
         runs-on: ubuntu-latest
@@ -53,34 +42,27 @@ jobs:
             - uses: actions/checkout@v6
             - uses: actions/setup-node@v6
               with:
-                  node-version: 20.x
+                  node-version: 22.x
             - run: npm i
             - run: npm run build
 
     # Runs adapter tests on all supported node versions and OSes
+  # Runs adapter tests on all supported node versions and OSes
     adapter-tests:
-        if: contains(github.event.head_commit.message, '[skip ci]') == false
+      if: contains(github.event.head_commit.message, '[skip ci]') == false
 
-        needs: [check-and-lint, build]
+      needs: [ check-and-lint ]
 
-        runs-on: ${{ matrix.os }}
-        strategy:
-            matrix:
-                node-version: [18.x, 20.x, 22.x, 24.x]
-                os: [ubuntu-latest, windows-latest, macos-latest]
+      runs-on: ubuntu-latest
+      strategy:
+        matrix:
+          node-version: [ 18.x, 20.x, 22.x, 24.x ]
 
-        steps:
-            - uses: actions/checkout@v6
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v6
-              with:
-                  node-version: ${{ matrix.node-version }}
-
-            - name: Install Dependencies
-              run: npm install
-
-            - name: Run local tests
-              run: npm test
+      steps:
+        - uses: ioBroker/testing-action-adapter@v1
+          with:
+            install-command: 'npm install'
+            build: true
 
     # Merges and deploys the final package to NPM
     auto-merge:
@@ -90,6 +72,11 @@ jobs:
             always() &&
             github.event_name == 'pull_request'
         runs-on: ubuntu-latest
+
+        permissions:
+          contents: write
+          id-token: write
+
         steps:
             - id: automerge
               name: automerge
@@ -150,7 +137,7 @@ jobs:
             - name: Publish package to npm
               if: steps.automerge.outputs.mergeResult == 'merged'
               run: |
-                  npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+              # npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
                   npm whoami
                   npm publish
 
