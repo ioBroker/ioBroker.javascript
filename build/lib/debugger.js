@@ -821,21 +821,15 @@ function createRepl(inspector) {
         // Save execution context's data
         currentBacktrace = Backtrace.from(callFrames);
         selectedFrame = currentBacktrace[0];
-        const { scriptId, lineNumber } = selectedFrame.location;
-        const breakType = reason === 'other' ? 'break' : reason;
-        const script = knownScripts[scriptId];
-        const scriptUrl = script ? getRelativePath(script.url) : '[unknown]';
-        const header = `${breakType} in ${scriptUrl}:${lineNumber + 1}`;
-        void inspector.suspendReplWhile(() => Promise.all([/*formatWatchers(true), */ selectedFrame?.list(3)])
-            .then(([/*watcherList, */ context]) => {
-            /*if (watcherList) {
-                return `${watcherList}\n${inspect(context)}`;
-            }*/
-            return inspect(context);
-        })
-            .then(breakContext => {
-            print(`${header}\n${breakContext}`);
-        }));
+        // const { scriptId, lineNumber } = selectedFrame.location;
+        // const breakType = reason === 'other' ? 'break' : reason;
+        // const script = knownScripts[scriptId];
+        // const scriptUrl = script ? getRelativePath(script.url) : '[unknown]';
+        // const header = `${breakType} in ${scriptUrl}:${lineNumber + 1}`;
+        void inspector.suspendReplWhile(() => {
+            const context = selectedFrame?.list(3);
+            inspect(context);
+        });
     });
     function handleResumed() {
         currentBacktrace = undefined;

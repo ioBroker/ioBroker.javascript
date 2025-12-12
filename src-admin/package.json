@@ -1,7 +1,7 @@
 {
     "name": "iobroker-admin-component-backitup",
     "private": true,
-    "version": "9.0.13",
+    "version": "9.0.14",
     "type": "module",
     "scripts": {
         "start": "vite --port 4173",

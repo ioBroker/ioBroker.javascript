@@ -32,8 +32,6 @@ jobs:
             - uses: ioBroker/testing-action-check@v1
               with:
                   node-version: '22.x'
-                  # Uncomment the following line if your adapter cannot be installed using 'npm ci'
-                  install-command: 'npm install'
                   lint: true
 
     build:
@@ -61,7 +59,6 @@ jobs:
         steps:
             - uses: ioBroker/testing-action-adapter@v1
               with:
-                  install-command: 'npm install'
                   build: true
 
     # Merges and deploys the final package to NPM
@@ -126,7 +123,7 @@ jobs:
 
             - name: Install Dependencies
               if: steps.automerge.outputs.mergeResult == 'merged'
-              run: npm install
+              run: npm ci
 
             - name: Build
               if: steps.automerge.outputs.mergeResult == 'merged'
