@@ -47,22 +47,22 @@ jobs:
             - run: npm run build
 
     # Runs adapter tests on all supported node versions and OSes
-  # Runs adapter tests on all supported node versions and OSes
+    # Runs adapter tests on all supported node versions and OSes
     adapter-tests:
-      if: contains(github.event.head_commit.message, '[skip ci]') == false
+        if: contains(github.event.head_commit.message, '[skip ci]') == false
 
-      needs: [ check-and-lint ]
+        needs: [check-and-lint]
 
-      runs-on: ubuntu-latest
-      strategy:
-        matrix:
-          node-version: [ 18.x, 20.x, 22.x, 24.x ]
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [18.x, 20.x, 22.x, 24.x]
 
-      steps:
-        - uses: ioBroker/testing-action-adapter@v1
-          with:
-            install-command: 'npm install'
-            build: true
+        steps:
+            - uses: ioBroker/testing-action-adapter@v1
+              with:
+                  install-command: 'npm install'
+                  build: true
 
     # Merges and deploys the final package to NPM
     auto-merge:
@@ -72,10 +72,9 @@ jobs:
             always() &&
             github.event_name == 'pull_request'
         runs-on: ubuntu-latest
-
         permissions:
-          contents: write
-          id-token: write
+            contents: write
+            id-token: write
 
         steps:
             - id: automerge
@@ -133,11 +132,9 @@ jobs:
               if: steps.automerge.outputs.mergeResult == 'merged'
               run: npm run build
 
-              # The prepublish script also creates a build
             - name: Publish package to npm
               if: steps.automerge.outputs.mergeResult == 'merged'
               run: |
-              # npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
                   npm whoami
                   npm publish
 
