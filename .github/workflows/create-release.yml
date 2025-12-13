@@ -78,8 +78,8 @@ jobs:
               with:
                   token: ${{ secrets.PR_TOKEN }}
                   commit-message: '[OFFICIAL RELEASE] ${{ steps.version.outputs.result }}'
-                  committer: GermanBluefox <dogafox@gmail.com>
-                  author: GermanBluefox <dogafox@gmail.com>
+                  committer: bluefoxbot <doga.fox@gmail.com>
+                  author: bluefoxbot <doga.fox@gmail.com>
                   signoff: false
                   branch: official-release
                   delete-branch: true
@@ -88,5 +88,5 @@ jobs:
                       ${{ steps.extract_release.outputs.BODY }}
                   labels: |
                       automated pr 🔧
-                  assignees: GermanBluefox
+                  assignees: bluefoxbot
                   draft: false
