@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "9.0.14",
+    "version": "9.0.15",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "9.0.15": {
+        "en": "Added possibility to encrypt scripts with password (only for vendors)",
+        "de": "Zusätzliche Möglichkeit, Skripte mit Passwort zu verschlüsseln (nur für Hersteller)",
+        "ru": "Добавлена возможность шифрования скриптов с помощью пароля (только для продавцов)",
+        "pt": "Adicionada possibilidade de criptografar scripts com senha (somente para fornecedores)",
+        "nl": "Toegevoegd mogelijkheid om scripts te versleutelen met wachtwoord (alleen voor leveranciers)",
+        "fr": "Ajout de la possibilité de chiffrer les scripts avec le mot de passe (seulement pour les fournisseurs)",
+        "it": "Aggiunta possibilità di crittografare gli script con password (solo per i fornitori)",
+        "es": "Añadido posibilidad de cifrar scripts con contraseña (sólo para proveedores)",
+        "pl": "Dodano możliwość szyfrowania skryptów hasłem (tylko dla sprzedawców)",
+        "uk": "Додана можливість шифрування сценаріїв з паролем (тільки для постачальників)",
+        "zh-cn": "添加使用密码加密脚本的可能性( 只针对供应商)"
+      },
       "9.0.14": {
         "en": "Added possibility to encrypt scripts with password (only for vendors)",
         "de": "Zusätzliche Möglichkeit, Skripte mit Passwort zu verschlüsseln (nur für Hersteller)",
@@ -117,19 +130,6 @@
         "pl": "Szybkie załadowanie GUI",
         "uk": "Швидкість завантаження GUI",
         "zh-cn": "快速装入图形界面"
-      },
-      "9.0.4": {
-        "en": "Corrected script editor for Polish language\nCorrected import of Blockly blocks\nCorrected editing of Blockly",
-        "de": "Korrigierter Skripteditor für polnische Sprache\nKorrigierter Import von Blockly Blöcken\nKorrigierte Bearbeitung von Blockly",
-        "ru": "Исправленный редактор сценариев для польского языка\nКорректированный импорт блокирующих блоков\nИсправленное редактирование Blockly",
-        "pt": "Editor de script corrigido para o idioma polonês\nImportação corrigida de blocos em bloco\nEdição corrigida de Blockly",
-        "nl": "Gecorrigeerde scripteditor voor Poolse taal\nGecorrigeerde invoer van blokken\nGecorrigeerd bewerken van Blockly",
-        "fr": "Editeur de script corrigé pour la langue polonaise\nImportation corrigée de blocs Blockly\nRévision corrigée de Blockly",
-        "it": "Editor di script corretto per la lingua polacca\nImportazione corretta dei blocchi Blockly\nModifica corretta di Blockly",
-        "es": "Editor de scripts corregido para idioma polaco\nImportación corregida de bloques bloqueados\nEdición corregida de Blockly",
-        "pl": "Poprawiony edytor skryptów dla języka polskiego\nSkorygowany import bloków blokujących\nPoprawiona edycja Blockly",
-        "uk": "Виправлений редактор сценаріїв для польської мови\nВиправлено імпорт блокнотів\nВиправлено редагування Blockly",
-        "zh-cn": "波兰语校正脚本编辑器\n已更正的块导入\n已更正的 Blockly 编辑"
       }
     },
     "platform": "Javascript/Node.js",
