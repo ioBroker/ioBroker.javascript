@@ -45,7 +45,6 @@ jobs:
             - run: npm run build
 
     # Runs adapter tests on all supported node versions and OSes
-    # Runs adapter tests on all supported node versions and OSes
     adapter-tests:
         if: contains(github.event.head_commit.message, '[skip ci]') == false
 
@@ -80,7 +79,7 @@ jobs:
               env:
                   GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
                   MERGE_LABELS: 'automated pr 🔧'
-                  MERGE_FILTER_AUTHOR: 'foxbot76'
+                  MERGE_FILTER_AUTHOR: 'GermanBluefox'
                   MERGE_FORKS: 'false'
                   MERGE_DELETE_BRANCH: 'false'
                   UPDATE_LABELS: 'automated pr 🔧'

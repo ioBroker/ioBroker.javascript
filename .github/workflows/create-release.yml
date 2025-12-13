@@ -19,7 +19,7 @@ jobs:
 
         strategy:
             matrix:
-                node: [20.x] # This should be LTS
+                node: [22.x] # This should be LTS
 
         steps:
             - name: Checkout code
@@ -33,7 +33,7 @@ jobs:
                   node-version: ${{ matrix.node }}
 
             - name: Install dependencies
-              run: npm i
+              run: npm ci
 
             - name: Test
               run: npm test
@@ -45,7 +45,7 @@ jobs:
               env:
                   VERSION_BUMP: ${{ inputs.versionBump }}
               run: |
-                  git config --global user.email "moritz.heusinger@gmail.com"
+                  git config --global user.email "dogafox@gmail.com"
                   git config --global user.name "Github Action"
 
                   npm run release -- ${VERSION_BUMP}
@@ -78,8 +78,8 @@ jobs:
               with:
                   token: ${{ secrets.PR_TOKEN }}
                   commit-message: '[OFFICIAL RELEASE] ${{ steps.version.outputs.result }}'
-                  committer: foxbot76 <heusinger.moritz@gmail.com>
-                  author: foxbot76 <heusinger.moritz@gmail.com>
+                  committer: GermanBluefox <dogafox@gmail.com>
+                  author: GermanBluefox <dogafox@gmail.com>
                   signoff: false
                   branch: official-release
                   delete-branch: true
@@ -88,5 +88,5 @@ jobs:
                       ${{ steps.extract_release.outputs.BODY }}
                   labels: |
                       automated pr 🔧
-                  assignees: foxbot76
+                  assignees: GermanBluefox
                   draft: false
