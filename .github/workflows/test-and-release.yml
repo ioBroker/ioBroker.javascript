@@ -87,6 +87,7 @@ jobs:
                   MERGE_METHOD: 'squash'
                   MERGE_COMMIT_MESSAGE: 'pull-request-title-and-description'
                   MERGE_RETRY_SLEEP: 10000
+                  MERGE_RETRIES: "60"
 
             - name: Checkout code
               if: steps.automerge.outputs.mergeResult == 'merged'
