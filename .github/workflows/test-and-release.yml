@@ -48,12 +48,13 @@ jobs:
     adapter-tests:
         if: contains(github.event.head_commit.message, '[skip ci]') == false
 
-        needs: [check-and-lint]
+        needs: [check-and-lint, build]
 
-        runs-on: ubuntu-latest
+        runs-on: ${{ matrix.os }}
         strategy:
             matrix:
                 node-version: [18.x, 20.x, 22.x, 24.x]
+                os: [ubuntu-latest, windows-latest, macos-latest]
 
         steps:
             - uses: ioBroker/testing-action-adapter@v1
@@ -79,7 +80,7 @@ jobs:
               env:
                   GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
                   MERGE_LABELS: 'automated pr 🔧'
-                  MERGE_FILTER_AUTHOR: 'bluefoxbot'
+                  MERGE_FILTER_AUTHOR: 'foxbot76'
                   MERGE_FORKS: 'false'
                   MERGE_DELETE_BRANCH: 'false'
                   UPDATE_LABELS: 'automated pr 🔧'
@@ -130,9 +131,7 @@ jobs:
 
             - name: Publish package to npm
               if: steps.automerge.outputs.mergeResult == 'merged'
-              run: |
-                  npm whoami
-                  npm publish
+              run: npm publish
 
             - name: Create Github Release
               if: steps.automerge.outputs.mergeResult == 'merged'
