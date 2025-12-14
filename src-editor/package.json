@@ -26,7 +26,7 @@
         "blockly": "^11.2.2",
         "file-selector": "^2.1.2",
         "monaco-editor": "~0.54.0",
-        "openai": "^5.23.2",
+        "openai": "^6.10.0",
         "react": "^18.3.1",
         "react-bem-helper": "^1.4.1",
         "react-dnd": "^16.0.1",
