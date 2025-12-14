@@ -43,7 +43,7 @@
         "react-text-mask": "^5.5.0",
         "react-treeview-mui": "^0.1.2",
         "reactour": "^1.19.4",
-        "sass": "^1.93.2",
+        "sass": "^1.96.0",
         "suncalc2": "^1.8.1",
         "vite": "7.1.12",
         "vite-plugin-commonjs": "^0.10.4",
