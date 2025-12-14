@@ -7,7 +7,7 @@ on:
 jobs:
     auto-approve:
         if: |
-            github.actor == 'bluefoxbot' &&
+            github.actor == 'foxbot76' &&
             github.event.label.name == 'automated pr 🔧'
 
         runs-on: ubuntu-latest

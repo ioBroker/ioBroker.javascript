@@ -121,6 +121,10 @@ jobs:
                   BODY="${BODY//$'\r'/'%0D'}"
                   echo "::set-output name=BODY::$BODY"
 
+            - name: Update npm to latest version
+              if: steps.automerge.outputs.mergeResult == 'merged'
+              run: npm install -g npm@latest
+
             - name: Install Dependencies
               if: steps.automerge.outputs.mergeResult == 'merged'
               run: npm ci
