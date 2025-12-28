@@ -13,7 +13,7 @@
         "@iobroker/type-detector": "^4.6.2",
         "@iobroker/types": "^7.0.7",
         "@module-federation/runtime": "^0.21.6",
-        "@module-federation/vite": "^1.9.0",
+        "@module-federation/vite": "^1.9.4",
         "@mui/icons-material": "^6.5.0",
         "@mui/material": "^6.5.0",
         "@mui/x-date-pickers": "^7.29.4",
