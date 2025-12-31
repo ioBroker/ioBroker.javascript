@@ -50,7 +50,7 @@ Executes Javascript, Typescript Scripts.
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2014-2025 bluefox <dogafox@gmail.com>,
+Copyright (c) 2014-2026 bluefox <dogafox@gmail.com>,
 
 Copyright (c) 2014      hobbyquaker
 
