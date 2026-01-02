@@ -213,7 +213,7 @@ export class Mirror {
         if (fileName.endsWith('.ts')) {
             return 'TypeScript/ts';
         }
-        return Mirror.isBlockly(data) ? 'Blockly' : Mirror.isRules(data) ? 'Rules' : 'JavaScript/js';
+        return Mirror.isBlockly(data) ? 'Blockly' : Mirror.isRules(data) ? 'Rules' : 'Javascript/js';
     }
 
     updateFolderTime(id: string): void {
