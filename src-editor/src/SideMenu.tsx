@@ -1081,7 +1081,11 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
             return true;
         }
 
-        if (this.state.typeFilter && item.type !== 'folder' && item.type !== this.state.typeFilter) {
+        if (
+            this.state.typeFilter &&
+            item.type !== 'folder' &&
+            item.type.toLowerCase() !== this.state.typeFilter.toLowerCase()
+        ) {
             return true;
         }
 
