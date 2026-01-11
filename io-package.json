@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "9.0.17",
+    "version": "9.0.18",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "9.0.18": {
+        "en": "Corrected error message with `lastSync`\nCorrected JavaScript filter",
+        "de": "Korrigierte Fehlermeldung mit `last Synthetisch `\nJavaScript-Filter korrigiert",
+        "ru": "Исправленное сообщение об ошибке с \"последним\" синхронизация пункт\nИсправленный фильтр JavaScript",
+        "pt": "Mensagem de erro corrigida com ` last Sincronizar `\nFiltro JavaScript corrigido",
+        "nl": "Gecorrigeerde foutmelding met de laatste Synchroniseren Wat\nGecorrigeerd JavaScript filter",
+        "fr": "Message d'erreur corrigé avec `dernier Synchronisation \"\nFiltre JavaScript corrigé",
+        "it": "Messaggio di errore corretto con `ultimo Traduzione: #\nFiltro JavaScript corretto",
+        "es": "Mensaje de error corregido con `último Sync `\nFiltro de JavaScript corregido",
+        "pl": "Poprawiony komunikat błędu z 'last Sync'\nPoprawiony filtr JavaScript",
+        "uk": "Виправлено повідомлення про помилку з `last Синхронізація й\nВиправлений JavaScript-фільтр",
+        "zh-cn": "更正错误消息为“ last 同步 `\n已更正的 JavaScript 过滤器"
+      },
       "9.0.17": {
         "en": "Added possibility to encrypt scripts with password (only for vendors)",
         "de": "Zusätzliche Möglichkeit, Skripte mit Passwort zu verschlüsseln (nur für Hersteller)",
@@ -117,19 +130,6 @@
         "pl": "Poprawiono edytor zasad, jeśli warunek jest pusty\nPoprawione typy dla TypeScript",
         "uk": "Виправлено редактор правила, якщо стан порожній\nВиправлені типи для TypeScript",
         "zh-cn": "如果条件为空, 更正规则编辑器\n类型脚本的校正类型"
-      },
-      "9.0.7": {
-        "en": "Fixing some blocks in blockly: time, function",
-        "de": "Einige Blocks blockieren: Zeit, Funktion",
-        "ru": "Блокировка блоков: время, функция",
-        "pt": "Corrigindo alguns blocos em bloco: tempo, função",
-        "nl": "Het repareren van enkele blokken in blokjes: tijd, functie",
-        "fr": "Correction de quelques blocs en bloc : temps, fonction",
-        "it": "Fissare alcuni blocchi in blocco: tempo, funzione",
-        "es": "Arreglar algunos bloques en bloque: tiempo, función",
-        "pl": "Ustawianie niektórych bloków w blokowanych: czas, funkcja",
-        "uk": "Виправлення деяких блоків в блокноті: час, функція",
-        "zh-cn": "以块状修复一些块: 时间, 功能"
       }
     },
     "platform": "Javascript/Node.js",

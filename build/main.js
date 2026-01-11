@@ -1180,7 +1180,7 @@ class JavaScript extends adapter_core_1.Adapter {
                 }
             }
         }
-        if (this.config.mirrorPath) {
+        if (this.config.mirrorPath?.trim()) {
             this.config.mirrorInstance = parseInt(this.config.mirrorInstance, 10) || 0;
             if (this.instance === this.config.mirrorInstance) {
                 const ioBDataDir = (0, adapter_core_1.getAbsoluteDefaultDataDir)() + node_path_1.sep;

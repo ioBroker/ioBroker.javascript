@@ -13,6 +13,7 @@ class Mirror {
     watchedFolder = {};
     diskList;
     dbList = {};
+    ready = false;
     constructor(options) {
         if (!options.adapter) {
             throw new Error('No adapter defined');
@@ -36,7 +37,7 @@ class Mirror {
                 error: text => console.error(text),
             };
         }
-        if (!options.diskRoot || options.adapter.namespace !== 'javascript.0') {
+        if (!options.diskRoot?.trim() || this.adapter.namespace !== 'javascript.0') {
             // only instance 0 can sync objects
             return;
         }
@@ -50,15 +51,14 @@ class Mirror {
             }
         }
         this.diskList = this.scanDisk();
-        this.checkLastSyncObject(lastSyncTime => {
-            this.scanDB(list => {
-                this.dbList = list;
-                this.sync(lastSyncTime);
-                this.adapter.setForeignState(this.lastSyncID, Date.now(), true);
-                // monitor all folders
-                this.watchFolders(this.diskRoot);
-            });
-        });
+        this.checkLastSyncObject(lastSyncTime => this.scanDB(list => {
+            this.dbList = list;
+            this.sync(lastSyncTime);
+            this.adapter.setForeignState(this.lastSyncID, Date.now(), true);
+            this.ready = true;
+            // monitor all folders
+            this.watchFolders(this.diskRoot);
+        }));
     }
     watchFolders(root_) {
         root_ = root_.endsWith('/') ? root_ : `${root_}/`;
@@ -132,10 +132,10 @@ class Mirror {
                     type: 'state',
                     native: {},
                 };
-                this.adapter.setForeignObject(this.lastSyncID, obj, () => this.adapter.setForeignState(this.lastSyncID, 0, true, () => cb && cb(0)));
+                this.adapter.setForeignObject(this.lastSyncID, obj, () => this.adapter.setForeignState(this.lastSyncID, 0, true, () => cb?.(0)));
             }
             else {
-                void this.adapter.getForeignState(this.lastSyncID, (_err, state) => cb && cb(state?.val));
+                void this.adapter.getForeignState(this.lastSyncID, (_err, state) => cb?.(state?.val));
             }
         });
     }
@@ -171,7 +171,7 @@ class Mirror {
         if (fileName.endsWith('.ts')) {
             return 'TypeScript/ts';
         }
-        return Mirror.isBlockly(data) ? 'Blockly' : Mirror.isRules(data) ? 'Rules' : 'JavaScript/js';
+        return Mirror.isBlockly(data) ? 'Blockly' : Mirror.isRules(data) ? 'Rules' : 'Javascript/js';
     }
     updateFolderTime(id) {
         this.dbList[id].ts = Date.now();
@@ -347,6 +347,9 @@ class Mirror {
         }
     }
     onFileChange(event, file) {
+        if (!this.ready) {
+            return;
+        }
         let stats;
         const exists = (0, node_fs_1.existsSync)(file);
         if (exists) {
@@ -482,11 +485,12 @@ class Mirror {
         this.adapter.setForeignState(this.lastSyncID, Date.now(), true);
     }
     onObjectChange(id, obj) {
-        if (!this.dbList || !id) {
+        if (!this.dbList || !id || !this.ready) {
             return;
         }
         const file = this._scriptId2FileName(id, obj?.common?.engineType);
-        if (!obj || !obj.common) {
+        if (!obj?.common) {
+            // File was deleted
             if (this.dbList[id]) {
                 delete this.dbList[id];
                 const folderId = Mirror.getDBFolder(id);
@@ -509,6 +513,7 @@ class Mirror {
         }
         else if (obj.type === 'script' && id.startsWith('script.js.')) {
             if (this.dbList[id]) {
+                // File changed
                 if (this.dbList[id].common.source !== obj.common.source) {
                     this.dbList[id] = obj;
                     this.log.debug(`Update ${file} on disk`);
@@ -620,9 +625,7 @@ class Mirror {
                         }
                     }
                 }
-                if (cb) {
-                    cb(list);
-                }
+                cb?.(list);
             });
         });
     }

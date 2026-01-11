@@ -1,4 +1,4 @@
-import{g as Na}from"./_commonjsHelpers-Cpj98o6Y.js";import{i as Pa}from"./iobroker_javascript__loadShare__react__loadShare__-i8pXne9X.js";function za(e,t){for(var n=0;n<t.length;n++){const r=t[n];if(typeof r!="string"&&!Array.isArray(r)){for(const l in r)if(l!=="default"&&!(l in e)){const u=Object.getOwnPropertyDescriptor(r,l);u&&Object.defineProperty(e,l,u.get?u:{enumerable:!0,get:()=>r[l]})}}}return Object.freeze(Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}))}var Co={exports:{}},ve={},xo={exports:{}},_o={};/**
+import{g as Na}from"./_commonjsHelpers-Cpj98o6Y.js";import{i as Pa}from"./iobroker_javascript__loadShare__react__loadShare__-6sH5wUl6.js";function za(e,t){for(var n=0;n<t.length;n++){const r=t[n];if(typeof r!="string"&&!Array.isArray(r)){for(const l in r)if(l!=="default"&&!(l in e)){const u=Object.getOwnPropertyDescriptor(r,l);u&&Object.defineProperty(e,l,u.get?u:{enumerable:!0,get:()=>r[l]})}}}return Object.freeze(Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}))}var Co={exports:{}},ve={},xo={exports:{}},_o={};/**
  * @license React
  * scheduler.production.min.js
  *

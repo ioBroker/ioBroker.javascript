@@ -59,7 +59,7 @@ export type JavascriptTimer = {
     ack?: boolean;
 };
 
-export type ScriptType = 'TypeScript/ts' | 'Blockly' | 'Rules' | 'JavaScript/js';
+export type ScriptType = 'TypeScript/ts' | 'Blockly' | 'Rules' | 'Javascript/js';
 
 export type TimeRule = {
     time: string | { hour: number; minute: number };
