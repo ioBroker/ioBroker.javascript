@@ -33,6 +33,7 @@ export class Mirror {
     private watchedFolder: Record<string, FSWatcher> = {};
     private readonly diskList: Record<string, { ts: number; source: string; name: string }>;
     private dbList: Record<string, ioBroker.BaseObject> = {};
+    private ready = false;
 
     constructor(options: { diskRoot: string; adapter: ioBroker.Adapter; log?: ioBroker.Logger }) {
         if (!options.adapter) {
@@ -64,7 +65,7 @@ export class Mirror {
                 error: text => console.error(text),
             };
         }
-        if (!options.diskRoot || options.adapter.namespace !== 'javascript.0') {
+        if (!options.diskRoot?.trim() || this.adapter.namespace !== 'javascript.0') {
             // only instance 0 can sync objects
             return;
         }
@@ -79,17 +80,18 @@ export class Mirror {
         }
 
         this.diskList = this.scanDisk();
-        this.checkLastSyncObject(lastSyncTime => {
+        this.checkLastSyncObject(lastSyncTime =>
             this.scanDB(list => {
                 this.dbList = list;
                 this.sync(lastSyncTime);
 
                 this.adapter.setForeignState(this.lastSyncID, Date.now(), true);
 
+                this.ready = true;
                 // monitor all folders
                 this.watchFolders(this.diskRoot);
-            });
-        });
+            }),
+        );
     }
 
     watchFolders(root_: string): void {
@@ -170,10 +172,10 @@ export class Mirror {
                 };
 
                 this.adapter.setForeignObject(this.lastSyncID, obj, () =>
-                    this.adapter.setForeignState(this.lastSyncID, 0, true, () => cb && cb(0)),
+                    this.adapter.setForeignState(this.lastSyncID, 0, true, () => cb?.(0)),
                 );
             } else {
-                void this.adapter.getForeignState(this.lastSyncID, (_err, state) => cb && cb(state?.val as number));
+                void this.adapter.getForeignState(this.lastSyncID, (_err, state) => cb?.(state?.val as number));
             }
         });
     }
@@ -412,6 +414,9 @@ export class Mirror {
     }
 
     onFileChange(event: 'change' | 'create' | 'delete' | 'rename', file: string): void {
+        if (!this.ready) {
+            return;
+        }
         let stats: Stats | undefined;
         const exists = existsSync(file);
         if (exists) {
@@ -542,13 +547,14 @@ export class Mirror {
     }
 
     onObjectChange(id: string, obj: ioBroker.ScriptObject | null | undefined): void {
-        if (!this.dbList || !id) {
+        if (!this.dbList || !id || !this.ready) {
             return;
         }
 
         const file = this._scriptId2FileName(id, obj?.common?.engineType as ScriptType);
 
-        if (!obj || !obj.common) {
+        if (!obj?.common) {
+            // File was deleted
             if (this.dbList[id]) {
                 delete this.dbList[id];
                 const folderId = Mirror.getDBFolder(id);
@@ -570,6 +576,7 @@ export class Mirror {
             }
         } else if (obj.type === 'script' && id.startsWith('script.js.')) {
             if (this.dbList[id]) {
+                // File changed
                 if (this.dbList[id].common.source !== obj.common.source) {
                     this.dbList[id] = obj;
                     this.log.debug(`Update ${file} on disk`);
@@ -691,9 +698,7 @@ export class Mirror {
                                 }
                             }
                         }
-                        if (cb) {
-                            cb(list);
-                        }
+                        cb?.(list);
                     },
                 );
             },

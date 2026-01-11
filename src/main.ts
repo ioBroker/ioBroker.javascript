@@ -1457,7 +1457,7 @@ class JavaScript extends Adapter {
             }
         }
 
-        if (this.config.mirrorPath) {
+        if (this.config.mirrorPath?.trim()) {
             this.config.mirrorInstance = parseInt(this.config.mirrorInstance as unknown as string, 10) || 0;
             if (this.instance === this.config.mirrorInstance) {
                 const ioBDataDir = getAbsoluteDefaultDataDir() + sep;

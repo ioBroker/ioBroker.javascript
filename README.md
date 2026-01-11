@@ -26,6 +26,9 @@ Executes Javascript, Typescript Scripts.
 <!--
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Corrected error message with `lastSync`
+
 ### 9.0.17 (2025-12-14)
 * (@GermanBluefox) Added possibility to encrypt scripts with password (only for vendors)
 
