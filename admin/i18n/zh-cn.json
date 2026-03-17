@@ -61,5 +61,6 @@
   "Custom API Base URL": "自定义 API 基础 URL（例如 Ollama、LM Studio）",
   "Custom API Base URL help": "OpenAI 留空。Ollama 使用 http://localhost:11434/v1",
   "Custom model name": "自定义模型名称",
-  "Custom model name help": "使用自定义模型名称覆盖模型选择（例如 llama3、mistral）"
+  "Custom model name help": "使用自定义模型名称覆盖模型选择（例如 llama3、mistral）",
+  "Test API connection": "测试 API 连接"
 }

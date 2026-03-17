@@ -120,6 +120,20 @@
           "xs": 12,
           "sm": 12,
           "help": "Custom model name help"
+        },
+        "_testApiConnection": {
+          "newLine": true,
+          "type": "sendTo",
+          "label": "Test API connection",
+          "command": "testApiConnection",
+          "jsonData": "{\"apiKey\": \"${data.gptKey}\", \"baseUrl\": \"${data.gptBaseUrl}\"}",
+          "variant": "outlined",
+          "icon": "system",
+          "xs": 12,
+          "sm": 6,
+          "alsoDependsOn": ["gptKey", "gptBaseUrl"],
+          "showProcess": true,
+          "resultStringToError": "error"
         }
       }
     },

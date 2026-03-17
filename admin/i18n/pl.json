@@ -61,5 +61,6 @@
     "Custom API Base URL": "Niestandardowy bazowy URL API (np. dla Ollama, LM Studio)",
     "Custom API Base URL help": "Pozostaw puste dla OpenAI. Dla Ollama użyj http://localhost:11434/v1",
     "Custom model name": "Niestandardowa nazwa modelu",
-    "Custom model name help": "Zastąp wybór modelu niestandardową nazwą modelu (np. llama3, mistral)"
+    "Custom model name help": "Zastąp wybór modelu niestandardową nazwą modelu (np. llama3, mistral)",
+    "Test API connection": "Testuj połączenie API"
 }
