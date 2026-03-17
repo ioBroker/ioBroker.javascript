@@ -903,6 +903,66 @@ class JavaScript extends adapter_core_1.Adapter {
                 }
                 break;
             }
+            case 'testApiConnection': {
+                // Test connection to an OpenAI-compatible API endpoint
+                if (obj.callback) {
+                    const baseUrl = (obj.message?.baseUrl || '').trim();
+                    const apiKey = (obj.message?.apiKey || '').trim();
+                    if (!apiKey) {
+                        this.sendTo(obj.from, obj.command, { error: 'No API key provided' }, obj.callback);
+                        break;
+                    }
+                    const url = `${baseUrl || 'https://api.openai.com/v1'}/models`;
+                    const urlObj = new URL(url);
+                    const isHttps = urlObj.protocol === 'https:';
+                    const requestModule = isHttps ? https : http;
+                    const req = requestModule.request(url, {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Bearer ${apiKey}`,
+                            'Content-Type': 'application/json',
+                        },
+                        timeout: 10000,
+                    }, res => {
+                        let data = '';
+                        res.on('data', (chunk) => {
+                            data += chunk.toString();
+                        });
+                        res.on('end', () => {
+                            if (res.statusCode === 200) {
+                                try {
+                                    const parsed = JSON.parse(data);
+                                    const models = (parsed.data || [])
+                                        .map((m) => m.id)
+                                        .sort();
+                                    this.sendTo(obj.from, obj.command, { success: true, models, count: models.length }, obj.callback);
+                                }
+                                catch {
+                                    this.sendTo(obj.from, obj.command, { error: 'Invalid JSON response from API' }, obj.callback);
+                                }
+                            }
+                            else if (res.statusCode === 401) {
+                                this.sendTo(obj.from, obj.command, { error: 'Invalid API key (401)' }, obj.callback);
+                            }
+                            else if (res.statusCode === 403) {
+                                this.sendTo(obj.from, obj.command, { error: 'Access denied (403)' }, obj.callback);
+                            }
+                            else {
+                                this.sendTo(obj.from, obj.command, { error: `API returned status ${res.statusCode}` }, obj.callback);
+                            }
+                        });
+                    });
+                    req.on('error', (err) => {
+                        this.sendTo(obj.from, obj.command, { error: `Connection failed: ${err.message}` }, obj.callback);
+                    });
+                    req.on('timeout', () => {
+                        req.destroy();
+                        this.sendTo(obj.from, obj.command, { error: 'Connection timeout (10s)' }, obj.callback);
+                    });
+                    req.end();
+                }
+                break;
+            }
             case 'prettier': {
                 // Format the code with Prettier
                 if (obj.message && typeof obj.message.code === 'string') {
