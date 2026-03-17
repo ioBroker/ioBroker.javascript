@@ -378,5 +378,12 @@
     "with date": "mit Datum",
     "with offset": "mit Versatz",
     "wizard": "Assistent",
-    "Loading models...": "Modelle werden geladen..."
+    "Loading models...": "Modelle werden geladen...",
+    "Could not connect to API at %s": "Verbindung zur API unter %s nicht möglich",
+    "Invalid API key": "Ungültiger API-Schlüssel",
+    "Access denied by API": "Zugriff von der API verweigert",
+    "API error: %s": "API-Fehler: %s",
+    "Model \"%s\" not found": "Modell \"%s\" nicht gefunden",
+    "Request failed: %s": "Anfrage fehlgeschlagen: %s",
+    "Retry": "Erneut versuchen"
 }

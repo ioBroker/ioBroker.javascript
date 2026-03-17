@@ -15,7 +15,7 @@ import {
     InputLabel,
 } from '@mui/material';
 
-import { Check, Close, QuestionMark as Question, FileCopy as Copy } from '@mui/icons-material';
+import { Check, Close, QuestionMark as Question, FileCopy as Copy, Refresh } from '@mui/icons-material';
 
 import { Utils, I18n, type AdminConnection, type ThemeType } from '@iobroker/adapter-react-v5';
 
@@ -92,62 +92,76 @@ const OpenAiDialog = (props: OpenAiDialogProps): React.JSX.Element => {
     const [showKeyWarning, setShowKeyWarning] = useState(false);
     const [availableModels, setAvailableModels] = useState<string[]>([]);
     const [modelsLoading, setModelsLoading] = useState(true);
+    const [modelsError, setModelsError] = useState<string | null>(null);
     const devicesCache = useRef<null | DeviceObject[]>(null);
     const apiConfigCache = useRef<ApiConfig | null>(null);
     const docsCache = useRef<string | null>(null);
 
-    // Fetch API config and available models on mount
-    useEffect(() => {
-        let cancelled = false;
-
-        async function loadModels(): Promise<void> {
-            setModelsLoading(true);
-            try {
-                const config = await getApiConfig(props.socket, props.runningInstances);
-                if (cancelled) {
-                    return;
-                }
-                if (!config) {
-                    setModelsLoading(false);
-                    return;
-                }
-                apiConfigCache.current = config;
-
-                const openai = createOpenAiClient(config);
-                const response = await openai.models.list();
-                if (cancelled) {
-                    return;
-                }
-
-                const modelIds = response.data
-                    .map(m => m.id)
-                    .sort((a, b) => a.localeCompare(b));
-
-                setAvailableModels(modelIds);
-
-                // Auto-select: custom model > saved model > first available
-                const saved = window.localStorage.getItem('openai-model');
-                if (config.customModel && modelIds.includes(config.customModel)) {
-                    setModel(config.customModel);
-                } else if (saved && modelIds.includes(saved)) {
-                    setModel(saved);
-                } else if (modelIds.length > 0) {
-                    setModel(modelIds[0]);
-                }
-            } catch (err) {
-                console.error('Failed to fetch models:', err);
+    const loadModels = useCallback(async (cancelled?: { current: boolean }): Promise<void> => {
+        setModelsLoading(true);
+        setModelsError(null);
+        try {
+            const config = await getApiConfig(props.socket, props.runningInstances);
+            if (cancelled?.current) {
+                return;
             }
-            if (!cancelled) {
+            if (!config) {
                 setModelsLoading(false);
+                return;
+            }
+            apiConfigCache.current = config;
+
+            const openai = createOpenAiClient(config);
+            const response = await openai.models.list();
+            if (cancelled?.current) {
+                return;
+            }
+
+            const modelIds = response.data
+                .map(m => m.id)
+                .sort((a, b) => a.localeCompare(b));
+
+            setAvailableModels(modelIds);
+
+            // Auto-select: custom model > saved model > first available
+            const saved = window.localStorage.getItem('openai-model');
+            if (config.customModel && modelIds.includes(config.customModel)) {
+                setModel(config.customModel);
+            } else if (saved && modelIds.includes(saved)) {
+                setModel(saved);
+            } else if (modelIds.length > 0) {
+                setModel(modelIds[0]);
+            }
+        } catch (err: unknown) {
+            console.error('Failed to fetch models:', err);
+            if (!cancelled?.current) {
+                const baseUrl = apiConfigCache.current?.baseUrl || 'https://api.openai.com/v1';
+                if (err instanceof TypeError || (err as any)?.code === 'ECONNREFUSED') {
+                    setModelsError(I18n.t('Could not connect to API at %s', baseUrl));
+                } else if ((err as APIError)?.status === 401) {
+                    setModelsError(I18n.t('Invalid API key'));
+                } else if ((err as APIError)?.status === 403) {
+                    setModelsError(I18n.t('Access denied by API'));
+                } else if ((err as APIError)?.status) {
+                    setModelsError(I18n.t('API error: %s', `${(err as APIError).status} - ${(err as APIError).message}`));
+                } else {
+                    setModelsError(I18n.t('Could not connect to API at %s', baseUrl));
+                }
             }
         }
-
-        void loadModels();
-
-        return () => {
-            cancelled = true;
-        };
+        if (!cancelled?.current) {
+            setModelsLoading(false);
+        }
     }, [props.socket, props.runningInstances]);
+
+    // Fetch API config and available models on mount
+    useEffect(() => {
+        const cancelled = { current: false };
+        void loadModels(cancelled);
+        return () => {
+            cancelled.current = true;
+        };
+    }, [loadModels]);
 
     const ask = useCallback(async (): Promise<void> => {
         let devices: DeviceObject[];
@@ -230,11 +244,19 @@ Do not import any libraries as all functions are already imported.`,
             console.log(message);
             setAnswer(code || '');
         } catch (err: unknown) {
-            console.log(JSON.stringify(err));
-            if ((err as APIError).error) {
+            console.error('Chat request failed:', err);
+            if (err instanceof TypeError || (err as any)?.code === 'ECONNREFUSED') {
+                const baseUrl = config.baseUrl || 'https://api.openai.com/v1';
+                setError(I18n.t('Could not connect to API at %s', baseUrl));
+            } else if ((err as APIError)?.status === 401) {
+                setError(I18n.t('Invalid API key'));
+            } else if ((err as APIError)?.status === 404) {
+                setError(I18n.t('Model "%s" not found', effectiveModel));
+            } else if ((err as APIError).error) {
                 setError(((err as APIError).error as any).message);
+            } else {
+                setError(I18n.t('Request failed: %s', String(err)));
             }
-            console.error(`Cannot request: ${err}, ${JSON.stringify((err as APIError).error || err, null, 2)}`);
         }
 
         setWorking(false);
@@ -338,12 +360,13 @@ Do not import any libraries as all functions are already imported.`,
                     <FormControl
                         style={{ width: 300, marginLeft: 20 }}
                         variant="standard"
+                        error={!!modelsError}
                     >
                         <InputLabel>{I18n.t('Model')}</InputLabel>
                         <Select
                             variant="standard"
                             value={model}
-                            disabled={modelsLoading}
+                            disabled={modelsLoading || !!modelsError}
                             onChange={e => {
                                 window.localStorage.setItem('openai-model', e.target.value);
                                 error && setError(false);
@@ -362,7 +385,23 @@ Do not import any libraries as all functions are already imported.`,
                             ))}
                         </Select>
                     </FormControl>
+                    {modelsError && (
+                        <Button
+                            style={{ marginLeft: 10 }}
+                            variant="outlined"
+                            color="error"
+                            startIcon={<Refresh />}
+                            onClick={() => void loadModels()}
+                        >
+                            {I18n.t('Retry')}
+                        </Button>
+                    )}
                 </div>
+                {modelsError && (
+                    <div style={{ color: props.themeType === 'dark' ? '#984242' : '#bb0000' }}>
+                        {modelsError}
+                    </div>
+                )}
                 <div>{I18n.t('Result')}</div>
                 <div style={{ height: 'calc(100% - 155px)' }}>
                     {error ? (

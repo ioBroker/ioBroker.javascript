@@ -378,5 +378,12 @@
     "with date": "com data",
     "with offset": "com deslocamento",
     "wizard": "Wizard",
-    "Loading models...": "Carregando modelos..."
+    "Loading models...": "Carregando modelos...",
+    "Could not connect to API at %s": "Não foi possível conectar à API em %s",
+    "Invalid API key": "Chave API inválida",
+    "Access denied by API": "Acesso negado pela API",
+    "API error: %s": "Erro de API: %s",
+    "Model \"%s\" not found": "Modelo \"%s\" não encontrado",
+    "Request failed: %s": "Solicitação falhou: %s",
+    "Retry": "Tentar novamente"
 }

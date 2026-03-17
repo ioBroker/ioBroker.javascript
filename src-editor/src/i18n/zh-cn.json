@@ -378,5 +378,12 @@
     "with date": "有日期",
     "with offset": "带偏移",
     "wizard": "巫师",
-    "Loading models...": "加载模型..."
+    "Loading models...": "加载模型...",
+    "Could not connect to API at %s": "无法连接到 %s 的 API",
+    "Invalid API key": "无效的 API 密钥",
+    "Access denied by API": "API 拒绝访问",
+    "API error: %s": "API 错误：%s",
+    "Model \"%s\" not found": "未找到模型 \"%s\"",
+    "Request failed: %s": "请求失败：%s",
+    "Retry": "重试"
 }

@@ -378,5 +378,12 @@
     "with date": "с датой",
     "with offset": "со сдвигом",
     "wizard": "Мастер",
-    "Loading models...": "Загрузка моделей..."
+    "Loading models...": "Загрузка моделей...",
+    "Could not connect to API at %s": "Не удалось подключиться к API по адресу %s",
+    "Invalid API key": "Недействительный ключ API",
+    "Access denied by API": "Доступ запрещён API",
+    "API error: %s": "Ошибка API: %s",
+    "Model \"%s\" not found": "Модель \"%s\" не найдена",
+    "Request failed: %s": "Запрос не удался: %s",
+    "Retry": "Повторить"
 }

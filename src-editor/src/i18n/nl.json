@@ -378,5 +378,12 @@
     "with date": "met datum",
     "with offset": "met offset",
     "wizard": "tovenaar",
-    "Loading models...": "Modellen laden..."
+    "Loading models...": "Modellen laden...",
+    "Could not connect to API at %s": "Kan geen verbinding maken met API op %s",
+    "Invalid API key": "Ongeldige API-sleutel",
+    "Access denied by API": "Toegang geweigerd door API",
+    "API error: %s": "API-fout: %s",
+    "Model \"%s\" not found": "Model \"%s\" niet gevonden",
+    "Request failed: %s": "Verzoek mislukt: %s",
+    "Retry": "Opnieuw proberen"
 }
