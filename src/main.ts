@@ -1158,7 +1158,8 @@ class JavaScript extends Adapter {
                     const urlObj = new URL(url);
                     const isHttps = urlObj.protocol === 'https:';
                     const requestModule = isHttps ? https : http;
-                    const body = JSON.stringify({ model: chatModel, messages });
+                    const body = JSON.stringify({ model: chatModel, messages, stream: false });
+                    const bodyBuffer = Buffer.from(body, 'utf8');
 
                     const req = requestModule.request(
                         url,
@@ -1167,8 +1168,9 @@ class JavaScript extends Adapter {
                             headers: {
                                 Authorization: `Bearer ${apiKey}`,
                                 'Content-Type': 'application/json',
+                                'Content-Length': bodyBuffer.length,
                             },
-                            timeout: 120000,
+                            timeout: 600000,
                         },
                         res => {
                             let data = '';
@@ -1230,12 +1232,12 @@ class JavaScript extends Adapter {
                         this.sendTo(
                             obj.from,
                             obj.command,
-                            { error: 'Connection timeout (120s)' },
+                            { error: 'Connection timeout (600s)' },
                             obj.callback,
                         );
                     });
 
-                    req.write(body);
+                    req.write(bodyBuffer);
                     req.end();
                 }
                 break;

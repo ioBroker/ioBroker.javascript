@@ -922,14 +922,16 @@ class JavaScript extends adapter_core_1.Adapter {
                     const urlObj = new URL(url);
                     const isHttps = urlObj.protocol === 'https:';
                     const requestModule = isHttps ? https : http;
-                    const body = JSON.stringify({ model: chatModel, messages });
+                    const body = JSON.stringify({ model: chatModel, messages, stream: false });
+                    const bodyBuffer = Buffer.from(body, 'utf8');
                     const req = requestModule.request(url, {
                         method: 'POST',
                         headers: {
                             Authorization: `Bearer ${apiKey}`,
                             'Content-Type': 'application/json',
+                            'Content-Length': bodyBuffer.length,
                         },
-                        timeout: 120000,
+                        timeout: 600000,
                     }, res => {
                         let data = '';
                         res.on('data', (chunk) => {
@@ -966,9 +968,9 @@ class JavaScript extends adapter_core_1.Adapter {
                     });
                     req.on('timeout', () => {
                         req.destroy();
-                        this.sendTo(obj.from, obj.command, { error: 'Connection timeout (120s)' }, obj.callback);
+                        this.sendTo(obj.from, obj.command, { error: 'Connection timeout (600s)' }, obj.callback);
                     });
-                    req.write(body);
+                    req.write(bodyBuffer);
                     req.end();
                 }
                 break;
