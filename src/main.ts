@@ -1277,7 +1277,9 @@ class JavaScript extends Adapter {
                                     try {
                                         const parsed = JSON.parse(data);
                                         const models: string[] = (parsed.data || [])
-                                            .map((m: { id: string }) => m.id)
+                                            .map((m: { id: string }) =>
+                                                m.id.startsWith('models/') ? m.id.substring(7) : m.id,
+                                            )
                                             .sort();
                                         this.sendTo(
                                             obj.from,

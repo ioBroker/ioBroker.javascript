@@ -1005,7 +1005,7 @@ class JavaScript extends adapter_core_1.Adapter {
                                 try {
                                     const parsed = JSON.parse(data);
                                     const models = (parsed.data || [])
-                                        .map((m) => m.id)
+                                        .map((m) => m.id.startsWith('models/') ? m.id.substring(7) : m.id)
                                         .sort();
                                     this.sendTo(obj.from, obj.command, { success: true, models, count: models.length }, obj.callback);
                                 }
