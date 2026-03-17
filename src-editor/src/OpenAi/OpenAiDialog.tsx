@@ -216,26 +216,81 @@ Do not import any libraries as all functions are already imported.`,
             if (result.error) {
                 setError(result.error);
             } else {
-                const messageContent = result.content || '';
-                const m = messageContent.match(/```(javascript|js|typescript)\n?(.*)```(.*)/ms);
+                let content = result.content || '';
+
+                // Strip LLM thinking artifacts (<think>...</think>, <|endoftext|>, <|im_start|>, etc.)
+                content = content.replace(/<think>[\s\S]*?<\/think>/gi, '');
+                content = content.replace(/<\|endoftext\|>/g, '');
+                content = content.replace(/<\|im_start\|>[\s\S]*?<\|im_end\|>/g, '');
+                content = content.replace(/<\|im_start\|>[\s\S]*/g, '');
+
+                // Try to extract code from markdown fences
+                const m = content.match(/```(?:javascript|js|typescript)?\n?([\s\S]*?)```/m);
                 let code;
-                if (!m) {
-                    code = messageContent;
-                    if (code.startsWith('`')) {
-                        code = code.substring(1);
-                    }
-                    if (code.endsWith('`')) {
-                        code = code.substring(0, code.length - 1);
-                    }
+                if (m) {
+                    code = m[1].trim();
                 } else {
-                    code = m[2];
-                    if (m[3]) {
-                        const comments = m[3].split('\n').map(line => line.trim());
-                        while (comments[0] === '') {
-                            comments.shift();
+                    // No fences found — try to extract code lines
+                    // Remove lines that look like LLM commentary (not code)
+                    const lines = content.split('\n');
+                    const codeLines: string[] = [];
+                    let codeStarted = false;
+                    for (const line of lines) {
+                        const trimmed = line.trim();
+                        // Skip empty lines before code starts
+                        if (!codeStarted && trimmed === '') {
+                            continue;
                         }
-                        code = `${comments.map(line => `// ${line}`).join('\n')}\n${code}`;
+                        // Detect start of code
+                        if (
+                            !codeStarted &&
+                            (trimmed.startsWith('//') ||
+                                trimmed.startsWith('const ') ||
+                                trimmed.startsWith('let ') ||
+                                trimmed.startsWith('var ') ||
+                                trimmed.startsWith('function ') ||
+                                trimmed.startsWith('async ') ||
+                                trimmed.startsWith('await ') ||
+                                trimmed.startsWith('if ') ||
+                                trimmed.startsWith('for ') ||
+                                trimmed.startsWith('on(') ||
+                                trimmed.startsWith('schedule(') ||
+                                trimmed.startsWith('setState') ||
+                                trimmed.startsWith('getState') ||
+                                trimmed.startsWith('createState') ||
+                                trimmed.startsWith('$') ||
+                                trimmed.startsWith("'use strict'") ||
+                                trimmed.startsWith('"use strict"'))
+                        ) {
+                            codeStarted = true;
+                        }
+                        if (codeStarted) {
+                            codeLines.push(line);
+                        }
                     }
+                    // Remove trailing non-code commentary
+                    while (codeLines.length > 0) {
+                        const last = codeLines[codeLines.length - 1].trim();
+                        if (
+                            last === '' ||
+                            (last.length > 0 &&
+                                !last.startsWith('//') &&
+                                !last.startsWith('*') &&
+                                !last.startsWith('}') &&
+                                !last.startsWith(');') &&
+                                !last.endsWith(';') &&
+                                !last.endsWith('}') &&
+                                !last.endsWith(')') &&
+                                !last.endsWith(',') &&
+                                !last.endsWith('{') &&
+                                /^[A-Z]/.test(last))
+                        ) {
+                            codeLines.pop();
+                        } else {
+                            break;
+                        }
+                    }
+                    code = codeLines.join('\n').trim();
                 }
                 setAnswer(code || '');
             }
