@@ -58,10 +58,12 @@ async function getApiConfig(
     for (let i = 0; i < ids.length; i++) {
         const config: ioBroker.Object | null | undefined = await socket.getObject(ids[i]);
         const apiKey = (config?.native.gptKey || '').trim();
-        if (apiKey) {
+        const baseUrl = (config?.native.gptBaseUrl || '').trim() || undefined;
+        // Allow empty API key when a custom base URL is set (local providers like Ollama don't need one)
+        if (apiKey || baseUrl) {
             return {
                 apiKey,
-                baseUrl: (config?.native.gptBaseUrl || '').trim() || undefined,
+                baseUrl,
             };
         }
     }

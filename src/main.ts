@@ -1146,7 +1146,8 @@ class JavaScript extends Adapter {
                     const apiKey = (obj.message?.apiKey || '').trim();
                     const chatModel = (obj.message?.model || '').trim();
                     const messages = obj.message?.messages;
-                    if (!apiKey) {
+                    // Only require API key when using default OpenAI endpoint (local providers like Ollama don't need one)
+                    if (!apiKey && !baseUrl) {
                         this.sendTo(obj.from, obj.command, { error: 'No API key provided' }, obj.callback);
                         break;
                     }
@@ -1161,15 +1162,19 @@ class JavaScript extends Adapter {
                     const body = JSON.stringify({ model: chatModel, messages, stream: false });
                     const bodyBuffer = Buffer.from(body, 'utf8');
 
+                    const chatHeaders: Record<string, string | number> = {
+                        'Content-Type': 'application/json',
+                        'Content-Length': bodyBuffer.length,
+                    };
+                    if (apiKey) {
+                        chatHeaders.Authorization = `Bearer ${apiKey}`;
+                    }
+
                     const req = requestModule.request(
                         url,
                         {
                             method: 'POST',
-                            headers: {
-                                Authorization: `Bearer ${apiKey}`,
-                                'Content-Type': 'application/json',
-                                'Content-Length': bodyBuffer.length,
-                            },
+                            headers: chatHeaders,
                             timeout: 600000,
                         },
                         res => {
@@ -1248,7 +1253,8 @@ class JavaScript extends Adapter {
                 if (obj.callback) {
                     const baseUrl = (obj.message?.baseUrl || '').trim();
                     const apiKey = (obj.message?.apiKey || '').trim();
-                    if (!apiKey) {
+                    // Only require API key when using default OpenAI endpoint (local providers like Ollama don't need one)
+                    if (!apiKey && !baseUrl) {
                         this.sendTo(obj.from, obj.command, { error: 'No API key provided' }, obj.callback);
                         break;
                     }
@@ -1257,14 +1263,18 @@ class JavaScript extends Adapter {
                     const isHttps = urlObj.protocol === 'https:';
                     const requestModule = isHttps ? https : http;
 
+                    const testHeaders: Record<string, string> = {
+                        'Content-Type': 'application/json',
+                    };
+                    if (apiKey) {
+                        testHeaders.Authorization = `Bearer ${apiKey}`;
+                    }
+
                     const req = requestModule.request(
                         url,
                         {
                             method: 'GET',
-                            headers: {
-                                Authorization: `Bearer ${apiKey}`,
-                                'Content-Type': 'application/json',
-                            },
+                            headers: testHeaders,
                             timeout: 10000,
                         },
                         res => {
