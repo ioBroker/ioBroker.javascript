@@ -72,7 +72,7 @@ const OpenAiDialog = (props: OpenAiDialogProps): React.JSX.Element => {
     const [question, setQuestion] = useState(window.localStorage.getItem('openai-question') || '');
     const [answer, setAnswer] = useState('');
     const [working, setWorking] = useState(false);
-    const [error, setError] = useState(false);
+    const [error, setError] = useState<string | false>(false);
     const [model, setModel] = useState(window.localStorage.getItem('openai-model') || '');
     const [showKeyWarning, setShowKeyWarning] = useState(false);
     const [availableModels, setAvailableModels] = useState<string[]>([]);
@@ -428,7 +428,7 @@ Do not import any libraries as all functions are already imported.`,
                 <Button
                     color="primary"
                     variant="contained"
-                    disabled={!answer || error}
+                    disabled={!answer || !!error}
                     startIcon={<Check />}
                     onClick={() => {
                         props.onAddCode(answer);
