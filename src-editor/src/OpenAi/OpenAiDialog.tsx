@@ -50,7 +50,6 @@ interface OpenAiDialogProps {
 interface ApiConfig {
     apiKey: string;
     baseUrl?: string;
-    customModel?: string;
 }
 
 async function getApiConfig(
@@ -65,7 +64,6 @@ async function getApiConfig(
             return {
                 apiKey,
                 baseUrl: (config?.native.gptBaseUrl || '').trim() || undefined,
-                customModel: (config?.native.gptCustomModel || '').trim() || undefined,
             };
         }
     }
@@ -123,11 +121,9 @@ const OpenAiDialog = (props: OpenAiDialogProps): React.JSX.Element => {
 
             setAvailableModels(modelIds);
 
-            // Auto-select: custom model > saved model > first available
+            // Auto-select: saved model > first available
             const saved = window.localStorage.getItem('openai-model');
-            if (config.customModel && modelIds.includes(config.customModel)) {
-                setModel(config.customModel);
-            } else if (saved && modelIds.includes(saved)) {
+            if (saved && modelIds.includes(saved)) {
                 setModel(saved);
             } else if (modelIds.length > 0) {
                 setModel(modelIds[0]);
@@ -197,7 +193,7 @@ const OpenAiDialog = (props: OpenAiDialogProps): React.JSX.Element => {
         try {
             const openai = createOpenAiClient(config);
 
-            const effectiveModel = config.customModel || model;
+            const effectiveModel = model;
             const chatCompletionPhase1 = await openai.chat.completions.create({
                 model: effectiveModel,
                 messages: [

@@ -26,7 +26,6 @@ In den Adapter-Einstellungen unter "Haupteinstellungen" befinden sich drei Felde
 |-------------|-------------|
 | **ChatGPT API-Schlüssel** | Der API-Schlüssel. Erforderlich für alle Anbieter. Für Ollama kann ein beliebiger nicht-leerer Wert verwendet werden (z.B. `ollama`). |
 | **Eigene API Base-URL** | Die Base-URL des API-Anbieters. Leer lassen für OpenAI. Beispiele: `http://localhost:11434/v1` (Ollama), `http://localhost:1234/v1` (LM Studio). |
-| **Eigener Modellname** | Überschreibt die Modellauswahl im Dropdown mit einem festen Modellnamen. |
 
 ### API-Verbindung testen
 

@@ -114,13 +114,6 @@
           "help": "Custom API Base URL help",
           "placeholder": "https://api.openai.com/v1"
         },
-        "gptCustomModel": {
-          "type": "text",
-          "label": "Custom model name",
-          "xs": 12,
-          "sm": 12,
-          "help": "Custom model name help"
-        },
         "_testApiConnection": {
           "newLine": true,
           "type": "sendTo",

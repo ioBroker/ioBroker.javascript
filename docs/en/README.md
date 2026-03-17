@@ -27,7 +27,6 @@ In the adapter settings under "Main settings", you will find three fields for AI
 |---------|-------------|
 | **ChatGPT API key** | Your API key. Required for all providers. For Ollama you can use any non-empty string (e.g. `ollama`). |
 | **Custom API Base URL** | The base URL of your API provider. Leave empty for OpenAI. Examples: `http://localhost:11434/v1` (Ollama), `http://localhost:1234/v1` (LM Studio). |
-| **Custom model name** | Overrides the model dropdown selection with a fixed model name. |
 
 ### Test API Connection
 

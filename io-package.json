@@ -505,8 +505,7 @@
     "maxSetStatePerMinute": 1000,
     "maxTriggersPerScript": 100,
     "gptKey": "",
-    "gptBaseUrl": "",
-    "gptCustomModel": ""
+    "gptBaseUrl": ""
   },
   "objects": [
     {

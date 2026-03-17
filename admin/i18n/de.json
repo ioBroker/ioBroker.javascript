@@ -60,7 +60,5 @@
     "tooltip_useSystemGPS": "Die Koordinaten aus den Systemeinstellungen verwenden",
     "Custom API Base URL": "Eigene API Base-URL (z.B. für Ollama, LM Studio)",
     "Custom API Base URL help": "Leer lassen für OpenAI. Für Ollama: http://localhost:11434/v1",
-    "Custom model name": "Eigener Modellname",
-    "Custom model name help": "Überschreibt die Modellauswahl mit einem eigenen Modellnamen (z.B. llama3, mistral)",
     "Test API connection": "API-Verbindung testen"
 }
