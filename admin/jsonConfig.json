@@ -121,7 +121,6 @@
           "command": "testApiConnection",
           "jsonData": "{\"apiKey\": \"${data.gptKey}\", \"baseUrl\": \"${data.gptBaseUrl}\"}",
           "variant": "outlined",
-          "icon": "system",
           "xs": 12,
           "sm": 6,
           "alsoDependsOn": ["gptKey", "gptBaseUrl"],
