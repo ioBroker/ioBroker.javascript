@@ -385,5 +385,6 @@
     "API error: %s": "API 错误：%s",
     "Model \"%s\" not found": "未找到模型 \"%s\"",
     "Request failed: %s": "请求失败：%s",
-    "Retry": "重试"
+    "Retry": "重试",
+    "No running javascript instance found": "未找到正在运行的 JavaScript 实例"
 }

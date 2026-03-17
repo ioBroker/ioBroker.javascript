@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import OpenAI from 'openai';
 
 import {
     Button,
@@ -21,7 +20,6 @@ import { Utils, I18n, type AdminConnection, type ThemeType } from '@iobroker/ada
 
 import { detectDevices, type DeviceObject, systemPrompt } from './OpenAiPrompt';
 import ScriptEditorComponent from '../Components/ScriptEditorVanillaMonaco';
-import type { APIError } from 'openai/error';
 
 const LANGUAGES: Record<ioBroker.Languages, string> = {
     ru: 'Russian',
@@ -70,17 +68,6 @@ async function getApiConfig(
     return null;
 }
 
-function createOpenAiClient(config: ApiConfig): OpenAI {
-    const options: { apiKey: string; dangerouslyAllowBrowser: boolean; baseURL?: string } = {
-        apiKey: config.apiKey,
-        dangerouslyAllowBrowser: true,
-    };
-    if (config.baseUrl) {
-        options.baseURL = config.baseUrl;
-    }
-    return new OpenAI(options);
-}
-
 const OpenAiDialog = (props: OpenAiDialogProps): React.JSX.Element => {
     const [question, setQuestion] = useState(window.localStorage.getItem('openai-question') || '');
     const [answer, setAnswer] = useState('');
@@ -109,40 +96,41 @@ const OpenAiDialog = (props: OpenAiDialogProps): React.JSX.Element => {
             }
             apiConfigCache.current = config;
 
-            const openai = createOpenAiClient(config);
-            const response = await openai.models.list();
+            // Fetch models server-side via sendTo to avoid CORS issues
+            const instanceId = Object.keys(props.runningInstances)[0];
+            if (!instanceId) {
+                setModelsError(I18n.t('No running javascript instance found'));
+                setModelsLoading(false);
+                return;
+            }
+
+            const result: { success?: boolean; models?: string[]; error?: string } = await props.socket.sendTo(
+                instanceId,
+                'testApiConnection',
+                { apiKey: config.apiKey, baseUrl: config.baseUrl || '' },
+            );
+
             if (cancelled?.current) {
                 return;
             }
 
-            const modelIds = response.data
-                .map(m => m.id)
-                .sort((a, b) => a.localeCompare(b));
+            if (result.error) {
+                setModelsError(result.error);
+            } else if (result.models && result.models.length > 0) {
+                setAvailableModels(result.models);
 
-            setAvailableModels(modelIds);
-
-            // Auto-select: saved model > first available
-            const saved = window.localStorage.getItem('openai-model');
-            if (saved && modelIds.includes(saved)) {
-                setModel(saved);
-            } else if (modelIds.length > 0) {
-                setModel(modelIds[0]);
+                // Auto-select: saved model > first available
+                const saved = window.localStorage.getItem('openai-model');
+                if (saved && result.models.includes(saved)) {
+                    setModel(saved);
+                } else {
+                    setModel(result.models[0]);
+                }
             }
         } catch (err: unknown) {
             console.error('Failed to fetch models:', err);
             if (!cancelled?.current) {
-                const baseUrl = apiConfigCache.current?.baseUrl || 'https://api.openai.com/v1';
-                if (err instanceof TypeError || (err as any)?.code === 'ECONNREFUSED') {
-                    setModelsError(I18n.t('Could not connect to API at %s', baseUrl));
-                } else if ((err as APIError)?.status === 401) {
-                    setModelsError(I18n.t('Invalid API key'));
-                } else if ((err as APIError)?.status === 403) {
-                    setModelsError(I18n.t('Access denied by API'));
-                } else if ((err as APIError)?.status) {
-                    setModelsError(I18n.t('API error: %s', `${(err as APIError).status} - ${(err as APIError).message}`));
-                } else {
-                    setModelsError(I18n.t('Could not connect to API at %s', baseUrl));
-                }
+                setModelsError(I18n.t('Request failed: %s', String(err)));
             }
         }
         if (!cancelled?.current) {
@@ -187,72 +175,73 @@ const OpenAiDialog = (props: OpenAiDialogProps): React.JSX.Element => {
             return;
         }
 
+        const instanceId = Object.keys(props.runningInstances)[0];
+        if (!instanceId) {
+            setError(I18n.t('No running javascript instance found'));
+            return;
+        }
+
         setWorking(true);
         setError(false);
 
         try {
-            const openai = createOpenAiClient(config);
-
-            const effectiveModel = model;
-            const chatCompletionPhase1 = await openai.chat.completions.create({
-                model: effectiveModel,
-                messages: [
-                    {
-                        role: 'system',
-                        content: `You are programmer. Here is a documentation:\n\n${docs}`,
-                    },
-                    {
-                        role: 'system',
-                        content: `Here is list of devices:\n\n${JSON.stringify(devices, null, 2)}`,
-                    },
-                    {
-                        role: 'user',
-                        content: `Write JavaScript code that does:\n\n${question}
+            const result: { success?: boolean; content?: string; error?: string } = await props.socket.sendTo(
+                instanceId,
+                'chatCompletion',
+                {
+                    apiKey: config.apiKey,
+                    baseUrl: config.baseUrl || '',
+                    model,
+                    messages: [
+                        {
+                            role: 'system',
+                            content: `You are programmer. Here is a documentation:\n\n${docs}`,
+                        },
+                        {
+                            role: 'system',
+                            content: `Here is list of devices:\n\n${JSON.stringify(devices, null, 2)}`,
+                        },
+                        {
+                            role: 'user',
+                            content: `Write JavaScript code that does:\n\n${question}
 Return only code.
 Write comments in ${LANGUAGES[I18n.getLanguage()] || 'English'}.
 You can call async function directly in the code without encapsulate them in async function as this code will be already executed in async function.
 Do not import any libraries as all functions are already imported.`,
-                    },
-                ],
-            });
-            const message = chatCompletionPhase1.choices[0].message;
-            const m = message.content?.match(/```(javascript|js|typescript)\n?(.*)```(.*)/ms);
-            let code;
-            if (!m) {
-                code = message.content;
-                if (code?.startsWith('`')) {
-                    code = code.substring(1);
-                }
-                if (code?.endsWith('`')) {
-                    code = code.substring(0, code.length - 1);
-                }
+                        },
+                    ],
+                },
+            );
+
+            if (result.error) {
+                setError(result.error);
             } else {
-                code = m[2];
-                if (m[3]) {
-                    const comments = m[3].split('\n').map(line => line.trim());
-                    // skip empty lines on start and end
-                    while (comments[0] === '') {
-                        comments.shift();
+                const messageContent = result.content || '';
+                const m = messageContent.match(/```(javascript|js|typescript)\n?(.*)```(.*)/ms);
+                let code;
+                if (!m) {
+                    code = messageContent;
+                    if (code.startsWith('`')) {
+                        code = code.substring(1);
                     }
-                    code = `${comments.map(line => `// ${line}`).join('\n')}\n${code}`;
+                    if (code.endsWith('`')) {
+                        code = code.substring(0, code.length - 1);
+                    }
+                } else {
+                    code = m[2];
+                    if (m[3]) {
+                        const comments = m[3].split('\n').map(line => line.trim());
+                        while (comments[0] === '') {
+                            comments.shift();
+                        }
+                        code = `${comments.map(line => `// ${line}`).join('\n')}\n${code}`;
+                    }
                 }
+                setAnswer(code || '');
             }
-            console.log(message);
-            setAnswer(code || '');
         } catch (err: unknown) {
             console.error('Chat request failed:', err);
-            if (err instanceof TypeError || (err as any)?.code === 'ECONNREFUSED') {
-                const baseUrl = config.baseUrl || 'https://api.openai.com/v1';
-                setError(I18n.t('Could not connect to API at %s', baseUrl));
-            } else if ((err as APIError)?.status === 401) {
-                setError(I18n.t('Invalid API key'));
-            } else if ((err as APIError)?.status === 404) {
-                setError(I18n.t('Model "%s" not found', effectiveModel));
-            } else if ((err as APIError).error) {
-                setError(((err as APIError).error as any).message);
-            } else {
-                setError(I18n.t('Request failed: %s', String(err)));
-            }
+            setError(I18n.t('Request failed: %s', String(err)));
         }
 
         setWorking(false);

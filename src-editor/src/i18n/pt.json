@@ -385,5 +385,6 @@
     "API error: %s": "Erro de API: %s",
     "Model \"%s\" not found": "Modelo \"%s\" não encontrado",
     "Request failed: %s": "Solicitação falhou: %s",
-    "Retry": "Tentar novamente"
+    "Retry": "Tentar novamente",
+    "No running javascript instance found": "Nenhuma instância JavaScript em execução encontrada"
 }

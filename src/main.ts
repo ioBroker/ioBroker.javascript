@@ -1139,6 +1139,108 @@ class JavaScript extends Adapter {
                 break;
             }
 
+            case 'chatCompletion': {
+                // Proxy chat completion requests to an OpenAI-compatible API endpoint
+                if (obj.callback) {
+                    const baseUrl = (obj.message?.baseUrl || '').trim();
+                    const apiKey = (obj.message?.apiKey || '').trim();
+                    const chatModel = (obj.message?.model || '').trim();
+                    const messages = obj.message?.messages;
+                    if (!apiKey) {
+                        this.sendTo(obj.from, obj.command, { error: 'No API key provided' }, obj.callback);
+                        break;
+                    }
+                    if (!chatModel || !messages) {
+                        this.sendTo(obj.from, obj.command, { error: 'Model and messages are required' }, obj.callback);
+                        break;
+                    }
+                    const url = `${baseUrl || 'https://api.openai.com/v1'}/chat/completions`;
+                    const urlObj = new URL(url);
+                    const isHttps = urlObj.protocol === 'https:';
+                    const requestModule = isHttps ? https : http;
+                    const body = JSON.stringify({ model: chatModel, messages });
+
+                    const req = requestModule.request(
+                        url,
+                        {
+                            method: 'POST',
+                            headers: {
+                                Authorization: `Bearer ${apiKey}`,
+                                'Content-Type': 'application/json',
+                            },
+                            timeout: 120000,
+                        },
+                        res => {
+                            let data = '';
+                            res.on('data', (chunk: Buffer) => {
+                                data += chunk.toString();
+                            });
+                            res.on('end', () => {
+                                if (res.statusCode === 200) {
+                                    try {
+                                        const parsed = JSON.parse(data);
+                                        const content =
+                                            parsed.choices?.[0]?.message?.content || '';
+                                        this.sendTo(
+                                            obj.from,
+                                            obj.command,
+                                            { success: true, content },
+                                            obj.callback,
+                                        );
+                                    } catch {
+                                        this.sendTo(
+                                            obj.from,
+                                            obj.command,
+                                            { error: 'Invalid JSON response from API' },
+                                            obj.callback,
+                                        );
+                                    }
+                                } else {
+                                    let errorMsg = `API returned status ${res.statusCode}`;
+                                    try {
+                                        const parsed = JSON.parse(data);
+                                        if (parsed.error?.message) {
+                                            errorMsg = parsed.error.message;
+                                        }
+                                    } catch {
+                                        // ignore parse error
+                                    }
+                                    this.sendTo(
+                                        obj.from,
+                                        obj.command,
+                                        { error: errorMsg },
+                                        obj.callback,
+                                    );
+                                }
+                            });
+                        },
+                    );
+
+                    req.on('error', (err: Error) => {
+                        this.sendTo(
+                            obj.from,
+                            obj.command,
+                            { error: `Connection failed: ${err.message}` },
+                            obj.callback,
+                        );
+                    });
+
+                    req.on('timeout', () => {
+                        req.destroy();
+                        this.sendTo(
+                            obj.from,
+                            obj.command,
+                            { error: 'Connection timeout (120s)' },
+                            obj.callback,
+                        );
+                    });
+
+                    req.write(body);
+                    req.end();
+                }
+                break;
+            }
+
             case 'testApiConnection': {
                 // Test connection to an OpenAI-compatible API endpoint
                 if (obj.callback) {
