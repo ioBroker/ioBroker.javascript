@@ -57,5 +57,9 @@
     "tooltip_latitude": "Szerokość geograficzna 5.345 przy korzystaniu z funkcji astro",
     "tooltip_libraries": "Dodatkowe biblioteki NPM rozdzielone przecinkiem. Dostęp do nich w skryptach można uzyskać za pomocą require('name')",
     "tooltip_longitude": "Długość geograficzna 5.345 przy korzystaniu funkcji astro",
-    "tooltip_useSystemGPS": "Użyj współrzędnych z ustawień systemowych"
+    "tooltip_useSystemGPS": "Użyj współrzędnych z ustawień systemowych",
+    "Custom API Base URL": "Niestandardowy bazowy URL API (np. dla Ollama, LM Studio)",
+    "Custom API Base URL help": "Pozostaw puste dla OpenAI. Dla Ollama użyj http://localhost:11434/v1",
+    "Custom model name": "Niestandardowa nazwa modelu",
+    "Custom model name help": "Zastąp wybór modelu niestandardową nazwą modelu (np. llama3, mistral)"
 }

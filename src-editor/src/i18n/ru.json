@@ -377,5 +377,6 @@
     "with": "с",
     "with date": "с датой",
     "with offset": "со сдвигом",
-    "wizard": "Мастер"
+    "wizard": "Мастер",
+    "Loading models...": "Загрузка моделей..."
 }

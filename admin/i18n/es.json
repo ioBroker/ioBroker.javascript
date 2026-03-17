@@ -57,5 +57,9 @@
   "tooltip_latitude": "Latitud como 5.345 para usar funciones astro",
   "tooltip_libraries": "Bibliotecas adicionales de NPM divididas por comas. Puede acceder a ellos con require ('nombre') en las secuencias de comandos.",
   "tooltip_longitude": "Longitud como 5.345 para usar funciones astro",
-  "tooltip_useSystemGPS": "Usa las coordenadas de la configuración del sistema"
+  "tooltip_useSystemGPS": "Usa las coordenadas de la configuración del sistema",
+  "Custom API Base URL": "URL base de API personalizada (p. ej. para Ollama, LM Studio)",
+  "Custom API Base URL help": "Dejar vacío para OpenAI. Para Ollama usar http://localhost:11434/v1",
+  "Custom model name": "Nombre de modelo personalizado",
+  "Custom model name help": "Reemplazar la selección de modelo con un nombre de modelo personalizado (p. ej. llama3, mistral)"
 }

@@ -377,5 +377,6 @@
     "with": "mit",
     "with date": "mit Datum",
     "with offset": "mit Versatz",
-    "wizard": "Assistent"
+    "wizard": "Assistent",
+    "Loading models...": "Modelle werden geladen..."
 }

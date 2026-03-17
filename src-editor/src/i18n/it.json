@@ -377,5 +377,6 @@
     "with": "con",
     "with date": "con data",
     "with offset": "con offset",
-    "wizard": "procedura guidata"
+    "wizard": "procedura guidata",
+    "Loading models...": "Caricamento modelli..."
 }

@@ -504,7 +504,9 @@
     "createAstroStates": true,
     "maxSetStatePerMinute": 1000,
     "maxTriggersPerScript": 100,
-    "gptKey": ""
+    "gptKey": "",
+    "gptBaseUrl": "",
+    "gptCustomModel": ""
   },
   "objects": [
     {

@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import OpenAI from 'openai';
 
 import {
@@ -47,16 +47,107 @@ interface OpenAiDialogProps {
     onClose: () => void;
 }
 
+interface ApiConfig {
+    apiKey: string;
+    baseUrl?: string;
+    customModel?: string;
+}
+
+async function getApiConfig(
+    socket: AdminConnection,
+    runningInstances: Record<string, any>,
+): Promise<ApiConfig | null> {
+    const ids = Object.keys(runningInstances);
+    for (let i = 0; i < ids.length; i++) {
+        const config: ioBroker.Object | null | undefined = await socket.getObject(ids[i]);
+        const apiKey = (config?.native.gptKey || '').trim();
+        if (apiKey) {
+            return {
+                apiKey,
+                baseUrl: (config?.native.gptBaseUrl || '').trim() || undefined,
+                customModel: (config?.native.gptCustomModel || '').trim() || undefined,
+            };
+        }
+    }
+    return null;
+}
+
+function createOpenAiClient(config: ApiConfig): OpenAI {
+    const options: { apiKey: string; dangerouslyAllowBrowser: boolean; baseURL?: string } = {
+        apiKey: config.apiKey,
+        dangerouslyAllowBrowser: true,
+    };
+    if (config.baseUrl) {
+        options.baseURL = config.baseUrl;
+    }
+    return new OpenAI(options);
+}
+
 const OpenAiDialog = (props: OpenAiDialogProps): React.JSX.Element => {
     const [question, setQuestion] = useState(window.localStorage.getItem('openai-question') || '');
     const [answer, setAnswer] = useState('');
     const [working, setWorking] = useState(false);
     const [error, setError] = useState(false);
-    const [model, setModel] = useState(window.localStorage.getItem('openai-model') || 'gpt-4o');
+    const [model, setModel] = useState(window.localStorage.getItem('openai-model') || '');
     const [showKeyWarning, setShowKeyWarning] = useState(false);
+    const [availableModels, setAvailableModels] = useState<string[]>([]);
+    const [modelsLoading, setModelsLoading] = useState(true);
     const devicesCache = useRef<null | DeviceObject[]>(null);
-    const gptKeyCache = useRef<string | null>(null);
+    const apiConfigCache = useRef<ApiConfig | null>(null);
     const docsCache = useRef<string | null>(null);
+
+    // Fetch API config and available models on mount
+    useEffect(() => {
+        let cancelled = false;
+
+        async function loadModels(): Promise<void> {
+            setModelsLoading(true);
+            try {
+                const config = await getApiConfig(props.socket, props.runningInstances);
+                if (cancelled) {
+                    return;
+                }
+                if (!config) {
+                    setModelsLoading(false);
+                    return;
+                }
+                apiConfigCache.current = config;
+
+                const openai = createOpenAiClient(config);
+                const response = await openai.models.list();
+                if (cancelled) {
+                    return;
+                }
+
+                const modelIds = response.data
+                    .map(m => m.id)
+                    .sort((a, b) => a.localeCompare(b));
+
+                setAvailableModels(modelIds);
+
+                // Auto-select: custom model > saved model > first available
+                const saved = window.localStorage.getItem('openai-model');
+                if (config.customModel && modelIds.includes(config.customModel)) {
+                    setModel(config.customModel);
+                } else if (saved && modelIds.includes(saved)) {
+                    setModel(saved);
+                } else if (modelIds.length > 0) {
+                    setModel(modelIds[0]);
+                }
+            } catch (err) {
+                console.error('Failed to fetch models:', err);
+            }
+            if (!cancelled) {
+                setModelsLoading(false);
+            }
+        }
+
+        void loadModels();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [props.socket, props.runningInstances]);
 
     const ask = useCallback(async (): Promise<void> => {
         let devices: DeviceObject[];
@@ -67,19 +158,11 @@ const OpenAiDialog = (props: OpenAiDialogProps): React.JSX.Element => {
         } else {
             devices = devicesCache.current;
         }
-        let apiKey: string | undefined;
-        if (!gptKeyCache.current) {
-            const ids = Object.keys(props.runningInstances);
-            for (let i = 0; i < ids.length; i++) {
-                const config: ioBroker.Object | null | undefined = await props.socket.getObject(ids[i]);
-                apiKey = (config?.native.gptKey || '').trim();
-                if (apiKey) {
-                    break;
-                }
-            }
-            gptKeyCache.current = apiKey || null;
-        } else {
-            apiKey = gptKeyCache.current;
+
+        let config = apiConfigCache.current;
+        if (!config) {
+            config = await getApiConfig(props.socket, props.runningInstances);
+            apiConfigCache.current = config;
         }
 
         let docs;
@@ -89,7 +172,7 @@ const OpenAiDialog = (props: OpenAiDialogProps): React.JSX.Element => {
         } else {
             docs = docsCache.current;
         }
-        if (!apiKey) {
+        if (!config) {
             setShowKeyWarning(true);
             return;
         }
@@ -98,10 +181,11 @@ const OpenAiDialog = (props: OpenAiDialogProps): React.JSX.Element => {
         setError(false);
 
         try {
-            const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
+            const openai = createOpenAiClient(config);
 
+            const effectiveModel = config.customModel || model;
             const chatCompletionPhase1 = await openai.chat.completions.create({
-                model,
+                model: effectiveModel,
                 messages: [
                     {
                         role: 'system',
@@ -245,31 +329,37 @@ Do not import any libraries as all functions are already imported.`,
                 <div style={{ display: 'flex', alignItems: 'baseline' }}>
                     <Button
                         variant="contained"
-                        disabled={working || !question}
+                        disabled={working || !question || !model}
                         startIcon={<Question />}
                         onClick={async () => ask()}
                     >
                         {working ? <CircularProgress size={24} /> : I18n.t('Ask')}
                     </Button>
                     <FormControl
-                        style={{ width: 150, marginLeft: 20 }}
+                        style={{ width: 300, marginLeft: 20 }}
                         variant="standard"
                     >
                         <InputLabel>{I18n.t('Model')}</InputLabel>
                         <Select
                             variant="standard"
                             value={model}
+                            disabled={modelsLoading}
                             onChange={e => {
                                 window.localStorage.setItem('openai-model', e.target.value);
                                 error && setError(false);
                                 setModel(e.target.value);
                             }}
                         >
-                            <MenuItem value="gpt-4o">GPT-4o</MenuItem>
-                            <MenuItem value="gpt-4-turbo">GPT-4 Turbo</MenuItem>
-                            <MenuItem value="gpt-4-32k">GPT-4 32k</MenuItem>
-                            <MenuItem value="gpt-4">GPT-4</MenuItem>
-                            <MenuItem value="gpt-3.5-turbo-16k">GPT-3.5 Turbo</MenuItem>
+                            {modelsLoading && (
+                                <MenuItem value="" disabled>
+                                    {I18n.t('Loading models...')}
+                                </MenuItem>
+                            )}
+                            {availableModels.map(m => (
+                                <MenuItem key={m} value={m}>
+                                    {m}
+                                </MenuItem>
+                            ))}
                         </Select>
                     </FormControl>
                 </div>

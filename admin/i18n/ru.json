@@ -57,5 +57,9 @@
   "tooltip_latitude": "Широта в виде 5.435 для астро-функций",
   "tooltip_libraries": "Дополнительные NPM пакеты через запятую. Их можно использовать в скриптах, как require('name').",
   "tooltip_longitude": "Широта в виде 5.435 для астро-функций",
-  "tooltip_useSystemGPS": "Использовать координаты из системных настроек"
+  "tooltip_useSystemGPS": "Использовать координаты из системных настроек",
+  "Custom API Base URL": "Пользовательский базовый URL API (напр. для Ollama, LM Studio)",
+  "Custom API Base URL help": "Оставить пустым для OpenAI. Для Ollama используйте http://localhost:11434/v1",
+  "Custom model name": "Пользовательское имя модели",
+  "Custom model name help": "Заменить выбор модели пользовательским именем модели (напр. llama3, mistral)"
 }

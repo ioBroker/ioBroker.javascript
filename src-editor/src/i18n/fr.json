@@ -377,5 +377,6 @@
     "with": "avec",
     "with date": "avec date",
     "with offset": "avec offset",
-    "wizard": "Wizard"
+    "wizard": "Wizard",
+    "Loading models...": "Chargement des modèles..."
 }

@@ -377,5 +377,6 @@
     "with": "met",
     "with date": "met datum",
     "with offset": "met offset",
-    "wizard": "tovenaar"
+    "wizard": "tovenaar",
+    "Loading models...": "Modellen laden..."
 }

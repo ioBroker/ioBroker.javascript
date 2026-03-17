@@ -377,5 +377,6 @@
     "with": "z",
     "with date": "z datą",
     "with offset": "z przesunięciem",
-    "wizard": "Wizard"
+    "wizard": "Wizard",
+    "Loading models...": "Ładowanie modeli..."
 }

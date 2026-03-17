@@ -57,5 +57,9 @@
     "tooltip_latitude": "Der Breitengrad im Format 5.345 für Astro-Funktion",
     "tooltip_libraries": "Zusätzliche NPM Pakete mit Komma getrennt. Man kann die Pakete mit require('name') benutzen.",
     "tooltip_longitude": "Der Längengrad im Format 5.345 für Astro-Funktion",
-    "tooltip_useSystemGPS": "Die Koordinaten aus den Systemeinstellungen verwenden"
+    "tooltip_useSystemGPS": "Die Koordinaten aus den Systemeinstellungen verwenden",
+    "Custom API Base URL": "Eigene API Base-URL (z.B. für Ollama, LM Studio)",
+    "Custom API Base URL help": "Leer lassen für OpenAI. Für Ollama: http://localhost:11434/v1",
+    "Custom model name": "Eigener Modellname",
+    "Custom model name help": "Überschreibt die Modellauswahl mit einem eigenen Modellnamen (z.B. llama3, mistral)"
 }
