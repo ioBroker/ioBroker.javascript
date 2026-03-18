@@ -27,7 +27,7 @@ Executes Javascript, Typescript Scripts.
 	### **WORK IN PROGRESS**
 -->
 ### 9.0.18 (2026-01-11)
-* (@GermanBluefox) Corrected error message with `lastSync`
+* (@GermanBluefox) Corrected an error message with `lastSync`
 * (@klein0r) Corrected JavaScript filter
 
 ### 9.0.17 (2025-12-14)
