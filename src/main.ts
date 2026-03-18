@@ -1186,14 +1186,8 @@ class JavaScript extends Adapter {
                                 if (res.statusCode === 200) {
                                     try {
                                         const parsed = JSON.parse(data);
-                                        const content =
-                                            parsed.choices?.[0]?.message?.content || '';
-                                        this.sendTo(
-                                            obj.from,
-                                            obj.command,
-                                            { success: true, content },
-                                            obj.callback,
-                                        );
+                                        const content = parsed.choices?.[0]?.message?.content || '';
+                                        this.sendTo(obj.from, obj.command, { success: true, content }, obj.callback);
                                     } catch {
                                         this.sendTo(
                                             obj.from,
@@ -1212,12 +1206,7 @@ class JavaScript extends Adapter {
                                     } catch {
                                         // ignore parse error
                                     }
-                                    this.sendTo(
-                                        obj.from,
-                                        obj.command,
-                                        { error: errorMsg },
-                                        obj.callback,
-                                    );
+                                    this.sendTo(obj.from, obj.command, { error: errorMsg }, obj.callback);
                                 }
                             });
                         },
@@ -1234,12 +1223,7 @@ class JavaScript extends Adapter {
 
                     req.on('timeout', () => {
                         req.destroy();
-                        this.sendTo(
-                            obj.from,
-                            obj.command,
-                            { error: 'Connection timeout (600s)' },
-                            obj.callback,
-                        );
+                        this.sendTo(obj.from, obj.command, { error: 'Connection timeout (600s)' }, obj.callback);
                     });
 
                     req.write(bodyBuffer);
@@ -1313,12 +1297,7 @@ class JavaScript extends Adapter {
                                         obj.callback,
                                     );
                                 } else if (res.statusCode === 403) {
-                                    this.sendTo(
-                                        obj.from,
-                                        obj.command,
-                                        { error: 'Access denied (403)' },
-                                        obj.callback,
-                                    );
+                                    this.sendTo(obj.from, obj.command, { error: 'Access denied (403)' }, obj.callback);
                                 } else {
                                     this.sendTo(
                                         obj.from,
@@ -1342,12 +1321,7 @@ class JavaScript extends Adapter {
 
                     req.on('timeout', () => {
                         req.destroy();
-                        this.sendTo(
-                            obj.from,
-                            obj.command,
-                            { error: 'Connection timeout (10s)' },
-                            obj.callback,
-                        );
+                        this.sendTo(obj.from, obj.command, { error: 'Connection timeout (10s)' }, obj.callback);
                     });
 
                     req.end();
