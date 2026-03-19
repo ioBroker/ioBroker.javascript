@@ -24,16 +24,18 @@ Executes Javascript, Typescript Scripts.
 
 ## Changelog
 <!--
-	### **WORK IN PROGRESS**
+### **WORK IN PROGRESS**
+-->
+### **WORK IN PROGRESS**
 * Added support for custom OpenAI-compatible API endpoints (e.g. Ollama, LM Studio, Google Gemini, DeepSeek, OpenRouter)
 * Added configurable base URL in adapter settings
 * Models are now fetched dynamically from the configured API endpoint
-* Added "Test API connection" button in adapter settings
+* Added the "Test API connection" button in adapter settings
 * Added error handling with user-friendly messages for unreachable providers
 * Added retry functionality for failed model loading
 * All API calls (models + chat) are proxied server-side to avoid CORS issues with local providers
 * Strip LLM thinking artifacts from responses (for local models like Ollama)
--->
+
 ### 9.0.18 (2026-01-11)
 * (@GermanBluefox) Corrected an error message with `lastSync`
 * (@klein0r) Corrected JavaScript filter
