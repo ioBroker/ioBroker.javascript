@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "9.0.18",
+    "version": "9.1.0",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "9.1.0": {
+        "en": "Added support for custom OpenAI-compatible API endpoints (e.g. Ollama, LM Studio, Google Gemini, DeepSeek, OpenRouter)\nAdded configurable base URL in adapter settings\nModels are now fetched dynamically from the configured API endpoint\nAdded the \"Test API connection\" button in adapter settings\nAdded error handling with user-friendly messages for unreachable providers\nAdded retry functionality for failed model loading\nAll API calls (models + chat) are proxied server-side to avoid CORS issues with local providers\nStrip LLM thinking artifacts from responses (for local models like Ollama)",
+        "de": "Unterstützung für benutzerdefinierte OpenAI-kompatible API-Endpunkte (z.B. Ollama, LM Studio, Google Gemini, DeepSeek, OpenRouter)\nKonfigurierbare Basis-URL in Adaptereinstellungen hinzugefügt\nModelle werden nun dynamisch vom konfigurierten API-Endpunkt abgeholt\nHinzufügen der Schaltfläche \"Test API-Verbindung\" in Adaptereinstellungen\nHinzugefügt Fehlerbehandlung mit benutzerfreundlichen Nachrichten für unerreichbare Anbieter\nZusätzliche Retry-Funktionalität für gescheiterte Modellbeladung\nAlle API-Anrufe (Modelle + Chat) sind serverseitig proxied, um CORS Probleme mit lokalen Anbietern zu vermeiden\nStrip LLM denkende Artefakte aus Antworten (für lokale Modelle wie Ollama)",
+        "ru": "Добавлена поддержка пользовательских OpenAI-совместимых конечных точек API (например, Ollama, LM Studio, Google Gemini, DeepSeek, OpenRouter)\nДобавлен настраиваемый базовый URL в настройках адаптера\nМодели теперь динамически извлекаются из конфигурированной конечной точки API\nДобавлена кнопка «Test API connection» в настройках адаптера\nДобавлена обработка ошибок с помощью удобных сообщений для недостижимых поставщиков\nДобавлена функция retry для неудавшейся загрузки модели\nВсе вызовы API (модели + чат) проходят на стороне сервера, чтобы избежать проблем с CORS с местными провайдерами\nСтриптиз LLM мыслящие артефакты из ответов (для местных моделей, таких как Ollama)",
+        "pt": "Adicionado suporte para endpoints personalizados compatíveis com OpenAI API (por exemplo, Ollama, LM Studio, Google Gemini, DeepSeek, OpenRouter)\nAdicionado URL base configurável nas configurações do adaptador\nOs modelos agora são obtidos dinamicamente do endpoint da API configurado\nAdicionado o botão \"Teste conexão API\" nas configurações do adaptador\nTratamento de erros adicionado com mensagens amigáveis para provedores inalcançáveis\nAdicionada funcionalidade de repetição para carregamento do modelo falhou\nTodas as chamadas de API (modelos + chat) são proxied servidor-lado para evitar problemas CORS com fornecedores locais\nRetire artefatos de pensamento LLM de respostas (para modelos locais como Ollama)",
+        "nl": "Extra ondersteuning voor aangepaste OpenAI-compatibele API-eindpunten (bijv. Ollama, LM Studio, Google Gemini, DeepSeek, OpenRouter)\nConfigureerbare basis-URL in adapterinstellingen toegevoegd\nModellen worden nu dynamisch opgehaald uit het geconfigureerde API-eindpunt\nToegevoegd de \"Test API connection\" knop in adapter instellingen\nToegevoegd foutafhandeling met gebruiksvriendelijke berichten voor onbereikbare providers\nName\nAlle API-gesprekken (modellen + chat) zijn aangeprezen server-kant om CORS problemen met lokale aanbieders te voorkomen\nStrip LLM denken artefacten uit reacties (voor lokale modellen zoals Ollama)",
+        "fr": "Ajout de la prise en charge des paramètres d'API compatibles OpenAI personnalisés (par exemple Ollama, LM Studio, Google Gemini, DeepSeek, OpenRouter)\nAjout de l'URL de base configurable dans les paramètres de l'adaptateur\nLes modèles sont maintenant récupérés dynamiquement à partir du paramètre API configuré\nAjout du bouton \"Tester la connexion API\" dans les paramètres de l'adaptateur\nAjout du traitement des erreurs avec des messages conviviaux pour les fournisseurs inaccessibles\nAjout de la fonctionnalité de réessayer pour le chargement du modèle échoué\nTous les appels API (modèles + chat) sont proxiés côté serveur pour éviter les problèmes CORS avec les fournisseurs locaux\nStrip LLM artefacts de réflexion des réponses (pour les modèles locaux comme Ollama)",
+        "it": "Aggiunto il supporto per i endpoint API personalizzati compatibili con OpenAI (ad esempio Ollama, LM Studio, Google Gemini, DeepSeek, OpenRouter)\nAggiunto URL di base configurabile nelle impostazioni dell'adattatore\nI modelli sono ora recuperati dinamicamente dal endpoint API configurato\nAggiunto il pulsante \"Test API Connection\" nelle impostazioni dell'adattatore\nGestione degli errori aggiunti con messaggi intuitivi per fornitori irraggiungibili\nAggiunta funzionalità retry per il caricamento del modello fallito\nTutte le chiamate API (modelli + chat) sono proxied server-side per evitare problemi CORS con i fornitori locali\nStrip LLM pensa artefatti da risposte (per modelli locali come Ollama)",
+        "es": "Añadido soporte para terminales API compatibles con OpenAI (por ejemplo Ollama, LM Studio, Google Gemini, DeepSeek, OpenRouter)\nURL de base configurable en la configuración del adaptador\nLos modelos ahora se recogen dinámicamente desde el punto final de API configurado\nSe agregó el botón \"Test API connection\" en la configuración del adaptador\nManejo de error añadido con mensajes fáciles de usar para proveedores no accesibles\nFunción de retry adicional para la carga del modelo fallido\nTodas las llamadas de API (models + chat) son proxied servidor-side para evitar problemas de CORS con proveedores locales\nStrip LLM piensa artefactos de respuestas (para modelos locales como Ollama)",
+        "pl": "Dodano obsługę własnych punktów końcowych kompatybilnych z OpenAI (np. Ollama, LM Studio, Google Gemini, DeepSeek, OpenRouter)\nDodano konfigurowalny podstawowy adres URL w ustawieniach adaptera\nModele są teraz odbierane dynamicznie z skonfigurowanego punktu końcowego API\nDodano przycisk \"Test API connection\" w ustawieniach adaptera\nDodano obsługę błędów z komunikatami przyjaznymi dla użytkownika dla nieosiągalnych dostawców\nDodano funkcję ponownego testowania dla nieudanego obciążenia modelu\nWszystkie połączenia API (modele + czat) są proxied server- side, aby uniknąć problemów CORS z lokalnymi dostawcami\nStrip LLM myśli artefakty z odpowiedzi (dla lokalnych modeli takich jak Ollama)",
+        "uk": "Додано підтримку користувацького OpenAI-сумісного API endpoints (наприклад, Ollama, LM Studio, Google Gemini, DeepSeek, OpenRouter)\nДодано налаштування URL-адреси бази в налаштуваннях адаптера\nМоделі тепер динамічно від налаштованої точки API\nДодано кнопку \"Test API підключення\" в налаштуваннях адаптера\nДодана обробка помилок з зручними повідомленнями для ненадійних постачальників\nДодано функцію трейдингу для завантаження моделі\nУсі виклики API (модельи + чат) проксіовані сервери, щоб уникнути проблем з локальними постачальниками\nСмуга LLM мислення артефакти відповідей (для місцевих моделей, таких як Ollama)",
+        "zh-cn": "添加自定义的 OpenAI 兼容 API 端点支持( 如 Ollama, LM Studio, Google 双子座, DeepSeek, OpenRouter)\n在适配器设置中添加可配置的基础 URL\n现在从配置的 API 端点动态获取模型\n在适配器设置中添加“ 测试 API 连接” 按钮\n为无法访问的提供者处理方便用户的信件时添加错误处理\n为失败的模型加载添加了重试功能\n所有 API 呼叫( 模式 + 聊天) 均为代理服务器侧面, 以避免 CORS 与本地供应商发生问题\n从回应中脱去LLM思考文物(为奥拉马等本地模型)"
+      },
       "9.0.18": {
         "en": "Corrected error message with `lastSync`\nCorrected JavaScript filter",
         "de": "Korrigierte Fehlermeldung mit `last Synthetisch `\nJavaScript-Filter korrigiert",
@@ -117,19 +130,6 @@
         "pl": "Dodano możliwość szyfrowania skryptów hasłem (tylko dla sprzedawców)",
         "uk": "Додана можливість шифрування сценаріїв з паролем (тільки для постачальників)",
         "zh-cn": "添加使用密码加密脚本的可能性( 只针对供应商)"
-      },
-      "9.0.11": {
-        "en": "Corrected the rule editor if the condition is empty\nCorrected types for TypeScript",
-        "de": "Korrektur des Regeleditors, wenn die Bedingung leer ist\nKorrigierte Typen für TypeScript",
-        "ru": "Исправлен редактор правил, если условие пусто\nИсправленные типы для TypeScript",
-        "pt": "Corrigido o editor de regras se a condição estiver vazia\nTipos corrigidos para TypeScript",
-        "nl": "De regelbewerker corrigeren als de voorwaarde leeg is\nGecorrigeerde types voor TypeScript",
-        "fr": "Correction de l'éditeur de règles si la condition est vide\nTypes corrigés pour TypeScript",
-        "it": "Corretto l'editor di regola se la condizione è vuota\nTipi corretti per TypeScript",
-        "es": "Corregido el editor de reglas si la condición está vacía\nTipos corregidos para TipoScript",
-        "pl": "Poprawiono edytor zasad, jeśli warunek jest pusty\nPoprawione typy dla TypeScript",
-        "uk": "Виправлено редактор правила, якщо стан порожній\nВиправлені типи для TypeScript",
-        "zh-cn": "如果条件为空, 更正规则编辑器\n类型脚本的校正类型"
       }
     },
     "platform": "Javascript/Node.js",

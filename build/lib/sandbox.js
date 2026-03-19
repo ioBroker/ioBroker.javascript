@@ -1179,7 +1179,7 @@ function sandBox(script, name, verbose, debug, context) {
                 options = {};
             }
             const config = {
-                ...(0, tools_1.getHttpRequestConfig)(url, options),
+                ...(0, tools_1.getHttpRequestConfig)(url, options, context.allowSelfSignedCerts),
                 method: 'get',
             };
             if (sandbox.verbose) {
@@ -1240,7 +1240,7 @@ function sandBox(script, name, verbose, debug, context) {
                 options = {};
             }
             const config = {
-                ...(0, tools_1.getHttpRequestConfig)(url, options),
+                ...(0, tools_1.getHttpRequestConfig)(url, options, context.allowSelfSignedCerts),
                 method: 'post',
                 data,
             };
@@ -2204,7 +2204,7 @@ function sandBox(script, name, verbose, debug, context) {
                                 if (timers[_id_][ttt].id === id) {
                                     return {
                                         timerId: id,
-                                        left: timers[_id_][ttt].delay - (now - timers[id][ttt].ts),
+                                        left: timers[_id_][ttt].delay - (now - timers[_id_][ttt].ts),
                                         delay: timers[_id_][ttt].delay,
                                         val: timers[_id_][ttt].val,
                                         ack: timers[_id_][ttt].ack,

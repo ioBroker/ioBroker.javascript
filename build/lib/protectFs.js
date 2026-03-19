@@ -189,19 +189,35 @@ class ProtectFs {
     }
     static checkProtected(file, readOnly) {
         if (file.fd) {
+            // FileHandle objects bypass path checks — they were already validated at open() time.
+            // This is safe because the sandbox only exposes the wrapped fs where open() is protected.
             return;
         }
-        const filePath = (0, node_path_1.normalize)(file.toString());
+        let filePath;
+        try {
+            // Use resolve() instead of normalize() to get an absolute path and eliminate .. traversals.
+            // Then try realpath to resolve symlinks — fall back to resolved path if file doesn't exist yet.
+            const resolved = (0, node_path_1.resolve)(file.toString());
+            try {
+                filePath = nodeFS.realpathSync(resolved);
+            }
+            catch {
+                filePath = resolved;
+            }
+        }
+        catch {
+            filePath = (0, node_path_1.normalize)(file.toString());
+        }
         if (filePath.endsWith(`-data${node_path_1.sep}objects.json`) || filePath.endsWith(`-data${node_path_1.sep}objects.jsonl`)) {
-            ProtectFs.log?.error(`May not read ${file.toString()}`);
+            ProtectFs.log?.error(`May not access ${file.toString()}`);
             throw new Error('Permission denied');
         }
         if (!readOnly && filePath.startsWith((0, node_path_1.join)(ProtectFs.staticIoBrokerDataDir, 'files'))) {
-            ProtectFs.log?.error(`May not read ${file.toString()} - use writeFile instead`);
+            ProtectFs.log?.error(`May not write ${file.toString()} - use writeFile instead`);
             throw new Error('Permission denied');
         }
         if (!readOnly && filePath.startsWith(`file://${(0, node_path_1.join)(ProtectFs.staticIoBrokerDataDir, 'files')}`)) {
-            ProtectFs.log?.error(`May not read ${file.toString()} - use writeFile instead`);
+            ProtectFs.log?.error(`May not write ${file.toString()} - use writeFile instead`);
             throw new Error('Permission denied');
         }
     }

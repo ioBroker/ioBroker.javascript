@@ -1,0 +1,1 @@
+import{i as r}from"./iobroker_javascript__loadShare__react_mf_2_dom__loadShare__.mjs-DeVAS-oa.js";import{g as a}from"./iobroker_javascript__loadShare__react__loadShare__.mjs_commonjs-proxy-CE9lvhW8.js";const o=a(r);export{o as r};

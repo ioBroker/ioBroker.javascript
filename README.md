@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 9.1.0 (2026-03-19)
 * Added support for custom OpenAI-compatible API endpoints (e.g. Ollama, LM Studio, Google Gemini, DeepSeek, OpenRouter)
 * Added configurable base URL in adapter settings
 * Models are now fetched dynamically from the configured API endpoint
@@ -53,9 +53,6 @@ Executes Javascript, Typescript Scripts.
 * (@GermanBluefox) Added a new block: "unconditional return"
 * (@GermanBluefox) Type definitions for TypeScript were updated
 * (@GermanBluefox) Corrected bug with deleting of sub-folders
-
-### 9.0.7 (2025-06-29)
-* (@GermanBluefox) Fixing some blocks in blockly: time, function
 
 ## License
 The MIT License (MIT)

@@ -1,0 +1,1 @@
+import"./ConfigCustomJavascriptSet__loadShare__react__loadShare__.mjs-0SjJESw9.js";import{d as m}from"./defaultTheme-F2iJF2G2.js";import{T as o}from"./createTheme-Wd4QxQE0.js";import{u as r}from"./useTheme-DWZ6jNyq.js";function f(){const e=r(m);return e[o]||e}export{f as u};
