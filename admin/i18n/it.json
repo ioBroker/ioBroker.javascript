@@ -60,5 +60,11 @@
   "tooltip_useSystemGPS": "Usa le coordinate dalle impostazioni di sistema",
   "Custom API Base URL": "URL base API personalizzata (es. per Ollama, LM Studio)",
   "Custom API Base URL help": "Lasciare vuoto per OpenAI. Per Ollama usare http://localhost:11434/v1",
-  "Test API connection": "Testa connessione API"
+  "Test API connection": "Testa connessione API",
+  "AI settings": "Impostazioni IA",
+  "AI settings description": "Se si desidera utilizzare la generazione di codice tramite IA, è possibile definire qui le chiavi API per i rispettivi provider. È necessaria solo la chiave del provider utilizzato.",
+  "ChatGPT API key": "Chiave API ChatGPT",
+  "Anthropic API key": "Chiave API Anthropic",
+  "Gemini API key": "Chiave API Gemini",
+  "DeepSeek API key": "Chiave API DeepSeek"
 }

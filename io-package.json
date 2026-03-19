@@ -505,7 +505,10 @@
     "maxSetStatePerMinute": 1000,
     "maxTriggersPerScript": 100,
     "gptKey": "",
-    "gptBaseUrl": ""
+    "gptBaseUrl": "",
+    "claudeKey": "",
+    "geminiKey": "",
+    "deepseekKey": ""
   },
   "objects": [
     {

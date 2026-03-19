@@ -35,7 +35,7 @@ Executes Javascript, Typescript Scripts.
 * Strip LLM thinking artifacts from responses (for local models like Ollama)
 -->
 ### 9.0.18 (2026-01-11)
-* (@GermanBluefox) Corrected error message with `lastSync`
+* (@GermanBluefox) Corrected an error message with `lastSync`
 * (@klein0r) Corrected JavaScript filter
 
 ### 9.0.17 (2025-12-14)
@@ -48,7 +48,7 @@ Executes Javascript, Typescript Scripts.
 ### 9.0.10 (2025-07-27)
 * (@klein0r) Added Blockly block to format a numeric value
 * (@GermanBluefox) Fixing some blocks in blockly: cron, time
-* (@GermanBluefox) Added new block: "unconditional return"
+* (@GermanBluefox) Added a new block: "unconditional return"
 * (@GermanBluefox) Type definitions for TypeScript were updated
 * (@GermanBluefox) Corrected bug with deleting of sub-folders
 

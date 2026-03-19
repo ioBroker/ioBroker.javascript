@@ -33,6 +33,10 @@ export interface JavaScriptAdapterConfig {
     maxSetStatePerMinute: number;
     maxTriggersPerScript: number;
     gptKey: string;
+    gptBaseUrl: string;
+    claudeKey: string;
+    geminiKey: string;
+    deepseekKey: string;
     password?: string;
 }
 
