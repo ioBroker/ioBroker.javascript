@@ -275,9 +275,9 @@ export default class ProtectFs {
                 ProtectFs.checkProtected(path, false);
                 return nodeFS.promises.rm.call(this, path, options); // async function rm(path, options) {
             },
-            rmdir: async (path: PathLike, options?: RmDirOptions): Promise<void> => {
+            rmdir: async (path: PathLike): Promise<void> => {
                 ProtectFs.checkProtected(path, false);
-                return nodeFS.promises.rmdir.call(this, path, options); // async function rmdir(path, options) {
+                return nodeFS.promises.rmdir.call(this, path); // async function rmdir(path, options) {
             },
         };
 
@@ -797,18 +797,17 @@ export default class ProtectFs {
         return nodeFS.rmSync.call(this, path, options);
     }
 
-    rmdir(path: PathLike, options?: RmDirOptions | NoParamCallback, callback?: NoParamCallback): void {
+    rmdir(path: PathLike, callback?: NoParamCallback): void {
         ProtectFs.checkProtected(path, false);
         if (typeof callback === 'function') {
-            return nodeFS.rmdir.call(this, path, options as RmDirOptions, callback);
+            return nodeFS.rmdir.call(this, path, callback);
         }
-        // @ts-expect-error should work
-        return nodeFS.rmdir.call(this, path, options as NoParamCallback);
+        return nodeFS.rmdirSync.call(this, path);
     }
 
-    rmdirSync(path: PathLike, options?: RmDirOptions): void {
+    rmdirSync(path: PathLike): void {
         ProtectFs.checkProtected(path, false);
-        return nodeFS.rmdirSync.call(this, path, options);
+        return nodeFS.rmdirSync.call(this, path);
     }
 
     watch(

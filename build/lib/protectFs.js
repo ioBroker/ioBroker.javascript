@@ -160,9 +160,9 @@ class ProtectFs {
                 ProtectFs.checkProtected(path, false);
                 return nodeFS.promises.rm.call(this, path, options); // async function rm(path, options) {
             },
-            rmdir: async (path, options) => {
+            rmdir: async (path) => {
                 ProtectFs.checkProtected(path, false);
-                return nodeFS.promises.rmdir.call(this, path, options); // async function rmdir(path, options) {
+                return nodeFS.promises.rmdir.call(this, path); // async function rmdir(path, options) {
             },
         };
         // Add missing constants
@@ -501,17 +501,16 @@ class ProtectFs {
         ProtectFs.checkProtected(path, false);
         return nodeFS.rmSync.call(this, path, options);
     }
-    rmdir(path, options, callback) {
+    rmdir(path, callback) {
         ProtectFs.checkProtected(path, false);
         if (typeof callback === 'function') {
-            return nodeFS.rmdir.call(this, path, options, callback);
+            return nodeFS.rmdir.call(this, path, callback);
         }
-        // @ts-expect-error should work
-        return nodeFS.rmdir.call(this, path, options);
+        return nodeFS.rmdirSync.call(this, path);
     }
-    rmdirSync(path, options) {
+    rmdirSync(path) {
         ProtectFs.checkProtected(path, false);
-        return nodeFS.rmdirSync.call(this, path, options);
+        return nodeFS.rmdirSync.call(this, path);
     }
     watch(filename, options, listener) {
         ProtectFs.checkProtected(filename, true);

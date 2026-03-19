@@ -1150,10 +1150,7 @@ class JavaScript extends Adapter {
                     // Anthropic, Gemini, and DeepSeek always require an API key; OpenAI-compatible allows empty key with custom base URL
                     if (
                         !apiKey &&
-                        (provider === 'anthropic' ||
-                            provider === 'gemini' ||
-                            provider === 'deepseek' ||
-                            !baseUrl)
+                        (provider === 'anthropic' || provider === 'gemini' || provider === 'deepseek' || !baseUrl)
                     ) {
                         this.sendTo(obj.from, obj.command, { error: 'No API key provided' }, obj.callback);
                         break;
@@ -1173,15 +1170,9 @@ class JavaScript extends Adapter {
                         url = 'https://api.anthropic.com/v1/messages';
                         chatHeaders['x-api-key'] = apiKey;
                         chatHeaders['anthropic-version'] = '2023-06-01';
-                        const systemMessages = messages.filter(
-                            (m: { role: string }) => m.role === 'system',
-                        );
-                        const nonSystemMessages = messages.filter(
-                            (m: { role: string }) => m.role !== 'system',
-                        );
-                        const systemText = systemMessages
-                            .map((m: { content: string }) => m.content)
-                            .join('\n\n');
+                        const systemMessages = messages.filter((m: { role: string }) => m.role === 'system');
+                        const nonSystemMessages = messages.filter((m: { role: string }) => m.role !== 'system');
+                        const systemText = systemMessages.map((m: { content: string }) => m.content).join('\n\n');
                         bodyObj = {
                             model: chatModel,
                             max_tokens: 8192,
@@ -1215,12 +1206,7 @@ class JavaScript extends Adapter {
                     try {
                         urlObj = new URL(url);
                     } catch {
-                        this.sendTo(
-                            obj.from,
-                            obj.command,
-                            { error: `Invalid API URL: ${url}` },
-                            obj.callback,
-                        );
+                        this.sendTo(obj.from, obj.command, { error: `Invalid API URL: ${url}` }, obj.callback);
                         break;
                     }
                     const isHttps = urlObj.protocol === 'https:';
@@ -1314,10 +1300,7 @@ class JavaScript extends Adapter {
                     // Anthropic, Gemini, and DeepSeek always require an API key; OpenAI-compatible allows empty key with custom base URL
                     if (
                         !apiKey &&
-                        (provider === 'anthropic' ||
-                            provider === 'gemini' ||
-                            provider === 'deepseek' ||
-                            !baseUrl)
+                        (provider === 'anthropic' || provider === 'gemini' || provider === 'deepseek' || !baseUrl)
                     ) {
                         this.sendTo(obj.from, obj.command, { error: 'No API key provided' }, obj.callback);
                         break;
@@ -1351,12 +1334,7 @@ class JavaScript extends Adapter {
                     try {
                         urlObj = new URL(url);
                     } catch {
-                        this.sendTo(
-                            obj.from,
-                            obj.command,
-                            { error: `Invalid API URL: ${url}` },
-                            obj.callback,
-                        );
+                        this.sendTo(obj.from, obj.command, { error: `Invalid API URL: ${url}` }, obj.callback);
                         break;
                     }
                     const isHttps = urlObj.protocol === 'https:';

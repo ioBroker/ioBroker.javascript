@@ -913,10 +913,7 @@ class JavaScript extends adapter_core_1.Adapter {
                     const provider = (obj.message?.provider || 'openai').trim();
                     // Anthropic, Gemini, and DeepSeek always require an API key; OpenAI-compatible allows empty key with custom base URL
                     if (!apiKey &&
-                        (provider === 'anthropic' ||
-                            provider === 'gemini' ||
-                            provider === 'deepseek' ||
-                            !baseUrl)) {
+                        (provider === 'anthropic' || provider === 'gemini' || provider === 'deepseek' || !baseUrl)) {
                         this.sendTo(obj.from, obj.command, { error: 'No API key provided' }, obj.callback);
                         break;
                     }
@@ -935,9 +932,7 @@ class JavaScript extends adapter_core_1.Adapter {
                         chatHeaders['anthropic-version'] = '2023-06-01';
                         const systemMessages = messages.filter((m) => m.role === 'system');
                         const nonSystemMessages = messages.filter((m) => m.role !== 'system');
-                        const systemText = systemMessages
-                            .map((m) => m.content)
-                            .join('\n\n');
+                        const systemText = systemMessages.map((m) => m.content).join('\n\n');
                         bodyObj = {
                             model: chatModel,
                             max_tokens: 8192,
@@ -1040,10 +1035,7 @@ class JavaScript extends adapter_core_1.Adapter {
                     const provider = (obj.message?.provider || 'openai').trim();
                     // Anthropic, Gemini, and DeepSeek always require an API key; OpenAI-compatible allows empty key with custom base URL
                     if (!apiKey &&
-                        (provider === 'anthropic' ||
-                            provider === 'gemini' ||
-                            provider === 'deepseek' ||
-                            !baseUrl)) {
+                        (provider === 'anthropic' || provider === 'gemini' || provider === 'deepseek' || !baseUrl)) {
                         this.sendTo(obj.from, obj.command, { error: 'No API key provided' }, obj.callback);
                         break;
                     }

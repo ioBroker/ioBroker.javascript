@@ -607,7 +607,7 @@ Do not import any libraries as all functions are already imported.`,
                             disabled={modelsLoading || !!modelsError}
                             renderValue={value => (
                                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                                    {PROVIDER_ICONS[modelProviderMap.current[value as string]]}
+                                    {PROVIDER_ICONS[modelProviderMap.current[value]]}
                                     {value}
                                 </span>
                             )}
