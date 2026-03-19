@@ -144,6 +144,7 @@ export function getHttpRequestConfig(
         bearerAuth?: string;
         validateCertificate?: boolean;
     },
+    allowSelfSignedCerts?: boolean,
 ): AxiosRequestConfig {
     options = options || {};
     const timeoutMs = options && !isNaN(options.timeout as number) ? options.timeout : 2000;
@@ -187,10 +188,14 @@ export function getHttpRequestConfig(
         ...options.headers,
     };
 
-    // Certificate validation
+    // Certificate validation: per-request option takes priority, then adapter-level setting
     if (options && typeof options?.validateCertificate !== 'undefined') {
         config.httpsAgent = new Agent({
             rejectUnauthorized: options.validateCertificate,
+        });
+    } else if (allowSelfSignedCerts) {
+        config.httpsAgent = new Agent({
+            rejectUnauthorized: false,
         });
     }
 

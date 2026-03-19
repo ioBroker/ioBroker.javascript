@@ -493,6 +493,7 @@ class JavaScript extends Adapter {
             getAbsoluteDefaultDataDir,
             adapter: this as unknown as ioBroker.Adapter,
             logError: this.logError.bind(this),
+            allowSelfSignedCerts: false,
         };
 
         this.tsServer = new Server(tsCompilerOptions, this.tsLog);
@@ -1218,6 +1219,9 @@ class JavaScript extends Adapter {
                             method: 'POST',
                             headers: chatHeaders,
                             timeout: 600000,
+                            ...(isHttps && this.config.allowSelfSignedCerts
+                                ? { rejectUnauthorized: false }
+                                : {}),
                         },
                         res => {
                             let data = '';
@@ -1346,6 +1350,9 @@ class JavaScript extends Adapter {
                             method: 'GET',
                             headers: testHeaders,
                             timeout: 10000,
+                            ...(isHttps && this.config.allowSelfSignedCerts
+                                ? { rejectUnauthorized: false }
+                                : {}),
                         },
                         res => {
                             let data = '';
@@ -1592,10 +1599,9 @@ class JavaScript extends Adapter {
         await this.sunTimeSchedules();
         await this.timeSchedule();
 
-        // Warning. It could have a side effect in compact mode, so all adapters will accept self-signed certificates
-        if (this.config.allowSelfSignedCerts) {
-            process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-        }
+        // Store allowSelfSignedCerts on the context so sandbox HTTP functions can use it
+        // without setting the global process.env.NODE_TLS_REJECT_UNAUTHORIZED (which affects all adapters in compact mode)
+        this.context.allowSelfSignedCerts = this.config.allowSelfSignedCerts;
 
         const doc = await this.getObjectViewAsync('script', 'javascript', {});
         if (doc?.rows?.length) {
@@ -2185,7 +2191,7 @@ class JavaScript extends Adapter {
                 const intermediateStateValue = this.prepareStateObjectSimple(idActive, enabled, true);
                 await this.setForeignStateAsync(idActive, enabled, true);
                 if (enabled && !this.config.subscribe) {
-                    this.interimStateValues[id] = intermediateStateValue;
+                    this.interimStateValues[idActive] = intermediateStateValue;
                 }
             }
         }

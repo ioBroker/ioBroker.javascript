@@ -32,7 +32,7 @@ import type { URL } from 'node:url';
 import type { Stream } from 'node:stream';
 
 import * as nodeFS from 'node:fs';
-import { sep, normalize, join } from 'node:path';
+import { sep, normalize, join, resolve } from 'node:path';
 
 export default class ProtectFs {
     private readonly log: ioBroker.Logger;
@@ -312,20 +312,34 @@ export default class ProtectFs {
 
     static checkProtected(file: PathLike | FileHandle, readOnly: boolean): void {
         if ((file as FileHandle).fd) {
+            // FileHandle objects bypass path checks — they were already validated at open() time.
+            // This is safe because the sandbox only exposes the wrapped fs where open() is protected.
             return;
         }
-        const filePath = normalize((file as PathLike).toString());
+        let filePath: string;
+        try {
+            // Use resolve() instead of normalize() to get an absolute path and eliminate .. traversals.
+            // Then try realpath to resolve symlinks — fall back to resolved path if file doesn't exist yet.
+            const resolved = resolve((file as PathLike).toString());
+            try {
+                filePath = nodeFS.realpathSync(resolved);
+            } catch {
+                filePath = resolved;
+            }
+        } catch {
+            filePath = normalize((file as PathLike).toString());
+        }
 
         if (filePath.endsWith(`-data${sep}objects.json`) || filePath.endsWith(`-data${sep}objects.jsonl`)) {
-            ProtectFs.log?.error(`May not read ${(file as PathLike).toString()}`);
+            ProtectFs.log?.error(`May not access ${(file as PathLike).toString()}`);
             throw new Error('Permission denied');
         }
         if (!readOnly && filePath.startsWith(join(ProtectFs.staticIoBrokerDataDir, 'files'))) {
-            ProtectFs.log?.error(`May not read ${(file as PathLike).toString()} - use writeFile instead`);
+            ProtectFs.log?.error(`May not write ${(file as PathLike).toString()} - use writeFile instead`);
             throw new Error('Permission denied');
         }
         if (!readOnly && filePath.startsWith(`file://${join(ProtectFs.staticIoBrokerDataDir, 'files')}`)) {
-            ProtectFs.log?.error(`May not read ${(file as PathLike).toString()} - use writeFile instead`);
+            ProtectFs.log?.error(`May not write ${(file as PathLike).toString()} - use writeFile instead`);
             throw new Error('Permission denied');
         }
     }

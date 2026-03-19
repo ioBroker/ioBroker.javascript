@@ -1405,7 +1405,7 @@ export function sandBox(
             }
 
             const config = {
-                ...getHttpRequestConfig(url, options),
+                ...getHttpRequestConfig(url, options, context.allowSelfSignedCerts),
                 method: 'get',
             };
 
@@ -1519,6 +1519,7 @@ export function sandBox(
                         bearerAuth?: string;
                         validateCertificate?: boolean;
                     },
+                    context.allowSelfSignedCerts,
                 ),
                 method: 'post',
                 data,
@@ -2839,7 +2840,7 @@ export function sandBox(
                                 if (timers[_id_][ttt].id === id) {
                                     return {
                                         timerId: id,
-                                        left: timers[_id_][ttt].delay - (now - timers[id][ttt].ts),
+                                        left: timers[_id_][ttt].delay - (now - timers[_id_][ttt].ts),
                                         delay: timers[_id_][ttt].delay,
                                         val: timers[_id_][ttt].val,
                                         ack: timers[_id_][ttt].ack,

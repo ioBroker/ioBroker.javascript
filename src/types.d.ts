@@ -744,4 +744,5 @@ export interface JavascriptContext {
     logError: (scriptName: string, msg: string, e: Error, offs?: number) => void;
     logWithLineInfo: (message: string) => void;
     schedules?: string[];
+    allowSelfSignedCerts: boolean;
 }
