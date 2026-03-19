@@ -13,7 +13,7 @@ export async function requestModuleNameByUrl(url: string): Promise<string> {
             { windowsHide: true, encoding: 'utf8', shell: false },
             (error: ExecFileException | null, stdout: string) => {
                 if (error) {
-                    reject(error);
+                    reject(error as Error);
                 } else {
                     if (typeof stdout !== 'string') {
                         reject(

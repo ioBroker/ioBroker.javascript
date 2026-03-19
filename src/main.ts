@@ -123,7 +123,7 @@ const isCI = !!process.env.CI;
 let tsAmbient: Record<string, string>;
 
 // TypeScript's scripts are only recompiled if their source hash changes.
-// If an adapter update fixes the compilation bugs, a user won't notice until the changes and re-saves the script.
+// If an adapter update fixes the compilation bugs, a user won't notice until the changes and re-save the script.
 // To avoid that, we also include the
 // adapter version and TypeScript version in the hash
 const tsSourceHashBase = `versions:adapter=${packageJson.version},typescript=${packageJson.dependencies.typescript}`;
@@ -247,7 +247,7 @@ function formatHoursMinutesSeconds(date: Date): string {
     return `${h.padStart(2, '0')}:${m.padStart(2, '0')}:${s.padStart(2, '0')}`;
 }
 
-// Due to a npm bug, virtual-tsc may be hoisted to the top level node_modules but
+// Due to a npm bug, virtual-tsc may be hoisted to the top level node_modules, but
 // TypeScript may still be in the adapter level (https://npm.community/t/packages-with-peerdependencies-are-incorrectly-hoisted/4794),
 // so we need to tell virtual-tsc where TypeScript is
 setTypeScriptResolveOptions({
@@ -363,7 +363,7 @@ class JavaScript extends Adapter {
             name: 'javascript', // adapter name
             useFormatDate: true,
             /**
-             * If the JS-Controller catches an unhandled error, this will be called
+             * If the JS-Controller catches an unhandled error, this will be called,
              * so we have a chance to handle it ourselves.
              */
             error: (err: Error): boolean => {
@@ -550,7 +550,7 @@ class JavaScript extends Adapter {
             this.timeSettings.leadingZeros = obj.native.leadingZeros === undefined ? true : obj.native.leadingZeros;
         }
 
-        // send changes to disk mirror
+        // send changes to the disk mirror
         this.mirror?.onObjectChange(id, obj as ioBroker.ScriptObject | null);
 
         const formerObj = this.objects[id];
@@ -621,7 +621,7 @@ class JavaScript extends Adapter {
                 await this.createActiveObject(id, !!obj.common.enabled);
                 await this.createProblemObject(id);
                 if (obj.common.enabled) {
-                    // if enabled => Start script
+                    // if enabled => Start a script
                     await this.loadScriptById(id);
                 }
             }
@@ -712,7 +712,7 @@ class JavaScript extends Adapter {
                     });
                 }
 
-                // monitor if adapter is alive and send all subscriptions once more, after adapter goes online
+                // monitor if the adapter is alive and send all subscriptions once more, after the adapter goes online
                 if (/*oldState && */ oldState.val === false && state.val && id.endsWith('.alive')) {
                     if (this.adapterSubs[id]) {
                         const parts = id.split('.');
@@ -854,7 +854,7 @@ class JavaScript extends Adapter {
                         obj.message.instance === this.namespace)
                 ) {
                     Object.keys(this.messageBusHandlers).forEach(name => {
-                        // script name could be script.js.xxx or only xxx
+                        // the script name could be script.js.xxx or only xxx
                         if (
                             (!obj.message.script || obj.message.script === name) &&
                             this.messageBusHandlers[name][obj.message.message]
@@ -1219,9 +1219,7 @@ class JavaScript extends Adapter {
                             method: 'POST',
                             headers: chatHeaders,
                             timeout: 600000,
-                            ...(isHttps && this.config.allowSelfSignedCerts
-                                ? { rejectUnauthorized: false }
-                                : {}),
+                            ...(isHttps && this.config.allowSelfSignedCerts ? { rejectUnauthorized: false } : {}),
                         },
                         res => {
                             let data = '';
@@ -1350,9 +1348,7 @@ class JavaScript extends Adapter {
                             method: 'GET',
                             headers: testHeaders,
                             timeout: 10000,
-                            ...(isHttps && this.config.allowSelfSignedCerts
-                                ? { rejectUnauthorized: false }
-                                : {}),
+                            ...(isHttps && this.config.allowSelfSignedCerts ? { rejectUnauthorized: false } : {}),
                         },
                         res => {
                             let data = '';
@@ -1599,7 +1595,7 @@ class JavaScript extends Adapter {
         await this.sunTimeSchedules();
         await this.timeSchedule();
 
-        // Store allowSelfSignedCerts on the context so sandbox HTTP functions can use it
+        // Store allowSelfSignedCerts on the context, so sandbox HTTP functions can use it
         // without setting the global process.env.NODE_TLS_REJECT_UNAUTHORIZED (which affects all adapters in compact mode)
         this.context.allowSelfSignedCerts = this.config.allowSelfSignedCerts;
 
@@ -1764,7 +1760,7 @@ class JavaScript extends Adapter {
             }
         }
 
-        // CHeck setState counter per minute and stop script if too high
+        // CHeck setState counter per minute and stop a script if too high
         this.setStateCountCheckInterval = setInterval(() => {
             Object.keys(this.scripts).forEach(id => {
                 if (!this.scripts[id]) {
@@ -1909,7 +1905,7 @@ class JavaScript extends Adapter {
         }
 
         if (!obj && this.objects[id]) {
-            // objects was deleted
+            // objects were deleted
             this.removeFromNames(id);
             delete this.objects[id];
         } else if (obj && !this.objects[id]) {
@@ -2081,7 +2077,7 @@ class JavaScript extends Adapter {
                         continue;
                     }
                     if (this.objects[res.rows[i].doc._id] === undefined) {
-                        // If was already there ignore
+                        // If was already there, ignore
                         this.objects[res.rows[i].doc._id] = res.rows[i].doc;
                     }
                     this.objects[res.rows[i].doc._id].type === 'enum' && this._enums.push(res.rows[i].doc._id);
@@ -2362,7 +2358,7 @@ class JavaScript extends Adapter {
                 depName = parts.join('@');
             }
 
-            /** The real module name, because the dependency can be an url too */
+            /** The real module name, because the dependency can be a URL too */
             let moduleName = depName;
 
             if (URL.canParse(depName)) {
@@ -3223,10 +3219,10 @@ class JavaScript extends Adapter {
      * Add declarations for global scripts
      *
      * @param scriptID - The current script the declarations were generated from
-     * @param declarations - Declarations from script
+     * @param declarations - Declarations from a script
      */
     provideDeclarationsForGlobalScript(scriptID: string, declarations: string): void {
-        // Remember which declarations this global script had access to,
+        // Remember which declarations this global script had access to;
         // we need this so the editor doesn't show a duplicate identifier error
         if (this.globalDeclarations != null && this.globalDeclarations !== '') {
             this.knownGlobalDeclarationsByScript[scriptID] = this.globalDeclarations;
@@ -3475,7 +3471,7 @@ function patternMatching(
     return matched;
 }
 
-// If started as allInOne mode => return function to create instance
+// If started as allInOne mode => return function to create an instance
 if (require.main !== module) {
     // Export the constructor in compact mode
     module.exports = (options: Partial<AdapterOptions> | undefined) => new JavaScript(options);
