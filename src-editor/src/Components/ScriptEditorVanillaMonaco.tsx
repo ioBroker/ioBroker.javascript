@@ -75,6 +75,11 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
 
     private monaco: typeof monacoEditor | null = (window as any).monaco as typeof monacoEditor | null;
 
+    /** In Monaco 0.55+ loaded via AMD, the typescript API lives at "languages.typescript" (not top-level typescript) */
+    private get monacoTS(): typeof monacoEditor.typescript | undefined {
+        return this.monaco?.languages?.typescript as typeof monacoEditor.typescript | undefined;
+    }
+
     private insert: string = '';
 
     private originalCode: string;
@@ -120,10 +125,10 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
     }
 
     waitForMonaco(cb: () => void): void {
-        let monacoLoaded = !!this.monaco?.typescript?.typescriptDefaults?.getCompilerOptions;
+        let monacoLoaded = !!this.monacoTS?.typescriptDefaults?.getCompilerOptions;
         if (!monacoLoaded || !this.props.runningInstances) {
             this.monaco = (window as any).monaco as typeof monacoEditor | null;
-            monacoLoaded = !!this.monaco?.typescript?.typescriptDefaults?.getCompilerOptions;
+            monacoLoaded = !!this.monacoTS?.typescriptDefaults?.getCompilerOptions;
             this.monacoCounter++;
             if (!monacoLoaded && this.monacoCounter < 20) {
                 console.log('wait for monaco loaded');
@@ -164,10 +169,10 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
     }
 
     componentDidMount(): void {
-        let monacoLoaded = !!this.monaco?.typescript?.typescriptDefaults?.getCompilerOptions;
+        let monacoLoaded = !!this.monacoTS?.typescriptDefaults?.getCompilerOptions;
         if (!monacoLoaded || !this.props.runningInstances) {
             this.monaco = (window as any).monaco as typeof monacoEditor | null;
-            monacoLoaded = !!this.monaco?.typescript?.typescriptDefaults?.getCompilerOptions;
+            monacoLoaded = !!this.monacoTS?.typescriptDefaults?.getCompilerOptions;
             if (!monacoLoaded) {
                 console.log('wait for monaco loaded...');
                 this.waitForMonaco(() => this.componentDidMount());
@@ -188,19 +193,19 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
             });
             // For some reason, we have to get the original compiler options
             // and assign new properties one by one
-            const compilerOptions = this.monaco.typescript.typescriptDefaults.getCompilerOptions();
-            // compilerOptions.target = this.monaco.typescript.ScriptTarget.ES2020;
+            const compilerOptions = this.monacoTS!.typescriptDefaults.getCompilerOptions();
+            // compilerOptions.target = this.monacoTS!.ScriptTarget.ES2020;
             compilerOptions.allowJs = true;
             compilerOptions.checkJs = this.props.checkJs !== false;
             compilerOptions.noLib = true;
             compilerOptions.lib = [];
             compilerOptions.useUnknownInCatchVariables = false;
-            compilerOptions.moduleResolution = this.monaco.typescript.ModuleResolutionKind.NodeJs;
-            compilerOptions.target = this.monaco.typescript.ScriptTarget.ESNext;
-            compilerOptions.module = this.monaco.typescript.ModuleKind.ESNext;
+            compilerOptions.moduleResolution = this.monacoTS!.ModuleResolutionKind.NodeJs;
+            compilerOptions.target = this.monacoTS!.ScriptTarget.ESNext;
+            compilerOptions.module = this.monacoTS!.ModuleKind.ESNext;
             compilerOptions.allowNonTsExtensions = true;
 
-            this.monaco.typescript.typescriptDefaults.setCompilerOptions(compilerOptions);
+            this.monacoTS!.typescriptDefaults.setCompilerOptions(compilerOptions);
 
             this.setTypeCheck(false);
 
@@ -400,9 +405,9 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
             noSemanticValidation: !this.state.alive || !enabled, // toggle the type checking
             noSyntaxValidation: !this.state.alive, // always check the syntax
         };
-        this.monaco?.typescript.typescriptDefaults.setDiagnosticsOptions(options);
+        this.monacoTS?.typescriptDefaults.setDiagnosticsOptions(options);
 
-        this.monaco?.typescript.javascriptDefaults.setDiagnosticsOptions({
+        this.monacoTS?.javascriptDefaults.setDiagnosticsOptions({
             noSemanticValidation: !this.state.alive || !enabled,
             noSyntaxValidation: !this.state.alive,
         });
@@ -436,13 +441,13 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         // TODO BF: check https://microsoft.github.io/monaco-editor/playground.html#extending-language-services-semantic-tokens-provider-example
         // to support 0.21.0
 
-        if (this.monaco?.typescript?.typescriptDefaults?.setExtraLibs) {
-            this.monaco.typescript.typescriptDefaults.setExtraLibs(wantedTypings);
-        } else if (this.monaco?.typescript?.typescriptDefaults?.addExtraLib) {
-            const existingLibs = this.monaco.typescript.typescriptDefaults.getExtraLibs();
+        if (this.monacoTS?.typescriptDefaults?.setExtraLibs) {
+            this.monacoTS!.typescriptDefaults.setExtraLibs(wantedTypings);
+        } else if (this.monacoTS?.typescriptDefaults?.addExtraLib) {
+            const existingLibs = this.monacoTS!.typescriptDefaults.getExtraLibs();
             wantedTypings.forEach(lib => {
                 if (!existingLibs[lib.filePath] && this.monaco) {
-                    this.monaco.typescript.typescriptDefaults.addExtraLib(lib.content, lib.filePath);
+                    this.monacoTS!.typescriptDefaults.addExtraLib(lib.content, lib.filePath);
                 }
             });
         }
@@ -715,7 +720,7 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
     }
 
     render(): React.JSX.Element | null {
-        if (!this.monaco?.typescript?.typescriptDefaults || !this.props.runningInstances) {
+        if (!this.monacoTS?.typescriptDefaults || !this.props.runningInstances) {
             setTimeout(() => {
                 this.monaco = (window as any).monaco as typeof monacoEditor | null;
                 this.forceUpdate();
