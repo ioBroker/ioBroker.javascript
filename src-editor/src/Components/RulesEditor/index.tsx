@@ -106,9 +106,6 @@ const RulesEditor = ({
                                 break;
                             }
                         }
-                        console.log(`Debug1: ${JSON.stringify(gDebugMessages)}`);
-                        console.log(`Debug2: ${JSON.stringify(messages)}`);
-
                         gDebugMessages = messages;
                         setOnDebugMessage(messages);
                     }
@@ -132,9 +129,9 @@ const RulesEditor = ({
         });
 
         return function cleanup() {
-            socket?.unsubscribeState(scriptId, aliveHandler);
+            socket?.unsubscribeObject(scriptId, handler);
             if (_jsInstance) {
-                void socket?.unsubscribeObject(`${_jsInstance}.alive`, handler);
+                void socket?.unsubscribeState(`${_jsInstance}.alive`, aliveHandler);
                 if (_jsAlive) {
                     void socket?.sendTo(_jsInstance.replace(/^system\.adapter\./, ''), 'rulesOff', scriptId);
                 }

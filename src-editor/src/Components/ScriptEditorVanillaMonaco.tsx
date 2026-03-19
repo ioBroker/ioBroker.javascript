@@ -96,6 +96,10 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
 
     private triggerPrettier: number;
 
+    private contentChangeDisposable: monacoEditor.IDisposable | null = null;
+
+    private mouseDownDisposable: monacoEditor.IDisposable | null = null;
+
     constructor(props: ScriptEditorProps) {
         super(props);
         this.state = {
@@ -210,7 +214,7 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
                     colorDecorators: true,
                 });
 
-                this.editor.onDidChangeModelContent(() => this.onChange());
+                this.contentChangeDisposable = this.editor.onDidChangeModelContent(() => this.onChange());
 
                 // Load typings for the JS editor
                 this.loadTypings();
@@ -247,7 +251,7 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
 
             if (this.props.onToggleBreakpoint) {
                 // add onMouseDown listener to toggle breakpoints
-                this.editor.onMouseDown((e: monacoEditor.editor.IEditorMouseEvent) => {
+                this.mouseDownDisposable = this.editor.onMouseDown((e: monacoEditor.editor.IEditorMouseEvent) => {
                     const target: monacoEditor.editor.IMouseTargetMargin =
                         e.target as monacoEditor.editor.IMouseTargetMargin;
                     if (
@@ -257,11 +261,6 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
                     ) {
                         this.props.onToggleBreakpoint(target.position.lineNumber - 1);
                     }
-                });
-            } else {
-                // remove onMouseDown listener
-                this.editor.onMouseDown(() => {
-                    /* nop */
                 });
             }
         }
@@ -303,6 +302,10 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
     }
 
     componentWillUnmount(): void {
+        this.contentChangeDisposable?.dispose();
+        this.contentChangeDisposable = null;
+        this.mouseDownDisposable?.dispose();
+        this.mouseDownDisposable = null;
         if (this.editor) {
             this.props.onRegisterSelect?.(null);
             this.editor.dispose();
@@ -380,6 +383,9 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
 
             if (newModel) {
                 this.editor.setModel(newModel);
+                // Re-register content change listener on the new model
+                this.contentChangeDisposable?.dispose();
+                this.contentChangeDisposable = this.editor.onDidChangeModelContent(() => this.onChange());
             }
         }
     }
