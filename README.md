@@ -24,7 +24,7 @@ Executes Javascript, Typescript Scripts.
 
 ## Changelog
 <!--
-### **WORK IN PROGRESS**
+    ### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
 * Added support for custom OpenAI-compatible API endpoints (e.g. Ollama, LM Studio, Google Gemini, DeepSeek, OpenRouter)
