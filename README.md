@@ -26,6 +26,22 @@ Executes Javascript, Typescript Scripts.
 <!--
     ### **WORK IN PROGRESS**
 -->
+### WORK IN PROGRESS
+* Per-provider test buttons in adapter config (OpenAI, Anthropic, Gemini, DeepSeek, Custom API)
+* Optional API key field for custom base URL providers (e.g. Ollama without auth)
+* Provider icons on test buttons and in model dropdown
+* Human-readable HTTP error messages with API response details
+* Two-step AI code generation: plan first, then generate code
+* Collapsible plan view in AI code generator UI
+* Status display during generation ("Planning..." / "Generating code...")
+* Optimized prompts with code examples for better results with small local models
+* Compact API reference (docs-compact.md) for reduced context usage
+* Disable reasoning/thinking for local models (reasoning_effort: none)
+* TODO_DEVICE_ID placeholder when a required device is not in the device list
+* Node 25 compatibility: replaced deprecated rmdirSync with rmSync in build tasks
+* Flexible result area height in AI code generator (no extra scrollbar)
+* Added translations for all 11 languages
+
 ### 9.1.1 (2026-03-19)
 * (GermanBluefox) Small GUI optimizations
 * Added support for custom OpenAI-compatible API endpoints (e.g. Ollama, LM Studio, Google Gemini, DeepSeek, OpenRouter)

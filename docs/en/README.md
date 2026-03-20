@@ -46,26 +46,39 @@ DeepSeek offers excellent code generation at very low cost (~$0.001 per request)
 
 #### Local models (Ollama / LM Studio)
 
-Local models run on your own hardware without internet. However, for good ioBroker code generation, models with at least 14B+ parameters are recommended. Small models (7B) often generate incorrect API calls.
+Local models run on your own hardware without internet.
 
-- **Ollama**: Set **Base URL** to `http://localhost:11434/v1`, use any string as API key
-- **LM Studio**: Set **Base URL** to `http://localhost:1234/v1`
+**Minimum requirement: 14B parameter models** (e.g. `qwen2.5-coder:14b`). Smaller models (7B/9B) produce unreliable code with incorrect API calls. A GPU with at least 12GB VRAM (e.g. RTX 3060) is recommended for 14B models.
+
+Tested and recommended models:
+- `qwen2.5-coder:14b` - Good code quality, runs on 12GB VRAM
+- `qwen2.5-coder:32b` - Better quality, requires 24GB+ VRAM
+
+Setup:
+- **Ollama**: Set **Base URL** to `http://localhost:11434/v1`, leave API key empty
+- **LM Studio**: Set **Base URL** to `http://localhost:1234/v1`, leave API key empty
 
 **Note:** The free tier of the OpenAI API (ChatGPT) no longer provides API access for code generation. Consider using Google Gemini (free) or DeepSeek (very affordable) as alternatives.
 
 ### Configuration
 
-In the adapter settings under "Main settings", you will find the following fields for AI configuration:
+In the adapter settings under "AI settings", you will find API key fields for each provider:
 
 | Setting | Description |
 |---------|-------------|
-| **ChatGPT API key** | Your API key. Required for all providers. For Ollama you can use any non-empty string (e.g. `ollama`). |
-| **Custom API Base URL** | The base URL of your API provider. Leave empty for OpenAI. Examples: `https://generativelanguage.googleapis.com/v1beta/openai` (Google Gemini), `http://localhost:11434/v1` (Ollama). |
+| **ChatGPT API key** | API key for OpenAI (platform.openai.com) |
+| **Anthropic API key** | API key for Claude (console.anthropic.com) |
+| **Gemini API key** | API key for Google Gemini (aistudio.google.com) |
+| **DeepSeek API key** | API key for DeepSeek (platform.deepseek.com) |
+| **Custom API Base URL** | Base URL for custom providers (e.g. `http://localhost:11434/v1` for Ollama) |
+| **Custom API key** | Optional API key for custom providers (Ollama doesn't need one) |
+
+Only enter the keys for providers you want to use. Each provider has its own **Test** button.
 
 ### Test API Connection
 
-Use the **"Test API connection"** button in the adapter settings to verify your configuration. The test will:
-- Connect to the configured API endpoint
+Each provider has a dedicated **Test** button next to its API key field. The test will:
+- Connect to the provider's API endpoint
 - Validate the API key
 - Return the number of available models
 

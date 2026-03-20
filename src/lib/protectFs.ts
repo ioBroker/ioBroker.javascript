@@ -814,7 +814,7 @@ export default class ProtectFs {
     rmdir(path: PathLike, callback?: NoParamCallback): void {
         ProtectFs.checkProtected(path, false);
         if (typeof callback === 'function') {
-            return nodeFS.rmdir.call(this, path, callback);
+            return (nodeFS.rmdir as (...args: unknown[]) => void).call(this, path, callback);
         }
         return nodeFS.rmdirSync.call(this, path);
     }

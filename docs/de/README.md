@@ -45,26 +45,39 @@ DeepSeek bietet hervorragende Code-Generierung zu sehr niedrigen Kosten (~0,001�
 
 #### Lokale Modelle (Ollama / LM Studio)
 
-Lokale Modelle laufen auf eigener Hardware ohne Internet. Für gute ioBroker-Code-Generierung werden jedoch Modelle mit mindestens 14B+ Parametern empfohlen. Kleine Modelle (7B) erzeugen häufig falsche API-Aufrufe.
+Lokale Modelle laufen auf eigener Hardware ohne Internet.
 
-- **Ollama**: **Base-URL** auf `http://localhost:11434/v1` setzen, beliebigen Text als API-Key verwenden
-- **LM Studio**: **Base-URL** auf `http://localhost:1234/v1` setzen
+**Mindestanforderung: 14B-Parameter-Modelle** (z.B. `qwen2.5-coder:14b`). Kleinere Modelle (7B/9B) erzeugen unzuverlässigen Code mit falschen API-Aufrufen. Eine GPU mit mindestens 12GB VRAM (z.B. RTX 3060) wird für 14B-Modelle empfohlen.
+
+Getestete und empfohlene Modelle:
+- `qwen2.5-coder:14b` - Gute Codequalität, läuft auf 12GB VRAM
+- `qwen2.5-coder:32b` - Bessere Qualität, erfordert 24GB+ VRAM
+
+Einrichtung:
+- **Ollama**: **Base-URL** auf `http://localhost:11434/v1` setzen, API-Key leer lassen
+- **LM Studio**: **Base-URL** auf `http://localhost:1234/v1` setzen, API-Key leer lassen
 
 **Hinweis:** Die kostenlose Version der OpenAI-API (ChatGPT) bietet keinen API-Zugang mehr für Code-Generierung. Google Gemini (kostenlos) oder DeepSeek (sehr günstig) sind empfohlene Alternativen.
 
 ### Konfiguration
 
-In den Adapter-Einstellungen unter "Haupteinstellungen" befinden sich folgende Felder für die KI-Konfiguration:
+In den Adapter-Einstellungen unter "KI-Einstellungen" befinden sich API-Key-Felder für jeden Anbieter:
 
 | Einstellung | Beschreibung |
 |-------------|-------------|
-| **ChatGPT API-Schlüssel** | Der API-Schlüssel. Erforderlich für alle Anbieter. Für Ollama kann ein beliebiger nicht-leerer Wert verwendet werden (z.B. `ollama`). |
-| **Eigene API Base-URL** | Die Base-URL des API-Anbieters. Leer lassen für OpenAI. Beispiele: `https://generativelanguage.googleapis.com/v1beta/openai` (Google Gemini), `http://localhost:11434/v1` (Ollama). |
+| **ChatGPT API-Schlüssel** | API-Key für OpenAI (platform.openai.com) |
+| **Anthropic API-Schlüssel** | API-Key für Claude (console.anthropic.com) |
+| **Gemini API-Schlüssel** | API-Key für Google Gemini (aistudio.google.com) |
+| **DeepSeek API-Schlüssel** | API-Key für DeepSeek (platform.deepseek.com) |
+| **Eigene API Base-URL** | Base-URL für eigene Anbieter (z.B. `http://localhost:11434/v1` für Ollama) |
+| **Eigener API-Schlüssel** | Optionaler API-Key für eigene Anbieter (Ollama benötigt keinen) |
+
+Es müssen nur die Keys der gewünschten Anbieter eingetragen werden. Jeder Anbieter hat einen eigenen **Test**-Button.
 
 ### API-Verbindung testen
 
-Mit dem Button **"API-Verbindung testen"** in den Adapter-Einstellungen kann die Konfiguration überprüft werden. Der Test:
-- Verbindet sich mit dem konfigurierten API-Endpunkt
+Jeder Anbieter hat einen eigenen **Test**-Button neben seinem API-Key-Feld. Der Test:
+- Verbindet sich mit dem API-Endpunkt des Anbieters
 - Validiert den API-Schlüssel
 - Gibt die Anzahl der verfügbaren Modelle zurück
 

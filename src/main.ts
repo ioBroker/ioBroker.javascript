@@ -261,6 +261,20 @@ const jsDeclarationServer: Server = new Server(jsDeclarationCompilerOptions, isC
  * the compiled source was just updated
  */
 
+function httpStatusText(code: number): string {
+    const texts: Record<number, string> = {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        403: 'Forbidden',
+        404: 'Not Found',
+        429: 'Too Many Requests / Rate Limit',
+        500: 'Internal Server Error',
+        502: 'Bad Gateway',
+        503: 'Service Unavailable',
+    };
+    return texts[code] || `Error ${code}`;
+}
+
 class JavaScript extends Adapter {
     declare public config: JavaScriptAdapterConfig;
 
@@ -1196,7 +1210,13 @@ class JavaScript extends Adapter {
                         if (apiKey) {
                             chatHeaders.Authorization = `Bearer ${apiKey}`;
                         }
-                        bodyObj = { model: chatModel, messages, stream: false };
+                        bodyObj = {
+                            model: chatModel,
+                            messages,
+                            stream: false,
+                            // Disable thinking/reasoning for local models to save context and speed
+                            ...(baseUrl ? { reasoning_effort: 'none' } : {}),
+                        };
                     }
 
                     const body = JSON.stringify(bodyObj);
@@ -1258,16 +1278,21 @@ class JavaScript extends Adapter {
                                         );
                                     }
                                 } else {
-                                    let errorMsg = `API returned status ${res.statusCode}`;
+                                    let detail = '';
                                     try {
-                                        const parsed = JSON.parse(data);
-                                        if (parsed.error?.message) {
-                                            errorMsg = parsed.error.message;
-                                        }
+                                        const errParsed = JSON.parse(data);
+                                        detail = errParsed.error?.message || data.substring(0, 200);
                                     } catch {
-                                        // ignore parse error
+                                        detail = data.substring(0, 200);
                                     }
-                                    this.sendTo(obj.from, obj.command, { error: errorMsg }, obj.callback);
+                                    this.sendTo(
+                                        obj.from,
+                                        obj.command,
+                                        {
+                                            error: `${detail || httpStatusText(res.statusCode || 0)} (${res.statusCode})`,
+                                        },
+                                        obj.callback,
+                                    );
                                 }
                             });
                         },
@@ -1388,10 +1413,20 @@ class JavaScript extends Adapter {
                                 } else if (res.statusCode === 403) {
                                     this.sendTo(obj.from, obj.command, { error: 'Access denied (403)' }, obj.callback);
                                 } else {
+                                    // Include response body for debugging
+                                    let detail = '';
+                                    try {
+                                        const errParsed = JSON.parse(data);
+                                        detail = errParsed.error?.message || data.substring(0, 200);
+                                    } catch {
+                                        detail = data.substring(0, 200);
+                                    }
                                     this.sendTo(
                                         obj.from,
                                         obj.command,
-                                        { error: `API returned status ${res.statusCode}` },
+                                        {
+                                            error: `${detail || httpStatusText(res.statusCode || 0)} (${res.statusCode})`,
+                                        },
                                         obj.callback,
                                     );
                                 }
