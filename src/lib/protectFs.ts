@@ -342,6 +342,11 @@ export default class ProtectFs {
             ProtectFs.log?.error(`May not write ${(file as PathLike).toString()} - use writeFile instead`);
             throw new Error('Permission denied');
         }
+        // Disallow writing into node_modules directories (see #2127)
+        if (!readOnly && `${sep}${filePath}${sep}`.includes(`${sep}node_modules${sep}`)) {
+            ProtectFs.log?.error(`May not write into node_modules: ${(file as PathLike).toString()}`);
+            throw new Error('Permission denied. Writing into node_modules is not allowed');
+        }
     }
 
     access(path: PathLike, mode?: number | NoParamCallback, callback?: NoParamCallback): void {
