@@ -26,6 +26,9 @@ Executes Javascript, Typescript Scripts.
 <!--
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Added support for plain import/export
+
 ### 9.1.1 (2026-03-19)
 * (GermanBluefox) Small GUI optimizations
 * Added support for custom OpenAI-compatible API endpoints (e.g. Ollama, LM Studio, Google Gemini, DeepSeek, OpenRouter)

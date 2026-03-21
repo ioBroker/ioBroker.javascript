@@ -1,6 +1,6 @@
 {
     "name": "js",
-    "version": "9.1.0",
+    "version": "9.1.1",
     "private": true,
     "type": "module",
     "dependencies": {
@@ -25,6 +25,7 @@
         "@vitejs/plugin-react": "^5.2.0",
         "blockly": "^11.2.2",
         "file-selector": "^2.1.2",
+        "jszip": "^3.10.1",
         "monaco-editor": "~0.55.1",
         "openai": "^6.32.0",
         "react": "^18.3.1",

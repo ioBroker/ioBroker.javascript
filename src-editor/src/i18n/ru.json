@@ -280,6 +280,8 @@
     "acknowledgment": "подтверждение",
     "all": "все",
     "and": "и",
+    "as JSON": "как JSON",
+    "as plain text": "как текст",
     "astro": "Астро",
     "at": "в",
     "clear running": "остановить уже бегущие",

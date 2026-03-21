@@ -37,6 +37,7 @@ import ptLang from './i18n/pt.json';
 import ruLang from './i18n/ru.json';
 import ukLang from './i18n/uk.json';
 import zhCnLang from './i18n/zh-cn.json';
+import JSZip from 'jszip';
 import type { ScriptType } from '@/types';
 import PasswordDialog from '@/Dialogs/Password';
 
@@ -166,6 +167,7 @@ interface AppState extends GenericAppState {
 export default class App extends GenericApp<AppProps, AppState> {
     private hosts: string[] = [];
     private importFile: string | null = null;
+    private importFileName: string | null = null;
     private scripts: Record<string, ioBroker.ScriptObject | ioBroker.ChannelObject> = {};
     private confirmCallback: null | ((result: boolean) => void) = null;
     private changedScripts: { [id: string]: boolean } = {};
@@ -831,13 +833,7 @@ export default class App extends GenericApp<AppProps, AppState> {
         return undefined;
     }
 
-    async onExport(): Promise<void> {
-        const host = await this.getLiveHost();
-        if (!host) {
-            this.showJsError(I18n.t('No active host found'));
-            return;
-        }
-
+    async onExport(isJsonOrText: boolean): Promise<void> {
         const d = new Date();
         let date = d.getFullYear().toString();
         let m: number | string = d.getMonth() + 1;
@@ -851,43 +847,82 @@ export default class App extends GenericApp<AppProps, AppState> {
         }
         date += `-${m}-`;
 
-        this.socket.getRawSocket().emit(
-            'sendToHost',
-            host,
-            'readObjectsAsZip',
-            {
-                adapter: 'javascript',
-                id: 'script.js',
-                link: `${date}scripts.zip`, // request link to file and not the data itself
-                fileStorageNamespace: `admin.${this.instance}`, // new controller 5.x understands this and saves ZIP in the file store
-            },
-            (data: string | { data?: string; error?: string }) => {
-                if (typeof data === 'string') {
-                    // it is a link to the created file
-                    const a = document.createElement('a');
-                    // actual position is http://IP:8081/adapter/javascript/index.html
-                    // we need http://IP:8081/files/admin.0/zip/2023-06-20-scripts.zip
-                    a.href = `../../files/${data}`;
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                } else {
-                    data.error && this.showJsError(data.error);
-                    if (data.data) {
+        if (isJsonOrText) {
+            // Export as JSON
+            const host = await this.getLiveHost();
+            if (!host) {
+                this.showJsError(I18n.t('No active host found'));
+                return;
+            }
+            this.socket.getRawSocket().emit(
+                'sendToHost',
+                host,
+                'readObjectsAsZip',
+                {
+                    adapter: 'javascript',
+                    id: 'script.js',
+                    link: `${date}scripts.zip`, // request link to file and not the data itself
+                    fileStorageNamespace: `admin.${this.instance}`, // new controller 5.x understands this and saves ZIP in the file store
+                },
+                (data: string | { data?: string; error?: string }) => {
+                    if (typeof data === 'string') {
+                        // it is a link to the created file
                         const a = document.createElement('a');
-                        a.href = `data: application/zip;base64,${data.data}`;
-                        a.download = `${date}scripts.zip`;
+                        // actual position is http://IP:8081/adapter/javascript/index.html
+                        // we need http://IP:8081/files/admin.0/zip/2023-06-20-scripts.zip
+                        a.href = `../../files/${data}`;
                         document.body.appendChild(a);
                         a.click();
                         a.remove();
+                    } else {
+                        data.error && this.showJsError(data.error);
+                        if (data.data) {
+                            const a = document.createElement('a');
+                            a.href = `data: application/zip;base64,${data.data}`;
+                            a.download = `${date}scripts.zip`;
+                            document.body.appendChild(a);
+                            a.click();
+                            a.remove();
+                        }
                     }
+                },
+            );
+        } else {
+            // Export as ZIP with same structure of scripts but in plain text
+            const zip = new JSZip();
+            for (const [id, obj] of Object.entries(this.scripts)) {
+                if (obj.type === 'script') {
+                    const scriptObj = obj;
+                    const ext =
+                        scriptObj.common.engineType === 'TypeScript/ts'
+                            ? 'ts'
+                            : scriptObj.common.engineType === 'Blockly'
+                              ? 'blockly'
+                              : scriptObj.common.engineType === 'Rules'
+                                ? 'rules'
+                                : 'js';
+                    let text = `/******* (ext=${ext}/engine=${scriptObj.common.engine}/debug=${scriptObj.common.debug}/verbose=${scriptObj.common.verbose}/enabled=${scriptObj.common.enabled}) *******/\n`;
+                    text += scriptObj.common.source || '';
+                    // Convert dots in the path to slashes to create folder structure, e.g. common.myFolder.myScript → common/myFolder/myScript.js
+                    const filePath = `${id.substring('script.js.'.length).replace(/\./g, '/')}.${ext}`;
+                    zip.file(filePath, text);
                 }
-            },
-        );
+            }
+            zip.generateAsync({ type: 'blob' }).then(blob => {
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `${date}scripts_plain.zip`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(a.href);
+            });
+        }
     }
 
-    onImport(data: string | undefined): void {
+    onImport(data: string | undefined, name?: string): void {
         this.importFile = data || null;
+        this.importFileName = name || null;
         if (data) {
             this.confirmCallback = this.onImportConfirmed.bind(this);
             this.setState({ importFile: false, confirm: I18n.t('Existing scripts will be overwritten.') });
@@ -898,35 +933,141 @@ export default class App extends GenericApp<AppProps, AppState> {
 
     async onImportConfirmed(ok: boolean): Promise<void> {
         let data = this.importFile;
+        const fileName = this.importFileName;
         this.importFile = null;
+        this.importFileName = null;
         if (ok && data) {
-            data = data.split(',')[1];
-            const host = await this.getLiveHost();
-            if (!host) {
-                this.showJsError(I18n.t('No active host found'));
-                return;
-            }
-            this.socket.getRawSocket().emit(
-                'sendToHost',
-                host,
-                'writeObjectsAsZip',
-                {
-                    data: data,
-                    adapter: 'javascript',
-                    id: 'script.js',
-                },
-                (data: string | { error?: string }) => {
-                    if (data === 'permissionError') {
-                        this.showJsError(I18n.t(data));
-                    } else if (!data || (data as { error?: string }).error) {
-                        this.showJsError(
-                            data ? I18n.t((data as { error?: string }).error || '') : I18n.t('Unknown error'),
+            // Check if the file name indicates a plain text export (e.g., "2026-03-21-scripts_plain.zip")
+            const isPlain = fileName && /_(plain|text)\.zip$/i.test(fileName);
+
+            if (isPlain) {
+                // Import plain text ZIP in browser: parse each file's first line for metadata
+                data = data.split(',')[1];
+                try {
+                    const zip = await JSZip.loadAsync(data, { base64: true });
+                    const promises: Promise<void>[] = [];
+
+                    zip.forEach((relativePath, zipEntry) => {
+                        if (zipEntry.dir) {
+                            return;
+                        }
+                        promises.push(
+                            zipEntry.async('string').then(async content => {
+                                const lines = content.split('\n');
+                                const firstLine = lines[0] || '';
+                                const source = lines.slice(1).join('\n');
+
+                                // Parse first line: /******* (ext=js/engine=system.adapter.javascript.0/debug=false/verbose=false/enabled=true) *******/
+                                const match = firstLine.match(
+                                    /\/\*{7}\s*\(ext=(\w+)\/engine=([^/]+)\/debug=(\w+)\/verbose=(\w+)\/enabled=(\w+)\)\s*\*{7}\//,
+                                );
+
+                                let engineType: ScriptType = 'Javascript/js';
+                                let engine = 'system.adapter.javascript.0';
+                                let debug = false;
+                                let verbose = false;
+                                let enabled = false;
+
+                                if (match) {
+                                    const ext = match[1];
+                                    engine = match[2];
+                                    debug = match[3] === 'true';
+                                    verbose = match[4] === 'true';
+                                    enabled = match[5] === 'true';
+
+                                    if (ext === 'ts') {
+                                        engineType = 'TypeScript/ts';
+                                    } else if (ext === 'blockly') {
+                                        engineType = 'Blockly';
+                                    } else if (ext === 'rules') {
+                                        engineType = 'Rules';
+                                    }
+                                }
+
+                                // Convert file path back to script ID: common/myFolder/myScript.js → script.js.common.myFolder.myScript
+                                const scriptPath = relativePath.replace(/\.\w+$/, '').replace(/\//g, '.');
+                                const id = `script.js.${scriptPath}`;
+                                const name = scriptPath.split('.').pop() || scriptPath;
+
+                                // Ensure parent folders exist
+                                const parts = id.split('.');
+                                for (let i = 3; i < parts.length; i++) {
+                                    const folderId = parts.slice(0, i).join('.');
+                                    if (!this.scripts[folderId]) {
+                                        try {
+                                            await this.socket.setObject(folderId, {
+                                                _id: folderId,
+                                                type: 'channel',
+                                                common: {
+                                                    name: parts[i - 1],
+                                                    expert: true,
+                                                },
+                                                native: {},
+                                            });
+                                        } catch {
+                                            // folder may already exist
+                                        }
+                                    }
+                                }
+
+                                await this.socket.setObject(id, {
+                                    _id: id,
+                                    type: 'script',
+                                    common: {
+                                        name,
+                                        expert: true,
+                                        engineType: engineType as
+                                            | 'TypeScript/ts'
+                                            | 'Blockly'
+                                            | 'Rules'
+                                            | 'Javascript/js',
+                                        engine,
+                                        enabled,
+                                        source,
+                                        debug,
+                                        verbose,
+                                    },
+                                    native: {},
+                                });
+                            }),
                         );
-                    } else {
-                        this.showMessage(I18n.t('Done'));
-                    }
-                },
-            );
+                    });
+
+                    await Promise.all(promises);
+                    this.showMessage(I18n.t('Done'));
+                } catch (err) {
+                    this.showJsError(err as Error);
+                }
+            } else {
+                // Standard JSON ZIP import via host
+                data = data.split(',')[1];
+                const host = await this.getLiveHost();
+                if (!host) {
+                    this.showJsError(I18n.t('No active host found'));
+                    return;
+                }
+                this.socket.getRawSocket().emit(
+                    'sendToHost',
+                    host,
+                    'writeObjectsAsZip',
+                    {
+                        data: data,
+                        adapter: 'javascript',
+                        id: 'script.js',
+                    },
+                    (data: string | { error?: string }) => {
+                        if (data === 'permissionError') {
+                            this.showJsError(I18n.t(data));
+                        } else if (!data || (data as { error?: string }).error) {
+                            this.showJsError(
+                                data ? I18n.t((data as { error?: string }).error || '') : I18n.t('Unknown error'),
+                            );
+                        } else {
+                            this.showMessage(I18n.t('Done'));
+                        }
+                    },
+                );
+            }
         }
     }
 
@@ -1092,7 +1233,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                 {this.state.importFile ? (
                     <DialogImportFile
                         key="dialogImportFile"
-                        onClose={data => this.onImport(data)}
+                        onClose={(data, name) => this.onImport(data, name)}
                     />
                 ) : null}
                 {this.state.confirm ? (

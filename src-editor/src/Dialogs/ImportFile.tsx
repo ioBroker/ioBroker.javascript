@@ -67,7 +67,7 @@ const styles: Record<string, React.CSSProperties> = {
 };
 
 interface DialogImportFileProps {
-    onClose: (data?: string) => void;
+    onClose: (data?: string, name?: string) => void;
 }
 interface DialogImportFileState {
     error: string;
@@ -135,7 +135,7 @@ class DialogImportFile extends React.Component<DialogImportFileProps, DialogImpo
                     this.setState({ error: err || 'No data' });
                 } else {
                     // eslint-disable-next-line @typescript-eslint/no-base-to-string
-                    this.props.onClose(result.data?.toString() || '');
+                    this.props.onClose(result.data?.toString() || '', result.name);
                 }
             },
         );
