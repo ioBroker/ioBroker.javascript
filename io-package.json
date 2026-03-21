@@ -78,45 +78,6 @@
         "pl": "Dodano możliwość szyfrowania skryptów hasłem (tylko dla sprzedawców)",
         "uk": "Додана можливість шифрування сценаріїв з паролем (тільки для постачальників)",
         "zh-cn": "添加使用密码加密脚本的可能性( 只针对供应商)"
-      },
-      "9.0.16": {
-        "en": "Added possibility to encrypt scripts with password (only for vendors)",
-        "de": "Zusätzliche Möglichkeit, Skripte mit Passwort zu verschlüsseln (nur für Hersteller)",
-        "ru": "Добавлена возможность шифрования скриптов с помощью пароля (только для продавцов)",
-        "pt": "Adicionada possibilidade de criptografar scripts com senha (somente para fornecedores)",
-        "nl": "Toegevoegd mogelijkheid om scripts te versleutelen met wachtwoord (alleen voor leveranciers)",
-        "fr": "Ajout de la possibilité de chiffrer les scripts avec le mot de passe (seulement pour les fournisseurs)",
-        "it": "Aggiunta possibilità di crittografare gli script con password (solo per i fornitori)",
-        "es": "Añadido posibilidad de cifrar scripts con contraseña (sólo para proveedores)",
-        "pl": "Dodano możliwość szyfrowania skryptów hasłem (tylko dla sprzedawców)",
-        "uk": "Додана можливість шифрування сценаріїв з паролем (тільки для постачальників)",
-        "zh-cn": "添加使用密码加密脚本的可能性( 只针对供应商)"
-      },
-      "9.0.15": {
-        "en": "Added possibility to encrypt scripts with password (only for vendors)",
-        "de": "Zusätzliche Möglichkeit, Skripte mit Passwort zu verschlüsseln (nur für Hersteller)",
-        "ru": "Добавлена возможность шифрования скриптов с помощью пароля (только для продавцов)",
-        "pt": "Adicionada possibilidade de criptografar scripts com senha (somente para fornecedores)",
-        "nl": "Toegevoegd mogelijkheid om scripts te versleutelen met wachtwoord (alleen voor leveranciers)",
-        "fr": "Ajout de la possibilité de chiffrer les scripts avec le mot de passe (seulement pour les fournisseurs)",
-        "it": "Aggiunta possibilità di crittografare gli script con password (solo per i fornitori)",
-        "es": "Añadido posibilidad de cifrar scripts con contraseña (sólo para proveedores)",
-        "pl": "Dodano możliwość szyfrowania skryptów hasłem (tylko dla sprzedawców)",
-        "uk": "Додана можливість шифрування сценаріїв з паролем (тільки для постачальників)",
-        "zh-cn": "添加使用密码加密脚本的可能性( 只针对供应商)"
-      },
-      "9.0.14": {
-        "en": "Added possibility to encrypt scripts with password (only for vendors)",
-        "de": "Zusätzliche Möglichkeit, Skripte mit Passwort zu verschlüsseln (nur für Hersteller)",
-        "ru": "Добавлена возможность шифрования скриптов с помощью пароля (только для продавцов)",
-        "pt": "Adicionada possibilidade de criptografar scripts com senha (somente para fornecedores)",
-        "nl": "Toegevoegd mogelijkheid om scripts te versleutelen met wachtwoord (alleen voor leveranciers)",
-        "fr": "Ajout de la possibilité de chiffrer les scripts avec le mot de passe (seulement pour les fournisseurs)",
-        "it": "Aggiunta possibilità di crittografare gli script con password (solo per i fornitori)",
-        "es": "Añadido posibilidad de cifrar scripts con contraseña (sólo para proveedores)",
-        "pl": "Dodano możliwość szyfrowania skryptów hasłem (tylko dla sprzedawców)",
-        "uk": "Додана можливість шифрування сценаріїв з паролем (тільки для постачальників)",
-        "zh-cn": "添加使用密码加密脚本的可能性( 只针对供应商)"
       }
     },
     "platform": "Javascript/Node.js",
@@ -173,7 +134,7 @@
     },
     "dependencies": [
       {
-        "js-controller": ">=5.0.19"
+        "js-controller": ">=6.0.11"
       }
     ],
     "globalDependencies": [

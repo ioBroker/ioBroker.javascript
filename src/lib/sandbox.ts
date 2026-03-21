@@ -2779,6 +2779,7 @@ export function sandBox(
                     (state as ioBroker.SettableState).ack !== undefined
                         ? (state as ioBroker.SettableState).ack
                         : isAck,
+                scriptName: name,
             });
 
             return context.timerId;

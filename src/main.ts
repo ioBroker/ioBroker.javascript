@@ -2656,6 +2656,20 @@ class JavaScript extends Adapter {
             for (let i = 0; i < this.scripts[name].intervals.length; i++) {
                 clearInterval(this.scripts[name].intervals[i]);
             }
+            // Stop all delayed states (setStateDelayed timers)
+            for (const stateId of Object.keys(this.timers)) {
+                if (this.timers[stateId]) {
+                    for (let i = this.timers[stateId].length - 1; i >= 0; i--) {
+                        if (this.timers[stateId][i].scriptName === name) {
+                            clearTimeout(this.timers[stateId][i].t);
+                            this.timers[stateId].splice(i, 1);
+                        }
+                    }
+                    if (!this.timers[stateId].length) {
+                        delete this.timers[stateId];
+                    }
+                }
+            }
             // Stop all scheduled jobs
             for (let i = 0; i < this.scripts[name].schedules.length; i++) {
                 if (this.scripts[name].schedules[i]) {

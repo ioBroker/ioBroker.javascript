@@ -2154,6 +2154,7 @@ function sandBox(script, name, verbose, debug, context) {
                     state.ack !== undefined
                     ? state.ack
                     : isAck,
+                scriptName: name,
             });
             return context.timerId;
         },

@@ -201,8 +201,9 @@ const styles: Record<string, any> = {
               color: 'white',
           },
     instances: {
-        color: 'gray',
         fontSize: 'smaller',
+        fontWeight: 'bold',
+        marginRight: 4,
     },
     childrenCount: {
         fontSize: 10,
@@ -1143,15 +1144,20 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
         }
 
         if (!this.state.isAllZeroInstances && item.type !== 'folder') {
+            const instanceRunning =
+                this.state.runningInstances[`system.adapter.javascript.${item.instance}`];
             title = [
-                <span key="title">{title}</span>,
                 <span
                     key="instance"
-                    title={I18n.t('Instance')}
-                    style={styles.instances}
+                    title={`${I18n.t('Instance')} ${item.instance}${instanceRunning ? '' : ` (${I18n.t('not running')})`}`}
+                    style={{
+                        ...styles.instances,
+                        color: instanceRunning ? COLOR_RUN : COLOR_PAUSE,
+                    }}
                 >
                     [{item.instance}]
                 </span>,
+                <span key="title">{title}</span>,
             ];
         }
         const reorder = this.state.reorder && !this.props.debugMode;
