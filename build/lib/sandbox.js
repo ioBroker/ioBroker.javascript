@@ -3964,7 +3964,7 @@ function sandBox(script, name, verbose, debug, context) {
                 callback = ignoreIfStarted;
                 ignoreIfStarted = false;
             }
-            scriptName = scriptName || name;
+            scriptName ||= name;
             if (!scriptName.match(/^script\.js\./)) {
                 scriptName = `script.js.${scriptName}`;
             }
@@ -3980,7 +3980,6 @@ function sandBox(script, name, verbose, debug, context) {
             }
             if (objects[scriptName].common.enabled) {
                 if (!ignoreIfStarted) {
-                    objects[scriptName].common.enabled = false;
                     adapter.extendForeignObject(scriptName, { common: { enabled: false } }, () => {
                         adapter.extendForeignObject(scriptName, { common: { enabled: true } }, err => typeof callback === 'function' && callback(err, true));
                     });

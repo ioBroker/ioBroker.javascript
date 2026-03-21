@@ -220,6 +220,11 @@ class ProtectFs {
             ProtectFs.log?.error(`May not write ${file.toString()} - use writeFile instead`);
             throw new Error('Permission denied');
         }
+        // Disallow writing into node_modules directories (see #2127)
+        if (!readOnly && `${node_path_1.sep}${filePath}${node_path_1.sep}`.includes(`${node_path_1.sep}node_modules${node_path_1.sep}`)) {
+            ProtectFs.log?.error(`May not write into node_modules: ${file.toString()}`);
+            throw new Error('Permission denied. Writing into node_modules is not allowed');
+        }
     }
     access(path, mode, callback) {
         ProtectFs.checkProtected(path, true);
