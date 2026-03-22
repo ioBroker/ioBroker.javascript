@@ -2779,6 +2779,7 @@ export function sandBox(
                     (state as ioBroker.SettableState).ack !== undefined
                         ? (state as ioBroker.SettableState).ack
                         : isAck,
+                scriptName: name,
             });
 
             return context.timerId;
@@ -4892,7 +4893,7 @@ export function sandBox(
                 callback = ignoreIfStarted as (err: Error | null | undefined, started: boolean) => void;
                 ignoreIfStarted = false;
             }
-            scriptName = scriptName || name;
+            scriptName ||= name;
             if (!scriptName.match(/^script\.js\./)) {
                 scriptName = `script.js.${scriptName}`;
             }
@@ -4911,7 +4912,6 @@ export function sandBox(
             }
             if (objects[scriptName].common.enabled) {
                 if (!ignoreIfStarted) {
-                    objects[scriptName].common.enabled = false;
                     adapter.extendForeignObject(scriptName, { common: { enabled: false } }, () => {
                         adapter.extendForeignObject(
                             scriptName,

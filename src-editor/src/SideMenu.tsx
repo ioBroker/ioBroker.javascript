@@ -14,6 +14,10 @@ import {
     MenuItem,
     Input,
     Box,
+    Dialog,
+    DialogTitle,
+    DialogActions,
+    Button,
 } from '@mui/material';
 
 import {
@@ -197,8 +201,9 @@ const styles: Record<string, any> = {
               color: 'white',
           },
     instances: {
-        color: 'gray',
         fontSize: 'smaller',
+        fontWeight: 'bold',
+        marginRight: 4,
     },
     childrenCount: {
         fontSize: 10,
@@ -495,8 +500,8 @@ interface SideDrawerProps {
     onEdit: (id: string) => void;
     onEnableDisable: (id: string, enabled: boolean) => void;
     onDelete: (id: string) => void;
-    onExport: () => void;
-    onImport: () => void;
+    onExport?: (isJsonOrText: boolean) => void;
+    onImport?: () => void;
     onRename: (oldId: string, newId: string, newName?: string, newInstance?: number) => void;
     instances: number[];
     scripts: Record<string, ioBroker.ScriptObject | ioBroker.ChannelObject>;
@@ -552,6 +557,7 @@ interface SideDrawerState {
     scriptsHash: number;
     showAdapterDebug: boolean;
     isAllZeroInstances: boolean;
+    showExportDialog: boolean;
 }
 
 export default class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
@@ -603,6 +609,7 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
             scriptsHash: props.scriptsHash,
             showAdapterDebug: false,
             isAllZeroInstances: false,
+            showExportDialog: false,
         };
 
         const newExp = this.ensureSelectedIsVisible();
@@ -1137,15 +1144,20 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
         }
 
         if (!this.state.isAllZeroInstances && item.type !== 'folder') {
+            const instanceRunning =
+                this.state.runningInstances[`system.adapter.javascript.${item.instance}`];
             title = [
-                <span key="title">{title}</span>,
                 <span
                     key="instance"
-                    title={I18n.t('Instance')}
-                    style={styles.instances}
+                    title={`${I18n.t('Instance')} ${item.instance}${instanceRunning ? '' : ` (${I18n.t('not running')})`}`}
+                    style={{
+                        ...styles.instances,
+                        color: instanceRunning ? COLOR_RUN : COLOR_PAUSE,
+                    }}
                 >
                     [{item.instance}]
                 </span>,
+                <span key="title">{title}</span>,
             ];
         }
         const reorder = this.state.reorder && !this.props.debugMode;
@@ -1517,7 +1529,7 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
                         onClick={event => {
                             event.stopPropagation();
                             event.preventDefault();
-                            this.onCloseMenu(() => this.props.onExport());
+                            this.onCloseMenu(() => this.setState({ showExportDialog: true }));
                         }}
                     >
                         <IconExport style={styles.iconDropdownMenu} />
@@ -1531,7 +1543,7 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
                         onClick={event => {
                             event.stopPropagation();
                             event.preventDefault();
-                            this.onCloseMenu(() => this.props.onImport());
+                            this.onCloseMenu(() => this.props.onImport!());
                         }}
                     >
                         <IconImport style={styles.iconDropdownMenu} />
@@ -2194,6 +2206,45 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
             ) : null,
 
             this.getAdapterDebugDialog(),
+
+            this.state.showExportDialog ? (
+                <Dialog
+                    key="dialog-export-format"
+                    open
+                    onClose={() => this.setState({ showExportDialog: false })}
+                >
+                    <DialogTitle>{I18n.t('Export all scripts')}</DialogTitle>
+                    <DialogActions>
+                        <Button
+                            variant="contained"
+                            onClick={() => {
+                                this.setState({ showExportDialog: false });
+                                this.props.onExport!(true);
+                            }}
+                            color="primary"
+                        >
+                            {I18n.t('as JSON')}
+                        </Button>
+                        <Button
+                            variant="contained"
+                            onClick={() => {
+                                this.setState({ showExportDialog: false });
+                                this.props.onExport!(false);
+                            }}
+                            color="grey"
+                        >
+                            {I18n.t('as plain text')}
+                        </Button>
+                        <Button
+                            variant="contained"
+                            onClick={() => this.setState({ showExportDialog: false })}
+                            color="primary"
+                        >
+                            {I18n.t('Cancel')}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            ) : null,
         ];
     }
 }

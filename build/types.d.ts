@@ -61,6 +61,7 @@ export type JavascriptTimer = {
     delay: number;
     val: ioBroker.StateValue;
     ack?: boolean;
+    scriptName: string;
 };
 
 export type ScriptType = 'TypeScript/ts' | 'Blockly' | 'Rules' | 'Javascript/js';

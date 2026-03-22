@@ -41,6 +41,13 @@ Executes Javascript, Typescript Scripts.
 * Node 25 compatibility: replaced deprecated rmdirSync with rmSync in build tasks
 * Flexible result area height in AI code generator (no extra scrollbar)
 * Added translations for all 11 languages
+* (@GermanBluefox) Added support for plain import/export
+* (@GermanBluefox) Correcting error in configuration
+* (@GermanBluefox) disallow writing into node_modules folder by scripts
+* (@GermanBluefox) Correcting start of the script more than one time if restart is triggered
+* (@GermanBluefox) All delayed writings are stopped by the script stop
+* (@GermanBluefox) Added check if a script has been modified by another user/window
+* (@GermanBluefox) Make the instance number more prominent
 
 ### 9.1.1 (2026-03-19)
 * (GermanBluefox) Small GUI optimizations

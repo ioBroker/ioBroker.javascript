@@ -278,6 +278,7 @@ interface EditorState {
     menuDebugAnchorEl: null | HTMLElement;
     triggerPrettier: number;
     openAiDialog: boolean;
+    scriptConflict: string;
 }
 
 class Editor extends React.Component<EditorProps, EditorState> {
@@ -316,6 +317,8 @@ class Editor extends React.Component<EditorProps, EditorState> {
     };
 
     private confirmCallback: null | ((result: boolean) => void) = null;
+
+    private lastKnownTs: Record<string, number> = {};
 
     constructor(props: EditorProps) {
         super(props);
@@ -362,6 +365,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             menuTabsOpened: false,
             openAiDialog: false,
             triggerPrettier: 1,
+            scriptConflict: '',
             rules: null,
             runningInstances: this.props.runningInstances || {},
             searchText: '',
@@ -496,6 +500,34 @@ class Editor extends React.Component<EditorProps, EditorState> {
     componentWillUnmount(): void {
         window.removeEventListener('beforeunload', this.onBrowserClose);
         void this.props.socket.unsubscribeObject('system.adapter.*', Editor.onInstanceChanged);
+    }
+
+    componentDidUpdate(prevProps: EditorProps): void {
+        if (prevProps.scriptsHash !== this.props.scriptsHash) {
+            // Check if any currently editing script was modified externally
+            for (const id of this.state.editing) {
+                const obj = this.props.objects[id];
+                if (!obj || obj.type !== 'script') {
+                    continue;
+                }
+                const newTs = obj.ts || 0;
+                const knownTs = this.lastKnownTs[id];
+
+                // Only check scripts we've already loaded (have a known ts)
+                if (knownTs !== undefined && newTs !== knownTs) {
+                    if (this.state.changed[id]) {
+                        // User has local unsaved changes - show conflict dialog
+                        if (!this.state.scriptConflict) {
+                            this.setState({ scriptConflict: id });
+                        }
+                    } else {
+                        // No local changes - silently reload the script
+                        this.scripts[id] = this.getScriptFromObject(id)!;
+                        this.lastKnownTs[id] = newTs;
+                    }
+                }
+            }
+        }
     }
 
     onBrowserClose = (e: BeforeUnloadEvent): string | void => {
@@ -808,6 +840,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
 
     onCancel(): void {
         this.scripts[this.state.selected] = this.getScriptFromObject(this.state.selected)!;
+        this.lastKnownTs[this.state.selected] = this.props.objects[this.state.selected]?.ts || 0;
 
         const changed: { [id: string]: boolean } = { ...this.state.changed };
         changed[this.state.selected] = false;
@@ -872,6 +905,12 @@ class Editor extends React.Component<EditorProps, EditorState> {
         }
         window.localStorage.setItem('Editor.selected', selected);
         const common = this.scripts[selected] || this.getScriptFromObject(selected);
+        if (!this.scripts[selected]) {
+            this.scripts[selected] = common;
+        }
+        if (this.lastKnownTs[selected] === undefined && this.props.objects[selected]) {
+            this.lastKnownTs[selected] = this.props.objects[selected].ts || 0;
+        }
         this.setState({
             selected,
             rules: common.engineType === 'Rules',
@@ -900,6 +939,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                 this.showConfirmDialog(I18n.t('Discard changes for %s', this.props.objects[id].common.name), ok => {
                     if (ok) {
                         delete this.scripts[id];
+                        delete this.lastKnownTs[id];
                         this.onTabClose(id);
                     }
                 });
@@ -1752,6 +1792,57 @@ class Editor extends React.Component<EditorProps, EditorState> {
         return null;
     }
 
+    getScriptConflictDialog(): React.JSX.Element | null {
+        if (!this.state.scriptConflict) {
+            return null;
+        }
+        const id = this.state.scriptConflict;
+        const scriptName = this.props.objects[id]?.common?.name || id;
+
+        return (
+            <Dialog
+                key="dialogScriptConflict"
+                open
+                onClose={() => this.setState({ scriptConflict: '' })}
+            >
+                <DialogTitle>{I18n.t('Script was modified externally')}</DialogTitle>
+                <DialogContent>
+                    {I18n.t('The script "%s" has been modified by another user or in another window. Do you want to reload the script or keep your local changes?', scriptName)}
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="contained"
+                        onClick={() => {
+                            // Reload: discard local changes, load the new version
+                            this.scripts[id] = this.getScriptFromObject(id)!;
+                            this.lastKnownTs[id] = this.props.objects[id]?.ts || 0;
+                            const changed: Record<string, boolean> = { ...this.state.changed };
+                            changed[id] = false;
+                            this.setState({ scriptConflict: '', changed }, () =>
+                                this.setChangedInAdmin(),
+                            );
+                        }}
+                        color="primary"
+                        autoFocus
+                    >
+                        {I18n.t('Reload')}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        onClick={() => {
+                            // Keep local changes, acknowledge the external modification
+                            this.lastKnownTs[id] = this.props.objects[id]?.ts || 0;
+                            this.setState({ scriptConflict: '' });
+                        }}
+                        color="secondary"
+                    >
+                        {I18n.t('Keep my changes')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
+    }
+
     getConfirmDialog(): React.JSX.Element | null {
         if (this.state.confirm) {
             return (
@@ -2106,7 +2197,10 @@ class Editor extends React.Component<EditorProps, EditorState> {
             this.state.blockly === null &&
             this.state.rules === null
         ) {
-            this.scripts[this.state.selected] ||= this.getScriptFromObject(this.state.selected)!;
+            if (!this.scripts[this.state.selected]) {
+                this.scripts[this.state.selected] = this.getScriptFromObject(this.state.selected)!;
+                this.lastKnownTs[this.state.selected] = this.props.objects[this.state.selected]?.ts || 0;
+            }
 
             setTimeout(() => {
                 const newState = {
@@ -2163,6 +2257,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             this.getRulesEditor(),
             this.getDebug(),
             this.getConfirmDialog(),
+            this.getScriptConflictDialog(),
             this.getSelectIdDialog(),
             this.getCronDialog(),
             this.getEditorDialog(),
