@@ -23,6 +23,9 @@ Executes Javascript, Typescript Scripts.
   - 🇷🇺 Описание по [blockly](docs/ru/blockly.md) можно найти [здесь](docs/ru/blockly.md).
 
 ## Changelog
+
+### **WORK IN PROGRESS**
+- (iobroker-bot) Adapter requires node.js >= 20 now.
 <!--
     ### **WORK IN PROGRESS**
 -->
