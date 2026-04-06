@@ -21,6 +21,7 @@
   "Maximum setState requests per Minute per Script": "Максимальное количество setState запросов в минуту на скрипт",
   "Maximum triggers per Script (until warning)": "Максимальное количество триггеров на скрипт (до предупреждения)",
   "Mirror scripts to file path": "Зеркальное копирование сценариев в путь к файлу",
+  "Sort global scripts alphabetically": "Сортировать глобальные скрипты по алфавиту",
   "Module names": "Имена модулей",
   "Next sunrise": "Следующий восход:",
   "Next sunset": "Следующий закат:",
