@@ -1,7 +1,7 @@
 // this script updates blockly
 
-const cp = require('child_process');
-const fs = require('fs');
+const cp = require('node:child_process');
+const fs = require('node:fs');
 
 function copyFile(fileName, newName) {
     if (fileName.endsWith('/')) {

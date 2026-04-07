@@ -1,4 +1,4 @@
-import { execFile, type ExecFileException } from 'child_process';
+import { execFile, type ExecFileException } from 'node:child_process';
 
 /**
  * Request a module name by given url using `npm view`
