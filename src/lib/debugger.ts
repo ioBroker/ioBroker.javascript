@@ -20,7 +20,7 @@
  * IN THE SOFTWARE.
  */
 import { join, resolve } from 'node:path';
-import { type ReplOptions, type REPLServer, start } from 'repl';
+import { type ReplOptions, type REPLServer, start } from 'node:repl';
 import {
     debuglog as debuglogUtil,
     inspect as inspectUtil,

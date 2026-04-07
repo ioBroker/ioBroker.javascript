@@ -30,7 +30,7 @@ import type { WriteStream, ReadStream } from 'node:tty';
 // @ts-expect-error no types available
 import InspectClient from 'node-inspect/lib/internal/inspect_client';
 import type { Debugger, Runtime } from 'node:inspector';
-import type { REPLServer } from 'repl';
+import type { REPLServer } from 'node:repl';
 import createRepl from './debugger';
 // const runAsStandalone = typeof __dirname !== 'undefined';
 
