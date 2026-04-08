@@ -160,9 +160,9 @@ class ProtectFs {
                 ProtectFs.checkProtected(path, false);
                 return nodeFS.promises.rm.call(this, path, options); // async function rm(path, options) {
             },
-            rmdir: async (path, options) => {
+            rmdir: async (path) => {
                 ProtectFs.checkProtected(path, false);
-                return nodeFS.promises.rmdir.call(this, path, options); // async function rmdir(path, options) {
+                return nodeFS.promises.rmdir.call(this, path); // async function rmdir(path, options) {
             },
         };
         // Add missing constants
@@ -189,20 +189,41 @@ class ProtectFs {
     }
     static checkProtected(file, readOnly) {
         if (file.fd) {
+            // FileHandle objects bypass path checks — they were already validated at open() time.
+            // This is safe because the sandbox only exposes the wrapped fs where open() is protected.
             return;
         }
-        const filePath = (0, node_path_1.normalize)(file.toString());
+        let filePath;
+        try {
+            // Use resolve() instead of normalize() to get an absolute path and eliminate .. traversals.
+            // Then try realpath to resolve symlinks — fall back to resolved path if file doesn't exist yet.
+            const resolved = (0, node_path_1.resolve)(file.toString());
+            try {
+                filePath = nodeFS.realpathSync(resolved);
+            }
+            catch {
+                filePath = resolved;
+            }
+        }
+        catch {
+            filePath = (0, node_path_1.normalize)(file.toString());
+        }
         if (filePath.endsWith(`-data${node_path_1.sep}objects.json`) || filePath.endsWith(`-data${node_path_1.sep}objects.jsonl`)) {
-            ProtectFs.log?.error(`May not read ${file.toString()}`);
+            ProtectFs.log?.error(`May not access ${file.toString()}`);
             throw new Error('Permission denied');
         }
         if (!readOnly && filePath.startsWith((0, node_path_1.join)(ProtectFs.staticIoBrokerDataDir, 'files'))) {
-            ProtectFs.log?.error(`May not read ${file.toString()} - use writeFile instead`);
+            ProtectFs.log?.error(`May not write ${file.toString()} - use writeFile instead`);
             throw new Error('Permission denied');
         }
         if (!readOnly && filePath.startsWith(`file://${(0, node_path_1.join)(ProtectFs.staticIoBrokerDataDir, 'files')}`)) {
-            ProtectFs.log?.error(`May not read ${file.toString()} - use writeFile instead`);
+            ProtectFs.log?.error(`May not write ${file.toString()} - use writeFile instead`);
             throw new Error('Permission denied');
+        }
+        // Disallow writing into node_modules directories (see #2127)
+        if (!readOnly && `${node_path_1.sep}${filePath}${node_path_1.sep}`.includes(`${node_path_1.sep}node_modules${node_path_1.sep}`)) {
+            ProtectFs.log?.error(`May not write into node_modules: ${file.toString()}`);
+            throw new Error('Permission denied. Writing into node_modules is not allowed');
         }
     }
     access(path, mode, callback) {
@@ -501,17 +522,16 @@ class ProtectFs {
         ProtectFs.checkProtected(path, false);
         return nodeFS.rmSync.call(this, path, options);
     }
-    rmdir(path, options, callback) {
+    rmdir(path, callback) {
         ProtectFs.checkProtected(path, false);
         if (typeof callback === 'function') {
-            return nodeFS.rmdir.call(this, path, options, callback);
+            return nodeFS.rmdir.call(this, path, callback);
         }
-        // @ts-expect-error should work
-        return nodeFS.rmdir.call(this, path, options);
+        return nodeFS.rmdirSync.call(this, path);
     }
-    rmdirSync(path, options) {
+    rmdirSync(path) {
         ProtectFs.checkProtected(path, false);
-        return nodeFS.rmdirSync.call(this, path, options);
+        return nodeFS.rmdirSync.call(this, path);
     }
     watch(filename, options, listener) {
         ProtectFs.checkProtected(filename, true);

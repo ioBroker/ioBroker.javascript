@@ -57,5 +57,21 @@
   "tooltip_latitude": "Latitude as 5.345 to use astro functions",
   "tooltip_libraries": "Additional NPM libraries divided by comma. You can access them with require('name') in scripts.",
   "tooltip_longitude": "Longitude as 5.345 to use astro functions",
-  "tooltip_useSystemGPS": "Use coordinates from system settings"
+  "tooltip_useSystemGPS": "Use coordinates from system settings",
+  "Custom API Base URL": "Custom API Base URL (e.g. for Ollama, LM Studio)",
+  "Custom API Base URL help": "Leave empty for OpenAI. For Ollama use http://localhost:11434/v1",
+  "Test API connection": "Test API connection",
+  "Test OpenAI": "Test OpenAI",
+  "Test Anthropic": "Test Anthropic",
+  "Test Gemini": "Test Gemini",
+  "Test DeepSeek": "Test DeepSeek",
+  "Test Custom API": "Test Custom API",
+  "Custom API key": "API key (optional)",
+  "Custom API key help": "Only needed if your provider requires authentication",
+  "AI settings": "AI settings",
+  "AI settings description": "If you want to use AI code generation, you can define API keys for the corresponding providers here. Only the key for the provider you use is required.",
+  "ChatGPT API key": "ChatGPT API key",
+  "Anthropic API key": "Anthropic API key",
+  "Gemini API key": "Gemini API key",
+  "DeepSeek API key": "DeepSeek API key"
 }

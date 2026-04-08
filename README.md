@@ -24,10 +24,44 @@ Executes Javascript, Typescript Scripts.
 
 ## Changelog
 <!--
-	### **WORK IN PROGRESS**
+    ### **WORK IN PROGRESS**
 -->
+### WORK IN PROGRESS
+* Per-provider test buttons in adapter config (OpenAI, Anthropic, Gemini, DeepSeek, Custom API)
+* Optional API key field for custom base URL providers (e.g. Ollama without auth)
+* Provider icons on test buttons and in model dropdown
+* Human-readable HTTP error messages with API response details
+* Two-step AI code generation: plan first, then generate code
+* Collapsible plan view in AI code generator UI
+* Status display during generation ("Planning..." / "Generating code...")
+* Optimized prompts with code examples for better results with small local models
+* Compact API reference (docs-compact.md) for reduced context usage
+* Disable reasoning/thinking for local models (reasoning_effort: none)
+* TODO_DEVICE_ID placeholder when a required device is not in the device list
+* Node 25 compatibility: replaced deprecated rmdirSync with rmSync in build tasks
+* Flexible result area height in AI code generator (no extra scrollbar)
+* Added translations for all 11 languages
+* (@GermanBluefox) Added support for plain import/export
+* (@GermanBluefox) Correcting error in configuration
+* (@GermanBluefox) disallow writing into node_modules folder by scripts
+* (@GermanBluefox) Correcting start of the script more than one time if restart is triggered
+* (@GermanBluefox) All delayed writings are stopped by the script stop
+* (@GermanBluefox) Added check if a script has been modified by another user/window
+* (@GermanBluefox) Make the instance number more prominent
+
+### 9.1.1 (2026-03-19)
+* (GermanBluefox) Small GUI optimizations
+* Added support for custom OpenAI-compatible API endpoints (e.g. Ollama, LM Studio, Google Gemini, DeepSeek, OpenRouter)
+* Added configurable base URL in adapter settings
+* Models are now fetched dynamically from the configured API endpoint
+* Added the "Test API connection" button in adapter settings
+* Added error handling with user-friendly messages for unreachable providers
+* Added retry functionality for failed model loading
+* All API calls (models + chat) are proxied server-side to avoid CORS issues with local providers
+* Strip LLM thinking artifacts from responses (for local models like Ollama)
+
 ### 9.0.18 (2026-01-11)
-* (@GermanBluefox) Corrected error message with `lastSync`
+* (@GermanBluefox) Corrected an error message with `lastSync`
 * (@klein0r) Corrected JavaScript filter
 
 ### 9.0.17 (2025-12-14)
@@ -40,12 +74,9 @@ Executes Javascript, Typescript Scripts.
 ### 9.0.10 (2025-07-27)
 * (@klein0r) Added Blockly block to format a numeric value
 * (@GermanBluefox) Fixing some blocks in blockly: cron, time
-* (@GermanBluefox) Added new block: "unconditional return"
+* (@GermanBluefox) Added a new block: "unconditional return"
 * (@GermanBluefox) Type definitions for TypeScript were updated
 * (@GermanBluefox) Corrected bug with deleting of sub-folders
-
-### 9.0.7 (2025-06-29)
-* (@GermanBluefox) Fixing some blocks in blockly: time, function
 
 ## License
 The MIT License (MIT)

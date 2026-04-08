@@ -1,4 +1,4 @@
-import { exec, type ExecException } from 'child_process';
+import { execFile, type ExecFileException } from 'node:child_process';
 
 /**
  * Request a module name by given url using `npm view`
@@ -7,17 +7,21 @@ import { exec, type ExecException } from 'child_process';
  */
 export async function requestModuleNameByUrl(url: string): Promise<string> {
     return new Promise((resolve, reject) => {
-        exec(
-            `npm view ${url} name`,
-            { windowsHide: true, encoding: 'utf8' },
-            (error: ExecException | null, stdout: string /* , stderr */) => {
+        execFile(
+            'npm',
+            ['view', url, 'name'],
+            { windowsHide: true, encoding: 'utf8', shell: false },
+            (error: ExecFileException | null, stdout: string) => {
                 if (error) {
-                    reject(error);
+                    reject(error as Error);
                 } else {
                     if (typeof stdout !== 'string') {
-                        throw new Error(
-                            `Could not determine module name for url "${url}". Unexpected stdout: "${stdout ? JSON.stringify(stdout) : ''}"`,
+                        reject(
+                            new Error(
+                                `Could not determine module name for url "${url}". Unexpected stdout: "${stdout ? JSON.stringify(stdout) : ''}"`,
+                            ),
                         );
+                        return;
                     }
 
                     resolve(stdout.trim());

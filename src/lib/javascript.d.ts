@@ -2024,8 +2024,10 @@ declare global {
         type SettableOtherObject = SettableObject<OtherObject>;
 
         /** Represents the change of a state */
-        interface ChangedStateObject<TOld extends iobJS.StateValue = any, TNew extends iobJS.StateValue = TOld>
-            extends StateObject {
+        interface ChangedStateObject<
+            TOld extends iobJS.StateValue = any,
+            TNew extends iobJS.StateValue = TOld,
+        > extends StateObject {
             common: StateCommon;
             native: Record<string, any>;
             id?: string;

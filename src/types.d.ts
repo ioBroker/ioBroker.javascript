@@ -33,6 +33,10 @@ export interface JavaScriptAdapterConfig {
     maxSetStatePerMinute: number;
     maxTriggersPerScript: number;
     gptKey: string;
+    gptBaseUrl: string;
+    claudeKey: string;
+    geminiKey: string;
+    deepseekKey: string;
     password?: string;
 }
 
@@ -57,6 +61,7 @@ export type JavascriptTimer = {
     delay: number;
     val: ioBroker.StateValue;
     ack?: boolean;
+    scriptName: string;
 };
 
 export type ScriptType = 'TypeScript/ts' | 'Blockly' | 'Rules' | 'Javascript/js';
@@ -740,4 +745,5 @@ export interface JavascriptContext {
     logError: (scriptName: string, msg: string, e: Error, offs?: number) => void;
     logWithLineInfo: (message: string) => void;
     schedules?: string[];
+    allowSelfSignedCerts: boolean;
 }

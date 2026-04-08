@@ -104,7 +104,7 @@ const isCI = !!process.env.CI;
 // ambient declarations for typescript
 let tsAmbient;
 // TypeScript's scripts are only recompiled if their source hash changes.
-// If an adapter update fixes the compilation bugs, a user won't notice until the changes and re-saves the script.
+// If an adapter update fixes the compilation bugs, a user won't notice until the changes and re-save the script.
 // To avoid that, we also include the
 // adapter version and TypeScript version in the hash
 const tsSourceHashBase = `versions:adapter=${packageJson.version},typescript=${packageJson.dependencies.typescript}`;
@@ -213,7 +213,7 @@ function formatHoursMinutesSeconds(date) {
     const s = String(date.getSeconds());
     return `${h.padStart(2, '0')}:${m.padStart(2, '0')}:${s.padStart(2, '0')}`;
 }
-// Due to a npm bug, virtual-tsc may be hoisted to the top level node_modules but
+// Due to a npm bug, virtual-tsc may be hoisted to the top level node_modules, but
 // TypeScript may still be in the adapter level (https://npm.community/t/packages-with-peerdependencies-are-incorrectly-hoisted/4794),
 // so we need to tell virtual-tsc where TypeScript is
 (0, virtual_tsc_1.setTypeScriptResolveOptions)({
@@ -225,6 +225,19 @@ const jsDeclarationServer = new virtual_tsc_1.Server(typescriptSettings_1.jsDecl
  * Stores the IDs of script objects whose change should be ignored because
  * the compiled source was just updated
  */
+function httpStatusText(code) {
+    const texts = {
+        400: 'Bad Request',
+        401: 'Unauthorized',
+        403: 'Forbidden',
+        404: 'Not Found',
+        429: 'Too Many Requests / Rate Limit',
+        500: 'Internal Server Error',
+        502: 'Bad Gateway',
+        503: 'Service Unavailable',
+    };
+    return texts[code] || `Error ${code}`;
+}
 class JavaScript extends adapter_core_1.Adapter {
     context;
     errorLogFunction = {
@@ -290,7 +303,7 @@ class JavaScript extends adapter_core_1.Adapter {
             name: 'javascript', // adapter name
             useFormatDate: true,
             /**
-             * If the JS-Controller catches an unhandled error, this will be called
+             * If the JS-Controller catches an unhandled error, this will be called,
              * so we have a chance to handle it ourselves.
              */
             error: (err) => {
@@ -408,6 +421,7 @@ class JavaScript extends adapter_core_1.Adapter {
             getAbsoluteDefaultDataDir: adapter_core_1.getAbsoluteDefaultDataDir,
             adapter: this,
             logError: this.logError.bind(this),
+            allowSelfSignedCerts: false,
         };
         this.tsServer = new virtual_tsc_1.Server(typescriptSettings_1.tsCompilerOptions, this.tsLog);
     }
@@ -457,7 +471,7 @@ class JavaScript extends adapter_core_1.Adapter {
             this.timeSettings.format12 = obj.native.format12 || false;
             this.timeSettings.leadingZeros = obj.native.leadingZeros === undefined ? true : obj.native.leadingZeros;
         }
-        // send changes to disk mirror
+        // send changes to the disk mirror
         this.mirror?.onObjectChange(id, obj);
         const formerObj = this.objects[id];
         this.updateObjectContext(id, obj); // Update all Meta object data
@@ -526,7 +540,7 @@ class JavaScript extends adapter_core_1.Adapter {
                 await this.createActiveObject(id, !!obj.common.enabled);
                 await this.createProblemObject(id);
                 if (obj.common.enabled) {
-                    // if enabled => Start script
+                    // if enabled => Start a script
                     await this.loadScriptById(id);
                 }
             }
@@ -610,7 +624,7 @@ class JavaScript extends adapter_core_1.Adapter {
                         common: { enabled: state.val },
                     });
                 }
-                // monitor if adapter is alive and send all subscriptions once more, after adapter goes online
+                // monitor if the adapter is alive and send all subscriptions once more, after the adapter goes online
                 if ( /*oldState && */oldState.val === false && state.val && id.endsWith('.alive')) {
                     if (this.adapterSubs[id]) {
                         const parts = id.split('.');
@@ -727,7 +741,7 @@ class JavaScript extends adapter_core_1.Adapter {
                         `javascript.${obj.message.instance}` === this.namespace ||
                         obj.message.instance === this.namespace)) {
                     Object.keys(this.messageBusHandlers).forEach(name => {
-                        // script name could be script.js.xxx or only xxx
+                        // the script name could be script.js.xxx or only xxx
                         if ((!obj.message.script || obj.message.script === name) &&
                             this.messageBusHandlers[name][obj.message.message]) {
                             this.messageBusHandlers[name][obj.message.message].forEach(handler => {
@@ -903,6 +917,240 @@ class JavaScript extends adapter_core_1.Adapter {
                 }
                 break;
             }
+            case 'chatCompletion': {
+                // Proxy chat completion requests to an OpenAI-compatible API endpoint
+                if (obj.callback) {
+                    const baseUrl = (obj.message?.baseUrl || '').trim();
+                    const apiKey = (obj.message?.apiKey || '').trim();
+                    const chatModel = (obj.message?.model || '').trim();
+                    const messages = obj.message?.messages;
+                    const provider = (obj.message?.provider || 'openai').trim();
+                    // Anthropic, Gemini, and DeepSeek always require an API key; OpenAI-compatible allows empty key with custom base URL
+                    if (!apiKey &&
+                        (provider === 'anthropic' || provider === 'gemini' || provider === 'deepseek' || !baseUrl)) {
+                        this.sendTo(obj.from, obj.command, { error: 'No API key provided' }, obj.callback);
+                        break;
+                    }
+                    if (!chatModel || !messages) {
+                        this.sendTo(obj.from, obj.command, { error: 'Model and messages are required' }, obj.callback);
+                        break;
+                    }
+                    let url;
+                    const chatHeaders = {
+                        'Content-Type': 'application/json',
+                    };
+                    let bodyObj;
+                    if (provider === 'anthropic') {
+                        url = 'https://api.anthropic.com/v1/messages';
+                        chatHeaders['x-api-key'] = apiKey;
+                        chatHeaders['anthropic-version'] = '2023-06-01';
+                        const systemMessages = messages.filter((m) => m.role === 'system');
+                        const nonSystemMessages = messages.filter((m) => m.role !== 'system');
+                        const systemText = systemMessages.map((m) => m.content).join('\n\n');
+                        bodyObj = {
+                            model: chatModel,
+                            max_tokens: 8192,
+                            stream: false,
+                            ...(systemText ? { system: systemText } : {}),
+                            messages: nonSystemMessages,
+                        };
+                    }
+                    else if (provider === 'gemini') {
+                        url = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
+                        if (apiKey) {
+                            chatHeaders.Authorization = `Bearer ${apiKey}`;
+                        }
+                        bodyObj = { model: chatModel, messages, stream: false };
+                    }
+                    else if (provider === 'deepseek') {
+                        url = 'https://api.deepseek.com/chat/completions';
+                        chatHeaders.Authorization = `Bearer ${apiKey}`;
+                        bodyObj = { model: chatModel, messages, stream: false };
+                    }
+                    else {
+                        url = `${baseUrl || 'https://api.openai.com/v1'}/chat/completions`;
+                        if (apiKey) {
+                            chatHeaders.Authorization = `Bearer ${apiKey}`;
+                        }
+                        bodyObj = {
+                            model: chatModel,
+                            messages,
+                            stream: false,
+                            // Disable thinking/reasoning for local models to save context and speed
+                            ...(baseUrl ? { reasoning_effort: 'none' } : {}),
+                        };
+                    }
+                    const body = JSON.stringify(bodyObj);
+                    const bodyBuffer = Buffer.from(body, 'utf8');
+                    chatHeaders['Content-Length'] = bodyBuffer.length;
+                    let urlObj;
+                    try {
+                        urlObj = new URL(url);
+                    }
+                    catch {
+                        this.sendTo(obj.from, obj.command, { error: `Invalid API URL: ${url}` }, obj.callback);
+                        break;
+                    }
+                    const isHttps = urlObj.protocol === 'https:';
+                    const requestModule = isHttps ? https : http;
+                    const req = requestModule.request(url, {
+                        method: 'POST',
+                        headers: chatHeaders,
+                        timeout: 600000,
+                        ...(isHttps && this.config.allowSelfSignedCerts ? { rejectUnauthorized: false } : {}),
+                    }, res => {
+                        let data = '';
+                        res.on('data', (chunk) => {
+                            data += chunk.toString();
+                        });
+                        res.on('end', () => {
+                            if (res.statusCode === 200) {
+                                try {
+                                    const parsed = JSON.parse(data);
+                                    const content = provider === 'anthropic'
+                                        ? parsed.content?.[0]?.text || ''
+                                        : parsed.choices?.[0]?.message?.content || '';
+                                    if (!content) {
+                                        this.sendTo(obj.from, obj.command, { error: 'Empty response from API' }, obj.callback);
+                                    }
+                                    else {
+                                        this.sendTo(obj.from, obj.command, { success: true, content }, obj.callback);
+                                    }
+                                }
+                                catch {
+                                    this.sendTo(obj.from, obj.command, { error: 'Invalid JSON response from API' }, obj.callback);
+                                }
+                            }
+                            else {
+                                let detail = '';
+                                try {
+                                    const errParsed = JSON.parse(data);
+                                    detail = errParsed.error?.message || data.substring(0, 200);
+                                }
+                                catch {
+                                    detail = data.substring(0, 200);
+                                }
+                                this.sendTo(obj.from, obj.command, {
+                                    error: `${detail || httpStatusText(res.statusCode || 0)} (${res.statusCode})`,
+                                }, obj.callback);
+                            }
+                        });
+                    });
+                    req.on('error', (err) => {
+                        this.sendTo(obj.from, obj.command, { error: `Connection failed: ${err.message}` }, obj.callback);
+                    });
+                    req.on('timeout', () => {
+                        req.destroy();
+                        this.sendTo(obj.from, obj.command, { error: 'Connection timeout (600s)' }, obj.callback);
+                    });
+                    req.write(bodyBuffer);
+                    req.end();
+                }
+                break;
+            }
+            case 'testApiConnection': {
+                // Test connection to an OpenAI-compatible API endpoint
+                if (obj.callback) {
+                    const baseUrl = (obj.message?.baseUrl || '').trim();
+                    const apiKey = (obj.message?.apiKey || '').trim();
+                    const provider = (obj.message?.provider || 'openai').trim();
+                    // Anthropic, Gemini, and DeepSeek always require an API key; OpenAI-compatible allows empty key with custom base URL
+                    if (!apiKey &&
+                        (provider === 'anthropic' || provider === 'gemini' || provider === 'deepseek' || !baseUrl)) {
+                        this.sendTo(obj.from, obj.command, { error: 'No API key provided' }, obj.callback);
+                        break;
+                    }
+                    let url;
+                    const testHeaders = {
+                        'Content-Type': 'application/json',
+                    };
+                    if (provider === 'anthropic') {
+                        url = 'https://api.anthropic.com/v1/models';
+                        testHeaders['x-api-key'] = apiKey;
+                        testHeaders['anthropic-version'] = '2023-06-01';
+                    }
+                    else if (provider === 'gemini') {
+                        url = 'https://generativelanguage.googleapis.com/v1beta/openai/models';
+                        if (apiKey) {
+                            testHeaders.Authorization = `Bearer ${apiKey}`;
+                        }
+                    }
+                    else if (provider === 'deepseek') {
+                        url = 'https://api.deepseek.com/models';
+                        testHeaders.Authorization = `Bearer ${apiKey}`;
+                    }
+                    else {
+                        url = `${baseUrl || 'https://api.openai.com/v1'}/models`;
+                        if (apiKey) {
+                            testHeaders.Authorization = `Bearer ${apiKey}`;
+                        }
+                    }
+                    let urlObj;
+                    try {
+                        urlObj = new URL(url);
+                    }
+                    catch {
+                        this.sendTo(obj.from, obj.command, { error: `Invalid API URL: ${url}` }, obj.callback);
+                        break;
+                    }
+                    const isHttps = urlObj.protocol === 'https:';
+                    const requestModule = isHttps ? https : http;
+                    const req = requestModule.request(url, {
+                        method: 'GET',
+                        headers: testHeaders,
+                        timeout: 10000,
+                        ...(isHttps && this.config.allowSelfSignedCerts ? { rejectUnauthorized: false } : {}),
+                    }, res => {
+                        let data = '';
+                        res.on('data', (chunk) => {
+                            data += chunk.toString();
+                        });
+                        res.on('end', () => {
+                            if (res.statusCode === 200) {
+                                try {
+                                    const parsed = JSON.parse(data);
+                                    const models = (parsed.data || [])
+                                        .map((m) => m.id.startsWith('models/') ? m.id.substring(7) : m.id)
+                                        .sort();
+                                    this.sendTo(obj.from, obj.command, { success: true, models, count: models.length }, obj.callback);
+                                }
+                                catch {
+                                    this.sendTo(obj.from, obj.command, { error: 'Invalid JSON response from API' }, obj.callback);
+                                }
+                            }
+                            else if (res.statusCode === 401) {
+                                this.sendTo(obj.from, obj.command, { error: 'Invalid API key (401)' }, obj.callback);
+                            }
+                            else if (res.statusCode === 403) {
+                                this.sendTo(obj.from, obj.command, { error: 'Access denied (403)' }, obj.callback);
+                            }
+                            else {
+                                // Include response body for debugging
+                                let detail = '';
+                                try {
+                                    const errParsed = JSON.parse(data);
+                                    detail = errParsed.error?.message || data.substring(0, 200);
+                                }
+                                catch {
+                                    detail = data.substring(0, 200);
+                                }
+                                this.sendTo(obj.from, obj.command, {
+                                    error: `${detail || httpStatusText(res.statusCode || 0)} (${res.statusCode})`,
+                                }, obj.callback);
+                            }
+                        });
+                    });
+                    req.on('error', (err) => {
+                        this.sendTo(obj.from, obj.command, { error: `Connection failed: ${err.message}` }, obj.callback);
+                    });
+                    req.on('timeout', () => {
+                        req.destroy();
+                        this.sendTo(obj.from, obj.command, { error: 'Connection timeout (10s)' }, obj.callback);
+                    });
+                    req.end();
+                }
+                break;
+            }
             case 'prettier': {
                 // Format the code with Prettier
                 if (obj.message && typeof obj.message.code === 'string') {
@@ -1058,10 +1306,9 @@ class JavaScript extends adapter_core_1.Adapter {
         await this.dayTimeSchedules();
         await this.sunTimeSchedules();
         await this.timeSchedule();
-        // Warning. It could have a side effect in compact mode, so all adapters will accept self-signed certificates
-        if (this.config.allowSelfSignedCerts) {
-            process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-        }
+        // Store allowSelfSignedCerts on the context, so sandbox HTTP functions can use it
+        // without setting the global process.env.NODE_TLS_REJECT_UNAUTHORIZED (which affects all adapters in compact mode)
+        this.context.allowSelfSignedCerts = this.config.allowSelfSignedCerts;
         const doc = await this.getObjectViewAsync('script', 'javascript', {});
         if (doc?.rows?.length) {
             // assemble global script
@@ -1204,7 +1451,7 @@ class JavaScript extends adapter_core_1.Adapter {
                 }
             }
         }
-        // CHeck setState counter per minute and stop script if too high
+        // CHeck setState counter per minute and stop a script if too high
         this.setStateCountCheckInterval = setInterval(() => {
             Object.keys(this.scripts).forEach(id => {
                 if (!this.scripts[id]) {
@@ -1335,7 +1582,7 @@ class JavaScript extends adapter_core_1.Adapter {
             delete this.folderCreationVerifiedObjects[id];
         }
         if (!obj && this.objects[id]) {
-            // objects was deleted
+            // objects were deleted
             this.removeFromNames(id);
             delete this.objects[id];
         }
@@ -1484,7 +1731,7 @@ class JavaScript extends adapter_core_1.Adapter {
                     continue;
                 }
                 if (this.objects[res.rows[i].doc._id] === undefined) {
-                    // If was already there ignore
+                    // If was already there, ignore
                     this.objects[res.rows[i].doc._id] = res.rows[i].doc;
                 }
                 this.objects[res.rows[i].doc._id].type === 'enum' && this._enums.push(res.rows[i].doc._id);
@@ -1584,7 +1831,7 @@ class JavaScript extends adapter_core_1.Adapter {
                 const intermediateStateValue = this.prepareStateObjectSimple(idActive, enabled, true);
                 await this.setForeignStateAsync(idActive, enabled, true);
                 if (enabled && !this.config.subscribe) {
-                    this.interimStateValues[id] = intermediateStateValue;
+                    this.interimStateValues[idActive] = intermediateStateValue;
                 }
             }
         }
@@ -1733,7 +1980,7 @@ class JavaScript extends adapter_core_1.Adapter {
                 version = parts.pop() ?? 'latest';
                 depName = parts.join('@');
             }
-            /** The real module name, because the dependency can be an url too */
+            /** The real module name, because the dependency can be a URL too */
             let moduleName = depName;
             if (URL.canParse(depName)) {
                 moduleName = await (0, nodeModulesManagement_1.requestModuleNameByUrl)(depName);
@@ -2010,6 +2257,20 @@ class JavaScript extends adapter_core_1.Adapter {
             // Stop all intervals
             for (let i = 0; i < this.scripts[name].intervals.length; i++) {
                 clearInterval(this.scripts[name].intervals[i]);
+            }
+            // Stop all delayed states (setStateDelayed timers)
+            for (const stateId of Object.keys(this.timers)) {
+                if (this.timers[stateId]) {
+                    for (let i = this.timers[stateId].length - 1; i >= 0; i--) {
+                        if (this.timers[stateId][i].scriptName === name) {
+                            clearTimeout(this.timers[stateId][i].t);
+                            this.timers[stateId].splice(i, 1);
+                        }
+                    }
+                    if (!this.timers[stateId].length) {
+                        delete this.timers[stateId];
+                    }
+                }
             }
             // Stop all scheduled jobs
             for (let i = 0; i < this.scripts[name].schedules.length; i++) {
@@ -2470,10 +2731,10 @@ class JavaScript extends adapter_core_1.Adapter {
      * Add declarations for global scripts
      *
      * @param scriptID - The current script the declarations were generated from
-     * @param declarations - Declarations from script
+     * @param declarations - Declarations from a script
      */
     provideDeclarationsForGlobalScript(scriptID, declarations) {
-        // Remember which declarations this global script had access to,
+        // Remember which declarations this global script had access to;
         // we need this so the editor doesn't show a duplicate identifier error
         if (this.globalDeclarations != null && this.globalDeclarations !== '') {
             this.knownGlobalDeclarationsByScript[scriptID] = this.globalDeclarations;
@@ -2665,7 +2926,7 @@ function patternMatching(event, patternFunctions) {
     }
     return matched;
 }
-// If started as allInOne mode => return function to create instance
+// If started as allInOne mode => return function to create an instance
 if (require.main !== module) {
     // Export the constructor in compact mode
     module.exports = (options) => new JavaScript(options);

@@ -1,5 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
-import OpenAI from 'openai';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
     Button,
@@ -15,13 +14,12 @@ import {
     InputLabel,
 } from '@mui/material';
 
-import { Check, Close, QuestionMark as Question, FileCopy as Copy } from '@mui/icons-material';
+import { Check, Close, QuestionMark as Question, FileCopy as Copy, Refresh } from '@mui/icons-material';
 
 import { Utils, I18n, type AdminConnection, type ThemeType } from '@iobroker/adapter-react-v5';
 
-import { detectDevices, type DeviceObject, systemPrompt } from './OpenAiPrompt';
+import { detectDevices, type DeviceObject, systemPromptFull } from './OpenAiPrompt';
 import ScriptEditorComponent from '../Components/ScriptEditorVanillaMonaco';
-import type { APIError } from 'openai/error';
 
 const LANGUAGES: Record<ioBroker.Languages, string> = {
     ru: 'Russian',
@@ -37,6 +35,25 @@ const LANGUAGES: Record<ioBroker.Languages, string> = {
     'zh-cn': 'Chinese',
 };
 
+const ICON_STYLE: React.CSSProperties = { width: 16, height: 16, flexShrink: 0, opacity: 0.7 };
+
+// Map provider names to icon files downloaded by the adapter at startup
+const PROVIDER_ICON_FILES: Record<string, string> = {
+    openai: 'img/openai.svg',
+    anthropic: 'img/anthropic.svg',
+    gemini: 'img/gemini.svg',
+    deepseek: 'img/deepseek.svg',
+    custom: 'img/custom.svg',
+};
+
+function ProviderIcon({ provider }: { provider: string }): React.JSX.Element | null {
+    const file = PROVIDER_ICON_FILES[provider];
+    if (!file) {
+        return null;
+    }
+    return <img src={`./img/${provider}.svg`} alt={provider} style={ICON_STYLE} onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />;
+}
+
 interface OpenAiDialogProps {
     adapterName: string;
     socket: AdminConnection;
@@ -47,16 +64,250 @@ interface OpenAiDialogProps {
     onClose: () => void;
 }
 
+interface ApiConfig {
+    gptKey: string;
+    claudeKey: string;
+    geminiKey: string;
+    deepseekKey: string;
+    gptBaseUrl?: string;
+    gptBaseUrlKey?: string;
+}
+
+async function getApiConfig(socket: AdminConnection, runningInstances: Record<string, any>): Promise<ApiConfig | null> {
+    const ids = Object.keys(runningInstances);
+    for (let i = 0; i < ids.length; i++) {
+        const config: ioBroker.Object | null | undefined = await socket.getObject(ids[i]);
+        const gptKey = (config?.native.gptKey || '').trim();
+        const claudeKey = (config?.native.claudeKey || '').trim();
+        const geminiKey = (config?.native.geminiKey || '').trim();
+        const deepseekKey = (config?.native.deepseekKey || '').trim();
+        const gptBaseUrl = (config?.native.gptBaseUrl || '').trim() || undefined;
+        const gptBaseUrlKey = (config?.native.gptBaseUrlKey || '').trim() || undefined;
+        // At least one key or custom base URL must be configured
+        if (gptKey || claudeKey || geminiKey || deepseekKey || gptBaseUrl) {
+            return { gptKey, claudeKey, geminiKey, deepseekKey, gptBaseUrl, gptBaseUrlKey };
+        }
+    }
+    return null;
+}
+
 const OpenAiDialog = (props: OpenAiDialogProps): React.JSX.Element => {
     const [question, setQuestion] = useState(window.localStorage.getItem('openai-question') || '');
     const [answer, setAnswer] = useState('');
-    const [working, setWorking] = useState(false);
-    const [error, setError] = useState(false);
-    const [model, setModel] = useState(window.localStorage.getItem('openai-model') || 'gpt-4o');
+    const [working, setWorking] = useState<string | false>(false);
+    const [plan, setPlan] = useState('');
+    const [showPlan, setShowPlan] = useState(false);
+    const [error, setError] = useState<string | false>(false);
+    const [model, setModel] = useState(window.localStorage.getItem('openai-model') || '');
     const [showKeyWarning, setShowKeyWarning] = useState(false);
+    const [availableModels, setAvailableModels] = useState<string[]>([]);
+    const [modelsLoading, setModelsLoading] = useState(true);
+    const [modelsError, setModelsError] = useState<string | null>(null);
     const devicesCache = useRef<null | DeviceObject[]>(null);
-    const gptKeyCache = useRef<string | null>(null);
+    const apiConfigCache = useRef<ApiConfig | null>(null);
+    const modelProviderMap = useRef<Record<string, string>>({});
     const docsCache = useRef<string | null>(null);
+
+    const loadModels = useCallback(
+        async (cancelled?: { current: boolean }): Promise<void> => {
+            setModelsLoading(true);
+            setModelsError(null);
+            try {
+                const config = await getApiConfig(props.socket, props.runningInstances);
+                if (cancelled?.current) {
+                    return;
+                }
+                if (!config) {
+                    setModelsLoading(false);
+                    return;
+                }
+                apiConfigCache.current = config;
+
+                const instanceId = Object.keys(props.runningInstances)[0];
+                if (!instanceId) {
+                    setModelsError(I18n.t('No running javascript instance found'));
+                    setModelsLoading(false);
+                    return;
+                }
+
+                const allModels: string[] = [];
+                const providerMap: Record<string, string> = {};
+                const errors: string[] = [];
+
+                // Fetch models from all configured providers in parallel
+                const queries: Promise<void>[] = [];
+
+                const addModels = (models: string[], provider: string): void => {
+                    for (const m of models) {
+                        // Filter out non-chat models (image, audio, embedding, legacy)
+                        const lower = m.toLowerCase();
+                        if (
+                            lower.includes('embedding') ||
+                            lower.includes('moderation') ||
+                            lower.startsWith('dall-e') ||
+                            lower.startsWith('tts-') ||
+                            lower.startsWith('whisper') ||
+                            lower.startsWith('babbage') ||
+                            lower.startsWith('davinci') ||
+                            lower.startsWith('sora') ||
+                            lower.startsWith('omni-moderation')
+                        ) {
+                            continue;
+                        }
+                        // Prevent collision: first provider to register a model name wins
+                        if (!providerMap[m]) {
+                            allModels.push(m);
+                            providerMap[m] = provider;
+                        }
+                    }
+                };
+
+                if (config.gptKey) {
+                    queries.push(
+                        props.socket
+                            .sendTo(instanceId, 'testApiConnection', {
+                                apiKey: config.gptKey,
+                                provider: 'openai',
+                            })
+                            .then((result: { models?: string[]; error?: string }) => {
+                                if (result.models) {
+                                    addModels(result.models, 'openai');
+                                } else if (result.error) {
+                                    errors.push(`OpenAI: ${result.error}`);
+                                }
+                            })
+                            .catch((err: unknown) => {
+                                errors.push(`OpenAI: ${String(err)}`);
+                            }),
+                    );
+                }
+
+                if (config.gptBaseUrl) {
+                    queries.push(
+                        props.socket
+                            .sendTo(instanceId, 'testApiConnection', {
+                                apiKey: config.gptBaseUrlKey || '',
+                                baseUrl: config.gptBaseUrl,
+                                provider: 'openai',
+                            })
+                            .then((result: { models?: string[]; error?: string }) => {
+                                if (result.models) {
+                                    addModels(result.models, 'custom');
+                                } else if (result.error) {
+                                    errors.push(`Custom: ${result.error}`);
+                                }
+                            })
+                            .catch((err: unknown) => {
+                                errors.push(`Custom: ${String(err)}`);
+                            }),
+                    );
+                }
+
+                if (config.claudeKey) {
+                    queries.push(
+                        props.socket
+                            .sendTo(instanceId, 'testApiConnection', {
+                                apiKey: config.claudeKey,
+                                provider: 'anthropic',
+                            })
+                            .then((result: { models?: string[]; error?: string }) => {
+                                if (result.models) {
+                                    addModels(result.models, 'anthropic');
+                                } else if (result.error) {
+                                    errors.push(`Anthropic: ${result.error}`);
+                                }
+                            })
+                            .catch((err: unknown) => {
+                                errors.push(`Anthropic: ${String(err)}`);
+                            }),
+                    );
+                }
+
+                if (config.geminiKey) {
+                    queries.push(
+                        props.socket
+                            .sendTo(instanceId, 'testApiConnection', {
+                                apiKey: config.geminiKey,
+                                provider: 'gemini',
+                            })
+                            .then((result: { models?: string[]; error?: string }) => {
+                                if (result.models) {
+                                    addModels(result.models, 'gemini');
+                                } else if (result.error) {
+                                    errors.push(`Gemini: ${result.error}`);
+                                }
+                            })
+                            .catch((err: unknown) => {
+                                errors.push(`Gemini: ${String(err)}`);
+                            }),
+                    );
+                }
+
+                if (config.deepseekKey) {
+                    queries.push(
+                        props.socket
+                            .sendTo(instanceId, 'testApiConnection', {
+                                apiKey: config.deepseekKey,
+                                provider: 'deepseek',
+                            })
+                            .then((result: { models?: string[]; error?: string }) => {
+                                if (result.models) {
+                                    addModels(result.models, 'deepseek');
+                                } else if (result.error) {
+                                    errors.push(`DeepSeek: ${result.error}`);
+                                }
+                            })
+                            .catch((err: unknown) => {
+                                errors.push(`DeepSeek: ${String(err)}`);
+                            }),
+                    );
+                }
+
+                await Promise.all(queries);
+
+                if (cancelled?.current) {
+                    return;
+                }
+
+                modelProviderMap.current = providerMap;
+
+                if (allModels.length > 0) {
+                    allModels.sort();
+                    setAvailableModels(allModels);
+
+                    // Auto-select: saved model > first available
+                    const saved = window.localStorage.getItem('openai-model');
+                    if (saved && allModels.includes(saved)) {
+                        setModel(saved);
+                    } else {
+                        setModel(allModels[0]);
+                    }
+                }
+
+                if (errors.length > 0) {
+                    setModelsError(errors.join('; '));
+                }
+            } catch (err: unknown) {
+                console.error('Failed to fetch models:', err);
+                if (!cancelled?.current) {
+                    setModelsError(I18n.t('Request failed: %s', String(err)));
+                }
+            }
+            if (!cancelled?.current) {
+                setModelsLoading(false);
+            }
+        },
+        [props.socket, props.runningInstances],
+    );
+
+    // Fetch API config and available models on mount
+    useEffect(() => {
+        const cancelled = { current: false };
+        void loadModels(cancelled);
+        return () => {
+            cancelled.current = true;
+        };
+    }, [loadModels]);
 
     const ask = useCallback(async (): Promise<void> => {
         let devices: DeviceObject[];
@@ -67,90 +318,289 @@ const OpenAiDialog = (props: OpenAiDialogProps): React.JSX.Element => {
         } else {
             devices = devicesCache.current;
         }
-        let apiKey: string | undefined;
-        if (!gptKeyCache.current) {
-            const ids = Object.keys(props.runningInstances);
-            for (let i = 0; i < ids.length; i++) {
-                const config: ioBroker.Object | null | undefined = await props.socket.getObject(ids[i]);
-                apiKey = (config?.native.gptKey || '').trim();
-                if (apiKey) {
-                    break;
-                }
-            }
-            gptKeyCache.current = apiKey || null;
-        } else {
-            apiKey = gptKeyCache.current;
+
+        let config = apiConfigCache.current;
+        if (!config) {
+            config = await getApiConfig(props.socket, props.runningInstances);
+            apiConfigCache.current = config;
         }
 
         let docs;
         if (!docsCache.current) {
-            docs = await systemPrompt();
+            docs = await systemPromptFull();
             docsCache.current = docs;
         } else {
             docs = docsCache.current;
         }
-        if (!apiKey) {
+        if (!config) {
             setShowKeyWarning(true);
             return;
         }
 
-        setWorking(true);
+        const provider = modelProviderMap.current[model];
+        if (!provider) {
+            setError(I18n.t('Please select a valid model'));
+            return;
+        }
+        let apiKey: string;
+        let baseUrl: string;
+        if (provider === 'anthropic') {
+            apiKey = config.claudeKey;
+            baseUrl = '';
+        } else if (provider === 'gemini') {
+            apiKey = config.geminiKey;
+            baseUrl = '';
+        } else if (provider === 'deepseek') {
+            apiKey = config.deepseekKey;
+            baseUrl = '';
+        } else if (provider === 'custom') {
+            apiKey = config.gptBaseUrlKey || '';
+            baseUrl = config.gptBaseUrl || '';
+        } else {
+            apiKey = config.gptKey;
+            baseUrl = '';
+        }
+
+        const instanceId = Object.keys(props.runningInstances)[0];
+        if (!instanceId) {
+            setError(I18n.t('No running javascript instance found'));
+            return;
+        }
+
+        setWorking(I18n.t('Planning...'));
         setError(false);
+        setPlan('');
+        setShowPlan(false);
+        setAnswer('');
 
         try {
-            const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
+            // Step 1: Create an implementation plan with relevant devices
+            const step1: { success?: boolean; content?: string; error?: string } = await props.socket.sendTo(
+                instanceId,
+                'chatCompletion',
+                {
+                    timeout: 600000,
+                    apiKey,
+                    baseUrl,
+                    model,
+                    provider,
+                    messages: [
+                        {
+                            role: 'user',
+                            content: `Devices in my smart home:
+${JSON.stringify(devices)}
 
-            const chatCompletionPhase1 = await openai.chat.completions.create({
-                model,
-                messages: [
-                    {
-                        role: 'system',
-                        content: `You are programmer. Here is a documentation:\n\n${docs}`,
-                    },
-                    {
-                        role: 'system',
-                        content: `Here is list of devices:\n\n${JSON.stringify(devices, null, 2)}`,
-                    },
-                    {
-                        role: 'user',
-                        content: `Write JavaScript code that does:\n\n${question}
-Return only code.
-Write comments in ${LANGUAGES[I18n.getLanguage()] || 'English'}.
-You can call async function directly in the code without encapsulate them in async function as this code will be already executed in async function.
-Do not import any libraries as all functions are already imported.`,
-                    },
-                ],
-            });
-            const message = chatCompletionPhase1.choices[0].message;
-            const m = message.content?.match(/```(javascript|js|typescript)\n?(.*)```(.*)/ms);
-            let code;
-            if (!m) {
-                code = message.content;
-                if (code?.startsWith('`')) {
-                    code = code.substring(1);
-                }
-                if (code?.endsWith('`')) {
-                    code = code.substring(0, code.length - 1);
-                }
+I need a plan for this task: ${question}
+
+Answer with max 6 lines. Use FULL device IDs from the list above (e.g. zigbee2mqtt.0.0xa4c1383f5ef5fb07.state). No explanation. No reasoning.
+1. IDs: <full IDs from the device list. If a device is not in the list, use TODO_DEVICE_ID as placeholder>
+2. Trigger: <on(id) for state changes OR schedule('min hour * * *') for time-based tasks>
+3. Condition: <when to act>
+4. Actions: <what to set, with full IDs and values. For Telegram use sendTo('telegram.0', 'send', {text: msg})>
+5. Else: <alternative actions or nothing>
+6. Extra: <logging, formatting, etc.>
+Values are boolean (true/false) or numbers, not strings. Use .state not .state_toggle.`,
+                        },
+                    ],
+                },
+            );
+
+            if (step1.error) {
+                setError(step1.error);
+                setWorking(false);
+                return;
+            }
+
+            // Extract plan from step 1
+            let planText = (step1.content || '').trim();
+            // Strip thinking artifacts
+            planText = planText.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+            planText = planText.replace(/<\|endoftext\|>/g, '').trim();
+            planText = planText.replace(/<\|im_start\|>[\s\S]*?<\|im_end\|>/g, '').trim();
+            setPlan(planText);
+
+            // Step 2: Generate code based on the plan + full API docs
+            setWorking(I18n.t('Generating code...'));
+            const result: { success?: boolean; content?: string; error?: string } = await props.socket.sendTo(
+                instanceId,
+                'chatCompletion',
+                {
+                    timeout: 600000,
+                    apiKey,
+                    baseUrl,
+                    model,
+                    provider,
+                    messages: [
+                        {
+                            role: 'system',
+                            content: `You write ioBroker JavaScript adapter scripts.
+Copy EXACTLY this syntax. Do NOT change the callback signature.
+IMPORTANT: Write all code at top level. NEVER use console.log (use log instead). NEVER define functions with the function keyword.
+
+// CORRECT: on() always has ONE callback argument called obj
+on('zigbee.0.sensor.state', (obj) => {
+    // obj.state.val = the new value (boolean or number)
+    // obj.id = the state ID that changed
+    setState('zigbee.0.lamp.state', obj.state.val);
+    log('Changed to ' + obj.state.val);
+});
+
+// CORRECT: on() with filter
+on({id: /zigbee\.0\..*\.state$/, change: 'ne'}, (obj) => {
+    if (obj.state.val === true) {
+        setState('zigbee.0.other.state', true);
+    }
+});
+
+// Other correct examples:
+setState('id', true);
+setState('id', 50);
+const val = getState('id').val;
+schedule('0 7 * * *', () => { log('runs daily at 07:00'); });
+schedule('0 22 * * *', () => { setState('id', false); });
+
+// CORRECT Telegram: always use sendTo, NEVER setState on telegram
+sendTo('telegram.0', 'send', {text: 'Alert: ' + someValue});
+
+// CORRECT httpGet: res.data is a STRING, parse JSON with JSON.parse
+httpGet('https://api.example.com/data', (err, res) => {
+    const data = JSON.parse(res.data);
+    log('Temperature: ' + data.main.temp);
+});
+
+$('state[state.id=*.state](rooms=Room)').each((id) => { setState(id, false); });
+createState('name', 0, {type: 'number', name: 'Name'});
+setStateDelayed('id', true, false, 5000);
+log(formatDate(new Date(), 'DD.MM.YYYY hh:mm'));
+
+WRONG: on('id', (id, state) => {})   CORRECT: on('id', (obj) => {})
+WRONG: set('id', true)               CORRECT: setState('id', true)
+WRONG: adapter.setState('id', true)  CORRECT: setState('id', true)
+WRONG: obj.val or newState.val       CORRECT: obj.state.val
+WRONG: on('change', {id: 'x'}, cb)  CORRECT: on({id: 'x', change: 'ne'}, cb)
+WRONG: setState('telegram.0', text)  CORRECT: sendTo('telegram.0', 'send', {text: text})
+WRONG: res.body.main.temp            CORRECT: JSON.parse(res.data).main.temp
+WRONG: function myFunc() {}          CORRECT: write code directly, no function definitions
+WRONG: setTimeout(fn, ms)            CORRECT: schedule('cron', () => {}) or setStateDelayed()
+Values are boolean (true/false) or numbers, NEVER strings like 'ON'/'OFF'.
+NEVER use: function keyword, require, import, setInterval, setTimeout, console.log, debug().
+
+All available functions (use syntax from examples above):
+on(pattern, (obj)=>{}) | once(pattern, (obj)=>{}) | unsubscribe(handler)
+setState(id, val) | getState(id).val | setStateChanged(id, val) | setStateDelayed(id, val, ack, ms) | clearStateDelayed(id)
+existsState(id) | existsObject(id) | getObject(id) | setObject(id, obj) | extendObject(id, obj) | deleteObject(id)
+createState(name, initVal, {type,name,role}) | deleteState(name) | createAlias(name, alias)
+schedule(cron, ()=>{}) | clearSchedule(obj) | scheduleById(id, (obj)=>{}) | getSchedules()
+sendTo(adapter, cmd, msg) | sendToHost(host, cmd, msg)
+$('selector').each((id)=>{}) | $('selector').setState(val) | $('selector').getState()
+log(text) | formatDate(date, 'DD.MM.YYYY hh:mm') | formatTimeDiff(ms) | formatValue(val, decimals)
+getDateObject(str) | getAstroDate(pattern) | isAstroDay() | compareTime(start, end, op)
+exec(cmd, (err,stdout,stderr)=>{}) | httpGet(url, (err,res)=>{}) | httpPost(url, data, (err,res)=>{})
+readFile(adapter, name, (err,data)=>{}) | writeFile(adapter, name, data, cb) | delFile(adapter, name, cb)
+onFile(id, name, withFile, cb) | offFile(id, name) | onStop(cb, timeout)
+getHistory(inst, {id,start,end,aggregate,count}, cb) | getEnums(name) | getIdByName(name)
+wait(ms) | toInt(val) | toFloat(val) | toBoolean(val)
+messageTo(target, data) | onMessage(name, cb) | onLog(severity, cb)
+setInterval(cb, ms) | clearInterval(id) | setTimeout(cb, ms) | clearTimeout(id)
+runScript(name) | startScript(name) | stopScript(name) | isScriptActive(name)`,
+                        },
+                        {
+                            role: 'user',
+                            content: `TASK: ${question}
+
+PLAN:
+${planText}
+
+Write the ioBroker script. Use the exact state IDs from the plan. If the plan contains TODO_DEVICE_ID, keep it as a placeholder with a comment so the user can fill in the correct ID. Write comments in ${LANGUAGES[I18n.getLanguage()] || 'English'}. Return ONLY code.`,
+                        },
+                    ],
+                },
+            );
+
+            if (result.error) {
+                setError(result.error);
             } else {
-                code = m[2];
-                if (m[3]) {
-                    const comments = m[3].split('\n').map(line => line.trim());
-                    // skip empty lines on start and end
-                    while (comments[0] === '') {
-                        comments.shift();
+                let content = result.content || '';
+
+                // Strip LLM thinking artifacts (<think>...</think>, <|endoftext|>, <|im_start|>, etc.)
+                content = content.replace(/<think>[\s\S]*?<\/think>/gi, '');
+                content = content.replace(/<\|endoftext\|>/g, '');
+                content = content.replace(/<\|im_start\|>[\s\S]*?<\|im_end\|>/g, '');
+                content = content.replace(/<\|im_start\|>[\s\S]*/g, '');
+
+                // Try to extract code from markdown fences
+                const m = content.match(/```(?:javascript|js|typescript)?\n?([\s\S]*?)```/m);
+                let code;
+                if (m) {
+                    code = m[1].trim();
+                } else {
+                    // No fences found — try to extract code lines
+                    // Remove lines that look like LLM commentary (not code)
+                    const lines = content.split('\n');
+                    const codeLines: string[] = [];
+                    let codeStarted = false;
+                    for (const line of lines) {
+                        const trimmed = line.trim();
+                        // Skip empty lines before code starts
+                        if (!codeStarted && trimmed === '') {
+                            continue;
+                        }
+                        // Detect start of code
+                        if (
+                            !codeStarted &&
+                            (trimmed.startsWith('//') ||
+                                trimmed.startsWith('const ') ||
+                                trimmed.startsWith('let ') ||
+                                trimmed.startsWith('var ') ||
+                                trimmed.startsWith('function ') ||
+                                trimmed.startsWith('async ') ||
+                                trimmed.startsWith('await ') ||
+                                trimmed.startsWith('if ') ||
+                                trimmed.startsWith('for ') ||
+                                trimmed.startsWith('on(') ||
+                                trimmed.startsWith('schedule(') ||
+                                trimmed.startsWith('setState') ||
+                                trimmed.startsWith('getState') ||
+                                trimmed.startsWith('createState') ||
+                                trimmed.startsWith('$') ||
+                                trimmed.startsWith("'use strict'") ||
+                                trimmed.startsWith('"use strict"'))
+                        ) {
+                            codeStarted = true;
+                        }
+                        if (codeStarted) {
+                            codeLines.push(line);
+                        }
                     }
-                    code = `${comments.map(line => `// ${line}`).join('\n')}\n${code}`;
+                    // Remove trailing non-code commentary
+                    while (codeLines.length > 0) {
+                        const last = codeLines[codeLines.length - 1].trim();
+                        if (
+                            last === '' ||
+                            (last.length > 0 &&
+                                !last.startsWith('//') &&
+                                !last.startsWith('*') &&
+                                !last.startsWith('}') &&
+                                !last.startsWith(');') &&
+                                !last.endsWith(';') &&
+                                !last.endsWith('}') &&
+                                !last.endsWith(')') &&
+                                !last.endsWith(',') &&
+                                !last.endsWith('{') &&
+                                /^[A-Z]/.test(last))
+                        ) {
+                            codeLines.pop();
+                        } else {
+                            break;
+                        }
+                    }
+                    code = codeLines.join('\n').trim();
                 }
+                setAnswer(code || '');
             }
-            console.log(message);
-            setAnswer(code || '');
         } catch (err: unknown) {
-            console.log(JSON.stringify(err));
-            if ((err as APIError).error) {
-                setError(((err as APIError).error as any).message);
-            }
-            console.error(`Cannot request: ${err}, ${JSON.stringify((err as APIError).error || err, null, 2)}`);
+            console.error('Chat request failed:', err);
+            setError(I18n.t('Request failed: %s', String(err)));
         }
 
         setWorking(false);
@@ -175,7 +625,7 @@ Do not import any libraries as all functions are already imported.`,
                     onClose={() => setShowKeyWarning(false)}
                     fullWidth
                 >
-                    <DialogTitle>{I18n.t('No Chat GPT Key found')}</DialogTitle>
+                    <DialogTitle>{I18n.t('No API key found')}</DialogTitle>
                     <DialogContent
                         style={{
                             display: 'flex',
@@ -184,7 +634,9 @@ Do not import any libraries as all functions are already imported.`,
                         }}
                     >
                         <div>
-                            {I18n.t('You have to enter OpenAI API key in the configuration of javascript adapter.')}
+                            {I18n.t(
+                                'You have to enter at least one API key in the configuration of javascript adapter.',
+                            )}
                         </div>
                         <Button
                             variant="contained"
@@ -226,7 +678,7 @@ Do not import any libraries as all functions are already imported.`,
                         variant="standard"
                         multiline
                         autoFocus
-                        disabled={working}
+                        disabled={!!working}
                         fullWidth
                         onKeyUp={e => {
                             if (e.key === 'Enter' && e.ctrlKey) {
@@ -245,36 +697,98 @@ Do not import any libraries as all functions are already imported.`,
                 <div style={{ display: 'flex', alignItems: 'baseline' }}>
                     <Button
                         variant="contained"
-                        disabled={working || !question}
+                        disabled={!!working || !question || !model}
                         startIcon={<Question />}
                         onClick={async () => ask()}
                     >
-                        {working ? <CircularProgress size={24} /> : I18n.t('Ask')}
+                        {working ? <><CircularProgress size={18} style={{ marginRight: 8 }} />{working}</> : I18n.t('Ask')}
                     </Button>
                     <FormControl
-                        style={{ width: 150, marginLeft: 20 }}
+                        style={{ width: 300, marginLeft: 20 }}
+                        disabled={!!working}
                         variant="standard"
+                        error={!!modelsError}
                     >
                         <InputLabel>{I18n.t('Model')}</InputLabel>
                         <Select
                             variant="standard"
                             value={model}
+                            disabled={modelsLoading || !!modelsError}
+                            renderValue={value => (
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                                    <ProviderIcon provider={modelProviderMap.current[value]} />
+                                    {value}
+                                </span>
+                            )}
                             onChange={e => {
                                 window.localStorage.setItem('openai-model', e.target.value);
                                 error && setError(false);
                                 setModel(e.target.value);
                             }}
                         >
-                            <MenuItem value="gpt-4o">GPT-4o</MenuItem>
-                            <MenuItem value="gpt-4-turbo">GPT-4 Turbo</MenuItem>
-                            <MenuItem value="gpt-4-32k">GPT-4 32k</MenuItem>
-                            <MenuItem value="gpt-4">GPT-4</MenuItem>
-                            <MenuItem value="gpt-3.5-turbo-16k">GPT-3.5 Turbo</MenuItem>
+                            {modelsLoading && (
+                                <MenuItem
+                                    value=""
+                                    disabled
+                                >
+                                    {I18n.t('Loading models...')}
+                                </MenuItem>
+                            )}
+                            {availableModels.map(m => (
+                                <MenuItem
+                                    key={m}
+                                    value={m}
+                                >
+                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                                        <ProviderIcon provider={modelProviderMap.current[m]} />
+                                        {m}
+                                    </span>
+                                </MenuItem>
+                            ))}
                         </Select>
                     </FormControl>
+                    {modelsError && (
+                        <Button
+                            style={{ marginLeft: 10 }}
+                            variant="outlined"
+                            color="error"
+                            startIcon={<Refresh />}
+                            onClick={() => void loadModels()}
+                        >
+                            {I18n.t('Retry')}
+                        </Button>
+                    )}
                 </div>
+                {modelsError && (
+                    <div style={{ color: props.themeType === 'dark' ? '#984242' : '#bb0000' }}>{modelsError}</div>
+                )}
+                {plan && (
+                    <div style={{ marginBottom: 4 }}>
+                        <Button
+                            size="small"
+                            variant="text"
+                            onClick={() => setShowPlan(!showPlan)}
+                            style={{ textTransform: 'none', padding: '2px 8px' }}
+                        >
+                            {showPlan ? '▼' : '►'} {I18n.t('Show plan')}
+                        </Button>
+                        {showPlan && (
+                            <pre style={{
+                                margin: '4px 0',
+                                padding: 8,
+                                backgroundColor: props.themeType === 'dark' ? '#1e1e1e' : '#f5f5f5',
+                                borderRadius: 4,
+                                fontSize: 12,
+                                maxHeight: 200,
+                                overflow: 'auto',
+                                whiteSpace: 'pre-wrap',
+                                wordBreak: 'break-word',
+                            }}>{plan}</pre>
+                        )}
+                    </div>
+                )}
                 <div>{I18n.t('Result')}</div>
-                <div style={{ height: 'calc(100% - 155px)' }}>
+                <div style={{ flex: 1, minHeight: 100, overflow: 'hidden' }}>
                     {error ? (
                         <div style={{ color: props.themeType === 'dark' ? '#984242' : '#bb0000' }}>{error}</div>
                     ) : (
@@ -314,7 +828,7 @@ Do not import any libraries as all functions are already imported.`,
                 <Button
                     color="primary"
                     variant="contained"
-                    disabled={!answer || error}
+                    disabled={!answer || !!error}
                     startIcon={<Check />}
                     onClick={() => {
                         props.onAddCode(answer);
