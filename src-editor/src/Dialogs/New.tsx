@@ -77,7 +77,6 @@ class DialogNew extends React.Component<DialogNewProps, DialogNewState> {
     };
 
     render(): React.JSX.Element {
-        console.log(this.state.name);
         return (
             <Dialog
                 onClose={() => false}
@@ -127,7 +126,6 @@ class DialogNew extends React.Component<DialogNewProps, DialogNewState> {
                                 } else if (this.props.existingItems?.includes(id)) {
                                     this.setState({ name, id, error: I18n.t('Duplicate name') });
                                 } else {
-                                    console.log(`Set name: "${name}"`);
                                     this.setState({ name, id, error: '' });
                                 }
                             }}

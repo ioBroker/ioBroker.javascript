@@ -9,13 +9,14 @@ const child_process_1 = require("child_process");
  */
 async function requestModuleNameByUrl(url) {
     return new Promise((resolve, reject) => {
-        (0, child_process_1.exec)(`npm view ${url} name`, { windowsHide: true, encoding: 'utf8' }, (error, stdout /* , stderr */) => {
+        (0, child_process_1.execFile)('npm', ['view', url, 'name'], { windowsHide: true, encoding: 'utf8', shell: false }, (error, stdout) => {
             if (error) {
                 reject(error);
             }
             else {
                 if (typeof stdout !== 'string') {
-                    throw new Error(`Could not determine module name for url "${url}". Unexpected stdout: "${stdout ? JSON.stringify(stdout) : ''}"`);
+                    reject(new Error(`Could not determine module name for url "${url}". Unexpected stdout: "${stdout ? JSON.stringify(stdout) : ''}"`));
+                    return;
                 }
                 resolve(stdout.trim());
             }

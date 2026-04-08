@@ -1179,7 +1179,7 @@ function sandBox(script, name, verbose, debug, context) {
                 options = {};
             }
             const config = {
-                ...(0, tools_1.getHttpRequestConfig)(url, options),
+                ...(0, tools_1.getHttpRequestConfig)(url, options, context.allowSelfSignedCerts),
                 method: 'get',
             };
             if (sandbox.verbose) {
@@ -1240,7 +1240,7 @@ function sandBox(script, name, verbose, debug, context) {
                 options = {};
             }
             const config = {
-                ...(0, tools_1.getHttpRequestConfig)(url, options),
+                ...(0, tools_1.getHttpRequestConfig)(url, options, context.allowSelfSignedCerts),
                 method: 'post',
                 data,
             };
@@ -2154,6 +2154,7 @@ function sandBox(script, name, verbose, debug, context) {
                     state.ack !== undefined
                     ? state.ack
                     : isAck,
+                scriptName: name,
             });
             return context.timerId;
         },
@@ -2204,7 +2205,7 @@ function sandBox(script, name, verbose, debug, context) {
                                 if (timers[_id_][ttt].id === id) {
                                     return {
                                         timerId: id,
-                                        left: timers[_id_][ttt].delay - (now - timers[id][ttt].ts),
+                                        left: timers[_id_][ttt].delay - (now - timers[_id_][ttt].ts),
                                         delay: timers[_id_][ttt].delay,
                                         val: timers[_id_][ttt].val,
                                         ack: timers[_id_][ttt].ack,
@@ -3964,7 +3965,7 @@ function sandBox(script, name, verbose, debug, context) {
                 callback = ignoreIfStarted;
                 ignoreIfStarted = false;
             }
-            scriptName = scriptName || name;
+            scriptName ||= name;
             if (!scriptName.match(/^script\.js\./)) {
                 scriptName = `script.js.${scriptName}`;
             }
@@ -3980,7 +3981,6 @@ function sandBox(script, name, verbose, debug, context) {
             }
             if (objects[scriptName].common.enabled) {
                 if (!ignoreIfStarted) {
-                    objects[scriptName].common.enabled = false;
                     adapter.extendForeignObject(scriptName, { common: { enabled: false } }, () => {
                         adapter.extendForeignObject(scriptName, { common: { enabled: true } }, err => typeof callback === 'function' && callback(err, true));
                     });

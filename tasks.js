@@ -6,7 +6,7 @@
  */
 
 const {
-    rmdirSync,
+    rmSync,
     readFileSync,
     writeFileSync,
     existsSync,
@@ -43,6 +43,7 @@ function clean() {
         'javascript.svg',
         'vsFont',
         'i18n',
+        'img',
     ]);
     deleteFoldersRecursive(`${__dirname}/src-editor/build`);
 }
@@ -79,7 +80,7 @@ function copyAllFiles() {
         const dirs = readdirSync(i18nDir);
         for (const dir of dirs) {
             if (statSync(`${i18nDir}/${dir}`).isDirectory()) {
-                rmdirSync(`${i18nDir}/${dir}`, { recursive: true });
+                rmSync(`${i18nDir}/${dir}`, { recursive: true });
             }
         }
     }
@@ -278,7 +279,7 @@ function monacoTypescript() {
     // save the old configure.js
     renameSync(join(vsDir, 'configure.js'), join(__dirname, 'monaco.configure.js'));
     // delete everything else
-    rmdirSync(vsDir, { recursive: true });
+    rmSync(vsDir, { recursive: true });
     mkdirSync(vsDir, { recursive: true });
 
     console.log('installing new version');
@@ -319,7 +320,7 @@ function monacoUpdate() {
     // save the old configure.js
     renameSync(join(vsDir, 'configure.js'), join(__dirname, 'monaco.configure.js'));
     // delete everything else
-    rmdirSync(vsDir, { recursive: true });
+    rmSync(vsDir, { recursive: true });
     mkdirSync(vsDir, { recursive: true });
 
     console.log('installing new version');

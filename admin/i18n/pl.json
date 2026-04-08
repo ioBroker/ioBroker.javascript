@@ -57,5 +57,21 @@
     "tooltip_latitude": "Szerokość geograficzna 5.345 przy korzystaniu z funkcji astro",
     "tooltip_libraries": "Dodatkowe biblioteki NPM rozdzielone przecinkiem. Dostęp do nich w skryptach można uzyskać za pomocą require('name')",
     "tooltip_longitude": "Długość geograficzna 5.345 przy korzystaniu funkcji astro",
-    "tooltip_useSystemGPS": "Użyj współrzędnych z ustawień systemowych"
+    "tooltip_useSystemGPS": "Użyj współrzędnych z ustawień systemowych",
+    "Custom API Base URL": "Niestandardowy bazowy URL API (np. dla Ollama, LM Studio)",
+    "Custom API Base URL help": "Pozostaw puste dla OpenAI. Dla Ollama użyj http://localhost:11434/v1",
+    "Test API connection": "Testuj połączenie API",
+    "Test OpenAI": "Test OpenAI",
+    "Test Anthropic": "Test Anthropic",
+    "Test Gemini": "Test Gemini",
+    "Test DeepSeek": "Test DeepSeek",
+    "Test Custom API": "Test Custom API",
+    "Custom API key": "API key (optional)",
+    "Custom API key help": "Only needed if your provider requires authentication",
+    "AI settings": "Ustawienia AI",
+    "AI settings description": "Jeśli chcesz korzystać z generowania kodu przez AI, możesz tutaj zdefiniować klucze API dla odpowiednich dostawców. Wymagany jest tylko klucz dla używanego dostawcy.",
+    "ChatGPT API key": "Klucz API ChatGPT",
+    "Anthropic API key": "Klucz API Anthropic",
+    "Gemini API key": "Klucz API Gemini",
+    "DeepSeek API key": "Klucz API DeepSeek"
 }

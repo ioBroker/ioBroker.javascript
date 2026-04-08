@@ -1,4 +1,11 @@
 The newest change log is in README.md
+## 9.0.7 (2025-06-29)
+* (@GermanBluefox) Fixing some blocks in blockly: time, function
+
+## 9.0.6 (2025-06-18)
+* (@GermanBluefox) Speed-up loading of GUI
+* (@GermanBluefox) Migrating old blocks to new format
+
 ## 9.0.4 (2025-06-16)
 * (@GermanBluefox) Corrected script editor for Polish language
 * (@GermanBluefox) Corrected import of Blockly blocks

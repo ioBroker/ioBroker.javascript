@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-const fs = require('fs');
+const fs = require('node:fs');
 const sharp = require('sharp');
 
 sharp(__dirname + '/Codeimage.jpg')

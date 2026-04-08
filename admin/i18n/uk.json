@@ -57,5 +57,21 @@
   "tooltip_latitude": "Широта як 5,345 для використання астрофункцій",
   "tooltip_libraries": "Додаткові бібліотеки NPM, розділені комою. Ви можете отримати до них доступ за допомогою require('name') у скриптах.",
   "tooltip_longitude": "Довгота як 5,345 для використання астрофункцій",
-  "tooltip_useSystemGPS": "Використовуйте координати з налаштувань системи"
+  "tooltip_useSystemGPS": "Використовуйте координати з налаштувань системи",
+  "Custom API Base URL": "Власний базовий URL API (напр. для Ollama, LM Studio)",
+  "Custom API Base URL help": "Залишити порожнім для OpenAI. Для Ollama використовуйте http://localhost:11434/v1",
+  "Test API connection": "Тестувати підключення до API",
+  "Test OpenAI": "Test OpenAI",
+  "Test Anthropic": "Test Anthropic",
+  "Test Gemini": "Test Gemini",
+  "Test DeepSeek": "Test DeepSeek",
+  "Test Custom API": "Test Custom API",
+  "Custom API key": "API key (optional)",
+  "Custom API key help": "Only needed if your provider requires authentication",
+  "AI settings": "Налаштування ШІ",
+  "AI settings description": "Якщо ви хочете використовувати генерацію коду за допомогою ШІ, тут можна вказати API-ключі для відповідних провайдерів. Потрібен лише ключ для використовуваного провайдера.",
+  "ChatGPT API key": "API-ключ ChatGPT",
+  "Anthropic API key": "API-ключ Anthropic",
+  "Gemini API key": "API-ключ Gemini",
+  "DeepSeek API key": "API-ключ DeepSeek"
 }

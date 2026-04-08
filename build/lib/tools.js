@@ -133,7 +133,7 @@ export function promisifyNoError(fn: Function, context: any): (...args: any[]) =
 function hashSource(source) {
     return (0, node_crypto_1.createHash)('md5').update(source).digest('hex');
 }
-function getHttpRequestConfig(url, options) {
+function getHttpRequestConfig(url, options, allowSelfSignedCerts) {
     options = options || {};
     const timeoutMs = options && !isNaN(options.timeout) ? options.timeout : 2000;
     const config = {
@@ -172,10 +172,15 @@ function getHttpRequestConfig(url, options) {
         'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:109.0) Gecko/20100101 Firefox/121.0',
         ...options.headers,
     };
-    // Certificate validation
+    // Certificate validation: per-request option takes priority, then adapter-level setting
     if (options && typeof options?.validateCertificate !== 'undefined') {
         config.httpsAgent = new node_https_1.Agent({
             rejectUnauthorized: options.validateCertificate,
+        });
+    }
+    else if (allowSelfSignedCerts) {
+        config.httpsAgent = new node_https_1.Agent({
+            rejectUnauthorized: false,
         });
     }
     return config;

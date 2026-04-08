@@ -8,7 +8,12 @@ import markerRetinaIcon from 'leaflet/dist/images/marker-icon-2x.png';
 
 function MyMapComponent(props: { addMap: (map: LeafletMap) => void }): null {
     const map = useMap();
-    props.addMap?.(map);
+    // Use a ref-like pattern to only call addMap once per map instance
+    const mapRef = React.useRef<LeafletMap | null>(null);
+    if (mapRef.current !== map) {
+        mapRef.current = map;
+        props.addMap?.(map);
+    }
     return null;
 }
 
@@ -27,11 +32,15 @@ interface MapState {
     height: number;
 }
 
+let mapKeyCounter = 0;
+
 class Map extends Component<MapProps, MapState> {
     divRef: React.RefObject<HTMLDivElement>;
     marker: Marker<any> | null;
     map?: LeafletMap;
     latLongTimer?: ReturnType<typeof setTimeout> | null;
+    resizeTimer?: ReturnType<typeof setTimeout> | null;
+    mapKey: number;
 
     constructor(props: MapProps) {
         super(props);
@@ -44,6 +53,8 @@ class Map extends Component<MapProps, MapState> {
         };
         this.divRef = React.createRef();
         this.marker = null;
+        mapKeyCounter++;
+        this.mapKey = mapKeyCounter;
     }
 
     onMap = (map: LeafletMap): void => {
@@ -99,10 +110,35 @@ class Map extends Component<MapProps, MapState> {
             (this.state.width !== this.divRef.current.clientWidth ||
                 this.state.height !== this.divRef.current.clientHeight)
         ) {
-            setTimeout(() => {
-                this.setState({ width: this.divRef.current!.clientWidth, height: this.divRef.current!.clientHeight });
+            if (this.resizeTimer) {
+                clearTimeout(this.resizeTimer);
+            }
+            this.resizeTimer = setTimeout(() => {
+                this.resizeTimer = null;
+                if (this.divRef.current) {
+                    this.setState({ width: this.divRef.current.clientWidth, height: this.divRef.current.clientHeight });
+                }
             }, 100);
         }
+    }
+
+    componentWillUnmount(): void {
+        if (this.latLongTimer) {
+            clearTimeout(this.latLongTimer);
+            this.latLongTimer = null;
+        }
+        if (this.resizeTimer) {
+            clearTimeout(this.resizeTimer);
+            this.resizeTimer = null;
+        }
+        if (this.marker) {
+            this.marker.off('dragend');
+            this.marker.remove();
+            this.marker = null;
+        }
+        // Do not call this.map.remove() here — react-leaflet's MapContainer
+        // manages the Leaflet map lifecycle and will clean it up on unmount.
+        this.map = undefined;
     }
 
     onMarkerDragend = (evt: DragEndEvent): void => {
@@ -124,7 +160,6 @@ class Map extends Component<MapProps, MapState> {
         ];
         const { zoom } = this.state;
 
-        console.log(this.state.width, this.state.height);
         return (
             <div
                 style={{ width: '100%', height: '100%', minHeight: 350 }}
@@ -132,6 +167,7 @@ class Map extends Component<MapProps, MapState> {
             >
                 {this.state.width && this.state.height ? (
                     <MapContainer
+                        key={`map-${this.mapKey}`}
                         style={{
                             width: '100%',
                             height: '100%',

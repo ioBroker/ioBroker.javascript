@@ -32,7 +32,7 @@ import type { URL } from 'node:url';
 import type { Stream } from 'node:stream';
 
 import * as nodeFS from 'node:fs';
-import { sep, normalize, join } from 'node:path';
+import { sep, normalize, join, resolve } from 'node:path';
 
 export default class ProtectFs {
     private readonly log: ioBroker.Logger;
@@ -275,9 +275,9 @@ export default class ProtectFs {
                 ProtectFs.checkProtected(path, false);
                 return nodeFS.promises.rm.call(this, path, options); // async function rm(path, options) {
             },
-            rmdir: async (path: PathLike, options?: RmDirOptions): Promise<void> => {
+            rmdir: async (path: PathLike): Promise<void> => {
                 ProtectFs.checkProtected(path, false);
-                return nodeFS.promises.rmdir.call(this, path, options); // async function rmdir(path, options) {
+                return nodeFS.promises.rmdir.call(this, path); // async function rmdir(path, options) {
             },
         };
 
@@ -312,21 +312,40 @@ export default class ProtectFs {
 
     static checkProtected(file: PathLike | FileHandle, readOnly: boolean): void {
         if ((file as FileHandle).fd) {
+            // FileHandle objects bypass path checks — they were already validated at open() time.
+            // This is safe because the sandbox only exposes the wrapped fs where open() is protected.
             return;
         }
-        const filePath = normalize((file as PathLike).toString());
+        let filePath: string;
+        try {
+            // Use resolve() instead of normalize() to get an absolute path and eliminate .. traversals.
+            // Then try realpath to resolve symlinks — fall back to resolved path if file doesn't exist yet.
+            const resolved = resolve((file as PathLike).toString());
+            try {
+                filePath = nodeFS.realpathSync(resolved);
+            } catch {
+                filePath = resolved;
+            }
+        } catch {
+            filePath = normalize((file as PathLike).toString());
+        }
 
         if (filePath.endsWith(`-data${sep}objects.json`) || filePath.endsWith(`-data${sep}objects.jsonl`)) {
-            ProtectFs.log?.error(`May not read ${(file as PathLike).toString()}`);
+            ProtectFs.log?.error(`May not access ${(file as PathLike).toString()}`);
             throw new Error('Permission denied');
         }
         if (!readOnly && filePath.startsWith(join(ProtectFs.staticIoBrokerDataDir, 'files'))) {
-            ProtectFs.log?.error(`May not read ${(file as PathLike).toString()} - use writeFile instead`);
+            ProtectFs.log?.error(`May not write ${(file as PathLike).toString()} - use writeFile instead`);
             throw new Error('Permission denied');
         }
         if (!readOnly && filePath.startsWith(`file://${join(ProtectFs.staticIoBrokerDataDir, 'files')}`)) {
-            ProtectFs.log?.error(`May not read ${(file as PathLike).toString()} - use writeFile instead`);
+            ProtectFs.log?.error(`May not write ${(file as PathLike).toString()} - use writeFile instead`);
             throw new Error('Permission denied');
+        }
+        // Disallow writing into node_modules directories (see #2127)
+        if (!readOnly && `${sep}${filePath}${sep}`.includes(`${sep}node_modules${sep}`)) {
+            ProtectFs.log?.error(`May not write into node_modules: ${(file as PathLike).toString()}`);
+            throw new Error('Permission denied. Writing into node_modules is not allowed');
         }
     }
 
@@ -797,18 +816,17 @@ export default class ProtectFs {
         return nodeFS.rmSync.call(this, path, options);
     }
 
-    rmdir(path: PathLike, options?: RmDirOptions | NoParamCallback, callback?: NoParamCallback): void {
+    rmdir(path: PathLike, callback?: NoParamCallback): void {
         ProtectFs.checkProtected(path, false);
         if (typeof callback === 'function') {
-            return nodeFS.rmdir.call(this, path, options as RmDirOptions, callback);
+            return (nodeFS.rmdir as (...args: unknown[]) => void).call(this, path, callback);
         }
-        // @ts-expect-error should work
-        return nodeFS.rmdir.call(this, path, options as NoParamCallback);
+        return nodeFS.rmdirSync.call(this, path);
     }
 
-    rmdirSync(path: PathLike, options?: RmDirOptions): void {
+    rmdirSync(path: PathLike): void {
         ProtectFs.checkProtected(path, false);
-        return nodeFS.rmdirSync.call(this, path, options);
+        return nodeFS.rmdirSync.call(this, path);
     }
 
     watch(

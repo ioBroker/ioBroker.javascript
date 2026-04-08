@@ -1405,7 +1405,7 @@ export function sandBox(
             }
 
             const config = {
-                ...getHttpRequestConfig(url, options),
+                ...getHttpRequestConfig(url, options, context.allowSelfSignedCerts),
                 method: 'get',
             };
 
@@ -1519,6 +1519,7 @@ export function sandBox(
                         bearerAuth?: string;
                         validateCertificate?: boolean;
                     },
+                    context.allowSelfSignedCerts,
                 ),
                 method: 'post',
                 data,
@@ -2778,6 +2779,7 @@ export function sandBox(
                     (state as ioBroker.SettableState).ack !== undefined
                         ? (state as ioBroker.SettableState).ack
                         : isAck,
+                scriptName: name,
             });
 
             return context.timerId;
@@ -2839,7 +2841,7 @@ export function sandBox(
                                 if (timers[_id_][ttt].id === id) {
                                     return {
                                         timerId: id,
-                                        left: timers[_id_][ttt].delay - (now - timers[id][ttt].ts),
+                                        left: timers[_id_][ttt].delay - (now - timers[_id_][ttt].ts),
                                         delay: timers[_id_][ttt].delay,
                                         val: timers[_id_][ttt].val,
                                         ack: timers[_id_][ttt].ack,
@@ -4891,7 +4893,7 @@ export function sandBox(
                 callback = ignoreIfStarted as (err: Error | null | undefined, started: boolean) => void;
                 ignoreIfStarted = false;
             }
-            scriptName = scriptName || name;
+            scriptName ||= name;
             if (!scriptName.match(/^script\.js\./)) {
                 scriptName = `script.js.${scriptName}`;
             }
@@ -4910,7 +4912,6 @@ export function sandBox(
             }
             if (objects[scriptName].common.enabled) {
                 if (!ignoreIfStarted) {
-                    objects[scriptName].common.enabled = false;
                     adapter.extendForeignObject(scriptName, { common: { enabled: false } }, () => {
                         adapter.extendForeignObject(
                             scriptName,

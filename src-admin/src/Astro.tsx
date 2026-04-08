@@ -109,6 +109,7 @@ type AstroState = ConfigGenericState & {
 class Astro extends ConfigGeneric<ConfigGenericProps, AstroState> {
     calcTimeout?: ReturnType<typeof setTimeout> | null;
     lastCalc?: string;
+    private mounted = false;
 
     constructor(props: ConfigGenericProps) {
         super(props);
@@ -119,6 +120,7 @@ class Astro extends ConfigGeneric<ConfigGenericProps, AstroState> {
 
     componentDidMount(): void {
         super.componentDidMount();
+        this.mounted = true;
         const newState: Partial<AstroState> = {};
         ATTRIBUTES.forEach(attr => {
             newState[attr] = ConfigGeneric.getValue(this.props.data, attr);
@@ -137,6 +139,14 @@ class Astro extends ConfigGeneric<ConfigGenericProps, AstroState> {
         newState.ampm = this.props.oContext.systemConfig.dateFormat.includes('/');
 
         this.setState(newState as AstroState, () => this.onAstroChange());
+    }
+
+    componentWillUnmount(): void {
+        this.mounted = false;
+        if (this.calcTimeout) {
+            clearTimeout(this.calcTimeout);
+            this.calcTimeout = null;
+        }
     }
 
     renderMap(): React.JSX.Element {
@@ -180,11 +190,17 @@ class Astro extends ConfigGeneric<ConfigGenericProps, AstroState> {
             this.calcTimeout && clearTimeout(this.calcTimeout);
             this.calcTimeout = setTimeout(async () => {
                 this.calcTimeout = null;
+                if (!this.mounted) {
+                    return;
+                }
                 const times = await this.props.oContext.socket.sendTo(
                     `${this.props.oContext.adapterName}.${this.props.oContext.instance}`,
                     'calcAstro',
                     data,
                 );
+                if (!this.mounted) {
+                    return;
+                }
                 if (!times || times.error) {
                     console.error(`Cannot calculate astro times: ${JSON.stringify(times.error)}`);
                     return;

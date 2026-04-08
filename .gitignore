@@ -17,3 +17,4 @@ iob_npm.dode
 
 #ignore .commitinfo created by ioBroker release script
 .commitinfo
+/.claude/settings.local.json

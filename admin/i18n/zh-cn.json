@@ -57,5 +57,21 @@
   "tooltip_latitude": "纬度为5.345以使用astro功能",
   "tooltip_libraries": "增加外部NPM库, 请使用逗号分隔。您可以在脚本中使用require('name')调用它们。",
   "tooltip_longitude": "经度为5.345使用astro函数",
-  "tooltip_useSystemGPS": "使用系统设置中的坐标"
+  "tooltip_useSystemGPS": "使用系统设置中的坐标",
+  "Custom API Base URL": "自定义 API 基础 URL（例如 Ollama、LM Studio）",
+  "Custom API Base URL help": "OpenAI 留空。Ollama 使用 http://localhost:11434/v1",
+  "Test API connection": "测试 API 连接",
+  "Test OpenAI": "Test OpenAI",
+  "Test Anthropic": "Test Anthropic",
+  "Test Gemini": "Test Gemini",
+  "Test DeepSeek": "Test DeepSeek",
+  "Test Custom API": "Test Custom API",
+  "Custom API key": "API key (optional)",
+  "Custom API key help": "Only needed if your provider requires authentication",
+  "AI settings": "AI 设置",
+  "AI settings description": "如果您想使用 AI 代码生成功能，可以在此处为相应的提供商定义 API 密钥。只需要您所使用的提供商的密钥。",
+  "ChatGPT API key": "ChatGPT API 密钥",
+  "Anthropic API key": "Anthropic API 密钥",
+  "Gemini API key": "Gemini API 密钥",
+  "DeepSeek API key": "DeepSeek API 密钥"
 }

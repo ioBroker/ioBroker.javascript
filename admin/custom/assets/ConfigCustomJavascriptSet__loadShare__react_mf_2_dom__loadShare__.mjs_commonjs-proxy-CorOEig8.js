@@ -1,0 +1,1 @@
+import{C as a}from"./ConfigCustomJavascriptSet__loadShare__react_mf_2_dom__loadShare__.mjs-CL--xmjC.js";import{g as e}from"./ConfigCustomJavascriptSet__loadShare__react__loadShare__.mjs_commonjs-proxy-CInLgMWW.js";const _=e(a);export{_ as r};
