@@ -53,7 +53,7 @@ function npmCommand(command, npmArgs, options) {
     if (npmArgs == null) npmArgs = [];
 
     const npmBinary = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
-    /** @type {import("child_process").SpawnOptions} */
+    /** @type {import("node:child_process").SpawnOptions} */
     const spawnOptions = {
         stdio: [options.stdin || process.stdin, options.stdout || process.stdout, options.stderr || process.stderr],
         // @ts-ignore This option exists starting with NodeJS 8
