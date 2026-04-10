@@ -21,6 +21,7 @@
   "Maximum setState requests per Minute per Script": "Pedidos de status máximos por minuto por script",
   "Maximum triggers per Script (until warning)": "Máximo de triggers por Script (até aviso)",
   "Mirror scripts to file path": "Espelhe os scripts no caminho do arquivo",
+  "Sort global scripts alphabetically": "Ordenar scripts globais alfabeticamente",
   "Module names": "Nomes de módulos NPM",
   "Next sunrise": "Próximo amanhecer:",
   "Next sunset": "Próximo pôr do sol:",

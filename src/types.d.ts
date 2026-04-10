@@ -32,6 +32,7 @@ export interface JavaScriptAdapterConfig {
     createAstroStates: boolean;
     maxSetStatePerMinute: number;
     maxTriggersPerScript: number;
+    sortGlobalScriptsAlphabetically: boolean;
     gptKey: string;
     gptBaseUrl: string;
     claudeKey: string;

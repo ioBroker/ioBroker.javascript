@@ -1636,6 +1636,10 @@ class JavaScript extends Adapter {
 
         const doc = await this.getObjectViewAsync('script', 'javascript', {});
         if (doc?.rows?.length) {
+            // sort global scripts if configured
+            if (this.config.sortGlobalScriptsAlphabetically) {
+                doc.rows.sort((a, b) => a.value._id.localeCompare(b.value._id));
+            }
             // assemble global script
             for (let g = 0; g < doc.rows.length; g++) {
                 const obj = doc.rows[g].value;
