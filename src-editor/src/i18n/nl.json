@@ -400,4 +400,6 @@
     "Request failed: %s": "Verzoek mislukt: %s",
     "Retry": "Opnieuw proberen",
     "No running javascript instance found": "Geen draaiende JavaScript-instantie gevonden"
+,
+    "OID display mode": "OID-weergavemodus"
 }

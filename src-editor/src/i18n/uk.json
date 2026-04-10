@@ -400,4 +400,6 @@
     "Request failed: %s": "Запит не вдався: %s",
     "Retry": "Повторити",
     "No running javascript instance found": "Не знайдено запущеного екземпляра JavaScript"
+,
+    "OID display mode": "Режим відображення OID"
 }
