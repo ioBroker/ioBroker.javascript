@@ -400,4 +400,6 @@
     "Request failed: %s": "Запрос не удался: %s",
     "Retry": "Повторить",
     "No running javascript instance found": "Не найден работающий экземпляр JavaScript"
+,
+    "OID display mode": "Режим отображения OID"
 }
