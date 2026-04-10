@@ -1,46 +1,55 @@
-# Dependabot will run on day 28 of each month at 03:18 (Europe/Berlin timezone)
+# Dependabot configuration
+# Cooldown delays updating normal npm dependencies by 7 days but allows security updates to be processed immediately.
+# Note: Cooldown is not supported for the github-actions ecosystem.
+# Reference: https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference
 version: 2
 updates:
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "cron"
-      timezone: "Europe/Berlin"
-      cronjob: "18 3 28 * *"
+      interval: 'cron'
+      timezone: 'Europe/Berlin'
+      cronjob: '18 3 28 * *'
     open-pull-requests-limit: 15
 
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "cron"
-      timezone: "Europe/Berlin"
-      cronjob: "18 3 28 * *"
+      interval: 'cron'
+      timezone: 'Europe/Berlin'
+      cronjob: '18 3 28 * *'
     open-pull-requests-limit: 15
-    versioning-strategy: "increase"
+    versioning-strategy: 'increase'
     ignore:
-      - dependency-name: "typescript"
+      - dependency-name: 'typescript'
         update-types:
-          - "version-update:semver-minor"
-          - "version-update:semver-major"
-      - dependency-name: "@types/node"
+          - 'version-update:semver-minor'
+          - 'version-update:semver-major'
+      - dependency-name: '@types/node'
         update-types:
-          - "version-update:semver-major"
+          - 'version-update:semver-major'
+    cooldown:
+      default-days: 7
 
-  - package-ecosystem: "npm"
-    directory: "/src-editor"
+  - package-ecosystem: 'npm'
+    directory: '/src-editor'
     schedule:
-      interval: "cron"
-      timezone: "Europe/Berlin"
-      cronjob: "18 3 28 * *"
+      interval: 'cron'
+      timezone: 'Europe/Berlin'
+      cronjob: '18 3 28 * *'
     open-pull-requests-limit: 15
-    versioning-strategy: "increase"
+    versioning-strategy: 'increase'
+    cooldown:
+      default-days: 7
 
-  - package-ecosystem: "npm"
-    directory: "/src-admin"
+  - package-ecosystem: 'npm'
+    directory: '/src-admin'
     schedule:
-      interval: "cron"
-      timezone: "Europe/Berlin"
-      cronjob: "18 3 28 * *"
+      interval: 'cron'
+      timezone: 'Europe/Berlin'
+      cronjob: '18 3 28 * *'
     open-pull-requests-limit: 15
-    versioning-strategy: "increase"
+    versioning-strategy: 'increase'
+    cooldown:
+      default-days: 7
