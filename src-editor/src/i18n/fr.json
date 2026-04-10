@@ -400,4 +400,6 @@
     "Request failed: %s": "Requête échouée : %s",
     "Retry": "Réessayer",
     "No running javascript instance found": "Aucune instance JavaScript en cours d'exécution trouvée"
+,
+    "OID display mode": "Mode d'affichage OID"
 }

@@ -19,11 +19,241 @@ class FieldOID extends Blockly.Field {
         this.CURSOR = 'pointer';
         this.SERIALIZABLE = true;
         this.spellcheck_ = false;
+        this.maxDisplayLength = 200;
     }
 
     dispose() {
         Blockly.WidgetDiv.hideIfOwner(this);
         super.dispose();
+    }
+
+    initView() {
+        super.initView();
+        const id = this.getValue();
+        if (id) {
+            this.updateIcon_(id);
+        }
+    }
+
+    static _resolveObjectName(id) {
+        const objects = window.main.objects;
+        if (!objects || !objects[id] || !objects[id].common || !objects[id].common.name) {
+            return null;
+        }
+        let name = objects[id].common.name;
+        if (typeof name === 'object') {
+            name = name[systemLang] || name.en;
+        }
+        return name || null;
+    }
+
+    static computeDisplayText(id, maxLen) {
+        const mode = FieldOID.displayMode;
+        const objects = window.main.objects;
+        let text;
+
+        switch (mode) {
+            case 1: { // Path: all parent names joined with "."
+                const parts = id.split('.');
+                const names = [];
+                for (let i = 0; i < parts.length; i++) {
+                    const ancestorId = parts.slice(0, i + 1).join('.');
+                    const name = FieldOID._resolveObjectName(ancestorId);
+                    names.push(name || parts[i]);
+                }
+                text = names.join('.');
+                break;
+            }
+            case 2: // State ID: last segment only
+                text = id.split('.').pop() || id;
+                break;
+            case 3: // Full ID
+                text = id;
+                break;
+            default: { // Mode 0: Name (current behavior)
+                text = FieldOID._resolveObjectName(id) || id;
+                break;
+            }
+        }
+
+        // Append type suffix for non-state objects
+        if (objects && objects[id]?.type && !['state', 'meta', 'script'].includes(objects[id].type)) {
+            text += ` (${objects[id].type})`;
+        }
+
+        if (maxLen && text.length > maxLen) {
+            text = text.substring(0, maxLen - 2) + '\u2026';
+        }
+
+        // Replace whitespace with non-breaking spaces so the text doesn't collapse.
+        text = text.replace(/\s/g, Blockly.Field.NBSP);
+
+        return text || Blockly.Field.NBSP;
+    }
+
+    refreshDisplay() {
+        const id = this.getValue();
+        if (id) {
+            this._idName = FieldOID.computeDisplayText(id, this.maxDisplayLength);
+            this.updateIcon_(id);
+            this.forceRerender();
+            // For path mode, async-fetch parent objects to resolve names
+            if (FieldOID.displayMode === 1) {
+                this._resolvePathNamesAsync(id);
+            }
+        }
+    }
+
+    _resolvePathNamesAsync(id) {
+        if (typeof window.main.getObject !== 'function') return;
+        const objects = window.main.objects;
+        const parts = id.split('.');
+        let pending = 0;
+        let updated = false;
+        for (let i = 0; i < parts.length; i++) {
+            const ancestorId = parts.slice(0, i + 1).join('.');
+            if (objects[ancestorId]) continue; // already cached
+            pending++;
+            window.main.getObject(ancestorId, (err, obj) => {
+                if (obj) {
+                    objects[obj._id] = objects[obj._id] || obj;
+                    updated = true;
+                }
+                pending--;
+                if (pending === 0 && updated) {
+                    this._idName = FieldOID.computeDisplayText(id, this.maxDisplayLength);
+                    this.forceRerender();
+                }
+            });
+        }
+    }
+
+    _getIconOffset() {
+        return (FieldOID.showIcon && this._iconElement) ? 20 : 0;
+    }
+
+    // Override Blockly's size + position to account for icon
+    updateSize_(margin) {
+        const constants = this.getConstants();
+        const xPad = margin !== undefined ? margin :
+            (this.isFullBlockField() ? 0 : constants.FIELD_BORDER_RECT_X_PADDING);
+        const iconOffset = this._getIconOffset();
+
+        let textWidth = 0;
+        if (this.textElement_) {
+            textWidth = this.textElement_.getComputedTextLength();
+        }
+
+        let totalWidth = 2 * xPad + textWidth + iconOffset;
+        let totalHeight = constants.FIELD_TEXT_HEIGHT;
+        if (!this.isFullBlockField()) {
+            totalHeight = Math.max(totalHeight, constants.FIELD_BORDER_RECT_HEIGHT);
+        }
+
+        this.size_.height = totalHeight;
+        this.size_.width = totalWidth;
+
+        this.positionTextElement_(xPad + iconOffset, textWidth);
+        this.positionBorderRect_();
+    }
+
+    updateIcon_(id) {
+        if (!this.fieldGroup_) {
+            return;
+        }
+        if (!FieldOID.showIcon) {
+            if (this._iconElement) {
+                this._iconElement.remove();
+                this._iconElement = null;
+                this._iconUrl = null;
+            }
+            return;
+        }
+        // First try synchronous resolve with cached objects
+        const iconUrl = FieldOID.resolveIcon(id);
+        if (iconUrl) {
+            this._applyIcon(iconUrl);
+        }
+        // Then async-fetch parent objects to find a closer (more specific) icon
+        this._resolveIconAsync(id);
+    }
+
+    _applyIcon(iconUrl) {
+        if (!this.fieldGroup_) return;
+        if (this._iconUrl === iconUrl && this._iconElement) {
+            return;
+        }
+        this._iconUrl = iconUrl;
+        const iconSize = 16;
+        if (!this._iconElement) {
+            this._iconElement = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+            this._iconElement.setAttribute('width', String(iconSize));
+            this._iconElement.setAttribute('height', String(iconSize));
+            if (this.textElement_) {
+                this.fieldGroup_.insertBefore(this._iconElement, this.textElement_);
+            } else {
+                this.fieldGroup_.appendChild(this._iconElement);
+            }
+        }
+        this._iconElement.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', iconUrl);
+        this._positionIcon();
+    }
+
+    _positionIcon() {
+        if (!this._iconElement || !this.textElement_) return;
+        const iconSize = 16;
+        try {
+            // Position icon at the start of the field content area
+            const constants = this.getConstants();
+            const xPad = this.borderRect_ ? constants.FIELD_BORDER_RECT_X_PADDING : 0;
+            this._iconElement.setAttribute('x', String(xPad + 2));
+
+            // Vertically center icon with text
+            const textBBox = this.textElement_.getBBox();
+            if (textBBox.height > 0) {
+                const textMidY = textBBox.y + textBBox.height / 2;
+                this._iconElement.setAttribute('y', String(textMidY - iconSize / 2));
+            }
+        } catch (e) {
+            // getBBox can fail if element is not in DOM yet
+        }
+    }
+
+    _resolveIconAsync(id) {
+        if (!FieldOID.showIcon || typeof window.main.getObject !== 'function') {
+            return;
+        }
+        const objects = window.main.objects;
+        const parts = id.split('.');
+        const adapterName = parts[0];
+        // Fetch ancestors from state level up to adapter instance level
+        // Start from the state itself, go up - first icon found wins
+        let remaining = parts.length;
+        const tryNext = (idx) => {
+            if (idx < 1) return;
+            const ancestorId = parts.slice(0, idx).join('.');
+            // Already in cache?
+            if (objects[ancestorId]) {
+                if (objects[ancestorId].common && objects[ancestorId].common.icon) {
+                    this._applyIcon(FieldOID._buildIconUrl(objects[ancestorId].common.icon, adapterName));
+                    return; // Found closest icon, stop
+                }
+                tryNext(idx - 1); // No icon here, try parent
+                return;
+            }
+            // Fetch this ancestor
+            window.main.getObject(ancestorId, (err, obj) => {
+                if (obj) {
+                    objects[obj._id] = objects[obj._id] || obj;
+                    if (obj.common && obj.common.icon) {
+                        this._applyIcon(FieldOID._buildIconUrl(obj.common.icon, adapterName));
+                        return; // Found closest icon, stop
+                    }
+                }
+                tryNext(idx - 1); // Try parent
+            });
+        };
+        tryNext(remaining);
     }
 
     setValue(id) {
@@ -38,50 +268,26 @@ class FieldOID extends Blockly.Field {
             window.main.getObject(id, (err, obj) => {
                 if (obj) {
                     objects[obj._id] = objects[obj._id] || obj;
-                    let text = objects[obj._id].common && objects[obj._id].common.name && objects[obj._id].common.name;
+                    const text = FieldOID.computeDisplayText(id, this.maxDisplayLength);
                     if (text) {
-                        if (typeof text === 'object') {
-                            text = text[systemLang] || text.en;
-                        }
-                        if (text.length > this.maxDisplayLength) {
-                            // Truncate displayed string and add an ellipsis ('...').
-                            text = text.substring(0, this.maxDisplayLength - 2) + '\u2026';
-                        }
-                        if (objects && objects[id] && objects[id]?.type && !['state', 'meta', 'script'].includes(objects[id].type)) {
-                            text += ` (${objects[id].type})`;
-                        }
-                        // Replace whitespace with non-breaking spaces so the text doesn't collapse.
-                        text = text.replace(/\s/g, Blockly.Field.NBSP);
-
-                        if (text) {
-                            this._idName = text;
-                            this.forceRerender();
-                        }
+                        this._idName = text;
+                        this.forceRerender();
+                    }
+                    // Resolve parent names for path mode
+                    if (FieldOID.displayMode === 1) {
+                        this._resolvePathNamesAsync(id);
                     }
                 }
             });
         } else {
-            let text = objects && objects[id] && objects[id].common && objects[id].common.name ? objects[id].common.name : id;
-            if (typeof text === 'object') {
-                text = text[systemLang] || text.en;
+            this._idName = FieldOID.computeDisplayText(id, this.maxDisplayLength);
+            // Resolve parent names for path mode
+            if (FieldOID.displayMode === 1) {
+                this._resolvePathNamesAsync(id);
             }
-            if (text.length > this.maxDisplayLength) {
-                // Truncate the displayed string and add an ellipsis ('...').
-                text = text.substring(0, this.maxDisplayLength - 2) + '\u2026';
-            }
-            if (objects && objects[id] && objects[id]?.type && !['state', 'meta', 'script'].includes(objects[id].type)) {
-                text += ` (${objects[id].type})`;
-            }
-            // Replace whitespace with non-breaking spaces so the text doesn't collapse.
-            text = text.replace(/\s/g, Blockly.Field.NBSP);
-
-            if (!text) {
-                // Prevent the field from disappearing if empty.
-                text = Blockly.Field.NBSP;
-            }
-            this._idName = text;
         }
 
+        this.updateIcon_(id);
         super.setValue(id);
         super.setTooltip(id);
     }
@@ -98,7 +304,6 @@ class FieldOID extends Blockly.Field {
         }
         // Replace whitespace with non-breaking spaces so the text doesn't collapse.
         text = text.replace(/\s/g, Blockly.Field.NBSP);
-
         if (this.sourceBlock_.RTL) {
             // The SVG is LTR, force text to be RTL.
             text += '\u200F';
@@ -213,6 +418,75 @@ class FieldOID extends Blockly.Field {
         };
     }
 }
+
+FieldOID.DISPLAY_MODE_KEYS = ['oid_display_name', 'oid_display_path', 'oid_display_id', 'oid_display_full_id'];
+FieldOID.displayMode = parseInt(localStorage.getItem('Blockly.FieldOID.displayMode') || '0', 10) || 0;
+FieldOID.showIcon = localStorage.getItem('Blockly.FieldOID.showIcon') === 'true';
+
+FieldOID._buildIconUrl = function (icon, adapterName) {
+    if (!icon) return null;
+    // base64 data URIs and absolute URLs are used as-is
+    if (icon.startsWith('data:') || icon.startsWith('http://') || icon.startsWith('https://') || icon.startsWith('/')) {
+        return icon;
+    }
+    return '/adapter/' + adapterName + '/' + icon;
+};
+
+FieldOID.resolveIcon = function (id) {
+    const objects = window.main.objects;
+    if (!objects) return null;
+    const parts = id.split('.');
+    const adapterName = parts[0];
+    // Walk up the object hierarchy looking for common.icon
+    for (let i = parts.length; i >= 1; i--) {
+        const ancestorId = parts.slice(0, i).join('.');
+        const obj = objects[ancestorId];
+        if (obj && obj.common && obj.common.icon) {
+            return FieldOID._buildIconUrl(obj.common.icon, adapterName);
+        }
+    }
+    // Fallback: check system.adapter.{adapterName}.{instance} (e.g. system.adapter.zigbee2mqtt.0)
+    if (parts.length >= 2) {
+        const instanceId = 'system.adapter.' + parts[0] + '.' + parts[1];
+        const sysInstance = objects[instanceId];
+        if (sysInstance && sysInstance.common && sysInstance.common.icon) {
+            return FieldOID._buildIconUrl(sysInstance.common.icon, adapterName);
+        }
+    }
+    return null;
+};
+
+FieldOID.setDisplayMode = function (mode, workspace) {
+    FieldOID.displayMode = mode;
+    localStorage.setItem('Blockly.FieldOID.displayMode', String(mode));
+
+    const blocks = workspace.getAllBlocks(false);
+    for (const block of blocks) {
+        for (const input of block.inputList) {
+            for (const field of input.fieldRow) {
+                if (field instanceof FieldOID) {
+                    field.refreshDisplay();
+                }
+            }
+        }
+    }
+};
+
+FieldOID.setShowIcon = function (show, workspace) {
+    FieldOID.showIcon = show;
+    localStorage.setItem('Blockly.FieldOID.showIcon', String(show));
+
+    const blocks = workspace.getAllBlocks(false);
+    for (const block of blocks) {
+        for (const input of block.inputList) {
+            for (const field of input.fieldRow) {
+                if (field instanceof FieldOID) {
+                    field.refreshDisplay();
+                }
+            }
+        }
+    }
+};
 
 Blockly.FieldOID = FieldOID;
 

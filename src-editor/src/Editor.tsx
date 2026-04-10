@@ -12,6 +12,7 @@ import {
     Menu,
     MenuItem,
     Checkbox,
+    Divider,
     Dialog,
     DialogTitle,
     DialogContent,
@@ -63,6 +64,13 @@ import ImgTypeScript from './assets/typescript.svg';
 import ImgBlockly2Js from './assets/blockly2js.svg';
 import ImgRules2Js from './assets/rules2js.svg';
 import ImgRules from './assets/rules.svg';
+
+import ImgOidName from './assets/oid-name.svg';
+import ImgOidNamePath from './assets/oid-name-path.svg';
+import ImgOidId from './assets/oid-id.svg';
+import ImgOidIdFull from './assets/oid-id-full.svg';
+
+const OID_DISPLAY_MODE_ICONS = [ImgOidName, ImgOidNamePath, ImgOidId, ImgOidIdFull];
 
 import {
     I18n,
@@ -276,6 +284,9 @@ interface EditorState {
     confirm: string;
     askAboutDebug: boolean;
     menuDebugAnchorEl: null | HTMLElement;
+    menuOidDisplayAnchorEl: null | HTMLElement;
+    oidDisplayMode: number;
+    oidShowIcon: boolean;
     triggerPrettier: number;
     openAiDialog: boolean;
     scriptConflict: string;
@@ -361,6 +372,9 @@ class Editor extends React.Component<EditorProps, EditorState> {
             instancesLoaded: false,
             isTourOpen: window.localStorage.getItem('tour') !== 'true',
             menuDebugAnchorEl: null,
+            menuOidDisplayAnchorEl: null,
+            oidDisplayMode: parseInt(window.localStorage.getItem('Blockly.FieldOID.displayMode') || '0', 10) || 0,
+            oidShowIcon: window.localStorage.getItem('Blockly.FieldOID.showIcon') === 'true',
             menuOpened: !!this.props.menuOpened,
             menuTabsOpened: false,
             openAiDialog: false,
@@ -1435,6 +1449,77 @@ class Editor extends React.Component<EditorProps, EditorState> {
                         </Button>
                     ) : null}
                     <div style={{ flex: 2 }} />
+
+                    {this.state.blockly && !this.state.showCompiledCode && (
+                        <IconButton
+                            key="oid-display-mode"
+                            aria-label="OID display mode"
+                            title={I18n.t('OID display mode')}
+                            style={styles.toolbarButtons}
+                            onClick={e => this.setState({ menuOidDisplayAnchorEl: e.currentTarget })}
+                            size="medium"
+                        >
+                            <img
+                                src={OID_DISPLAY_MODE_ICONS[this.state.oidDisplayMode] || OID_DISPLAY_MODE_ICONS[0]}
+                                alt="OID"
+                                width={36}
+                                height={22}
+                            />
+                        </IconButton>
+                    )}
+                    <Menu
+                        key="menuOidDisplay"
+                        anchorEl={this.state.menuOidDisplayAnchorEl}
+                        open={!!this.state.menuOidDisplayAnchorEl}
+                        onClose={() => this.setState({ menuOidDisplayAnchorEl: null })}
+                    >
+                        {OID_DISPLAY_MODE_ICONS.map((icon, index) => (
+                            <MenuItem
+                                key={`oid-mode-${index}`}
+                                selected={this.state.oidDisplayMode === index}
+                                onClick={() => {
+                                    this.setState({ oidDisplayMode: index, menuOidDisplayAnchorEl: null });
+                                    const workspace = window.scripts?.blocklyWorkspace;
+                                    if (workspace && window.Blockly?.FieldOID?.setDisplayMode) {
+                                        window.Blockly.FieldOID.setDisplayMode(index, workspace);
+                                    }
+                                }}
+                            >
+                                <img
+                                    src={icon}
+                                    alt=""
+                                    width={48}
+                                    height={28}
+                                    style={{ marginRight: 8 }}
+                                />
+                                {(() => {
+                                    const key = window.Blockly?.FieldOID?.DISPLAY_MODE_KEYS?.[index];
+                                    const fallback = ['Show name', 'Show name path', 'Show ID', 'Show full ID'];
+                                    if (!key) return fallback[index];
+                                    return window.Blockly?.Words?.[key]?.[I18n.getLanguage()] || window.Blockly?.Words?.[key]?.en || fallback[index];
+                                })()}
+                            </MenuItem>
+                        ))}
+                        <Divider />
+                        <MenuItem
+                            key="oid-show-icon"
+                            onClick={() => {
+                                const newVal = !this.state.oidShowIcon;
+                                this.setState({ oidShowIcon: newVal });
+                                const workspace = window.scripts?.blocklyWorkspace;
+                                if (workspace && window.Blockly?.FieldOID?.setShowIcon) {
+                                    window.Blockly.FieldOID.setShowIcon(newVal, workspace);
+                                }
+                            }}
+                        >
+                            <Checkbox checked={this.state.oidShowIcon} style={{ padding: 0, marginRight: 8 }} />
+                            {(() => {
+                                const key = 'oid_show_icon';
+                                return window.Blockly?.Words?.[key]?.[I18n.getLanguage()] || window.Blockly?.Words?.[key]?.en || 'Show icon';
+                            })()}
+                        </MenuItem>
+                    </Menu>
+
                     {!this.props.debugInstance && !this.state.showCompiledCode && (
                         <IconButton
                             style={styles.toolbarButtons}

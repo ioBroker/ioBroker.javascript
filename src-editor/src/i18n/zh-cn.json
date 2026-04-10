@@ -400,4 +400,6 @@
     "Request failed: %s": "请求失败：%s",
     "Retry": "重试",
     "No running javascript instance found": "未找到正在运行的 JavaScript 实例"
+,
+    "OID display mode": "OID显示模式"
 }
