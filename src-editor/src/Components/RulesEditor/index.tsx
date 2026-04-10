@@ -129,7 +129,7 @@ const RulesEditor = ({
         });
 
         return function cleanup() {
-            socket?.unsubscribeObject(scriptId, handler);
+            void socket?.unsubscribeObject(scriptId, handler);
             if (_jsInstance) {
                 void socket?.unsubscribeState(`${_jsInstance}.alive`, aliveHandler);
                 if (_jsAlive) {

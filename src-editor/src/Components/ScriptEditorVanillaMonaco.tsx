@@ -37,6 +37,7 @@ interface ScriptEditorProps {
     location?: DebuggerLocation | null;
     onToggleBreakpoint?: (lineNumber: number) => void;
     triggerPrettier: number;
+    aiCompletionsEnabled?: boolean;
 }
 
 interface ScriptEditorState {
@@ -98,6 +99,9 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
     private typings: Record<string, string> = {};
 
     private decorations: string[] = [];
+
+    private datapointProviderDisposable: monacoEditor.IDisposable | null = null;
+    private inlineProviderDisposable: monacoEditor.IDisposable | null = null;
 
     private triggerPrettier: number;
 
@@ -221,6 +225,35 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
 
                 this.contentChangeDisposable = this.editor.onDidChangeModelContent(() => this.onChange());
 
+                // Register datapoint autocomplete provider
+                if (this.monaco && !this.datapointProviderDisposable) {
+                    import('../AiChat/AiDatapointProvider')
+                        .then(({ registerDatapointProvider }) => {
+                            if (this.monaco) {
+                                this.datapointProviderDisposable = registerDatapointProvider(
+                                    this.monaco,
+                                    this.props.socket,
+                                );
+                            }
+                        })
+                        .catch(() => {});
+                }
+
+                // Register AI inline completions if enabled
+                if (this.props.aiCompletionsEnabled && this.monaco && !this.inlineProviderDisposable) {
+                    import('../AiChat/AiInlineProvider')
+                        .then(({ registerAiInlineProvider }) => {
+                            if (this.monaco) {
+                                this.inlineProviderDisposable = registerAiInlineProvider(
+                                    this.monaco,
+                                    this.props.socket,
+                                    this.props.runningInstances,
+                                );
+                            }
+                        })
+                        .catch(() => {});
+                }
+
                 // Load typings for the JS editor
                 this.loadTypings();
 
@@ -311,6 +344,11 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         this.contentChangeDisposable = null;
         this.mouseDownDisposable?.dispose();
         this.mouseDownDisposable = null;
+        this.datapointProviderDisposable?.dispose();
+        this.datapointProviderDisposable = null;
+        import('../AiChat/AiDatapointProvider').then(({ clearDatapointCache }) => clearDatapointCache()).catch(() => {});
+        this.inlineProviderDisposable?.dispose();
+        this.inlineProviderDisposable = null;
         if (this.editor) {
             this.props.onRegisterSelect?.(null);
             this.editor.dispose();
@@ -442,9 +480,9 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         // to support 0.21.0
 
         if (this.monacoTS?.typescriptDefaults?.setExtraLibs) {
-            this.monacoTS!.typescriptDefaults.setExtraLibs(wantedTypings);
+            this.monacoTS.typescriptDefaults.setExtraLibs(wantedTypings);
         } else if (this.monacoTS?.typescriptDefaults?.addExtraLib) {
-            const existingLibs = this.monacoTS!.typescriptDefaults.getExtraLibs();
+            const existingLibs = this.monacoTS.typescriptDefaults.getExtraLibs();
             wantedTypings.forEach(lib => {
                 if (!existingLibs[lib.filePath] && this.monaco) {
                     this.monacoTS!.typescriptDefaults.addExtraLib(lib.content, lib.filePath);
@@ -458,6 +496,14 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
      *
      * @param text The text to add
      */
+    undo(): void {
+        this.editor?.trigger('toolbar', 'undo', null);
+    }
+
+    redo(): void {
+        this.editor?.trigger('toolbar', 'redo', null);
+    }
+
     insertTextIntoEditor(text: string): void {
         if (!this.editor || !this.monaco) {
             return;
@@ -636,6 +682,26 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         }
 
         this.setEditorOptions(options);
+
+        // Toggle AI inline completions
+        if (nextProps.aiCompletionsEnabled !== this.props.aiCompletionsEnabled) {
+            if (nextProps.aiCompletionsEnabled && this.monaco && !this.inlineProviderDisposable) {
+                import('../AiChat/AiInlineProvider')
+                    .then(({ registerAiInlineProvider }) => {
+                        if (this.monaco) {
+                            this.inlineProviderDisposable = registerAiInlineProvider(
+                                this.monaco,
+                                this.props.socket,
+                                this.props.runningInstances,
+                            );
+                        }
+                    })
+                    .catch(() => {});
+            } else if (!nextProps.aiCompletionsEnabled && this.inlineProviderDisposable) {
+                this.inlineProviderDisposable.dispose();
+                this.inlineProviderDisposable = null;
+            }
+        }
 
         if (this.insert !== nextProps.insert) {
             this.insert = nextProps.insert || '';
