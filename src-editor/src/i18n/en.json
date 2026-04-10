@@ -400,4 +400,6 @@
     "Request failed: %s": "Request failed: %s",
     "Retry": "Retry",
     "No running javascript instance found": "No running javascript instance found"
+,
+    "OID display mode": "OID display mode"
 }

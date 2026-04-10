@@ -81,6 +81,13 @@ export interface BlocklyType {
         createBlockDefinitionsFromJsonArray: (jsonArray: any[]) => Record<string, any>;
         defineBlocks: (blocks: { [key: string]: any }) => void;
     };
+    FieldOID?: {
+        DISPLAY_MODE_KEYS: string[];
+        displayMode: number;
+        showIcon: boolean;
+        setDisplayMode: (mode: number, workspace: WorkspaceSvgType) => void;
+        setShowIcon: (show: boolean, workspace: WorkspaceSvgType) => void;
+    };
 }
 
 declare global {

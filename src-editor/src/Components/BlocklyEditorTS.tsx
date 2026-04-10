@@ -46,6 +46,13 @@ declare global {
             Procedures: {
                 flyoutCategoryNew: (workspace: WorkspaceSvg) => FlyoutDefinition;
             };
+            FieldOID?: {
+                DISPLAY_MODE_KEYS: string[];
+                displayMode: number;
+                showIcon: boolean;
+                setDisplayMode: (mode: number, workspace: WorkspaceSvg) => void;
+                setShowIcon: (show: boolean, workspace: WorkspaceSvg) => void;
+            };
         };
     }
 }
@@ -646,6 +653,30 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         // Move toolbar to the valid position
         const toolbar = document.getElementsByClassName('blocklyToolboxDiv')[0];
         this.blockly.appendChild(toolbar);
+
+        // Add OID display mode items to workspace context menu
+        if (window.Blockly?.FieldOID?.DISPLAY_MODE_KEYS) {
+            const workspace = this.blocklyWorkspace;
+            const origConfigureContextMenu = workspace.configureContextMenu as unknown as ((options: unknown[], e: Event) => void) | undefined;
+            // Blockly's configureContextMenu uses internal types not easily importable
+            (workspace as unknown as { configureContextMenu: (options: unknown[], e: Event) => void }).configureContextMenu = (menuOptions: unknown[], _e: Event) => {
+                if (origConfigureContextMenu) {
+                    origConfigureContextMenu.call(workspace, menuOptions, _e);
+                }
+                const FieldOID = window.Blockly.FieldOID!;
+                const keys = FieldOID.DISPLAY_MODE_KEYS;
+                for (let index = 0; index < keys.length; index++) {
+                    const label = window.Blockly.Words?.[keys[index]]?.[I18n.getLanguage()] || window.Blockly.Words?.[keys[index]]?.en || keys[index];
+                    menuOptions.push({
+                        text: `${FieldOID.displayMode === index ? '\u2713 ' : '   '}${label}`,
+                        enabled: true,
+                        callback: () => FieldOID.setDisplayMode(index, workspace),
+                        scope: { workspace },
+                        weight: 200 + index,
+                    });
+                }
+            };
+        }
 
         this.updateBackground();
         setTimeout(() => this.searchId(), 200); // select found blocks

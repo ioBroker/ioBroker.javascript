@@ -23,7 +23,7 @@ exports.default = createRepl;
  * IN THE SOFTWARE.
  */
 const node_path_1 = require("node:path");
-const repl_1 = require("repl");
+const node_repl_1 = require("node:repl");
 const node_util_1 = require("node:util");
 const node_vm_1 = require("node:vm");
 const node_url_1 = require("node:url");
@@ -1118,7 +1118,7 @@ function createRepl(inspector) {
             useGlobal: false,
             ignoreUndefined: true,
         };
-        repl = (0, repl_1.start)(replOptions);
+        repl = (0, node_repl_1.start)(replOptions);
         initializeContext(repl.context);
         repl.on('reset', initializeContext);
         repl.defineCommand('interrupt', () => {

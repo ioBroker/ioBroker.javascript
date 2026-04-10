@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.requestModuleNameByUrl = requestModuleNameByUrl;
-const child_process_1 = require("child_process");
+const node_child_process_1 = require("node:child_process");
 /**
  * Request a module name by given url using `npm view`
  *
@@ -9,7 +9,7 @@ const child_process_1 = require("child_process");
  */
 async function requestModuleNameByUrl(url) {
     return new Promise((resolve, reject) => {
-        (0, child_process_1.execFile)('npm', ['view', url, 'name'], { windowsHide: true, encoding: 'utf8', shell: false }, (error, stdout) => {
+        (0, node_child_process_1.execFile)('npm', ['view', url, 'name'], { windowsHide: true, encoding: 'utf8', shell: false }, (error, stdout) => {
             if (error) {
                 reject(error);
             }
