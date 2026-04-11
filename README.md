@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
     ### **WORK IN PROGRESS**
 -->
-### WORK IN PROGRESS
+### **WORK IN PROGRESS**
 * (Eistee82) AI Chat panel with multi-provider support, tool calling, inline completions, and smart-apply
 * (Eistee82) Fix: prevent duplicate 'Stopping script' log when script is not running
 * (Eistee82) Fix: only restart scripts on the instance that owns them
