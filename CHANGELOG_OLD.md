@@ -1,4 +1,11 @@
 The newest change log is in README.md
+## 9.0.10 (2025-07-27)
+* (@klein0r) Added Blockly block to format a numeric value
+* (@GermanBluefox) Fixing some blocks in blockly: cron, time
+* (@GermanBluefox) Added a new block: "unconditional return"
+* (@GermanBluefox) Type definitions for TypeScript were updated
+* (@GermanBluefox) Corrected bug with deleting of sub-folders
+
 ## 9.0.7 (2025-06-29)
 * (@GermanBluefox) Fixing some blocks in blockly: time, function
 
