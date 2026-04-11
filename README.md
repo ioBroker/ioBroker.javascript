@@ -26,7 +26,7 @@ Executes Javascript, Typescript Scripts.
 <!--
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 9.2.0 (2026-04-11)
 * (Eistee82) AI Chat panel with multi-provider support, tool calling, inline completions, and smart-apply
 * (Eistee82) Fix: prevent duplicate 'Stopping script' log when script is not running
 * (Eistee82) Fix: only restart scripts on the instance that owns them
@@ -61,13 +61,6 @@ Executes Javascript, Typescript Scripts.
 ### 9.0.11 (2025-07-29)
 * (@GermanBluefox) Corrected the rule editor if the condition is empty
 * (@GermanBluefox) Corrected types for TypeScript
-
-### 9.0.10 (2025-07-27)
-* (@klein0r) Added Blockly block to format a numeric value
-* (@GermanBluefox) Fixing some blocks in blockly: cron, time
-* (@GermanBluefox) Added a new block: "unconditional return"
-* (@GermanBluefox) Type definitions for TypeScript were updated
-* (@GermanBluefox) Corrected bug with deleting of sub-folders
 
 ## License
 The MIT License (MIT)
