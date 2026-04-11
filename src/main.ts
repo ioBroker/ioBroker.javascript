@@ -675,9 +675,11 @@ class JavaScript extends Adapter {
                         // Start script
                         await this.loadScriptById(id);
                     }
-                } else {
-                    // if (obj.common.source !== formerObj.common.source) {
-                    // Source changed => restart the script
+                } else if (
+                    obj.common.engine === `system.adapter.${this.namespace}` ||
+                    formerObj.common.engine === `system.adapter.${this.namespace}`
+                ) {
+                    // Source changed => restart the script (only on the relevant instance)
                     this.stopCounters[id] = this.stopCounters[id] ? this.stopCounters[id] + 1 : 1;
                     void this.stopScript(id).then(() => {
                         // only start again after stop when "last" object change to prevent problems on
@@ -1161,6 +1163,7 @@ class JavaScript extends Adapter {
                     const apiKey = (obj.message?.apiKey || '').trim();
                     const chatModel = (obj.message?.model || '').trim();
                     const messages = obj.message?.messages;
+                    const tools = obj.message?.tools;
                     const provider = (obj.message?.provider || 'openai').trim();
                     // Anthropic, Gemini, and DeepSeek always require an API key; OpenAI-compatible allows empty key with custom base URL
                     if (
@@ -1200,11 +1203,11 @@ class JavaScript extends Adapter {
                         if (apiKey) {
                             chatHeaders.Authorization = `Bearer ${apiKey}`;
                         }
-                        bodyObj = { model: chatModel, messages, stream: false };
+                        bodyObj = { model: chatModel, messages, stream: false, ...(tools?.length ? { tools } : {}) };
                     } else if (provider === 'deepseek') {
                         url = 'https://api.deepseek.com/chat/completions';
                         chatHeaders.Authorization = `Bearer ${apiKey}`;
-                        bodyObj = { model: chatModel, messages, stream: false };
+                        bodyObj = { model: chatModel, messages, stream: false, ...(tools?.length ? { tools } : {}) };
                     } else {
                         url = `${baseUrl || 'https://api.openai.com/v1'}/chat/completions`;
                         if (apiKey) {
@@ -1214,6 +1217,7 @@ class JavaScript extends Adapter {
                             model: chatModel,
                             messages,
                             stream: false,
+                            ...(tools?.length ? { tools } : {}),
                             // Disable thinking/reasoning for local models to save context and speed
                             ...(baseUrl ? { reasoning_effort: 'none' } : {}),
                         };
@@ -1250,11 +1254,13 @@ class JavaScript extends Adapter {
                                 if (res.statusCode === 200) {
                                     try {
                                         const parsed = JSON.parse(data);
+                                        const message = provider === 'anthropic' ? null : parsed.choices?.[0]?.message;
                                         const content =
                                             provider === 'anthropic'
                                                 ? parsed.content?.[0]?.text || ''
-                                                : parsed.choices?.[0]?.message?.content || '';
-                                        if (!content) {
+                                                : message?.content || '';
+                                        const tool_calls = message?.tool_calls;
+                                        if (!content && !tool_calls?.length) {
                                             this.sendTo(
                                                 obj.from,
                                                 obj.command,
@@ -1265,7 +1271,7 @@ class JavaScript extends Adapter {
                                             this.sendTo(
                                                 obj.from,
                                                 obj.command,
-                                                { success: true, content },
+                                                { success: true, content, ...(tool_calls ? { tool_calls } : {}) },
                                                 obj.callback,
                                             );
                                         }
@@ -1636,6 +1642,10 @@ class JavaScript extends Adapter {
 
         const doc = await this.getObjectViewAsync('script', 'javascript', {});
         if (doc?.rows?.length) {
+            // sort global scripts if configured
+            if (this.config.sortGlobalScriptsAlphabetically) {
+                doc.rows.sort((a, b) => a.value._id.localeCompare(b.value._id));
+            }
             // assemble global script
             for (let g = 0; g < doc.rows.length; g++) {
                 const obj = doc.rows[g].value;
@@ -2597,6 +2607,10 @@ class JavaScript extends Adapter {
     }
 
     async stopScript(name: string): Promise<boolean> {
+        if (!this.scripts[name]) {
+            return false;
+        }
+
         this.log.info(`${name}: Stopping script`);
 
         await this.setState(`scriptEnabled.${name.substring(SCRIPT_CODE_MARKER.length)}`, false, true);

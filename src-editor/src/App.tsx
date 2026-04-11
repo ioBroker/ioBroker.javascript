@@ -908,7 +908,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                     zip.file(filePath, text);
                 }
             }
-            zip.generateAsync({ type: 'blob' }).then(blob => {
+            void zip.generateAsync({ type: 'blob' }).then(blob => {
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
                 a.download = `${date}scripts_plain.zip`;

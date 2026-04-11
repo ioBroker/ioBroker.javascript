@@ -21,6 +21,7 @@
   "Maximum setState requests per Minute per Script": "Максимальна кількість запитів setState за хвилину на сценарій",
   "Maximum triggers per Script (until warning)": "Максимальна кількість тригерів на сценарій (до попередження)",
   "Mirror scripts to file path": "Дзеркало сценаріїв до шляху до файлу",
+  "Sort global scripts alphabetically": "Сортувати глобальні скрипти за алфавітом",
   "Module names": "Назви модулів NPM",
   "Next sunrise": "Наступний схід сонця:",
   "Next sunset": "Наступний захід сонця:",

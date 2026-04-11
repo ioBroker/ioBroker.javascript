@@ -21,6 +21,7 @@
   "Maximum setState requests per Minute per Script": "Numero massimo di richieste per Minute per Script",
   "Maximum triggers per Script (until warning)": "Numero massimo di trigger per script (fino all'avviso)",
   "Mirror scripts to file path": "Script speculari sul percorso del file",
+  "Sort global scripts alphabetically": "Ordina gli script globali in ordine alfabetico",
   "Module names": "Nomi dei moduli",
   "Next sunrise": "Prossima alba:",
   "Next sunset": "Prossimo tramonto:",

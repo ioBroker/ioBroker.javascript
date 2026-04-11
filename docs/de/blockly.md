@@ -2346,3 +2346,37 @@ Inside these blocks variable "value" yet exist, but anyway to read their values 
 ### Create custom function with return value
 
 ### Call function
+
+## AI Chat für Blockly
+
+Das AI-Chat-Panel ist jetzt auch für Blockly-Scripts verfügbar. Klicke auf den AI-Button (Zauberstab-Symbol) in der Toolbar, um das Chat-Panel neben dem Blockly-Editor zu öffnen.
+
+### Funktionen
+
+- **Chat-Modus**: Stelle Fragen zu deinem Blockly-Script. Die KI sieht den generierten JavaScript-Code als Kontext.
+- **Code-Modus**: Beschreibe eine Automatisierungsaufgabe und die KI generiert Blockly-XML-Blöcke in einem Zwei-Schritt-Prozess (Plan, dann Blöcke).
+- **Visuelle Vorschau**: KI-generierte Blöcke werden als grafische Blockly-Vorschau direkt im Chat dargestellt statt als rohes XML.
+- **Blöcke einfügen**: Klicke auf "Blöcke einfügen", um die KI-generierten Blöcke in deinen Blockly-Workspace einzufügen.
+- **Diff-Ansicht**: Klicke auf "Als Diff anzeigen" für einen Side-by-Side-Vergleich deiner aktuellen Blöcke mit den KI-vorgeschlagenen Blöcken, mit Akzeptieren/Ablehnen-Buttons.
+
+### Unterstützte Block-Typen
+
+Die KI kann folgende ioBroker-Blockly-Blocktypen generieren:
+
+- **on_ext** – Trigger (auf Zustandsänderungen reagieren)
+- **schedule** – Cron-basierte Zeitpläne
+- **control** – Zustand setzen (setState)
+- **get_value** – Zustandswert lesen (getState)
+- **debug** – Log-Ausgabe
+- **sendto_custom** – Nachrichten senden (z.B. Telegram)
+- **timeouts_settimeout** – Verzögerte Aktionen
+- **controls_if** – Wenn/Dann-Bedingungen
+- **logic_compare** – Vergleiche (EQ, NEQ, LT, GT, etc.)
+- **math_number**, **text**, **logic_boolean** – Wert-Blöcke
+
+### Tipps
+
+- Verwende den **Code-Modus** zum Generieren neuer Blöcke aus einer Aufgabenbeschreibung.
+- Verwende den **Chat-Modus** (oder Agent-Modus) für Fragen zu bestehenden Blöcken.
+- Die KI funktioniert am besten, wenn du deine Automatisierung in einfacher Sprache beschreibst, z.B. "Schalte das Wohnzimmerlicht ein, wenn der Bewegungssensor auslöst".
+- Du kannst `@geräte` verwenden, um deine Smart-Home-Geräte in den Kontext einzubeziehen.

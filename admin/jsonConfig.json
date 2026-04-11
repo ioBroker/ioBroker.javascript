@@ -95,6 +95,13 @@
                     "label": "Allow self-signed certificates for URL requests",
                     "xs": 12,
                     "sm": 12
+                },
+                "sortGlobalScriptsAlphabetically": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "label": "Sort global scripts alphabetically",
+                    "xs": 12,
+                    "sm": 12
                 }
             }
         },
@@ -126,7 +133,7 @@
         "_ai": {
             "type": "panel",
             "label": "AI settings",
-            "icon": "data:image/svg+xml;base64,",
+            "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNNy41IDUuNkwxMCA3IDguNiA0LjUgMTAgMiA3LjUgMy40IDUgMmwxLjQgMi41TDUgN3ptMTIgOS44TDE3IDE0bDEuNCAyLjVMMTcgMTlsMi41LTEuNEwyMiAxOWwtMS40LTIuNUwyMiAxNHpNMjIgMmwtMi41IDEuNEwxNyAybDEuNCAyLjVMMTcgN2wyLjUtMS40TDIyIDdsLTEuNC0yLjV6bS03LjYzIDUuMjlhLjk5Ni45OTYgMCAwMC0xLjQxIDBMMS4yOSAxOC45NmEuOTk2Ljk5NiAwIDAwMCAxLjQxbDIuMzQgMi4zNGMuMzkuMzkgMS4wMi4zOSAxLjQxIDBMMTYuNyAxMS4wNWEuOTk2Ljk5NiAwIDAwMC0xLjQxbC0yLjMzLTIuMzV6TTUuMDQgMTguOTZsLTEuNDEtMS40MSA4LjY5LTguNjkgMS40MSAxLjQxLTguNjkgOC42OXoiLz48L3N2Zz4=",
             "items": {
                 "_aiDescription": {
                     "type": "staticText",
