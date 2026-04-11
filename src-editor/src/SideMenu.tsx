@@ -1144,8 +1144,7 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
         }
 
         if (!this.state.isAllZeroInstances && item.type !== 'folder') {
-            const instanceRunning =
-                this.state.runningInstances[`system.adapter.javascript.${item.instance}`];
+            const instanceRunning = this.state.runningInstances[`system.adapter.javascript.${item.instance}`];
             title = [
                 <span
                     key="instance"
@@ -1262,8 +1261,8 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
                     }}
                     style={this.getTextStyle(item)}
                     primary={
-                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            {title}
+                        <span style={{ display: 'flex', alignItems: 'center' }}>
+                            <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>{title}</span>
                             {childrenCount}
                         </span>
                     }
