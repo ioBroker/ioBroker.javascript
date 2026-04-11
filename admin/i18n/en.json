@@ -21,6 +21,7 @@
   "Maximum setState requests per Minute per Script": "Maximum setState requests per Minute per Script",
   "Maximum triggers per Script (until warning)": "Maximum triggers per Script (until warning)",
   "Mirror scripts to file path": "Mirror scripts to file path",
+  "Sort global scripts alphabetically": "Sort global scripts alphabetically",
   "Module names": "NPM module names",
   "Next sunrise": "Next sunrise:",
   "Next sunset": "Next sunset:",

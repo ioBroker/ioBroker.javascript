@@ -21,6 +21,7 @@
   "Maximum setState requests per Minute per Script": "Maximum stelt verzoeken per Minute per Script",
   "Maximum triggers per Script (until warning)": "Maximale triggers per script (tot waarschuwing)",
   "Mirror scripts to file path": "Spiegel scripts naar bestandspad",
+  "Sort global scripts alphabetically": "Globale scripts alfabetisch sorteren",
   "Module names": "Module namen",
   "Next sunrise": "Volgende zonsopgang:",
   "Next sunset": "Volgende zonsondergang:",

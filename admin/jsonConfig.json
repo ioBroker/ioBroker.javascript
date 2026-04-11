@@ -95,6 +95,13 @@
                     "label": "Allow self-signed certificates for URL requests",
                     "xs": 12,
                     "sm": 12
+                },
+                "sortGlobalScriptsAlphabetically": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "label": "Sort global scripts alphabetically",
+                    "xs": 12,
+                    "sm": 12
                 }
             }
         },
