@@ -27,6 +27,8 @@ Executes Javascript, Typescript Scripts.
     ### **WORK IN PROGRESS**
 -->
 ### WORK IN PROGRESS
+* (Eistee82) Fix: prevent duplicate 'Stopping script' log when script is not running
+* (Eistee82) Fix: only restart scripts on the instance that owns them
 * (Eistee82) Added OID display mode toggle for Blockly editor: 4 display modes (Name, Name path, State ID, Full ID) with toolbar dropdown, context menu, optional object icons, and translations in 11 languages
 * Per-provider test buttons in adapter config (OpenAI, Anthropic, Gemini, DeepSeek, Custom API)
 * Optional API key field for custom base URL providers (e.g. Ollama without auth)
