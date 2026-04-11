@@ -48,6 +48,8 @@ import {
     MdBrightness4 as IconAstro,
     MdCode as IconCode,
     MdAutoFixHigh as IconWizard,
+    MdUndo as IconUndo,
+    MdRedo as IconRedo,
 } from 'react-icons/md';
 
 import {
@@ -89,11 +91,18 @@ import Connecting from './Components/Connecting';
 import { decryptText, encryptText } from './Components/crypto';
 
 const BlocklyEditor = React.lazy(() => import('./Components/BlocklyEditor'));
+type BlocklyEditorType = InstanceType<typeof import('./Components/BlocklyEditor')['default']>;
+type ScriptEditorType = InstanceType<typeof import('./Components/ScriptEditorVanillaMonaco')['default']>;
 const RulesEditor = React.lazy(() => import('./Components/RulesEditor'));
 const Debugger = React.lazy(() => import('./Components/Debugger'));
 const ScriptEditorComponent = React.lazy(() => import('./Components/ScriptEditorVanillaMonaco'));
 const DialogScriptEditor = React.lazy(() => import('./Dialogs/ScriptEditor'));
-const OpenAiDialog = React.lazy(() => import('./OpenAi/OpenAiDialog'));
+const AiChatPanel = React.lazy(() => import('./AiChat/AiChatPanel'));
+const AiDiffView = React.lazy(() => import('./AiChat/AiDiffView'));
+
+import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
+import { getAllScripts } from './AiChat/AiScriptAnalyzer';
+import type { ScriptInfo } from './AiChat/AiChatTypes';
 
 declare global {
     interface Window {
@@ -288,7 +297,9 @@ interface EditorState {
     oidDisplayMode: number;
     oidShowIcon: boolean;
     triggerPrettier: number;
-    openAiDialog: boolean;
+    aiChatOpen: boolean;
+    aiDiffView: { original: string; modified: string } | null;
+    aiCompletionsEnabled: boolean;
     scriptConflict: string;
 }
 
@@ -328,6 +339,9 @@ class Editor extends React.Component<EditorProps, EditorState> {
     };
 
     private confirmCallback: null | ((result: boolean) => void) = null;
+
+    private blocklyEditorRef = React.createRef<BlocklyEditorType>();
+    private scriptEditorRef = React.createRef<ScriptEditorType>();
 
     private lastKnownTs: Record<string, number> = {};
 
@@ -377,7 +391,9 @@ class Editor extends React.Component<EditorProps, EditorState> {
             oidShowIcon: window.localStorage.getItem('Blockly.FieldOID.showIcon') === 'true',
             menuOpened: !!this.props.menuOpened,
             menuTabsOpened: false,
-            openAiDialog: false,
+            aiChatOpen: window.localStorage.getItem('Editor.aiChatOpen') === 'true',
+            aiDiffView: null,
+            aiCompletionsEnabled: window.localStorage.getItem('Editor.aiCompletions') !== 'false',
             triggerPrettier: 1,
             scriptConflict: '',
             rules: null,
@@ -1329,27 +1345,6 @@ class Editor extends React.Component<EditorProps, EditorState> {
         return null;
     }
 
-    renderOpenAiDialog(): React.JSX.Element | null {
-        if (!this.state.openAiDialog) {
-            return null;
-        }
-        return (
-            <Suspense fallback={<Connecting />}>
-                <OpenAiDialog
-                    adapterName={this.props.adapterName}
-                    socket={this.props.socket}
-                    runningInstances={this.state.runningInstances}
-                    themeType={this.state.themeType}
-                    onClose={() => this.setState({ openAiDialog: false })}
-                    language={
-                        this.scripts[this.state.selected].engineType === 'TypeScript/ts' ? 'typescript' : 'javascript'
-                    }
-                    onAddCode={code => this.setState({ insert: code })}
-                />
-            </Suspense>
-        );
-    }
-
     getToolbar(): React.JSX.Element | null {
         const isInstanceRunning = !!(
             this.state.selected &&
@@ -1447,6 +1442,42 @@ class Editor extends React.Component<EditorProps, EditorState> {
                         >
                             {I18n.t('Cancel')}
                         </Button>
+                    ) : null}
+                    {!this.state.showCompiledCode && !this.state.rules ? (
+                        <IconButton
+                            key="undo"
+                            title={I18n.t('Undo')}
+                            style={styles.toolbarButtons}
+                            onClick={() => {
+                                if (this.state.blockly) {
+                                    const workspace = (this.blocklyEditorRef.current as any)?.blocklyWorkspace;
+                                    workspace?.undo(false);
+                                } else {
+                                    this.scriptEditorRef.current?.undo();
+                                }
+                            }}
+                            size="medium"
+                        >
+                            <IconUndo />
+                        </IconButton>
+                    ) : null}
+                    {!this.state.showCompiledCode && !this.state.rules ? (
+                        <IconButton
+                            key="redo"
+                            title={I18n.t('Redo')}
+                            style={styles.toolbarButtons}
+                            onClick={() => {
+                                if (this.state.blockly) {
+                                    const workspace = (this.blocklyEditorRef.current as any)?.blocklyWorkspace;
+                                    workspace?.undo(true);
+                                } else {
+                                    this.scriptEditorRef.current?.redo();
+                                }
+                            }}
+                            size="medium"
+                        >
+                            <IconRedo />
+                        </IconButton>
                     ) : null}
                     <div style={{ flex: 2 }} />
 
@@ -1585,19 +1616,26 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             <IconCron />
                         </IconButton>
                     ) : null}
-                    {this.scripts[this.state.selected] &&
-                    this.scripts[this.state.selected].engineType !== 'Blockly' &&
-                    this.scripts[this.state.selected].engineType !== 'Rules' ? (
-                        <IconButton
-                            key="ai"
-                            aria-label="AI"
-                            title={I18n.t('AI code generator')}
-                            style={styles.toolbarButtons}
-                            size="medium"
-                            onClick={() => this.setState({ openAiDialog: true })}
-                        >
-                            <IconWizard />
-                        </IconButton>
+                    {this.scripts[this.state.selected] && this.scripts[this.state.selected].engineType !== 'Rules' ? (
+                        <>
+                            <IconButton
+                                key="ai"
+                                aria-label="AI"
+                                title={I18n.t('AI Chat')}
+                                style={{
+                                    ...styles.toolbarButtons,
+                                    ...(this.state.aiChatOpen ? { color: '#4caf50' } : {}),
+                                }}
+                                size="medium"
+                                onClick={() => {
+                                    const newState = !this.state.aiChatOpen;
+                                    window.localStorage.setItem('Editor.aiChatOpen', String(newState));
+                                    this.setState({ aiChatOpen: newState });
+                                }}
+                            >
+                                <IconWizard />
+                            </IconButton>
+                        </>
                     ) : null}
                     <IconButton
                         key="show-astro"
@@ -1749,6 +1787,19 @@ class Editor extends React.Component<EditorProps, EditorState> {
         return null;
     }
 
+    private cachedScriptInfos: ScriptInfo[] | null = null;
+    private lastObjectsHash = '';
+
+    private getScriptInfos(): ScriptInfo[] {
+        const hash = Object.keys(this.props.objects).join(',');
+        if (this.cachedScriptInfos && this.lastObjectsHash === hash) {
+            return this.cachedScriptInfos;
+        }
+        this.lastObjectsHash = hash;
+        this.cachedScriptInfos = getAllScripts(this.props.objects);
+        return this.cachedScriptInfos;
+    }
+
     getScriptEditor(): React.JSX.Element | null {
         if (
             !this.props.debugMode &&
@@ -1760,36 +1811,116 @@ class Editor extends React.Component<EditorProps, EditorState> {
         ) {
             this.scripts[this.state.selected] ||= this.getScriptFromObject(this.state.selected)!;
 
+            const currentLanguage =
+                this.scripts[this.state.selected].engineType === 'TypeScript/ts'
+                    ? ('typescript' as const)
+                    : ('javascript' as const);
+
+            const editor = (
+                <Suspense fallback={<Connecting />}>
+                    <ScriptEditorComponent
+                        ref={this.scriptEditorRef}
+                        key="scriptEditor1"
+                        name={this.state.selected}
+                        adapterName={this.props.adapterName}
+                        insert={this.state.insert}
+                        onInserted={() => this.setState({ insert: '' })}
+                        onForceSave={() => this.onSave()}
+                        searchText={this.state.searchText}
+                        onRegisterSelect={(func: (() => string | undefined) | null) => this.onRegisterSelect(func)}
+                        readOnly={this.state.showCompiledCode}
+                        changed={this.state.changed[this.state.selected]}
+                        code={this.scripts[this.state.selected].source || ''}
+                        isDark={this.state.themeType === 'dark'}
+                        socket={this.props.socket}
+                        runningInstances={this.state.runningInstances}
+                        triggerPrettier={this.state.triggerPrettier}
+                        onChange={newValue => this.onChange({ script: newValue })}
+                        language={currentLanguage}
+                        aiCompletionsEnabled={this.state.aiCompletionsEnabled}
+                    />
+                </Suspense>
+            );
+
+            // Show diff view if active
+            if (this.state.aiDiffView) {
+                return (
+                    <Box
+                        sx={styles.editorDiv}
+                        key="scriptEditorDiv"
+                    >
+                        <Suspense fallback={<Connecting />}>
+                            <AiDiffView
+                                originalCode={this.state.aiDiffView.original}
+                                modifiedCode={this.state.aiDiffView.modified}
+                                language={currentLanguage}
+                                themeType={this.state.themeType}
+                                onAccept={code => {
+                                    this.onChange({ script: code });
+                                    this.setState({ aiDiffView: null });
+                                }}
+                                onReject={() => this.setState({ aiDiffView: null })}
+                            />
+                        </Suspense>
+                    </Box>
+                );
+            }
+
+            if (this.state.aiChatOpen) {
+                const savedSizes = window.localStorage.getItem('Editor.aiChatSizes');
+                let initialSizes = [70, 30];
+                try { if (savedSizes) { initialSizes = JSON.parse(savedSizes); } } catch { /* ignore corrupt localStorage */ }
+
+                return (
+                    <Box
+                        sx={styles.editorDiv}
+                        key="scriptEditorDiv"
+                    >
+                        <ReactSplit
+                            direction={SplitDirection.Horizontal}
+                            initialSizes={initialSizes}
+                            minWidths={[200, 250]}
+                            gutterClassName={this.state.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
+                            onResizeFinished={(_pairIdx: number, newSizes: number[]) => {
+                                window.localStorage.setItem('Editor.aiChatSizes', JSON.stringify(newSizes));
+                            }}
+                        >
+                            {editor}
+                            <Suspense fallback={<Connecting />}>
+                                <AiChatPanel
+                                    socket={this.props.socket}
+                                    runningInstances={this.state.runningInstances}
+                                    themeType={this.state.themeType}
+                                    currentCode={this.scripts[this.state.selected]?.source || ''}
+                                    currentLanguage={currentLanguage}
+                                    selectedCode={this.getSelect?.() || ''}
+                                    allScripts={this.getScriptInfos()}
+                                    onInsertCode={code => this.setState({ insert: code })}
+                                    onShowDiff={modifiedCode =>
+                                        this.setState({
+                                            aiDiffView: {
+                                                original: this.scripts[this.state.selected]?.source || '',
+                                                modified: modifiedCode,
+                                            },
+                                        })
+                                    }
+                                    onClose={() => {
+                                        window.localStorage.setItem('Editor.aiChatOpen', 'false');
+                                        this.setState({ aiChatOpen: false });
+                                    }}
+                                />
+                            </Suspense>
+                        </ReactSplit>
+                    </Box>
+                );
+            }
+
             return (
                 <Box
                     sx={styles.editorDiv}
                     key="scriptEditorDiv"
                 >
-                    <Suspense fallback={<Connecting />}>
-                        <ScriptEditorComponent
-                            key="scriptEditor1"
-                            name={this.state.selected}
-                            adapterName={this.props.adapterName}
-                            insert={this.state.insert}
-                            onInserted={() => this.setState({ insert: '' })}
-                            onForceSave={() => this.onSave()}
-                            searchText={this.state.searchText}
-                            onRegisterSelect={(func: (() => string | undefined) | null) => this.onRegisterSelect(func)}
-                            readOnly={this.state.showCompiledCode}
-                            changed={this.state.changed[this.state.selected]}
-                            code={this.scripts[this.state.selected].source || ''}
-                            isDark={this.state.themeType === 'dark'}
-                            socket={this.props.socket}
-                            runningInstances={this.state.runningInstances}
-                            triggerPrettier={this.state.triggerPrettier}
-                            onChange={newValue => this.onChange({ script: newValue })}
-                            language={
-                                this.scripts[this.state.selected].engineType === 'TypeScript/ts'
-                                    ? 'typescript'
-                                    : 'javascript'
-                            }
-                        />
-                    </Suspense>
+                    {editor}
                 </Box>
             );
         }
@@ -1808,22 +1939,93 @@ class Editor extends React.Component<EditorProps, EditorState> {
         ) {
             this.scripts[this.state.selected] ||= this.getScriptFromObject(this.state.selected)!;
 
+            const blocklyEditor = (
+                <Suspense fallback={<Connecting />}>
+                    <BlocklyEditor
+                        ref={this.blocklyEditorRef}
+                        command={this.state.cmdToBlockly}
+                        key="BlocklyEditor"
+                        themeType={this.state.themeType}
+                        searchText={this.state.searchText}
+                        code={this.scripts[this.state.selected].source || ''}
+                        scriptId={this.state.selected}
+                        onChange={newValue => this.onChange({ script: newValue })}
+                    />
+                </Suspense>
+            );
+
+            if (this.state.aiChatOpen) {
+                const savedSizes = window.localStorage.getItem('Editor.aiBlocklyChatSizes');
+                let initialSizes = [70, 30];
+                try { if (savedSizes) { initialSizes = JSON.parse(savedSizes); } } catch { /* ignore corrupt localStorage */ }
+
+                return (
+                    <Box
+                        sx={styles.editorDiv}
+                        key="blocklyEditorDiv"
+                    >
+                        <ReactSplit
+                            direction={SplitDirection.Horizontal}
+                            initialSizes={initialSizes}
+                            minWidths={[200, 250]}
+                            gutterClassName={this.state.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
+                            onResizeFinished={(_pairIdx: number, newSizes: number[]) => {
+                                window.localStorage.setItem('Editor.aiBlocklyChatSizes', JSON.stringify(newSizes));
+                            }}
+                        >
+                            {blocklyEditor}
+                            <Suspense fallback={<Connecting />}>
+                                <AiChatPanel
+                                    socket={this.props.socket}
+                                    runningInstances={this.state.runningInstances}
+                                    themeType={this.state.themeType}
+                                    currentCode={(() => {
+                                        const ref = this.blocklyEditorRef.current;
+                                        let jsCode = '';
+                                        let xml = '';
+                                        try {
+                                            jsCode = ref?.blocklyCode2JSCode(true) || '';
+                                        } catch {
+                                            /* ignore */
+                                        }
+                                        try {
+                                            xml = ref?.getWorkspaceXml() || '';
+                                        } catch {
+                                            /* ignore */
+                                        }
+                                        return `${jsCode}\n%%BLOCKLY_XML%%\n${xml}`;
+                                    })()}
+                                    currentLanguage="blockly"
+                                    allScripts={this.getScriptInfos()}
+                                    onInsertCode={xml => {
+                                        const ref = this.blocklyEditorRef.current;
+                                        if (ref) {
+                                            ref.appendBlocksFromXml(xml);
+                                        }
+                                    }}
+                                    onApplyCode={xml => {
+                                        const ref = this.blocklyEditorRef.current;
+                                        if (ref) {
+                                            ref.applyAiBlocks(xml);
+                                        }
+                                    }}
+                                    onClose={() => {
+                                        window.localStorage.setItem('Editor.aiChatOpen', 'false');
+                                        this.setState({ aiChatOpen: false });
+                                    }}
+                                />
+                            </Suspense>
+                        </ReactSplit>
+                    </Box>
+                );
+            }
+
             return (
                 <Box
                     sx={styles.editorDiv}
                     key="blocklyEditorDiv"
                 >
-                    <Suspense fallback={<Connecting />}>
-                        <BlocklyEditor
-                            command={this.state.cmdToBlockly}
-                            key="BlocklyEditor"
-                            themeType={this.state.themeType}
-                            searchText={this.state.searchText}
-                            code={this.scripts[this.state.selected].source || ''}
-                            scriptId={this.state.selected}
-                            onChange={newValue => this.onChange({ script: newValue })}
-                        />
-                    </Suspense>
+                    {blocklyEditor}
                 </Box>
             );
         }
@@ -1892,7 +2094,10 @@ class Editor extends React.Component<EditorProps, EditorState> {
             >
                 <DialogTitle>{I18n.t('Script was modified externally')}</DialogTitle>
                 <DialogContent>
-                    {I18n.t('The script "%s" has been modified by another user or in another window. Do you want to reload the script or keep your local changes?', scriptName)}
+                    {I18n.t(
+                        'The script "%s" has been modified by another user or in another window. Do you want to reload the script or keep your local changes?',
+                        scriptName,
+                    )}
                 </DialogContent>
                 <DialogActions>
                     <Button
@@ -1903,9 +2108,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             this.lastKnownTs[id] = this.props.objects[id]?.ts || 0;
                             const changed: Record<string, boolean> = { ...this.state.changed };
                             changed[id] = false;
-                            this.setState({ scriptConflict: '', changed }, () =>
-                                this.setChangedInAdmin(),
-                            );
+                            this.setState({ scriptConflict: '', changed }, () => this.setChangedInAdmin());
                         }}
                         color="primary"
                         autoFocus
@@ -2348,7 +2551,6 @@ class Editor extends React.Component<EditorProps, EditorState> {
             this.getEditorDialog(),
             this.getAstroDialog(),
             this.getDebugMenu(),
-            this.renderOpenAiDialog(),
             this.getToast(),
             this.getTour(),
         ];

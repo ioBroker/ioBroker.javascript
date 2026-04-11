@@ -2752,3 +2752,37 @@ For every created function in the menu appears additional block with the name of
 
 You can use it like normal blocks in you scripts.
 
+## AI Chat for Blockly
+
+The AI Chat panel is now available for Blockly scripts. Click the AI button (magic wand icon) in the toolbar to open the chat panel alongside the Blockly editor.
+
+### Features
+
+- **Chat mode**: Ask questions about your Blockly script. The AI sees the generated JavaScript code as context.
+- **Code mode**: Describe an automation task and the AI generates Blockly XML blocks in a two-step process (plan, then blocks).
+- **Visual preview**: AI-generated blocks are rendered as a visual Blockly preview directly in the chat instead of showing raw XML.
+- **Insert blocks**: Click "Insert blocks" to append the AI-generated blocks into your Blockly workspace.
+- **Diff view**: Click "Show as diff" to see a side-by-side comparison of your current blocks vs. the AI-suggested blocks, with Accept/Reject buttons.
+
+### Supported Block Types
+
+The AI can generate the following ioBroker Blockly block types:
+
+- **on_ext** – Trigger (react to state changes)
+- **schedule** – Cron-based schedules
+- **control** – Set state (setState)
+- **get_value** – Get state value (getState)
+- **debug** – Log output
+- **sendto_custom** – Send messages (e.g. Telegram)
+- **timeouts_settimeout** – Delayed actions
+- **controls_if** – If/else conditions
+- **logic_compare** – Comparisons (EQ, NEQ, LT, GT, etc.)
+- **math_number**, **text**, **logic_boolean** – Value blocks
+
+### Tips
+
+- Use **Code mode** for generating new blocks from a task description.
+- Use **Chat mode** (or Agent mode) for asking questions about existing blocks.
+- The AI works best when you describe your automation in plain language, e.g. "Turn on the living room light when the motion sensor triggers".
+- You can use `@devices` to include your smart home devices in the context.
+

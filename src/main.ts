@@ -1163,6 +1163,7 @@ class JavaScript extends Adapter {
                     const apiKey = (obj.message?.apiKey || '').trim();
                     const chatModel = (obj.message?.model || '').trim();
                     const messages = obj.message?.messages;
+                    const tools = obj.message?.tools;
                     const provider = (obj.message?.provider || 'openai').trim();
                     // Anthropic, Gemini, and DeepSeek always require an API key; OpenAI-compatible allows empty key with custom base URL
                     if (
@@ -1202,11 +1203,11 @@ class JavaScript extends Adapter {
                         if (apiKey) {
                             chatHeaders.Authorization = `Bearer ${apiKey}`;
                         }
-                        bodyObj = { model: chatModel, messages, stream: false };
+                        bodyObj = { model: chatModel, messages, stream: false, ...(tools?.length ? { tools } : {}) };
                     } else if (provider === 'deepseek') {
                         url = 'https://api.deepseek.com/chat/completions';
                         chatHeaders.Authorization = `Bearer ${apiKey}`;
-                        bodyObj = { model: chatModel, messages, stream: false };
+                        bodyObj = { model: chatModel, messages, stream: false, ...(tools?.length ? { tools } : {}) };
                     } else {
                         url = `${baseUrl || 'https://api.openai.com/v1'}/chat/completions`;
                         if (apiKey) {
@@ -1216,6 +1217,7 @@ class JavaScript extends Adapter {
                             model: chatModel,
                             messages,
                             stream: false,
+                            ...(tools?.length ? { tools } : {}),
                             // Disable thinking/reasoning for local models to save context and speed
                             ...(baseUrl ? { reasoning_effort: 'none' } : {}),
                         };
@@ -1252,11 +1254,13 @@ class JavaScript extends Adapter {
                                 if (res.statusCode === 200) {
                                     try {
                                         const parsed = JSON.parse(data);
+                                        const message = provider === 'anthropic' ? null : parsed.choices?.[0]?.message;
                                         const content =
                                             provider === 'anthropic'
                                                 ? parsed.content?.[0]?.text || ''
-                                                : parsed.choices?.[0]?.message?.content || '';
-                                        if (!content) {
+                                                : message?.content || '';
+                                        const tool_calls = message?.tool_calls;
+                                        if (!content && !tool_calls?.length) {
                                             this.sendTo(
                                                 obj.from,
                                                 obj.command,
@@ -1267,7 +1271,7 @@ class JavaScript extends Adapter {
                                             this.sendTo(
                                                 obj.from,
                                                 obj.command,
-                                                { success: true, content },
+                                                { success: true, content, ...(tool_calls ? { tool_calls } : {}) },
                                                 obj.callback,
                                             );
                                         }

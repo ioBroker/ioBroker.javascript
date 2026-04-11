@@ -27,23 +27,11 @@ Executes Javascript, Typescript Scripts.
     ### **WORK IN PROGRESS**
 -->
 ### WORK IN PROGRESS
+* (Eistee82) AI Chat panel with multi-provider support, tool calling, inline completions, and smart-apply
 * (Eistee82) Fix: prevent duplicate 'Stopping script' log when script is not running
 * (Eistee82) Fix: only restart scripts on the instance that owns them
 * (Eistee82) Added OID display mode toggle for Blockly editor: 4 display modes (Name, Name path, State ID, Full ID) with toolbar dropdown, context menu, optional object icons, and translations in 11 languages
-* Per-provider test buttons in adapter config (OpenAI, Anthropic, Gemini, DeepSeek, Custom API)
-* Optional API key field for custom base URL providers (e.g. Ollama without auth)
-* Provider icons on test buttons and in model dropdown
-* Human-readable HTTP error messages with API response details
-* Two-step AI code generation: plan first, then generate code
-* Collapsible plan view in AI code generator UI
-* Status display during generation ("Planning..." / "Generating code...")
-* Optimized prompts with code examples for better results with small local models
-* Compact API reference (docs-compact.md) for reduced context usage
-* Disable reasoning/thinking for local models (reasoning_effort: none)
-* TODO_DEVICE_ID placeholder when a required device is not in the device list
-* Node 25 compatibility: replaced deprecated rmdirSync with rmSync in build tasks
-* Flexible result area height in AI code generator (no extra scrollbar)
-* Added translations for all 11 languages
+* (Eistee82) Node 25 compatibility: replaced deprecated rmdirSync with rmSync in build tasks
 * (@GermanBluefox) Added support for plain import/export
 * (@GermanBluefox) Correcting error in configuration
 * (@GermanBluefox) disallow writing into node_modules folder by scripts
