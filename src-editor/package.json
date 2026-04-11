@@ -10,7 +10,7 @@
         "@devbookhq/splitter": "^1.4.2",
         "@iobroker/adapter-react-v5": "^8.1.3",
         "@iobroker/javascript-rules-dev": "^0.0.6",
-        "@iobroker/type-detector": "^5.0.10",
+        "@iobroker/type-detector": "^5.0.11",
         "@iobroker/types": "^7.1.0",
         "@module-federation/runtime": "^2.2.3",
         "@module-federation/vite": "^1.13.1",
