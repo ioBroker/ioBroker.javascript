@@ -28,6 +28,8 @@ Executes Javascript, Typescript Scripts.
 -->
 ### WORK IN PROGRESS
 * (Eistee82) AI Chat panel with multi-provider support, tool calling, inline completions, and smart-apply
+* (Eistee82) Fix: prevent duplicate 'Stopping script' log when script is not running
+* (Eistee82) Fix: only restart scripts on the instance that owns them
 * (Eistee82) Added OID display mode toggle for Blockly editor: 4 display modes (Name, Name path, State ID, Full ID) with toolbar dropdown, context menu, optional object icons, and translations in 11 languages
 * (Eistee82) Node 25 compatibility: replaced deprecated rmdirSync with rmSync in build tasks
 * (@GermanBluefox) Added support for plain import/export

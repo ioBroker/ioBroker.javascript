@@ -578,9 +578,9 @@ class JavaScript extends adapter_core_1.Adapter {
                         await this.loadScriptById(id);
                     }
                 }
-                else {
-                    // if (obj.common.source !== formerObj.common.source) {
-                    // Source changed => restart the script
+                else if (obj.common.engine === `system.adapter.${this.namespace}` ||
+                    formerObj.common.engine === `system.adapter.${this.namespace}`) {
+                    // Source changed => restart the script (only on the relevant instance)
                     this.stopCounters[id] = this.stopCounters[id] ? this.stopCounters[id] + 1 : 1;
                     void this.stopScript(id).then(() => {
                         // only start again after stop when "last" object change to prevent problems on
@@ -2183,6 +2183,9 @@ class JavaScript extends adapter_core_1.Adapter {
         }
     }
     async stopScript(name) {
+        if (!this.scripts[name]) {
+            return false;
+        }
         this.log.info(`${name}: Stopping script`);
         await this.setState(`scriptEnabled.${name.substring(SCRIPT_CODE_MARKER.length)}`, false, true);
         if (this.messageBusHandlers[name]) {
