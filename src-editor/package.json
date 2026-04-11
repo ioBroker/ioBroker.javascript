@@ -17,7 +17,7 @@
         "@mui/icons-material": "^6.5.0",
         "@mui/material": "^6.5.0",
         "@mui/x-date-pickers": "^7.29.4",
-        "@sentry/browser": "^10.44.0",
+        "@sentry/browser": "^10.47.0",
         "@types/lodash": "^4.17.24",
         "@types/react": "^18.3.28",
         "@types/react-dom": "^18.3.7",
