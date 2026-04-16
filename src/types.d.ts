@@ -38,6 +38,7 @@ export interface JavaScriptAdapterConfig {
     claudeKey: string;
     geminiKey: string;
     deepseekKey: string;
+    gptBaseUrlKey: string;
     password?: string;
 }
 
