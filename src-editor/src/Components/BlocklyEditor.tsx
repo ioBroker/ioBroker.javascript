@@ -408,6 +408,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
     }
 
     /** Append Blockly XML blocks to the workspace (used by AI Chat) */
+    // eslint-disable-next-line react/no-unused-class-component-methods
     public appendBlocksFromXml(xml: string): void {
         this.onImportBlocks(xml);
     }
@@ -416,6 +417,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
      * Smart-apply AI-generated blocks: matched blocks are replaced, new blocks are appended.
      * All operations are grouped so a single Ctrl+Z undoes everything.
      */
+    // eslint-disable-next-line react/no-unused-class-component-methods
     public applyAiBlocks(xml: string): void {
         if (!this.blocklyWorkspace) {
             return;
@@ -432,7 +434,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
             xml = xml.replace(/[\n\r]/g, '').replace(/<variables>.*<\/variables>/g, '');
 
             const aiDom = BlocklyEditor.Blockly.utils.xml.textToDom(xml);
-            const aiTopBlocks = Array.from(aiDom.querySelectorAll(':scope > block')) as Element[];
+            const aiTopBlocks = Array.from(aiDom.querySelectorAll(':scope > block'));
             if (aiTopBlocks.length === 0) {
                 return;
             }
@@ -590,6 +592,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
     }
 
     /** Get the current workspace XML (used by AI Chat) */
+    // eslint-disable-next-line react/no-unused-class-component-methods
     public getWorkspaceXml(): string {
         if (!this.blocklyWorkspace) {
             return '';
@@ -676,7 +679,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
 
                 // Auto-arrange imported top-level blocks vertically
                 // AI-generated blocks often all have x="0" y="0" causing overlap
-                const topBlocksList = Array.from(xmlBlocks.querySelectorAll(':scope > block')) as Element[];
+                const topBlocksList = Array.from(xmlBlocks.querySelectorAll(':scope > block'));
                 if (topBlocksList.length > 1) {
                     // Check if all blocks share the same position (likely AI-generated)
                     const positions = new Set<string>();
@@ -845,16 +848,23 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         // Add OID display mode items to workspace context menu
         if (window.Blockly?.FieldOID?.DISPLAY_MODE_KEYS) {
             const workspace = this.blocklyWorkspace;
-            const origConfigureContextMenu = workspace.configureContextMenu as unknown as ((options: unknown[], e: Event) => void) | undefined;
+            const origConfigureContextMenu = workspace.configureContextMenu as unknown as
+                | ((options: unknown[], e: Event) => void)
+                | undefined;
             // Blockly's configureContextMenu uses internal types not easily importable
-            (workspace as unknown as { configureContextMenu: (options: unknown[], e: Event) => void }).configureContextMenu = (menuOptions: unknown[], _e: Event) => {
+            (
+                workspace as unknown as { configureContextMenu: (options: unknown[], e: Event) => void }
+            ).configureContextMenu = (menuOptions: unknown[], _e: Event) => {
                 if (origConfigureContextMenu) {
                     origConfigureContextMenu.call(workspace, menuOptions, _e);
                 }
                 const FieldOID = window.Blockly.FieldOID!;
                 const keys = FieldOID.DISPLAY_MODE_KEYS;
                 for (let index = 0; index < keys.length; index++) {
-                    const label = BlocklyEditor.Blockly.Words?.[keys[index]]?.[I18n.getLanguage()] || BlocklyEditor.Blockly.Words?.[keys[index]]?.en || keys[index];
+                    const label =
+                        BlocklyEditor.Blockly.Words?.[keys[index]]?.[I18n.getLanguage()] ||
+                        BlocklyEditor.Blockly.Words?.[keys[index]]?.en ||
+                        keys[index];
                     menuOptions.push({
                         text: `${FieldOID.displayMode === index ? '\u2713 ' : '   '}${label}`,
                         enabled: true,

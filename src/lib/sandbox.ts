@@ -2603,9 +2603,10 @@ export function sandBox(
             for (let i = 0; i < script.schedules.length; i++) {
                 // Support both full IobSchedule objects (with nested _ioBroker) and
                 // bare _ioBroker metadata objects as returned by getSchedules()
-                const ioBrokerMeta = schedule && typeof schedule === 'object'
-                    ? (schedule as IobSchedule)._ioBroker || (schedule as { type?: string; id?: string })
-                    : undefined;
+                const ioBrokerMeta =
+                    schedule && typeof schedule === 'object'
+                        ? (schedule as IobSchedule)._ioBroker || (schedule as { type?: string; id?: string })
+                        : undefined;
                 if (ioBrokerMeta?.type === 'cron') {
                     if (script.schedules[i]._ioBroker.id === ioBrokerMeta.id) {
                         if (!mods.nodeSchedule.cancelJob(script.schedules[i])) {

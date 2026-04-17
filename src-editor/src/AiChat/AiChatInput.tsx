@@ -412,55 +412,57 @@ const AiChatInput: React.FC<AiChatInputProps> = ({
                 >
                     {/* Mode selector */}
                     <Tooltip
-                        title={I18n.t('Mode: Chat = conversation only, Agent = can read/analyze scripts, Code = can read and modify scripts')}
+                        title={I18n.t(
+                            'Mode: Chat = conversation only, Agent = can read/analyze scripts, Code = can read and modify scripts',
+                        )}
                         enterDelay={500}
                     >
-                    <Select
-                        value={mode}
-                        onChange={e => onModeChange(e.target.value as AiChatMode)}
-                        size="small"
-                        variant="standard"
-                        disableUnderline
-                        sx={{
-                            fontSize: '0.7rem',
-                            color: 'text.secondary',
-                            border: '1px solid',
-                            borderColor: 'text.secondary',
-                            borderRadius: 3,
-                            bgcolor: 'action.hover',
-                            px: 0.75,
-                            '&:hover': {
-                                borderColor: 'text.disabled',
+                        <Select
+                            value={mode}
+                            onChange={e => onModeChange(e.target.value as AiChatMode)}
+                            size="small"
+                            variant="standard"
+                            disableUnderline
+                            sx={{
+                                fontSize: '0.7rem',
+                                color: 'text.secondary',
+                                border: '1px solid',
+                                borderColor: 'text.secondary',
+                                borderRadius: 3,
                                 bgcolor: 'action.hover',
-                            },
-                            '& .MuiSelect-select': {
-                                py: '2px',
-                                pr: '18px !important',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 0.5,
-                            },
-                        }}
-                    >
-                        <MenuItem
-                            value="chat"
-                            sx={{ fontSize: '0.75rem' }}
+                                px: 0.75,
+                                '&:hover': {
+                                    borderColor: 'text.disabled',
+                                    bgcolor: 'action.hover',
+                                },
+                                '& .MuiSelect-select': {
+                                    py: '2px',
+                                    pr: '18px !important',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 0.5,
+                                },
+                            }}
                         >
-                            💬 Chat
-                        </MenuItem>
-                        <MenuItem
-                            value="agent"
-                            sx={{ fontSize: '0.75rem' }}
-                        >
-                            🤖 Agent
-                        </MenuItem>
-                        <MenuItem
-                            value="code"
-                            sx={{ fontSize: '0.75rem' }}
-                        >
-                            💻 Code
-                        </MenuItem>
-                    </Select>
+                            <MenuItem
+                                value="chat"
+                                sx={{ fontSize: '0.75rem' }}
+                            >
+                                💬 Chat
+                            </MenuItem>
+                            <MenuItem
+                                value="agent"
+                                sx={{ fontSize: '0.75rem' }}
+                            >
+                                🤖 Agent
+                            </MenuItem>
+                            <MenuItem
+                                value="code"
+                                sx={{ fontSize: '0.75rem' }}
+                            >
+                                💻 Code
+                            </MenuItem>
+                        </Select>
                     </Tooltip>
 
                     {/* Model selector */}
@@ -509,7 +511,9 @@ const AiChatInput: React.FC<AiChatInputProps> = ({
 
                     {/* @ context button */}
                     <Tooltip
-                        title={I18n.t('Mention scripts as context for the AI. Use @all for all scripts or @scriptName for a specific one.')}
+                        title={I18n.t(
+                            'Mention scripts as context for the AI. Use @all for all scripts or @scriptName for a specific one.',
+                        )}
                         enterDelay={500}
                     >
                         <IconButton

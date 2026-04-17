@@ -67,7 +67,10 @@ export function registerAiInlineProvider(
                         if (!cachedConfig || Date.now() - cachedConfig.ts > CONFIG_CACHE_TTL) {
                             try {
                                 const config = await socket.getObject(instanceId);
-                                cachedConfig = { native: (config?.native || {}) as Record<string, string>, ts: Date.now() };
+                                cachedConfig = {
+                                    native: (config?.native || {}) as Record<string, string>,
+                                    ts: Date.now(),
+                                };
                             } catch {
                                 resolve(undefined);
                                 return;

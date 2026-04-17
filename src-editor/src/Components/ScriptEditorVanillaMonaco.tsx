@@ -346,7 +346,9 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         this.mouseDownDisposable = null;
         this.datapointProviderDisposable?.dispose();
         this.datapointProviderDisposable = null;
-        import('../AiChat/AiDatapointProvider').then(({ clearDatapointCache }) => clearDatapointCache()).catch(() => {});
+        import('../AiChat/AiDatapointProvider')
+            .then(({ clearDatapointCache }) => clearDatapointCache())
+            .catch(() => {});
         this.inlineProviderDisposable?.dispose();
         this.inlineProviderDisposable = null;
         if (this.editor) {
@@ -491,15 +493,12 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         }
     }
 
-    /**
-     * Inserts some text into the given editor
-     *
-     * @param text The text to add
-     */
+    // eslint-ignore-next-line react/no-unused-class-component-methods
     undo(): void {
         this.editor?.trigger('toolbar', 'undo', null);
     }
 
+    // eslint-ignore-next-line react/no-unused-class-component-methods
     redo(): void {
         this.editor?.trigger('toolbar', 'redo', null);
     }
