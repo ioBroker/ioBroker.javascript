@@ -12,7 +12,7 @@
         "@iobroker/javascript-rules-dev": "^0.0.6",
         "@iobroker/type-detector": "^5.0.11",
         "@iobroker/types": "^7.1.2-alpha.0-20260409-feacb179d",
-        "@module-federation/runtime": "^2.2.3",
+        "@module-federation/runtime": "^2.3.1",
         "@module-federation/vite": "^1.13.1",
         "@mui/icons-material": "^6.5.0",
         "@mui/material": "^6.5.0",
