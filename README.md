@@ -26,16 +26,19 @@ Executes Javascript, Typescript Scripts.
 <!--
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Agent keys are encrypted now. You must enter your keys anew!
+
 ### 9.2.0 (2026-04-11)
 * (Eistee82) AI Chat panel with multi-provider support, tool calling, inline completions, and smart-apply
-* (Eistee82) Fix: prevent duplicate 'Stopping script' log when script is not running
+* (Eistee82) Fix: prevent duplicate 'Stopping script' log when the script is not running
 * (Eistee82) Fix: only restart scripts on the instance that owns them
 * (Eistee82) Added OID display mode toggle for Blockly editor: 4 display modes (Name, Name path, State ID, Full ID) with toolbar dropdown, context menu, optional object icons, and translations in 11 languages
 * (Eistee82) Node 25 compatibility: replaced deprecated rmdirSync with rmSync in build tasks
 * (@GermanBluefox) Added support for plain import/export
 * (@GermanBluefox) Correcting error in configuration
-* (@GermanBluefox) disallow writing into node_modules folder by scripts
-* (@GermanBluefox) Correcting start of the script more than one time if restart is triggered
+* (@GermanBluefox) disallows writing into the node_modules folder by scripts
+* (@GermanBluefox) Correcting the start of the script more than one time if restart is triggered
 * (@GermanBluefox) All delayed writings are stopped by the script stop
 * (@GermanBluefox) Added check if a script has been modified by another user/window
 * (@GermanBluefox) Make the instance number more prominent

@@ -24,6 +24,7 @@ export default [
             'public/',
             'src/Components/blockly-plugins/**/*',
             'src/Components/BlocklyEditorTS.tsx',
+            'vitest.config.ts',
         ],
     },
     {

@@ -146,7 +146,7 @@
                 },
                 "gptKey": {
                     "newLine": true,
-                    "type": "text",
+                    "type": "password",
                     "label": "ChatGPT API key",
                     "xs": 12,
                     "sm": 9,
@@ -156,7 +156,7 @@
                 "_testOpenAi": {
                     "type": "sendTo",
                     "label": "Test OpenAI",
-                    "icon": "img/openai.svg",
+                    "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik0xMiAyQzYuNDggMiAyIDUuNTggMiAxMGMwIDIuMjQgMS4xMiA0LjI3IDIuOTMgNS43Mkw0IDIwbDQuMzUtMi4xOEM5LjUgMTguMjcgMTAuNzIgMTguNSAxMiAxOC41YzUuNTIgMCAxMC0zLjU4IDEwLThTMTcuNTIgMiAxMiAyem0tMSAxMUg4di0yaDNWOGgydjNoM3YyaC0zdjNoLTJ2LTN6Ii8+PC9zdmc+",
                     "command": "testApiConnection",
                     "jsonData": "{\"apiKey\": \"${data.gptKey}\", \"provider\": \"openai\"}",
                     "variant": "outlined",
@@ -167,7 +167,7 @@
                 },
                 "claudeKey": {
                     "newLine": true,
-                    "type": "text",
+                    "type": "password",
                     "label": "Anthropic API key",
                     "xs": 12,
                     "sm": 9,
@@ -177,7 +177,7 @@
                 "_testClaude": {
                     "type": "sendTo",
                     "label": "Test Anthropic",
-                    "icon": "img/anthropic.svg",
+                    "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik0xMiAyTDMgMjBoNGwxLjUtNGg3bDEuNSA0aDRMMTIgMnptMCA2bDIuNSA3aC01TDEyIDh6Ii8+PC9zdmc+",
                     "command": "testApiConnection",
                     "jsonData": "{\"apiKey\": \"${data.claudeKey}\", \"provider\": \"anthropic\"}",
                     "variant": "outlined",
@@ -188,7 +188,7 @@
                 },
                 "geminiKey": {
                     "newLine": true,
-                    "type": "text",
+                    "type": "password",
                     "label": "Gemini API key",
                     "xs": 12,
                     "sm": 9,
@@ -198,7 +198,7 @@
                 "_testGemini": {
                     "type": "sendTo",
                     "label": "Test Gemini",
-                    "icon": "img/gemini.svg",
+                    "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik0xMiAxbDMgN2g3bC01LjUgNC41TDE4LjUgMjAgMTIgMTUuNSA1LjUgMjBsMi03LjVMMiA4aDd6Ii8+PC9zdmc+",
                     "command": "testApiConnection",
                     "jsonData": "{\"apiKey\": \"${data.geminiKey}\", \"provider\": \"gemini\"}",
                     "variant": "outlined",
@@ -209,7 +209,7 @@
                 },
                 "deepseekKey": {
                     "newLine": true,
-                    "type": "text",
+                    "type": "password",
                     "label": "DeepSeek API key",
                     "xs": 12,
                     "sm": 9,
@@ -219,7 +219,7 @@
                 "_testDeepseek": {
                     "type": "sendTo",
                     "label": "Test DeepSeek",
-                    "icon": "img/deepseek.svg",
+                    "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik0xMCAyYTggOCAwIDAgMSA2LjMyIDEyLjkxbDQuMzkgNC4zOC0xLjQyIDEuNDItNC4zOC00LjM5QTggOCAwIDEgMSAxMCAyem0wIDJhNiA2IDAgMSAwIDAgMTIgNiA2IDAgMCAwIDAtMTJ6Ii8+PC9zdmc+",
                     "command": "testApiConnection",
                     "jsonData": "{\"apiKey\": \"${data.deepseekKey}\", \"provider\": \"deepseek\"}",
                     "variant": "outlined",
@@ -248,7 +248,7 @@
                 "_testCustom": {
                     "type": "sendTo",
                     "label": "Test Custom API",
-                    "icon": "img/custom.svg",
+                    "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik00IDFoMTZ2NUg0VjF6bTEgMXYzaDE0VjJINXptLTEgNmgxNnY1SDRWOHptMSAxdjNoMTRWOUg1em0tMSA2aDE2djVINHYtNXptMSAxdjNoMTR2LTNINXptMi0xMmgydjFIN1Yzem0wIDZoMnYxSDdWOXptMCA2aDJ2MUg3di0xeiIvPjwvc3ZnPg==",
                     "command": "testApiConnection",
                     "jsonData": "{\"apiKey\": \"${data.gptBaseUrlKey}\", \"baseUrl\": \"${data.gptBaseUrl}\", \"provider\": \"openai\"}",
                     "variant": "outlined",

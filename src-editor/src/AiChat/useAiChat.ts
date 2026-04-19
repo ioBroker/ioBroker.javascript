@@ -459,6 +459,7 @@ ${docsRef.current}`;
             }
             setIsLoading(false);
         },
+        // eslint-ignore-next-line react-hooks/exhaustive-deps
         [model, modelProviderMap, isLoading, socket, runningInstances, currentLanguage],
     );
 
@@ -715,6 +716,7 @@ ${docsRef.current}`;
             }
             setIsLoading(false);
         },
+        // eslint-ignore-next-line react-hooks/exhaustive-deps
         [
             model,
             modelProviderMap,

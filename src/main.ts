@@ -1160,12 +1160,22 @@ class JavaScript extends Adapter {
                 // Proxy chat completion requests to an OpenAI-compatible API endpoint
                 if (obj.callback) {
                     const baseUrl = (obj.message?.baseUrl || '').trim();
-                    const apiKey = (obj.message?.apiKey || '').trim();
                     const chatModel = (obj.message?.model || '').trim();
                     const messages = obj.message?.messages;
                     const tools = obj.message?.tools;
                     const provider = (obj.message?.provider || 'openai').trim();
-                    // Anthropic, Gemini, and DeepSeek always require an API key; OpenAI-compatible allows empty key with custom base URL
+                    const apiKey =
+                        (obj.message?.apiKey || '').trim() ||
+                        (provider === 'anthropic'
+                            ? this.config.claudeKey
+                            : provider === 'gemini'
+                              ? this.config.geminiKey
+                              : provider === 'deepseek'
+                                ? this.config.deepseekKey
+                                : provider === 'openai'
+                                  ? this.config.gptKey
+                                  : this.config.gptBaseUrlKey);
+                    // Anthropic, Gemini, and DeepSeek always require an API key; OpenAI compatible allows empty key with custom base URL
                     if (
                         !apiKey &&
                         (provider === 'anthropic' || provider === 'gemini' || provider === 'deepseek' || !baseUrl)
@@ -1237,89 +1247,99 @@ class JavaScript extends Adapter {
                     const isHttps = urlObj.protocol === 'https:';
                     const requestModule = isHttps ? https : http;
 
-                    const req = requestModule.request(
-                        url,
-                        {
-                            method: 'POST',
-                            headers: chatHeaders,
-                            timeout: 600000,
-                            ...(isHttps && this.config.allowSelfSignedCerts ? { rejectUnauthorized: false } : {}),
-                        },
-                        res => {
-                            let data = '';
-                            res.on('data', (chunk: Buffer) => {
-                                data += chunk.toString();
-                            });
-                            res.on('end', () => {
-                                if (res.statusCode === 200) {
-                                    try {
-                                        const parsed = JSON.parse(data);
-                                        const message = provider === 'anthropic' ? null : parsed.choices?.[0]?.message;
-                                        const content =
-                                            provider === 'anthropic'
-                                                ? parsed.content?.[0]?.text || ''
-                                                : message?.content || '';
-                                        const tool_calls = message?.tool_calls;
-                                        if (!content && !tool_calls?.length) {
+                    try {
+                        const req = requestModule.request(
+                            url,
+                            {
+                                method: 'POST',
+                                headers: chatHeaders,
+                                timeout: 600000,
+                                ...(isHttps && this.config.allowSelfSignedCerts ? { rejectUnauthorized: false } : {}),
+                            },
+                            res => {
+                                let data = '';
+                                res.on('data', (chunk: Buffer) => {
+                                    data += chunk.toString();
+                                });
+                                res.on('end', () => {
+                                    if (res.statusCode === 200) {
+                                        try {
+                                            const parsed = JSON.parse(data);
+                                            const message =
+                                                provider === 'anthropic' ? null : parsed.choices?.[0]?.message;
+                                            const content =
+                                                provider === 'anthropic'
+                                                    ? parsed.content?.[0]?.text || ''
+                                                    : message?.content || '';
+                                            const tool_calls = message?.tool_calls;
+                                            if (!content && !tool_calls?.length) {
+                                                this.sendTo(
+                                                    obj.from,
+                                                    obj.command,
+                                                    { error: 'Empty response from API' },
+                                                    obj.callback,
+                                                );
+                                            } else {
+                                                this.sendTo(
+                                                    obj.from,
+                                                    obj.command,
+                                                    { success: true, content, ...(tool_calls ? { tool_calls } : {}) },
+                                                    obj.callback,
+                                                );
+                                            }
+                                        } catch {
                                             this.sendTo(
                                                 obj.from,
                                                 obj.command,
-                                                { error: 'Empty response from API' },
-                                                obj.callback,
-                                            );
-                                        } else {
-                                            this.sendTo(
-                                                obj.from,
-                                                obj.command,
-                                                { success: true, content, ...(tool_calls ? { tool_calls } : {}) },
+                                                { error: 'Invalid JSON response from API' },
                                                 obj.callback,
                                             );
                                         }
-                                    } catch {
+                                    } else {
+                                        let detail = '';
+                                        try {
+                                            const errParsed = JSON.parse(data);
+                                            detail = errParsed.error?.message || data.substring(0, 200);
+                                        } catch {
+                                            detail = data.substring(0, 200);
+                                        }
                                         this.sendTo(
                                             obj.from,
                                             obj.command,
-                                            { error: 'Invalid JSON response from API' },
+                                            {
+                                                error: `${detail || httpStatusText(res.statusCode || 0)} (${res.statusCode})`,
+                                            },
                                             obj.callback,
                                         );
                                     }
-                                } else {
-                                    let detail = '';
-                                    try {
-                                        const errParsed = JSON.parse(data);
-                                        detail = errParsed.error?.message || data.substring(0, 200);
-                                    } catch {
-                                        detail = data.substring(0, 200);
-                                    }
-                                    this.sendTo(
-                                        obj.from,
-                                        obj.command,
-                                        {
-                                            error: `${detail || httpStatusText(res.statusCode || 0)} (${res.statusCode})`,
-                                        },
-                                        obj.callback,
-                                    );
-                                }
-                            });
-                        },
-                    );
+                                });
+                            },
+                        );
 
-                    req.on('error', (err: Error) => {
+                        req.on('error', (err: Error) => {
+                            this.sendTo(
+                                obj.from,
+                                obj.command,
+                                { error: `Connection failed: ${err.message}` },
+                                obj.callback,
+                            );
+                        });
+
+                        req.on('timeout', () => {
+                            req.destroy();
+                            this.sendTo(obj.from, obj.command, { error: 'Connection timeout (600s)' }, obj.callback);
+                        });
+
+                        req.write(bodyBuffer);
+                        req.end();
+                    } catch (error) {
                         this.sendTo(
                             obj.from,
                             obj.command,
-                            { error: `Connection failed: ${err.message}` },
+                            { error: `Connection failed: ${(error as Error).toString()}` },
                             obj.callback,
                         );
-                    });
-
-                    req.on('timeout', () => {
-                        req.destroy();
-                        this.sendTo(obj.from, obj.command, { error: 'Connection timeout (600s)' }, obj.callback);
-                    });
-
-                    req.write(bodyBuffer);
-                    req.end();
+                    }
                 }
                 break;
             }
@@ -1328,9 +1348,19 @@ class JavaScript extends Adapter {
                 // Test connection to an OpenAI-compatible API endpoint
                 if (obj.callback) {
                     const baseUrl = (obj.message?.baseUrl || '').trim();
-                    const apiKey = (obj.message?.apiKey || '').trim();
                     const provider = (obj.message?.provider || 'openai').trim();
-                    // Anthropic, Gemini, and DeepSeek always require an API key; OpenAI-compatible allows empty key with custom base URL
+                    const apiKey =
+                        (obj.message?.apiKey || '').trim() ||
+                        (provider === 'anthropic'
+                            ? this.config.claudeKey
+                            : provider === 'gemini'
+                              ? this.config.geminiKey
+                              : provider === 'deepseek'
+                                ? this.config.deepseekKey
+                                : provider === 'openai'
+                                  ? this.config.gptKey
+                                  : this.config.gptBaseUrlKey);
+                    // Anthropic, Gemini, and DeepSeek always require an API key; OpenAI compatible allows empty key with custom base URL
                     if (
                         !apiKey &&
                         (provider === 'anthropic' || provider === 'gemini' || provider === 'deepseek' || !baseUrl)
@@ -1373,88 +1403,102 @@ class JavaScript extends Adapter {
                     const isHttps = urlObj.protocol === 'https:';
                     const requestModule = isHttps ? https : http;
 
-                    const req = requestModule.request(
-                        url,
-                        {
-                            method: 'GET',
-                            headers: testHeaders,
-                            timeout: 10000,
-                            ...(isHttps && this.config.allowSelfSignedCerts ? { rejectUnauthorized: false } : {}),
-                        },
-                        res => {
-                            let data = '';
-                            res.on('data', (chunk: Buffer) => {
-                                data += chunk.toString();
-                            });
-                            res.on('end', () => {
-                                if (res.statusCode === 200) {
-                                    try {
-                                        const parsed = JSON.parse(data);
-                                        const models: string[] = (parsed.data || [])
-                                            .map((m: { id: string }) =>
-                                                m.id.startsWith('models/') ? m.id.substring(7) : m.id,
-                                            )
-                                            .sort();
+                    try {
+                        const req = requestModule.request(
+                            url,
+                            {
+                                method: 'GET',
+                                headers: testHeaders,
+                                timeout: 10_000,
+                                ...(isHttps && this.config.allowSelfSignedCerts ? { rejectUnauthorized: false } : {}),
+                            },
+                            res => {
+                                let data = '';
+                                res.on('data', (chunk: Buffer) => {
+                                    data += chunk.toString();
+                                });
+                                res.on('end', () => {
+                                    if (res.statusCode === 200) {
+                                        try {
+                                            const parsed = JSON.parse(data);
+                                            const models: string[] = (parsed.data || [])
+                                                .map((m: { id: string }) =>
+                                                    m.id.startsWith('models/') ? m.id.substring(7) : m.id,
+                                                )
+                                                .sort();
+                                            this.sendTo(
+                                                obj.from,
+                                                obj.command,
+                                                { success: true, models, count: models.length },
+                                                obj.callback,
+                                            );
+                                        } catch {
+                                            this.sendTo(
+                                                obj.from,
+                                                obj.command,
+                                                { error: 'Invalid JSON response from API' },
+                                                obj.callback,
+                                            );
+                                        }
+                                    } else if (res.statusCode === 401) {
                                         this.sendTo(
                                             obj.from,
                                             obj.command,
-                                            { success: true, models, count: models.length },
+                                            { error: 'Invalid API key (401)' },
                                             obj.callback,
                                         );
-                                    } catch {
+                                    } else if (res.statusCode === 403) {
                                         this.sendTo(
                                             obj.from,
                                             obj.command,
-                                            { error: 'Invalid JSON response from API' },
+                                            { error: 'Access denied (403)' },
+                                            obj.callback,
+                                        );
+                                    } else {
+                                        // Include response body for debugging
+                                        let detail = '';
+                                        try {
+                                            const errParsed = JSON.parse(data);
+                                            detail = errParsed.error?.message || data.substring(0, 200);
+                                        } catch {
+                                            detail = data.substring(0, 200);
+                                        }
+                                        this.sendTo(
+                                            obj.from,
+                                            obj.command,
+                                            {
+                                                error: `${detail || httpStatusText(res.statusCode || 0)} (${res.statusCode})`,
+                                            },
                                             obj.callback,
                                         );
                                     }
-                                } else if (res.statusCode === 401) {
-                                    this.sendTo(
-                                        obj.from,
-                                        obj.command,
-                                        { error: 'Invalid API key (401)' },
-                                        obj.callback,
-                                    );
-                                } else if (res.statusCode === 403) {
-                                    this.sendTo(obj.from, obj.command, { error: 'Access denied (403)' }, obj.callback);
-                                } else {
-                                    // Include response body for debugging
-                                    let detail = '';
-                                    try {
-                                        const errParsed = JSON.parse(data);
-                                        detail = errParsed.error?.message || data.substring(0, 200);
-                                    } catch {
-                                        detail = data.substring(0, 200);
-                                    }
-                                    this.sendTo(
-                                        obj.from,
-                                        obj.command,
-                                        {
-                                            error: `${detail || httpStatusText(res.statusCode || 0)} (${res.statusCode})`,
-                                        },
-                                        obj.callback,
-                                    );
-                                }
-                            });
-                        },
-                    );
+                                });
+                            },
+                        );
 
-                    req.on('error', (err: Error) => {
+                        req.on('error', (err: Error) => {
+                            this.sendTo(
+                                obj.from,
+                                obj.command,
+                                { error: `Connection failed: ${err.message}` },
+                                obj.callback,
+                            );
+                        });
+
+                        req.on('timeout', () => {
+                            req.destroy();
+                            this.sendTo(obj.from, obj.command, { error: 'Connection timeout (10s)' }, obj.callback);
+                        });
+
+                        req.end();
+                    } catch (error) {
                         this.sendTo(
                             obj.from,
                             obj.command,
-                            { error: `Connection failed: ${err.message}` },
+                            { error: `Connection failed: ${(error as Error).toString()}` },
                             obj.callback,
                         );
-                    });
-
-                    req.on('timeout', () => {
-                        req.destroy();
-                        this.sendTo(obj.from, obj.command, { error: 'Connection timeout (10s)' }, obj.callback);
-                    });
-
-                    req.end();
+                    }
                 }
                 break;
             }

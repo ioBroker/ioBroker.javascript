@@ -341,6 +341,45 @@
           "agree",
           "cancel"
         ]
+      },
+      {
+        "condition": {
+          "operand": "and",
+          "rules": [
+            "oldVersion<=9.2.0",
+            "newVersion>9.2.0"
+          ]
+        },
+        "title": {
+          "en": "AI API keys must be re-entered",
+          "de": "AI-API-Schlüssel müssen erneut eingegeben werden",
+          "ru": "Ключи AI API необходимо ввести заново",
+          "pt": "As chaves da API de IA devem ser reinseridas",
+          "nl": "AI API-sleutels moeten opnieuw worden ingevoerd",
+          "fr": "Les clés API IA doivent être saisies à nouveau",
+          "it": "Le chiavi API AI devono essere reinserite",
+          "es": "Las claves de API de IA deben volver a introducirse",
+          "pl": "Klucze API AI muszą zostać ponownie wprowadzone",
+          "uk": "Ключі AI API необхідно ввести повторно",
+          "zh-cn": "AI API 密钥必须重新输入"
+        },
+        "text": {
+          "en": "The AI API keys (OpenAI, Anthropic, Gemini, DeepSeek) are now stored encrypted. If you had previously configured any AI API keys, you must re-enter them in the adapter settings under the \"AI settings\" tab.",
+          "de": "Die AI-API-Schlüssel (OpenAI, Anthropic, Gemini, DeepSeek) werden jetzt verschlüsselt gespeichert. Wenn Sie zuvor AI-API-Schlüssel konfiguriert haben, müssen Sie diese in den Adaptereinstellungen unter dem Tab \"AI-Einstellungen\" erneut eingeben.",
+          "ru": "Ключи AI API (OpenAI, Anthropic, Gemini, DeepSeek) теперь хранятся в зашифрованном виде. Если вы ранее настроили ключи AI API, вам необходимо повторно ввести их в настройках адаптера на вкладке \"Настройки AI\".",
+          "pt": "As chaves da API de IA (OpenAI, Anthropic, Gemini, DeepSeek) agora são armazenadas criptografadas. Se você configurou anteriormente chaves de API de IA, deve reinseri-las nas configurações do adaptador na aba \"Configurações de IA\".",
+          "nl": "De AI API-sleutels (OpenAI, Anthropic, Gemini, DeepSeek) worden nu versleuteld opgeslagen. Als u eerder AI API-sleutels heeft geconfigureerd, moet u deze opnieuw invoeren in de adapterinstellingen onder het tabblad \"AI-instellingen\".",
+          "fr": "Les clés API IA (OpenAI, Anthropic, Gemini, DeepSeek) sont désormais stockées de manière chiffrée. Si vous aviez précédemment configuré des clés API IA, vous devez les saisir à nouveau dans les paramètres de l'adaptateur sous l'onglet \"Paramètres IA\".",
+          "it": "Le chiavi API AI (OpenAI, Anthropic, Gemini, DeepSeek) sono ora memorizzate in modo crittografato. Se in precedenza erano state configurate chiavi API AI, è necessario reinserirle nelle impostazioni dell'adattatore nella scheda \"Impostazioni AI\".",
+          "es": "Las claves de API de IA (OpenAI, Anthropic, Gemini, DeepSeek) ahora se almacenan cifradas. Si previamente había configurado claves de API de IA, debe volver a introducirlas en la configuración del adaptador en la pestaña \"Configuración de IA\".",
+          "pl": "Klucze API AI (OpenAI, Anthropic, Gemini, DeepSeek) są teraz przechowywane w formie zaszyfrowanej. Jeśli wcześniej skonfigurowano klucze API AI, należy je ponownie wprowadzić w ustawieniach adaptera w zakładce \"Ustawienia AI\".",
+          "uk": "Ключі AI API (OpenAI, Anthropic, Gemini, DeepSeek) тепер зберігаються у зашифрованому вигляді. Якщо ви раніше налаштували ключі AI API, вам необхідно повторно ввести їх у налаштуваннях адаптера на вкладці \"Налаштування AI\".",
+          "zh-cn": "AI API 密钥（OpenAI、Anthropic、Gemini、DeepSeek）现在以加密方式存储。如果您之前配置了 AI API 密钥，则必须在适配器设置的\"AI 设置\"选项卡中重新输入。"
+        },
+        "level": "warn",
+        "buttons": [
+          "ok"
+        ]
       }
     ]
   },
@@ -441,6 +480,8 @@
       ]
     }
   ],
+  "protectedNative": ["gptKey", "claudeKey", "geminiKey", "deepseekKey"],
+  "encryptedNative": ["gptKey", "claudeKey", "geminiKey", "deepseekKey"],
   "native": {
     "latitude": "",
     "longitude": "",

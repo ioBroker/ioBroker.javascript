@@ -215,8 +215,6 @@ export async function sendChatCompletion(
     return result;
 }
 
-
-
 // ─── Device Detection ────────────────────────────────────────────
 async function loadAllObjects(socket: AdminConnection): Promise<Record<string, ioBroker.Object>> {
     if (allObjectsCache) {

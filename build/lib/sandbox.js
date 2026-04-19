@@ -2016,8 +2016,13 @@ function sandBox(script, name, verbose, debug, context) {
                 return true;
             }
             for (let i = 0; i < script.schedules.length; i++) {
-                if (schedule && typeof schedule === 'object' && schedule._ioBroker?.type === 'cron') {
-                    if (script.schedules[i]._ioBroker.id === schedule._ioBroker.id) {
+                // Support both full IobSchedule objects (with nested _ioBroker) and
+                // bare _ioBroker metadata objects as returned by getSchedules()
+                const ioBrokerMeta = schedule && typeof schedule === 'object'
+                    ? schedule._ioBroker || schedule
+                    : undefined;
+                if (ioBrokerMeta?.type === 'cron') {
+                    if (script.schedules[i]._ioBroker.id === ioBrokerMeta.id) {
                         if (!mods.nodeSchedule.cancelJob(script.schedules[i])) {
                             sandbox.log('Error by canceling scheduled job', 'error');
                         }

@@ -89,10 +89,12 @@ import steps, { STEPS } from './Components/RulesEditor/helpers/Tour';
 import type { AstroTimes, ScriptType } from './types';
 import Connecting from './Components/Connecting';
 import { decryptText, encryptText } from './Components/crypto';
+import type BlocklyEditorExportType from './Components/BlocklyEditor';
+import type ScriptEditorVanillaMonacoType from './Components/ScriptEditorVanillaMonaco';
 
 const BlocklyEditor = React.lazy(() => import('./Components/BlocklyEditor'));
-type BlocklyEditorType = InstanceType<typeof import('./Components/BlocklyEditor')['default']>;
-type ScriptEditorType = InstanceType<typeof import('./Components/ScriptEditorVanillaMonaco')['default']>;
+type BlocklyEditorType = BlocklyEditorExportType;
+type ScriptEditorType = ScriptEditorVanillaMonacoType;
 const RulesEditor = React.lazy(() => import('./Components/RulesEditor'));
 const Debugger = React.lazy(() => import('./Components/Debugger'));
 const ScriptEditorComponent = React.lazy(() => import('./Components/ScriptEditorVanillaMonaco'));
@@ -1526,8 +1528,14 @@ class Editor extends React.Component<EditorProps, EditorState> {
                                 {(() => {
                                     const key = window.Blockly?.FieldOID?.DISPLAY_MODE_KEYS?.[index];
                                     const fallback = ['Show name', 'Show name path', 'Show ID', 'Show full ID'];
-                                    if (!key) return fallback[index];
-                                    return window.Blockly?.Words?.[key]?.[I18n.getLanguage()] || window.Blockly?.Words?.[key]?.en || fallback[index];
+                                    if (!key) {
+                                        return fallback[index];
+                                    }
+                                    return (
+                                        window.Blockly?.Words?.[key]?.[I18n.getLanguage()] ||
+                                        window.Blockly?.Words?.[key]?.en ||
+                                        fallback[index]
+                                    );
                                 })()}
                             </MenuItem>
                         ))}
@@ -1543,10 +1551,17 @@ class Editor extends React.Component<EditorProps, EditorState> {
                                 }
                             }}
                         >
-                            <Checkbox checked={this.state.oidShowIcon} style={{ padding: 0, marginRight: 8 }} />
+                            <Checkbox
+                                checked={this.state.oidShowIcon}
+                                style={{ padding: 0, marginRight: 8 }}
+                            />
                             {(() => {
                                 const key = 'oid_show_icon';
-                                return window.Blockly?.Words?.[key]?.[I18n.getLanguage()] || window.Blockly?.Words?.[key]?.en || 'Show icon';
+                                return (
+                                    window.Blockly?.Words?.[key]?.[I18n.getLanguage()] ||
+                                    window.Blockly?.Words?.[key]?.en ||
+                                    'Show icon'
+                                );
                             })()}
                         </MenuItem>
                     </Menu>
@@ -1869,7 +1884,13 @@ class Editor extends React.Component<EditorProps, EditorState> {
             if (this.state.aiChatOpen) {
                 const savedSizes = window.localStorage.getItem('Editor.aiChatSizes');
                 let initialSizes = [70, 30];
-                try { if (savedSizes) { initialSizes = JSON.parse(savedSizes); } } catch { /* ignore corrupt localStorage */ }
+                try {
+                    if (savedSizes) {
+                        initialSizes = JSON.parse(savedSizes);
+                    }
+                } catch {
+                    /* ignore corrupt localStorage */
+                }
 
                 return (
                     <Box
@@ -1957,7 +1978,13 @@ class Editor extends React.Component<EditorProps, EditorState> {
             if (this.state.aiChatOpen) {
                 const savedSizes = window.localStorage.getItem('Editor.aiBlocklyChatSizes');
                 let initialSizes = [70, 30];
-                try { if (savedSizes) { initialSizes = JSON.parse(savedSizes); } } catch { /* ignore corrupt localStorage */ }
+                try {
+                    if (savedSizes) {
+                        initialSizes = JSON.parse(savedSizes);
+                    }
+                } catch {
+                    /* ignore corrupt localStorage */
+                }
 
                 return (
                     <Box
