@@ -20,11 +20,11 @@ export default [
             'node_modules/',
             '.__mf__temp/',
             'vite.config.*',
+            'vitest.config.*',
             'vite-env.d.ts',
             'public/',
             'src/Components/blockly-plugins/**/*',
             'src/Components/BlocklyEditorTS.tsx',
-            'vitest.config.ts',
         ],
     },
     {

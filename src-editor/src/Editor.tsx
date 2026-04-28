@@ -89,12 +89,13 @@ import steps, { STEPS } from './Components/RulesEditor/helpers/Tour';
 import type { AstroTimes, ScriptType } from './types';
 import Connecting from './Components/Connecting';
 import { decryptText, encryptText } from './Components/crypto';
-import type BlocklyEditorExportType from './Components/BlocklyEditor';
-import type ScriptEditorVanillaMonacoType from './Components/ScriptEditorVanillaMonaco';
+
+import type BlocklyEditorImport from './Components/BlocklyEditor';
+import type ScriptEditorVanillaMonacoImport from './Components/ScriptEditorVanillaMonaco';
 
 const BlocklyEditor = React.lazy(() => import('./Components/BlocklyEditor'));
-type BlocklyEditorType = BlocklyEditorExportType;
-type ScriptEditorType = ScriptEditorVanillaMonacoType;
+type BlocklyEditorType = InstanceType<typeof BlocklyEditorImport>;
+type ScriptEditorType = InstanceType<typeof ScriptEditorVanillaMonacoImport>;
 const RulesEditor = React.lazy(() => import('./Components/RulesEditor'));
 const Debugger = React.lazy(() => import('./Components/Debugger'));
 const ScriptEditorComponent = React.lazy(() => import('./Components/ScriptEditorVanillaMonaco'));
@@ -104,7 +105,8 @@ const AiDiffView = React.lazy(() => import('./AiChat/AiDiffView'));
 
 import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
 import { getAllScripts } from './AiChat/AiScriptAnalyzer';
-import type { ScriptInfo } from './AiChat/AiChatTypes';
+import { findBestTarget } from './AiChat/findAiBlockTarget';
+import type { ScriptInfo, EditorAiActionRequest, EditorApi } from './AiChat/AiChatTypes';
 
 declare global {
     interface Window {
@@ -301,6 +303,8 @@ interface EditorState {
     triggerPrettier: number;
     aiChatOpen: boolean;
     aiDiffView: { original: string; modified: string } | null;
+    aiActionRequest: EditorAiActionRequest | null;
+    inlineAskHandler: ((question: string, code: string) => Promise<string>) | null;
     aiCompletionsEnabled: boolean;
     scriptConflict: string;
 }
@@ -395,6 +399,8 @@ class Editor extends React.Component<EditorProps, EditorState> {
             menuTabsOpened: false,
             aiChatOpen: window.localStorage.getItem('Editor.aiChatOpen') === 'true',
             aiDiffView: null,
+            aiActionRequest: null,
+            inlineAskHandler: null,
             aiCompletionsEnabled: window.localStorage.getItem('Editor.aiCompletions') !== 'false',
             triggerPrettier: 1,
             scriptConflict: '',
@@ -882,6 +888,49 @@ class Editor extends React.Component<EditorProps, EditorState> {
 
     onRegisterSelect(func: (() => string | undefined) | null): void {
         this.getSelect = func;
+    }
+
+    /**
+     * Called from the Monaco editor when the user invokes an AI action
+     *  (context menu, keyboard shortcut, code lens). Opens the chat panel
+     *  if closed, then stashes the request so the panel can fire it off.
+     */
+    handleAiAction(request: EditorAiActionRequest): void {
+        const patch: Partial<EditorState> = { aiActionRequest: request };
+        if (!this.state.aiChatOpen) {
+            window.localStorage.setItem('Editor.aiChatOpen', 'true');
+            patch.aiChatOpen = true;
+        }
+        this.setState(patch as EditorState);
+    }
+
+    /**
+     * Build an EditorApi bound to the currently mounted Monaco editor.
+     *  Returned object is passed to the AI chat so agent tools can read/
+     *  manipulate the live editor (selection, cursor, diagnostics, …).
+     */
+    getEditorApi(): EditorApi {
+        const getRef = (): ScriptEditorType | null => this.scriptEditorRef.current;
+        return {
+            getSelection: () => getRef()?.getEditorSelection?.() ?? null,
+            getContent: () => getRef()?.getEditorContent?.() ?? '',
+            getCursorPosition: () => getRef()?.getCursorPosition?.() ?? null,
+            highlightText: (text: string) => getRef()?.highlightText?.(text) ?? 0,
+            highlightLineRange: (startLine: number, endLine: number) =>
+                getRef()?.highlightLineRange?.(startLine, endLine) ?? false,
+            goToLine: (line: number, column?: number) => getRef()?.goToLine?.(line, column) ?? false,
+            insertTextAtCursor: (text: string) => {
+                const ref = getRef();
+                if (!ref?.insertTextIntoEditor) {
+                    return false;
+                }
+                ref.insertTextIntoEditor(text);
+                return true;
+            },
+            replaceSelection: (text: string) => getRef()?.replaceSelection?.(text) ?? false,
+            getDiagnostics: () => getRef()?.getDiagnostics?.() ?? [],
+            getSymbols: async () => getRef()?.getDocumentSymbols?.() ?? [],
+        };
     }
 
     onConvertBlockly2JS(): void {
@@ -1853,6 +1902,12 @@ class Editor extends React.Component<EditorProps, EditorState> {
                         onChange={newValue => this.onChange({ script: newValue })}
                         language={currentLanguage}
                         aiCompletionsEnabled={this.state.aiCompletionsEnabled}
+                        onAiAction={req => this.handleAiAction(req)}
+                        onInlineAsk={
+                            this.state.inlineAskHandler
+                                ? payload => this.state.inlineAskHandler!(payload.question, payload.selectedCode)
+                                : undefined
+                        }
                     />
                 </Suspense>
             );
@@ -1916,15 +1971,70 @@ class Editor extends React.Component<EditorProps, EditorState> {
                                     currentLanguage={currentLanguage}
                                     selectedCode={this.getSelect?.() || ''}
                                     allScripts={this.getScriptInfos()}
+                                    editorApi={this.getEditorApi()}
+                                    aiActionRequest={this.state.aiActionRequest}
+                                    onAiActionConsumed={() => this.setState({ aiActionRequest: null })}
+                                    onRegisterInlineAsk={handler => this.setState({ inlineAskHandler: handler })}
+                                    currentScriptId={this.state.selected}
                                     onInsertCode={code => this.setState({ insert: code })}
-                                    onShowDiff={modifiedCode =>
+                                    onShowDiff={(modifiedCode, sourceRange) => {
+                                        const scriptId = this.state.selected;
+                                        const scriptSource = this.scripts[scriptId]?.source || '';
+                                        const editorRef = this.scriptEditorRef.current;
+
+                                        const showInline = (
+                                            range: {
+                                                startLine: number;
+                                                startColumn: number;
+                                                endLine: number;
+                                                endColumn: number;
+                                            },
+                                            originalText: string,
+                                        ): void => {
+                                            editorRef?.showInlineDiff({
+                                                range,
+                                                originalText,
+                                                modifiedText: modifiedCode,
+                                                onAccepted: () => {
+                                                    const newSrc = editorRef?.getEditorContent?.() || scriptSource;
+                                                    this.onChange({ script: newSrc });
+                                                },
+                                            });
+                                        };
+
+                                        // Path 1 — explicit range captured at question time (best case).
+                                        if (sourceRange && sourceRange.range && sourceRange.scriptId === scriptId) {
+                                            showInline(sourceRange.range, sourceRange.originalText);
+                                            return;
+                                        }
+
+                                        // Path 2 — VS-Code-style: scan the current script to locate
+                                        // where the AI block belongs (by function/class name, else
+                                        // by line-similarity). Covers legacy messages and free-form
+                                        // asks without selection.
+                                        try {
+                                            const match = findBestTarget(modifiedCode, scriptSource);
+                                            if (match) {
+                                                const lines = scriptSource.split('\n');
+                                                const originalText = lines
+                                                    .slice(match.range.startLine - 1, match.range.endLine)
+                                                    .join('\n');
+                                                showInline(match.range, originalText);
+                                                return;
+                                            }
+                                        } catch {
+                                            /* fall through to legacy modal */
+                                        }
+
+                                        // Path 3 — nothing fit: keep the old modal for insertions
+                                        // and genuinely new code blocks.
                                         this.setState({
                                             aiDiffView: {
-                                                original: this.scripts[this.state.selected]?.source || '',
+                                                original: scriptSource,
                                                 modified: modifiedCode,
                                             },
-                                        })
-                                    }
+                                        });
+                                    }}
                                     onClose={() => {
                                         window.localStorage.setItem('Editor.aiChatOpen', 'false');
                                         this.setState({ aiChatOpen: false });

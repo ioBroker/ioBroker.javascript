@@ -4,7 +4,7 @@ import { Person, SmartToy, AddCircleOutline, PlaylistAddCheck } from '@mui/icons
 import { I18n, type ThemeType } from '@iobroker/adapter-react-v5';
 import type { Theme } from '@mui/material/styles';
 
-import type { ChatMessage, AiScriptLanguage } from './AiChatTypes';
+import type { ChatMessage, AiScriptLanguage, ChatSourceRange } from './AiChatTypes';
 import AiChatCodeBlock from './AiChatCodeBlock';
 import AiBlocklyPreview from './AiBlocklyPreview';
 
@@ -13,7 +13,7 @@ interface AiChatMessageProps {
     themeType: ThemeType;
     currentLanguage?: AiScriptLanguage;
     onInsertCode?: (code: string) => void;
-    onShowDiff?: (code: string) => void;
+    onShowDiff?: (code: string, sourceRange: ChatSourceRange | null | undefined) => void;
     onApplyCode?: (code: string) => void;
 }
 
@@ -317,6 +317,18 @@ const AiChatMessage: React.FC<AiChatMessageProps> = ({
     const isUser = message.role === 'user';
     const theme = useTheme();
 
+    // Compute the actual avatar bg color so we can pick a readable contrast
+    // text — `primary.contrastText` is computed for primary.main, not primary.dark,
+    // so it ends up dark-on-dark in dark mode.
+    const avatarBgKey = isUser
+        ? themeType === 'dark'
+            ? theme.palette.primary.dark
+            : theme.palette.primary.main
+        : themeType === 'dark'
+          ? theme.palette.secondary.dark
+          : theme.palette.secondary.main;
+    const avatarFg = theme.palette.getContrastText(avatarBgKey);
+
     const contentParts = useMemo(() => splitContent(message.content), [message.content]);
 
     /** Check if a code block contains Blockly XML */
@@ -330,6 +342,25 @@ const AiChatMessage: React.FC<AiChatMessageProps> = ({
         return false;
     };
 
+    // Per-row visual styling — distinct yet tasteful in both light and dark themes.
+    // User → primary palette tint + left accent rail; AI → secondary palette tint.
+    // Tints are translucent so they layer cleanly over the chat panel background.
+    const accentColor = avatarBgKey;
+    const rowBg = isUser
+        ? themeType === 'dark'
+            ? 'rgba(144, 202, 249, 0.10)' // primary tint, dark
+            : 'rgba(25, 118, 210, 0.07)' // primary tint, light
+        : themeType === 'dark'
+          ? 'rgba(206, 147, 216, 0.10)' // secondary tint, dark
+          : 'rgba(156, 39, 176, 0.06)'; // secondary tint, light
+    const hoverBg = isUser
+        ? themeType === 'dark'
+            ? 'rgba(144, 202, 249, 0.16)'
+            : 'rgba(25, 118, 210, 0.12)'
+        : themeType === 'dark'
+          ? 'rgba(206, 147, 216, 0.16)'
+          : 'rgba(156, 39, 176, 0.10)';
+
     return (
         <Box
             sx={{
@@ -337,8 +368,15 @@ const AiChatMessage: React.FC<AiChatMessageProps> = ({
                 gap: 1,
                 px: 1.5,
                 py: 1,
+                mx: 0.75,
+                my: 0.5,
+                bgcolor: rowBg,
+                borderRadius: 1.5,
+                borderLeft: '3px solid',
+                borderLeftColor: accentColor,
+                transition: 'background-color 120ms',
                 '&:hover': {
-                    bgcolor: 'action.hover',
+                    bgcolor: hoverBg,
                 },
             }}
         >
@@ -346,13 +384,12 @@ const AiChatMessage: React.FC<AiChatMessageProps> = ({
                 sx={{
                     width: 28,
                     height: 28,
-                    bgcolor: isUser
-                        ? themeType === 'dark'
-                            ? 'primary.dark'
-                            : 'primary.main'
-                        : themeType === 'dark'
-                          ? 'secondary.dark'
-                          : 'secondary.main',
+                    bgcolor: avatarBgKey,
+                    // MUI Avatar defaults `color` to background.default, which renders
+                    // the SVG almost invisible on the dark theme. Pick a readable
+                    // contrast against the actual avatar bg (primary.dark / secondary.dark
+                    // in dark mode, primary.main / secondary.main in light mode).
+                    color: avatarFg,
                     flexShrink: 0,
                     mt: 0.5,
                 }}
@@ -409,6 +446,7 @@ const AiChatMessage: React.FC<AiChatMessageProps> = ({
                                 themeType={themeType}
                                 onInsertCode={onInsertCode}
                                 onShowDiff={onShowDiff}
+                                sourceRange={message.sourceRange || null}
                             />
                         );
                     }

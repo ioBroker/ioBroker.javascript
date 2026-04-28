@@ -72,18 +72,76 @@ In den Adapter-Einstellungen unter "KI-Einstellungen" befinden sich API-Key-Feld
 | **Eigene API Base-URL** | Base-URL für eigene Anbieter (z.B. `http://localhost:11434/v1` für Ollama) |
 | **Eigener API-Schlüssel** | Optionaler API-Key für eigene Anbieter (Ollama benötigt keinen) |
 
-Es müssen nur die Keys der gewünschten Anbieter eingetragen werden. Jeder Anbieter hat einen eigenen **Test**-Button.
+Alle API-Key-Felder werden als Passwortfelder dargestellt (maskiert). Es müssen nur die Keys der gewünschten Anbieter eingetragen werden. Jeder Anbieter hat einen eigenen **Test**-Button.
+
+### Sicherheit der API-Schlüssel
+
+Die API-Keys werden durch zwei von der ioBroker-Plattform bereitgestellte Schutzebenen abgesichert:
+
+1. **`encryptedNative`** — Die Keys werden vor dem Schreiben in die Object-Datenbank automatisch mit dem System-Secret verschlüsselt. Datenbank-Dumps oder Object-Backups enthalten die Keys nicht mehr im Klartext.
+2. **`protectedNative`** — Die Keys werden niemals an Admin-Oberflächen oder fremde Adapter übertragen. Nur die `javascript`-Instanz selbst kann sie über `this.config` lesen (die ioBroker-Runtime liefert sie dort transparent entschlüsselt).
+
+Daraus folgt: Das KI-Chat-Panel, die Inline-Completion und alle anderen Frontend-Komponenten **greifen nicht mehr direkt auf die Keys zu**. Stattdessen wird jede KI-Anfrage per `sendTo` an den Adapter geschickt, und das Backend setzt den passenden Key ein:
+
+```
+Frontend                      Backend (this.config, entschlüsselt)
+────────                      ─────────────────────────────────────
+sendTo('chatCompletion', {    →   wählt Provider → nimmt gptKey/claudeKey/…
+    provider: 'openai',           → schickt HTTP-Request an Anbieter
+    model: 'gpt-4o',              → liefert Antwort zurück
+    messages: [...]
+})
+```
+
+Für die Anzeige steht ein eigener `sendTo`-Befehl zur Verfügung:
+
+| Befehl | Payload | Antwort |
+|--------|---------|---------|
+| `getAvailableAiProviders` | `{}` | `{ providers: [{ provider: 'openai' }, { provider: 'custom', baseUrl: '…' }, …] }` |
+
+Die Antwort teilt dem Frontend nur mit, **welche** Provider konfiguriert sind — der eigentliche Schlüssel ist darin nie enthalten. So lassen sich im Editor die richtigen Provider-Icons anzeigen und das Modell-Dropdown korrekt befüllen, ohne Secrets in den Browser zu laden.
+
+**Hinweis zum Upgrade:** Nach dem Upgrade von einer älteren Version bleiben vorhandene (unverschlüsselte) Keys so lange gültig, bis die Adapter-Einstellungen das erste Mal gespeichert werden. Beim Speichern verschlüsselt die Runtime die Werte. Sollte ein Schlüssel nach dem Upgrade leer erscheinen, genügt es, ihn einmal neu einzutragen und zu speichern.
 
 ### API-Verbindung testen
 
-Jeder Anbieter hat einen eigenen **Test**-Button neben seinem API-Key-Feld. Der Test:
+Jeder Anbieter hat einen eigenen **Test**-Button neben seinem API-Key-Feld. Es werden zwei Fälle unterschieden:
+
+1. **Test mit Formular-Wert** — Unmittelbar nach dem Eintragen oder Ändern eines Keys im Einstellungsdialog nutzt der `Test`-Button den aktuellen Formularwert (der liegt vor dem Speichern noch lokal im Browser). So kann ein neuer Key vor dem Persistieren geprüft werden.
+2. **Test mit gespeichertem Schlüssel** — Wird der Test aus Kontexten ohne Formular-Wert aufgerufen (z.B. beim Modell-Abruf im Skript-Editor), löst das Backend den Key über `this.config` anhand des gewählten Providers auf.
+
+Der Test:
 - Verbindet sich mit dem API-Endpunkt des Anbieters
 - Validiert den API-Schlüssel
-- Gibt die Anzahl der verfügbaren Modelle zurück
+- Gibt die Anzahl der verfügbaren Chat-Modelle zurück
+
+Die Icons der Test-Buttons sind als Inline-SVG-Data-URIs mit `fill="currentColor"` eingebettet. Dadurch folgt ihre Farbe automatisch dem aktiven Theme (Light/Dark-Mode).
 
 ### Dynamisches Laden der Modelle
 
-Beim Öffnen des KI-Codegenerator-Dialogs im Skript-Editor werden die verfügbaren Modelle automatisch vom konfigurierten API-Endpunkt abgerufen. Das Modell-Dropdown wird dynamisch befüllt — es gibt keine fest hinterlegte Modellliste.
+Beim Öffnen des KI-Codegenerator-Dialogs im Skript-Editor werden die verfügbaren Modelle automatisch von jedem konfigurierten Provider abgerufen. Das Modell-Dropdown wird dynamisch befüllt — es gibt keine fest hinterlegte Modellliste.
+
+#### Filter für nicht-Chat-Modelle
+
+Die Modelllisten, die OpenAI, Anthropic, Gemini, DeepSeek und Custom-Endpunkte (Ollama/LM Studio/OpenRouter) zurückliefern, enthalten viele Modelle, die nicht für Chat-Completion geeignet sind. Der Adapter filtert diese automatisch heraus, sodass im Dropdown nur Modelle erscheinen, die für die ioBroker-Skript-Generierung taugen.
+
+Folgende Kategorien werden ausgeschlossen:
+
+| Kategorie | Beispiel-Schlüsselwörter |
+|-----------|--------------------------|
+| Embeddings | `embedding`, `text-embedding`, `embeddinggemma`, `bge-`, `nomic-embed`, `mxbai-embed`, `arctic-embed`, `all-minilm`, `voyage-`, `gecko`, `paraphrase-multilingual` |
+| Bild-Generierung / -Bearbeitung | `dall-e`, `gpt-image`, `image-edit`, `-image-preview`, `-image-latest`, `flash-image`, `nano-banana`, `stable-diffusion`, `sdxl`, `midjourney`, `flux-`, `imagen` |
+| Video-Generierung | `sora`, `veo-`, `cogvideo`, `runway-`, `lumiere` |
+| Musik-Generierung | `lyria` |
+| Audio / Sprache / Transkription / Realtime | `whisper`, `tts-`, `-tts`, `speech-`, `audio-preview`, `-transcribe`, `native-audio`, `flash-live`, `gpt-audio`, `realtime`, `bark-`, `xtts`, `voicebox` |
+| Moderation / Safety-Klassifikatoren | `moderation`, `omni-moderation`, `llama-guard`, `shieldgemma`, `prompt-guard`, `-guardian`, `safeguard` |
+| Reranker | `rerank`, `reranker` |
+| Legacy-Completion (OpenAI GPT-3-Ära) | `babbage-`, `davinci-`, `curie-`, `text-davinci`, `instructgpt`, `code-davinci`, `code-cushman`, `-turbo-instruct` |
+| Web-Suche / Browsing-Endpoints | `-search-preview`, `-search-api` |
+| Legacy-Suche / Similarity | `code-search`, `text-search`, `similarity-` |
+| Spezial / Single-Task | `computer-use-preview`, `deep-research`, `robotics`, `aqa`, `reader-lm` (HTML→Markdown), `-nsql` (Text-zu-SQL), `minicheck` (Fact-Check), `claude-1`, `claude-instant` |
+
+Der Filter verwendet eine Substring-Prüfung ohne Beachtung der Groß-/Kleinschreibung. Wenn ein Provider künftig eine weitere Nicht-Chat-Familie einführt, lässt sich die Liste in `src-editor/src/AiChat/AiChatService.ts` (`NON_CHAT_KEYWORDS`) erweitern.
 
 ### Fehlerbehandlung
 

@@ -8,7 +8,7 @@
         "@blockly/field-multilineinput": "^5.0.17",
         "@blockly/theme-dark": "^7.0.12",
         "@devbookhq/splitter": "^1.4.2",
-        "@iobroker/adapter-react-v5": "^8.2.0",
+        "@iobroker/adapter-react-v5": "^8.1.8",
         "@iobroker/javascript-rules-dev": "^0.0.6",
         "@iobroker/type-detector": "^5.0.11",
         "@iobroker/types": "^7.1.2-alpha.0-20260409-feacb179d",

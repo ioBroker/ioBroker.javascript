@@ -35,10 +35,10 @@ export interface JavaScriptAdapterConfig {
     sortGlobalScriptsAlphabetically: boolean;
     gptKey: string;
     gptBaseUrl: string;
+    gptBaseUrlKey: string;
     claudeKey: string;
     geminiKey: string;
     deepseekKey: string;
-    gptBaseUrlKey: string;
     password?: string;
 }
 

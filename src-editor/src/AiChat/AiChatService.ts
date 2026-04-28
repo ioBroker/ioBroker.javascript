@@ -55,6 +55,8 @@ export function clearCaches(): void {
 }
 
 // ─── API Config ─────────────────────────────────────────────────
+// Keys are stored as encryptedNative/protectedNative — frontend never sees them.
+// The backend reports which providers have credentials via `getAvailableAiProviders`.
 export async function getApiConfig(
     socket: AdminConnection,
     runningInstances: Record<string, unknown>,
@@ -62,39 +64,145 @@ export async function getApiConfig(
     if (apiConfigCache) {
         return apiConfigCache;
     }
-    const ids = Object.keys(runningInstances);
-    for (let i = 0; i < ids.length; i++) {
-        const config: ioBroker.Object | null | undefined = await socket.getObject(ids[i]);
-        const gptKey = (config?.native?.gptKey || '').trim();
-        const claudeKey = (config?.native?.claudeKey || '').trim();
-        const geminiKey = (config?.native?.geminiKey || '').trim();
-        const deepseekKey = (config?.native?.deepseekKey || '').trim();
-        const gptBaseUrl = (config?.native?.gptBaseUrl || '').trim() || undefined;
-        const gptBaseUrlKey = (config?.native?.gptBaseUrlKey || '').trim() || undefined;
-        if (gptKey || claudeKey || geminiKey || deepseekKey || gptBaseUrl) {
-            apiConfigCache = { gptKey, claudeKey, geminiKey, deepseekKey, gptBaseUrl, gptBaseUrlKey };
-            return apiConfigCache;
-        }
+    const instanceId = Object.keys(runningInstances)[0];
+    if (!instanceId) {
+        return null;
     }
-    return null;
+    const result: { providers?: { provider: AiProviderName; baseUrl?: string }[] } = await socket.sendTo(
+        instanceId,
+        'getAvailableAiProviders',
+        {},
+    );
+    const providers = (result?.providers || []).map(p => p.provider);
+    const customEntry = (result?.providers || []).find(p => p.provider === 'custom');
+    if (!providers.length) {
+        return null;
+    }
+    apiConfigCache = { providers, gptBaseUrl: customEntry?.baseUrl };
+    return apiConfigCache;
 }
 
 // ─── Model Loading ──────────────────────────────────────────────
-const NON_CHAT_KEYWORDS = [
+// Substring keywords for models that cannot be used for chat completion.
+// Grouped by category; matched via case-insensitive substring.
+const NON_CHAT_KEYWORDS: string[] = [
+    // Embeddings (vector models, no text generation)
     'embedding',
-    'moderation',
+    'text-embedding',
+    'textembedding',
+    'embeddinggemma', // Ollama: Google's Embedding-Gemma
+    'embed-',
+    '-embed',
+    'bge-',
+    'mxbai-embed',
+    'nomic-embed',
+    'arctic-embed',
+    'snowflake-arctic-embed',
+    'all-minilm',
+    'multilingual-e5',
+    'jina-embed',
+    'voyage-',
+    'gecko',
+    'paraphrase-multilingual', // Ollama: sentence-paraphrase embedding
+
+    // Image generation / editing
     'dall-e',
-    'tts-',
-    'whisper',
-    'babbage',
-    'davinci',
+    'gpt-image',
+    'image-edit',
+    '-image-preview', // gemini-3-pro-image-preview, gemini-3.1-flash-image-preview
+    '-image-latest',
+    'flash-image', // gemini-2.5-flash-image
+    'nano-banana', // Google's image editor (Gemini internal name for Imagen variants)
+    'stable-diffusion',
+    'sdxl',
+    'midjourney',
+    'flux-',
+    'imagen',
+
+    // Video generation
     'sora',
+    'veo-',
+    'cogvideo',
+    'runway-',
+    'lumiere',
+
+    // Music generation
+    'lyria', // Google Lyria music model
+
+    // Audio, speech, realtime (TTS, STT, voice pipelines)
+    'whisper',
+    'tts-',
+    '-tts', // gemini-2.5-flash-preview-tts, gemini-2.5-pro-preview-tts
+    'speech-',
+    'audio-preview',
+    'mini-tts',
+    'mini-transcribe',
+    '-transcribe', // gpt-4o-transcribe, gpt-4o-transcribe-diarize
+    'native-audio', // gemini-2.5-flash-native-audio-latest
+    'flash-live', // gemini-3.1-flash-live-preview (realtime voice pipeline)
+    'gpt-audio', // gpt-audio, gpt-audio-1.5, gpt-audio-mini
+    'realtime',
+    'bark-',
+    'xtts',
+    'voicebox',
+
+    // Moderation / safety classifiers
+    'moderation',
     'omni-moderation',
+    'llama-guard',
+    'shieldgemma',
+    'prompt-guard',
+    '-guardian', // granite3-guardian
+    'safeguard', // gpt-oss-safeguard
+
+    // Rerankers
+    'rerank',
+    'reranker',
+
+    // Legacy OpenAI GPT-3-era completion models (no chat/tool calling)
+    'babbage-',
+    'davinci-',
+    'curie-',
+    'text-ada-',
+    'text-davinci',
+    'text-curie',
+    'text-babbage',
+    'instructgpt',
+    'code-davinci',
+    'code-cushman',
+    '-turbo-instruct', // gpt-3.5-turbo-instruct, gpt-3.5-turbo-instruct-0914
+
+    // Web search / browsing-only endpoints
+    '-search-preview', // gpt-4o-search-preview, gpt-4o-mini-search-preview
+    '-search-api', // gpt-5-search-api
+
+    // Search / similarity endpoints (legacy)
+    'code-search',
+    'text-search',
+    'similarity-',
+
+    // Specialty / non-conversational
+    'computer-use-preview', // OpenAI: action loop, not general chat
+    'deep-research', // deep-research-pro-preview (long-running research agent, not general chat)
+    'robotics', // gemini-robotics-er-* (robotics embodied reasoning)
+    'aqa', // Gemini attributed question answering
+    // Ollama single-task models
+    'reader-lm', // HTML → Markdown converter
+    '-nsql', // duckdb-nsql and similar text-to-SQL-only models
+    'minicheck', // bespoke-minicheck (fact-checking classifier)
 ];
 
-function isChatModel(name: string): boolean {
+export function isChatModel(name: string): boolean {
     const lower = name.toLowerCase();
-    return !NON_CHAT_KEYWORDS.some(kw => lower.includes(kw) || lower.startsWith(kw));
+    // Reject obvious non-textual models and Anthropic's deprecated Claude 2.x line.
+    if (NON_CHAT_KEYWORDS.some(kw => lower.includes(kw))) {
+        return false;
+    }
+    // Anthropic: filter deprecated families that can't be reached by most users
+    if (lower.startsWith('claude-1') || lower.startsWith('claude-instant')) {
+        return false;
+    }
+    return true;
 }
 
 export interface LoadModelsResult {
@@ -135,13 +243,12 @@ export async function loadModels(
 
     const queries: Promise<void>[] = [];
 
-    const testProvider = (provider: AiProviderName, apiKey: string, baseUrl?: string, displayName?: string): void => {
+    const testProvider = (provider: AiProviderName, displayName?: string): void => {
         queries.push(
             socket
                 .sendTo(instanceId, 'testApiConnection', {
-                    apiKey,
-                    ...(baseUrl ? { baseUrl } : {}),
                     provider: provider === 'custom' ? 'openai' : provider,
+                    // apiKey/baseUrl intentionally omitted — backend resolves from this.config
                 })
                 .then((result: { models?: string[]; error?: string }) => {
                     if (result.models) {
@@ -156,20 +263,15 @@ export async function loadModels(
         );
     };
 
-    if (config.gptKey) {
-        testProvider('openai', config.gptKey, undefined, 'OpenAI');
-    }
-    if (config.gptBaseUrl) {
-        testProvider('custom', config.gptBaseUrlKey || '', config.gptBaseUrl, 'Custom');
-    }
-    if (config.claudeKey) {
-        testProvider('anthropic', config.claudeKey, undefined, 'Anthropic');
-    }
-    if (config.geminiKey) {
-        testProvider('gemini', config.geminiKey, undefined, 'Gemini');
-    }
-    if (config.deepseekKey) {
-        testProvider('deepseek', config.deepseekKey, undefined, 'DeepSeek');
+    const displayNames: Record<AiProviderName, string> = {
+        openai: 'OpenAI',
+        anthropic: 'Anthropic',
+        gemini: 'Gemini',
+        deepseek: 'DeepSeek',
+        custom: 'Custom',
+    };
+    for (const provider of config.providers) {
+        testProvider(provider, displayNames[provider]);
     }
 
     await Promise.all(queries);
@@ -178,26 +280,8 @@ export async function loadModels(
     return { models: allModels, providerMap, errors };
 }
 
-// ─── Get API key & base URL for a provider ──────────────────────
-export function getProviderCredentials(
-    config: ApiConfig,
-    provider: AiProviderName,
-): { apiKey: string; baseUrl: string } {
-    switch (provider) {
-        case 'anthropic':
-            return { apiKey: config.claudeKey, baseUrl: '' };
-        case 'gemini':
-            return { apiKey: config.geminiKey, baseUrl: '' };
-        case 'deepseek':
-            return { apiKey: config.deepseekKey, baseUrl: '' };
-        case 'custom':
-            return { apiKey: config.gptBaseUrlKey || '', baseUrl: config.gptBaseUrl || '' };
-        default:
-            return { apiKey: config.gptKey, baseUrl: '' };
-    }
-}
-
 // ─── Chat Completion (non-streaming) ────────────────────────────
+// apiKey is resolved server-side based on provider; never sent from the frontend.
 export async function sendChatCompletion(
     socket: AdminConnection,
     instanceId: string,
@@ -205,11 +289,10 @@ export async function sendChatCompletion(
 ): Promise<ChatCompletionResponse> {
     const result: ChatCompletionResponse = await socket.sendTo(instanceId, 'chatCompletion', {
         timeout: request.timeout || 600000,
-        apiKey: request.apiKey,
-        baseUrl: request.baseUrl || '',
         model: request.model,
         provider: request.provider,
         messages: request.messages,
+        ...(request.baseUrl ? { baseUrl: request.baseUrl } : {}),
         ...(request.tools?.length ? { tools: request.tools } : {}),
     });
     return result;

@@ -26,6 +26,8 @@ export default [
             'test/**/*',
             'build/**/*',
             'tasks.js',
+            'tmp/**/*',
+            '.dev-server/**/*',
         ],
     },
     {

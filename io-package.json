@@ -480,8 +480,6 @@
       ]
     }
   ],
-  "protectedNative": ["gptKey", "claudeKey", "geminiKey", "deepseekKey"],
-  "encryptedNative": ["gptKey", "claudeKey", "geminiKey", "deepseekKey"],
   "native": {
     "latitude": "",
     "longitude": "",
@@ -508,10 +506,25 @@
     "maxTriggersPerScript": 100,
     "gptKey": "",
     "gptBaseUrl": "",
+    "gptBaseUrlKey": "",
     "claudeKey": "",
     "geminiKey": "",
     "deepseekKey": ""
   },
+  "encryptedNative": [
+    "gptKey",
+    "claudeKey",
+    "geminiKey",
+    "deepseekKey",
+    "gptBaseUrlKey"
+  ],
+  "protectedNative": [
+    "gptKey",
+    "claudeKey",
+    "geminiKey",
+    "deepseekKey",
+    "gptBaseUrlKey"
+  ],
   "objects": [
     {
       "_id": "_design/script",
