@@ -22,8 +22,15 @@ Executes Javascript, Typescript Scripts.
   - 🇩🇪 Hier kann man die Beschreibung von [Blockly](docs/de/blockly.md) finden. 
   - 🇷🇺 Описание по [blockly](docs/ru/blockly.md) можно найти [здесь](docs/ru/blockly.md).
 
+<!--
+  ### **WORK IN PROGRESS**
+-->
+
 ## Changelog
 ### **WORK IN PROGRESS**
+* (@GermanBluefox) See previous changelog entries
+
+### 9.2.0 (2026-04-3)
 * (@GermanBluefox) Agent keys are encrypted now. You must enter your keys anew!
 * (Eistee82) AI API keys are now stored encrypted and only used server-side (`encryptedNative` + `protectedNative`); the frontend never sees them
 * (Eistee82) Code Lens above every top-level function/class/arrow with `💡 Explain | 🔧 Refactor | ✅ Tests` actions
