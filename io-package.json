@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "9.2.0",
+    "version": "9.2.1",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "9.2.1": {
+        "en": "See previous changelog entries",
+        "de": "Siehe frühere Changelog-Einträge",
+        "ru": "См. предыдущие Changelog",
+        "pt": "Ver entradas anteriores do changelog",
+        "nl": "Zie vorige wijzigingenlog items",
+        "fr": "Voir les entrées précédentes du journal des modifications",
+        "it": "Vedere le precedenti voci di changelog",
+        "es": "Ver entradas de cambio anteriores",
+        "pl": "Zob. poprzednie wpisy dotyczące zmiennych",
+        "uk": "Переглянути попередні записи змін",
+        "zh-cn": "参见上一个更改日志条目"
+      },
       "9.2.0": {
         "en": "AI Chat panel with multi-provider support, tool calling, inline completions, and smart-apply\nFix: prevent duplicate 'Stopping script' log when script is not running\nFix: only restart scripts on the instance that owns them\nAdded OID display mode toggle for Blockly editor: 4 display modes (Name, Name path, State ID, Full ID) with toolbar dropdown, context menu, optional object icons, and translations in 11 languages\nNode 25 compatibility: replaced deprecated rmdirSync with rmSync in build tasks\nAdded support for plain import/export\nCorrecting error in configuration\ndisallow writing into node_modules folder by scripts\nCorrecting start of the script more than one time if restart is triggered\nAll delayed writings are stopped by the script stop\nAdded check if a script has been modified by another user/window\nMake the instance number more prominent",
         "de": "AI Chat-Panel mit Multi-Provider-Unterstützung, Werkzeuganruf, Inline-Vervollständigungen und intelligent-apply\nFix: verhindern Sie doppeltes 'Stopping script'-Log, wenn Skript nicht läuft\nFix: nur Skripte auf der Instanz neu starten, die sie besitzt\nOID-Anzeigemodus für Blockly Editor hinzugefügt: 4 Anzeigemodi (Name, Name Pfad, State ID, Full ID) mit Symbolleiste Dropdown, Kontextmenü, optionale Objektsymbole und Übersetzungen in 11 Sprachen\nNode 25 Kompatibilität: ersetzt deprecated rmdirSync mit rmSync in Build Aufgaben\nUnterstützung für den einfachen Import/Export\nFehler in der Konfiguration korrigieren\ndeaktivieren sie das schreiben in node modules ordner durch skripte\nKorrektur des Starts des Skripts mehr als ein Mal, wenn der Neustart ausgelöst wird\nAlle verzögerten Schriften werden durch den Skriptstop gestoppt\nCheck hinzugefügt, wenn ein Skript von einem anderen Benutzer/Fenster geändert wurde\nMachen Sie die Instanz Nummer prominenter",

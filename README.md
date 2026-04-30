@@ -27,7 +27,7 @@ Executes Javascript, Typescript Scripts.
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 9.2.1 (2026-04-30)
 * (@GermanBluefox) See previous changelog entries
 
 ### 9.2.0 (2026-04-3)
@@ -70,13 +70,6 @@ Executes Javascript, Typescript Scripts.
 ### 9.0.18 (2026-01-11)
 * (@GermanBluefox) Corrected an error message with `lastSync`
 * (@klein0r) Corrected JavaScript filter
-
-### 9.0.17 (2025-12-14)
-* (@GermanBluefox) Added possibility to encrypt scripts with password (only for vendors)
-
-### 9.0.11 (2025-07-29)
-* (@GermanBluefox) Corrected the rule editor if the condition is empty
-* (@GermanBluefox) Corrected types for TypeScript
 
 ## License
 The MIT License (MIT)

@@ -1,4 +1,11 @@
 The newest change log is in README.md
+## 9.0.17 (2025-12-14)
+* (@GermanBluefox) Added possibility to encrypt scripts with password (only for vendors)
+
+## 9.0.11 (2025-07-29)
+* (@GermanBluefox) Corrected the rule editor if the condition is empty
+* (@GermanBluefox) Corrected types for TypeScript
+
 ## 9.0.10 (2025-07-27)
 * (@klein0r) Added Blockly block to format a numeric value
 * (@GermanBluefox) Fixing some blocks in blockly: cron, time
