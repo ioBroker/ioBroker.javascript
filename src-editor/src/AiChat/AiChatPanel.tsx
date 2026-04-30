@@ -3,7 +3,7 @@ import { Box, IconButton, Tooltip, CircularProgress, Typography, Alert } from '@
 import { Close, AddComment, Refresh } from '@mui/icons-material';
 import { I18n, type AdminConnection, type ThemeType } from '@iobroker/adapter-react-v5';
 
-import type { ScriptInfo, AiScriptLanguage } from './AiChatTypes';
+import type { ScriptInfo, AiScriptLanguage, EditorApi, EditorAiActionRequest, ChatSourceRange } from './AiChatTypes';
 import { useAiChat } from './useAiChat';
 import AiChatMessage from './AiChatMessage';
 import AiChatInput from './AiChatInput';
@@ -16,9 +16,25 @@ interface AiChatPanelProps {
     currentLanguage?: AiScriptLanguage;
     selectedCode?: string;
     allScripts?: ScriptInfo[];
+    editorApi?: EditorApi;
+    /** An editor-triggered AI action that the panel should execute. */
+    aiActionRequest?: EditorAiActionRequest | null;
+    /** Called by the panel once the action has been dispatched so the host can reset state. */
+    onAiActionConsumed?: () => void;
+    /**
+     * Called once at mount with a function the inline-chat widget can use to ask single-turn
+     *  questions without touching the chat history. Called again with `null` at unmount.
+     */
+    onRegisterInlineAsk?: (ask: ((question: string, code: string) => Promise<string>) | null) => void;
     onInsertCode?: (code: string) => void;
-    onShowDiff?: (modifiedCode: string) => void;
+    /**
+     * Show-diff with an optional source range so the host can render an inline
+     *  in-place diff instead of a full-script modal.
+     */
+    onShowDiff?: (modifiedCode: string, sourceRange: ChatSourceRange | null | undefined) => void;
     onApplyCode?: (code: string) => void;
+    /** Currently selected script id (used to populate ChatSourceRange.scriptId). */
+    currentScriptId?: string;
     onClose: () => void;
 }
 
@@ -30,9 +46,14 @@ const AiChatPanel: React.FC<AiChatPanelProps> = ({
     currentLanguage,
     selectedCode,
     allScripts,
+    editorApi,
+    aiActionRequest,
+    onAiActionConsumed,
+    onRegisterInlineAsk,
     onInsertCode,
     onShowDiff,
     onApplyCode,
+    currentScriptId,
     onClose,
 }) => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -44,8 +65,10 @@ const AiChatPanel: React.FC<AiChatPanelProps> = ({
             currentCode,
             currentLanguage,
             allScripts,
+            editorApi,
+            currentScriptId,
         }),
-        [socket, runningInstances, currentCode, currentLanguage, allScripts],
+        [socket, runningInstances, currentCode, currentLanguage, allScripts, editorApi, currentScriptId],
     );
 
     const {
@@ -62,9 +85,30 @@ const AiChatPanel: React.FC<AiChatPanelProps> = ({
         setMode,
         setModel,
         sendMessage,
+        triggerAiAction,
+        askInline,
         clearChat,
         retryLoadModels,
     } = useAiChat(chatOptions);
+
+    // Expose the one-shot ask function to the host so the Ctrl+I inline widget can reach it.
+    useEffect(() => {
+        onRegisterInlineAsk?.(askInline);
+        return () => onRegisterInlineAsk?.(null);
+    }, [askInline, onRegisterInlineAsk]);
+
+    // Dispatch editor-triggered AI actions (context menu / keyboard / code lens).
+    // Use a ref to remember the last request we already fired so the effect stays
+    // idempotent when triggerAiAction / onAiActionConsumed change identity.
+    const lastFiredActionRef = useRef<EditorAiActionRequest | null>(null);
+    useEffect(() => {
+        if (!aiActionRequest || lastFiredActionRef.current === aiActionRequest) {
+            return;
+        }
+        lastFiredActionRef.current = aiActionRequest;
+        triggerAiAction(aiActionRequest);
+        onAiActionConsumed?.();
+    }, [aiActionRequest, triggerAiAction, onAiActionConsumed]);
 
     // Auto-scroll to bottom on new messages
     useEffect(() => {
@@ -79,8 +123,8 @@ const AiChatPanel: React.FC<AiChatPanelProps> = ({
     );
 
     const handleShowDiff = useCallback(
-        (code: string) => {
-            onShowDiff?.(code);
+        (code: string, sourceRange: ChatSourceRange | null | undefined) => {
+            onShowDiff?.(code, sourceRange);
         },
         [onShowDiff],
     );
@@ -269,6 +313,7 @@ const AiChatPanel: React.FC<AiChatPanelProps> = ({
                 onModelChange={setModel}
                 mode={mode}
                 onModeChange={setMode}
+                currentLanguage={currentLanguage}
             />
         </Box>
     );

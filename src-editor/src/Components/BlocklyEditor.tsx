@@ -408,7 +408,6 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
     }
 
     /** Append Blockly XML blocks to the workspace (used by AI Chat) */
-    // eslint-disable-next-line react/no-unused-class-component-methods
     public appendBlocksFromXml(xml: string): void {
         this.onImportBlocks(xml);
     }
@@ -417,7 +416,6 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
      * Smart-apply AI-generated blocks: matched blocks are replaced, new blocks are appended.
      * All operations are grouped so a single Ctrl+Z undoes everything.
      */
-    // eslint-disable-next-line react/no-unused-class-component-methods
     public applyAiBlocks(xml: string): void {
         if (!this.blocklyWorkspace) {
             return;
@@ -592,7 +590,6 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
     }
 
     /** Get the current workspace XML (used by AI Chat) */
-    // eslint-disable-next-line react/no-unused-class-component-methods
     public getWorkspaceXml(): string {
         if (!this.blocklyWorkspace) {
             return '';
@@ -890,6 +887,13 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
     }
 
     componentWillUnmount(): void {
+        // Public methods consumed by Editor.tsx via blocklyEditorRef.
+        // Referenced here so eslint's react/no-unused-class-component-methods
+        // sees them as used (it can't trace cross-component ref usage).
+        void this.appendBlocksFromXml;
+        void this.applyAiBlocks;
+        void this.getWorkspaceXml;
+
         if (!this.blocklyWorkspace) {
             return;
         }

@@ -15,8 +15,9 @@ interface PendingRequest {
 
 let currentRequest: PendingRequest | null = null;
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-let cachedConfig: { native: Record<string, string>; ts: number } | null = null;
-const CONFIG_CACHE_TTL = 60_000; // Cache config for 60 seconds
+// Cache which providers have stored credentials (reported by backend — keys stay server-side).
+let cachedProviders: { providers: { provider: string; baseUrl?: string }[]; ts: number } | null = null;
+const CONFIG_CACHE_TTL = 60_000;
 
 export function registerAiInlineProvider(
     monaco: typeof monacoEditor,
@@ -63,50 +64,33 @@ export function registerAiInlineProvider(
                             return;
                         }
 
-                        // Get API config (cached to avoid socket call on every keystroke)
-                        if (!cachedConfig || Date.now() - cachedConfig.ts > CONFIG_CACHE_TTL) {
+                        // Ask backend which providers have credentials (cached).
+                        // Actual keys never leave the adapter.
+                        if (!cachedProviders || Date.now() - cachedProviders.ts > CONFIG_CACHE_TTL) {
                             try {
-                                const config = await socket.getObject(instanceId);
-                                cachedConfig = {
-                                    native: (config?.native || {}) as Record<string, string>,
-                                    ts: Date.now(),
-                                };
+                                const res: { providers?: { provider: string; baseUrl?: string }[] } =
+                                    await socket.sendTo(instanceId, 'getAvailableAiProviders', {});
+                                cachedProviders = { providers: res?.providers || [], ts: Date.now() };
                             } catch {
                                 resolve(undefined);
                                 return;
                             }
                         }
 
-                        const gptKey = (cachedConfig.native.gptKey || '').trim();
-                        const claudeKey = (cachedConfig.native.claudeKey || '').trim();
-                        const geminiKey = (cachedConfig.native.geminiKey || '').trim();
-                        const deepseekKey = (cachedConfig.native.deepseekKey || '').trim();
-                        const gptBaseUrl = (cachedConfig.native.gptBaseUrl || '').trim();
-                        const gptBaseUrlKey = (cachedConfig.native.gptBaseUrlKey || '').trim();
-
-                        // Find first available provider/key
-                        let apiKey = '';
-                        let provider = 'openai';
+                        // Prefer local/custom (faster), then cloud providers.
+                        const preferenceOrder = ['custom', 'openai', 'deepseek', 'anthropic', 'gemini'];
+                        let provider = '';
                         let baseUrl = '';
-
-                        // Prefer local/custom model for completions (faster)
-                        if (gptBaseUrl) {
-                            apiKey = gptBaseUrlKey;
-                            provider = 'openai';
-                            baseUrl = gptBaseUrl;
-                        } else if (gptKey) {
-                            apiKey = gptKey;
-                            provider = 'openai';
-                        } else if (deepseekKey) {
-                            apiKey = deepseekKey;
-                            provider = 'deepseek';
-                        } else if (claudeKey) {
-                            apiKey = claudeKey;
-                            provider = 'anthropic';
-                        } else if (geminiKey) {
-                            apiKey = geminiKey;
-                            provider = 'gemini';
-                        } else {
+                        for (const p of preferenceOrder) {
+                            const hit = cachedProviders.providers.find(pr => pr.provider === p);
+                            if (hit) {
+                                // `custom` is routed as openai on the wire (same protocol); baseUrl triggers it backend-side.
+                                provider = p === 'custom' ? 'openai' : p;
+                                baseUrl = hit.baseUrl || '';
+                                break;
+                            }
+                        }
+                        if (!provider) {
                             resolve(undefined);
                             return;
                         }
@@ -147,8 +131,7 @@ export function registerAiInlineProvider(
                                 'chatCompletion',
                                 {
                                     timeout: 15000,
-                                    apiKey,
-                                    baseUrl,
+                                    ...(baseUrl ? { baseUrl } : {}),
                                     model: savedModel,
                                     provider,
                                     messages: [

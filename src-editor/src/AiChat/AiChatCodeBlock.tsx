@@ -2,16 +2,30 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { Box, IconButton, Tooltip } from '@mui/material';
 import { ContentCopy, AddCircleOutline, CompareArrows } from '@mui/icons-material';
 import { I18n, type ThemeType } from '@iobroker/adapter-react-v5';
+import type { ChatSourceRange } from './AiChatTypes';
 
 interface AiChatCodeBlockProps {
     code: string;
     language: string;
     themeType: ThemeType;
     onInsertCode?: (code: string) => void;
-    onShowDiff?: (code: string) => void;
+    onShowDiff?: (code: string, sourceRange: ChatSourceRange | null | undefined) => void;
+    /**
+     * Snapshot of where the user's question was anchored, inherited from the
+     *  parent chat message. The host uses it to render an inline, in-place diff
+     *  instead of a full-script modal.
+     */
+    sourceRange?: ChatSourceRange | null;
 }
 
-const AiChatCodeBlock: React.FC<AiChatCodeBlockProps> = ({ code, language, themeType, onInsertCode, onShowDiff }) => {
+const AiChatCodeBlock: React.FC<AiChatCodeBlockProps> = ({
+    code,
+    language,
+    themeType,
+    onInsertCode,
+    onShowDiff,
+    sourceRange,
+}) => {
     const codeRef = useRef<HTMLPreElement>(null);
 
     useEffect(() => {
@@ -83,7 +97,7 @@ const AiChatCodeBlock: React.FC<AiChatCodeBlockProps> = ({ code, language, theme
                         <Tooltip title={I18n.t('Show as diff')}>
                             <IconButton
                                 size="small"
-                                onClick={() => onShowDiff(code)}
+                                onClick={() => onShowDiff(code, sourceRange)}
                             >
                                 <CompareArrows sx={{ fontSize: 16 }} />
                             </IconButton>

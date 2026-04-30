@@ -18,6 +18,7 @@ import { I18n, type ThemeType } from '@iobroker/adapter-react-v5';
 
 import type { ScriptInfo, AiProviderName, AiChatMode } from './AiChatTypes';
 import { PROVIDER_ICON_FILES, ICON_STYLE } from './AiChatService';
+import { parseSlashCommand, buildActionPrompt } from './aiPromptBuilder';
 
 /** Special @-mention options (labels are resolved at render time via I18n) */
 function getSpecialMentions(): { id: string; label: string; descriptionKey: string }[] {
@@ -70,6 +71,8 @@ interface AiChatInputProps {
     onModelChange: (model: string) => void;
     mode: AiChatMode;
     onModeChange: (mode: AiChatMode) => void;
+    /** Optional: current editor language to label slash-command prompts (default: javascript). */
+    currentLanguage?: string;
 }
 
 const AiChatInput: React.FC<AiChatInputProps> = ({
@@ -86,6 +89,7 @@ const AiChatInput: React.FC<AiChatInputProps> = ({
     onModelChange,
     mode,
     onModeChange,
+    currentLanguage,
 }) => {
     const [text, setText] = useState('');
     const [mentionOpen, setMentionOpen] = useState(false);
@@ -140,7 +144,22 @@ const AiChatInput: React.FC<AiChatInputProps> = ({
             return;
         }
         let messageText = trimmed;
-        if (hasSelection && selectionText) {
+
+        // Slash commands like "/explain" or "/fix missing semicolon" → build an action prompt.
+        const slash = parseSlashCommand(trimmed);
+        if (slash) {
+            const code = hasSelection && selectionText ? selectionText : '';
+            const prompt = buildActionPrompt({
+                action: slash.action,
+                code,
+                language: currentLanguage || 'javascript',
+                question: slash.action === 'ask' ? slash.rest : undefined,
+                diagnostic: slash.action === 'fix' ? slash.rest || undefined : undefined,
+            });
+            if (prompt) {
+                messageText = prompt;
+            }
+        } else if (hasSelection && selectionText) {
             messageText = `[Selected code in editor]\n\`\`\`\n${selectionText}\n\`\`\`\n\n${trimmed}`;
         }
         // Add to history and persist
@@ -160,7 +179,7 @@ const AiChatInput: React.FC<AiChatInputProps> = ({
         setMentionOpen(false);
         // Re-focus input so user can keep typing
         requestAnimationFrame(() => inputRef.current?.focus());
-    }, [text, disabled, onSend, hasSelection, selectionText]);
+    }, [text, disabled, onSend, hasSelection, selectionText, currentLanguage]);
 
     const insertMention = useCallback(
         (mentionId: string) => {
@@ -412,10 +431,31 @@ const AiChatInput: React.FC<AiChatInputProps> = ({
                 >
                     {/* Mode selector */}
                     <Tooltip
-                        title={I18n.t(
-                            'Mode: Chat = conversation only, Agent = can read/analyze scripts, Code = can read and modify scripts',
-                        )}
-                        enterDelay={500}
+                        title={
+                            <Box sx={{ fontSize: '0.8rem', lineHeight: 1.5, maxWidth: 360 }}>
+                                <Box sx={{ fontWeight: 600, mb: 0.75 }}>{I18n.t('AI chat mode')}</Box>
+                                <Box sx={{ mb: 0.75 }}>
+                                    <strong>💬 {I18n.t('Chat')}</strong> —{' '}
+                                    {I18n.t(
+                                        'Plain conversation. Use for questions, explanations, syntax help. Does not read or modify your scripts.',
+                                    )}
+                                </Box>
+                                <Box sx={{ mb: 0.75 }}>
+                                    <strong>🤖 {I18n.t('Agent')}</strong> —{' '}
+                                    {I18n.t(
+                                        'AI can call tools to inspect your system: read scripts, look up datapoints, browse the object tree. Use for "which scripts use this state?", "analyze my light script".',
+                                    )}
+                                </Box>
+                                <Box>
+                                    <strong>💻 {I18n.t('Code')}</strong> —{' '}
+                                    {I18n.t(
+                                        'Two-step script generator (plan then code). Use for "create a script that...", "write a Blockly rule for...". Output goes into the editor for smart-apply.',
+                                    )}
+                                </Box>
+                            </Box>
+                        }
+                        enterDelay={400}
+                        placement="top"
                     >
                         <Select
                             value={mode}
@@ -447,18 +487,27 @@ const AiChatInput: React.FC<AiChatInputProps> = ({
                             <MenuItem
                                 value="chat"
                                 sx={{ fontSize: '0.75rem' }}
+                                title={I18n.t(
+                                    'Plain conversation. Best for: general questions, syntax help, concept explanations.',
+                                )}
                             >
                                 💬 Chat
                             </MenuItem>
                             <MenuItem
                                 value="agent"
                                 sx={{ fontSize: '0.75rem' }}
+                                title={I18n.t(
+                                    'Tool-using assistant. Best for: analyzing existing scripts, finding datapoint usages, inspecting the object tree.',
+                                )}
                             >
                                 🤖 Agent
                             </MenuItem>
                             <MenuItem
                                 value="code"
                                 sx={{ fontSize: '0.75rem' }}
+                                title={I18n.t(
+                                    'Script generator. Best for: creating new JavaScript/TypeScript or Blockly scripts from a description.',
+                                )}
                             >
                                 💻 Code
                             </MenuItem>

@@ -78,6 +78,8 @@ const protectFs_1 = __importDefault(require("./lib/protectFs"));
 const words_1 = require("./lib/words");
 const sandbox_1 = require("./lib/sandbox");
 const nodeModulesManagement_1 = require("./lib/nodeModulesManagement");
+const aiProviderResolver_1 = require("./lib/aiProviderResolver");
+const anthropicAdapter_1 = require("./lib/anthropicAdapter");
 const eventObj_1 = require("./lib/eventObj");
 const scheduler_1 = require("./lib/scheduler");
 const typescriptSettings_1 = require("./lib/typescriptSettings");
@@ -918,24 +920,16 @@ class JavaScript extends adapter_core_1.Adapter {
                 break;
             }
             case 'chatCompletion': {
-                // Proxy chat completion requests to an OpenAI-compatible API endpoint
+                // Proxy chat completion requests to an OpenAI-compatible API endpoint.
+                // API keys are resolved server-side from encryptedNative config — they never
+                // leave the adapter (frontend only sends `provider`, not the key).
                 if (obj.callback) {
-                    const baseUrl = (obj.message?.baseUrl || '').trim();
                     const chatModel = (obj.message?.model || '').trim();
                     const messages = obj.message?.messages;
                     const tools = obj.message?.tools;
                     const provider = (obj.message?.provider || 'openai').trim();
-                    const apiKey = (obj.message?.apiKey || '').trim() ||
-                        (provider === 'anthropic'
-                            ? this.config.claudeKey
-                            : provider === 'gemini'
-                                ? this.config.geminiKey
-                                : provider === 'deepseek'
-                                    ? this.config.deepseekKey
-                                    : provider === 'openai'
-                                        ? this.config.gptKey
-                                        : this.config.gptBaseUrlKey);
-                    // Anthropic, Gemini, and DeepSeek always require an API key; OpenAI compatible allows empty key with custom base URL
+                    const { apiKey, baseUrl } = (0, aiProviderResolver_1.resolveProviderCredentials)(this.config, provider, obj.message?.baseUrl);
+                    // Anthropic, Gemini, and DeepSeek always require an API key; OpenAI-compatible allows empty key with custom base URL
                     if (!apiKey &&
                         (provider === 'anthropic' || provider === 'gemini' || provider === 'deepseek' || !baseUrl)) {
                         this.sendTo(obj.from, obj.command, { error: 'No API key provided' }, obj.callback);
@@ -954,15 +948,16 @@ class JavaScript extends adapter_core_1.Adapter {
                         url = 'https://api.anthropic.com/v1/messages';
                         chatHeaders['x-api-key'] = apiKey;
                         chatHeaders['anthropic-version'] = '2023-06-01';
-                        const systemMessages = messages.filter((m) => m.role === 'system');
-                        const nonSystemMessages = messages.filter((m) => m.role !== 'system');
-                        const systemText = systemMessages.map((m) => m.content).join('\n\n');
+                        // Translate OpenAI-format messages/tools into Anthropic's content-block format.
+                        const { system: systemText, messages: anthropicMessages } = (0, anthropicAdapter_1.translateMessagesToAnthropic)(messages);
+                        const anthropicTools = tools?.length ? (0, anthropicAdapter_1.translateToolsToAnthropic)(tools) : [];
                         bodyObj = {
                             model: chatModel,
                             max_tokens: 8192,
                             stream: false,
                             ...(systemText ? { system: systemText } : {}),
-                            messages: nonSystemMessages,
+                            messages: anthropicMessages,
+                            ...(anthropicTools.length ? { tools: anthropicTools } : {}),
                         };
                     }
                     else if (provider === 'gemini') {
@@ -1019,16 +1014,27 @@ class JavaScript extends adapter_core_1.Adapter {
                                 if (res.statusCode === 200) {
                                     try {
                                         const parsed = JSON.parse(data);
-                                        const message = provider === 'anthropic' ? null : parsed.choices?.[0]?.message;
-                                        const content = provider === 'anthropic'
-                                            ? parsed.content?.[0]?.text || ''
-                                            : message?.content || '';
-                                        const tool_calls = message?.tool_calls;
+                                        let content;
+                                        let tool_calls;
+                                        if (provider === 'anthropic') {
+                                            const translated = (0, anthropicAdapter_1.translateAnthropicResponseToOpenAI)(parsed);
+                                            content = translated.content;
+                                            tool_calls = translated.tool_calls;
+                                        }
+                                        else {
+                                            const message = parsed.choices?.[0]?.message;
+                                            content = message?.content || '';
+                                            tool_calls = message?.tool_calls;
+                                        }
                                         if (!content && !tool_calls?.length) {
                                             this.sendTo(obj.from, obj.command, { error: 'Empty response from API' }, obj.callback);
                                         }
                                         else {
-                                            this.sendTo(obj.from, obj.command, { success: true, content, ...(tool_calls ? { tool_calls } : {}) }, obj.callback);
+                                            this.sendTo(obj.from, obj.command, {
+                                                success: true,
+                                                content,
+                                                ...(tool_calls ? { tool_calls } : {}),
+                                            }, obj.callback);
                                         }
                                     }
                                     catch {
@@ -1067,21 +1073,13 @@ class JavaScript extends adapter_core_1.Adapter {
                 break;
             }
             case 'testApiConnection': {
-                // Test connection to an OpenAI-compatible API endpoint
+                // Test connection to an OpenAI-compatible API endpoint.
+                // The settings-dialog Test button sends the current form value as `apiKey`
+                // (so users can test before saving); otherwise we fall back to the stored key.
                 if (obj.callback) {
-                    const baseUrl = (obj.message?.baseUrl || '').trim();
                     const provider = (obj.message?.provider || 'openai').trim();
-                    const apiKey = (obj.message?.apiKey || '').trim() ||
-                        (provider === 'anthropic'
-                            ? this.config.claudeKey
-                            : provider === 'gemini'
-                                ? this.config.geminiKey
-                                : provider === 'deepseek'
-                                    ? this.config.deepseekKey
-                                    : provider === 'openai'
-                                        ? this.config.gptKey
-                                        : this.config.gptBaseUrlKey);
-                    // Anthropic, Gemini, and DeepSeek always require an API key; OpenAI compatible allows empty key with custom base URL
+                    const { apiKey, baseUrl } = (0, aiProviderResolver_1.resolveTestCredentials)(this.config, provider, obj.message?.apiKey, obj.message?.baseUrl);
+                    // Anthropic, Gemini, and DeepSeek always require an API key; OpenAI-compatible allows empty key with custom base URL
                     if (!apiKey &&
                         (provider === 'anthropic' || provider === 'gemini' || provider === 'deepseek' || !baseUrl)) {
                         this.sendTo(obj.from, obj.command, { error: 'No API key provided' }, obj.callback);
@@ -1126,7 +1124,7 @@ class JavaScript extends adapter_core_1.Adapter {
                         const req = requestModule.request(url, {
                             method: 'GET',
                             headers: testHeaders,
-                            timeout: 10_000,
+                            timeout: 10000,
                             ...(isHttps && this.config.allowSelfSignedCerts ? { rejectUnauthorized: false } : {}),
                         }, res => {
                             let data = '';
@@ -1180,6 +1178,14 @@ class JavaScript extends adapter_core_1.Adapter {
                     catch (error) {
                         this.sendTo(obj.from, obj.command, { error: `Connection failed: ${error.toString()}` }, obj.callback);
                     }
+                }
+                break;
+            }
+            case 'getAvailableAiProviders': {
+                // Reports which AI providers have stored credentials (keys never leave the backend).
+                if (obj.callback) {
+                    const providers = (0, aiProviderResolver_1.listAvailableProviders)(this.config);
+                    this.sendTo(obj.from, obj.command, { providers }, obj.callback);
                 }
                 break;
             }

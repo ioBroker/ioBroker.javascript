@@ -232,7 +232,10 @@ function extractBlocklyInfo(xmlSource: string): string {
 }
 
 /**
- * Build a detailed summary of all scripts, including source code for the AI system prompt.
+ * Build a detailed summary of all scripts including source code for the AI system prompt.
+ *
+ *  @param scripts    list of scripts to summarize
+ *  @param noSizeLimit when true, don't enforce the character limit (for specifically @-mentioned scripts)
  */
 export function buildScriptSummary(scripts: ScriptInfo[], noSizeLimit = false): string {
     if (scripts.length === 0) {

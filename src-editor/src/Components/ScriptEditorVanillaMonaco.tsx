@@ -7,6 +7,8 @@ import { MdGTranslate as IconNoCheck, MdClose as Close } from 'react-icons/md';
 
 import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
 import type { DebuggerLocation, SetBreakpointParameterType } from './Debugger/types';
+import type { EditorAiActionRequest } from '../AiChat/AiChatTypes';
+import { findSymbolAtLine } from '../AiChat/aiCodeLensProvider';
 
 function isIdOfGlobalScript(id: string): boolean {
     return /^script\.js\.global\./.test(id);
@@ -38,6 +40,16 @@ interface ScriptEditorProps {
     onToggleBreakpoint?: (lineNumber: number) => void;
     triggerPrettier: number;
     aiCompletionsEnabled?: boolean;
+    /**
+     * Called when the user invokes a VS-Code-like AI action
+     *  (context menu, keyboard shortcut, code lens).
+     */
+    onAiAction?: (request: EditorAiActionRequest) => void;
+    /**
+     * Called by the inline-chat widget when the user submits a Ctrl+I question.
+     *  Must return the AI's answer (plain text or a fenced code block).
+     */
+    onInlineAsk?: (payload: { question: string; selectedCode: string }) => Promise<string>;
 }
 
 interface ScriptEditorState {
@@ -102,6 +114,11 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
 
     private datapointProviderDisposable: monacoEditor.IDisposable | null = null;
     private inlineProviderDisposable: monacoEditor.IDisposable | null = null;
+    private stateHoverDisposable: monacoEditor.IDisposable | null = null;
+    private codeLensDisposable: monacoEditor.IDisposable | null = null;
+    private inlineChatWidgetInstance: { dispose: () => void; show: () => void } | null = null;
+    private inlineDiffInstance: { dispose: () => void } | null = null;
+    private inlineDiffCssInjected: boolean = false;
 
     private triggerPrettier: number;
 
@@ -173,6 +190,21 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
     }
 
     componentDidMount(): void {
+        // Public methods consumed by Editor.tsx via scriptEditorRef.
+        // Referenced here so eslint's react/no-unused-class-component-methods
+        // sees them as used (it can't trace cross-component ref usage).
+        void this.undo;
+        void this.redo;
+        void this.showInlineDiff;
+        void this.getEditorSelection;
+        void this.getEditorContent;
+        void this.getCursorPosition;
+        void this.highlightLineRange;
+        void this.goToLine;
+        void this.replaceSelection;
+        void this.getDiagnostics;
+        void this.getDocumentSymbols;
+
         let monacoLoaded = !!this.monacoTS?.typescriptDefaults?.getCompilerOptions;
         if (!monacoLoaded || !this.props.runningInstances) {
             this.monaco = (window as any).monaco as typeof monacoEditor | null;
@@ -239,6 +271,17 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
                         .catch(() => {});
                 }
 
+                // Register state-info hover provider (shows live value when hovering over an object ID)
+                if (this.monaco && !this.stateHoverDisposable) {
+                    import('../AiChat/stateHoverProvider')
+                        .then(({ registerStateHoverProvider }) => {
+                            if (this.monaco) {
+                                this.stateHoverDisposable = registerStateHoverProvider(this.monaco, this.props.socket);
+                            }
+                        })
+                        .catch(() => {});
+                }
+
                 // Register AI inline completions if enabled
                 if (this.props.aiCompletionsEnabled && this.monaco && !this.inlineProviderDisposable) {
                     import('../AiChat/AiInlineProvider')
@@ -262,6 +305,43 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
                         this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.KeyS,
                         () => this.props.onForceSave && this.props.onForceSave(),
                     );
+                }
+
+                // Register VS-Code-like AI actions (context menu + keyboard shortcuts)
+                this.registerAiActions();
+
+                // Register AI code-lens provider (Explain / Refactor / Tests above each function)
+                if (this.monaco && this.editor && this.props.onAiAction && !this.codeLensDisposable) {
+                    import('../AiChat/aiCodeLensProvider')
+                        .then(({ registerAiCodeLensProvider }) => {
+                            if (this.monaco && this.editor && this.props.onAiAction) {
+                                this.codeLensDisposable = registerAiCodeLensProvider(
+                                    this.monaco,
+                                    this.editor,
+                                    (action, code, rangeLabel, startLine, endLine) => {
+                                        // Build the Monaco-convention range for the symbol body
+                                        // so the inline diff can later target it precisely.
+                                        const model = this.editor?.getModel();
+                                        const endCol = model
+                                            ? model.getLineMaxColumn(Math.min(endLine, model.getLineCount()))
+                                            : 1;
+                                        this.props.onAiAction?.({
+                                            action,
+                                            code,
+                                            rangeLabel,
+                                            range: {
+                                                startLine,
+                                                startColumn: 1,
+                                                endLine,
+                                                endColumn: endCol,
+                                            },
+                                            kind: 'codelens',
+                                        });
+                                    },
+                                );
+                            }
+                        })
+                        .catch(() => {});
                 }
 
                 setTimeout(() => {
@@ -351,6 +431,16 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
             .catch(() => {});
         this.inlineProviderDisposable?.dispose();
         this.inlineProviderDisposable = null;
+        this.stateHoverDisposable?.dispose();
+        this.stateHoverDisposable = null;
+        import('../AiChat/stateHoverProvider')
+            .then(({ clearStateHoverCache }) => clearStateHoverCache())
+            .catch(() => {});
+        this.codeLensDisposable?.dispose();
+        this.codeLensDisposable = null;
+        this.inlineChatWidgetInstance?.dispose();
+        this.inlineChatWidgetInstance = null;
+        this.hideInlineDiff();
         if (this.editor) {
             this.props.onRegisterSelect?.(null);
             this.editor.dispose();
@@ -493,12 +583,11 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         }
     }
 
-    // eslint-ignore-next-line react/no-unused-class-component-methods
+    /** Trigger an undo on the underlying Monaco editor (toolbar button). */
     undo(): void {
         this.editor?.trigger('toolbar', 'undo', null);
     }
 
-    // eslint-ignore-next-line react/no-unused-class-component-methods
     redo(): void {
         this.editor?.trigger('toolbar', 'redo', null);
     }
@@ -520,9 +609,9 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         this.editor.focus();
     }
 
-    highlightText(text: string): void {
+    highlightText(text: string): number {
         if (!this.editor || !this.monaco) {
-            return;
+            return 0;
         }
 
         const range: monacoEditor.editor.FindMatch[] | undefined = text
@@ -531,14 +620,528 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         if (range?.length) {
             range.forEach(r => this.editor?.setSelection(r.range));
             this.editor.revealLine(range[0].range.startLineNumber);
-        } else {
-            const pos = this.editor.getPosition();
-            if (pos) {
-                const row = pos.lineNumber;
-                const col = pos.column;
-                this.editor.setSelection(new this.monaco.Range(row, col, row, col));
+            return range.length;
+        }
+        const pos = this.editor.getPosition();
+        if (pos) {
+            const row = pos.lineNumber;
+            const col = pos.column;
+            this.editor.setSelection(new this.monaco.Range(row, col, row, col));
+        }
+        return 0;
+    }
+
+    /**
+     * Render an inline diff for an AI change inside the editor.
+     *  Replaces any previously active inline diff.
+     */
+    showInlineDiff(args: {
+        range: { startLine: number; startColumn: number; endLine: number; endColumn: number };
+        originalText: string;
+        modifiedText: string;
+        onAccepted?: () => void;
+        onRejected?: () => void;
+    }): void {
+        if (!this.editor || !this.monaco) {
+            return;
+        }
+        const editor = this.editor;
+        const monaco = this.monaco;
+        this.hideInlineDiff();
+        import('../AiChat/inlineDiffController')
+            .then(({ InlineDiffController, INLINE_DIFF_CSS }) => {
+                if (!this.inlineDiffCssInjected) {
+                    const style = document.createElement('style');
+                    style.textContent = INLINE_DIFF_CSS;
+                    style.setAttribute('data-iob-aichat', 'inline-diff');
+                    document.head.appendChild(style);
+                    this.inlineDiffCssInjected = true;
+                }
+                const controller = new InlineDiffController(editor, monaco, {
+                    range: args.range,
+                    originalText: args.originalText,
+                    modifiedText: args.modifiedText,
+                    onAccepted: () => {
+                        this.inlineDiffInstance = null;
+                        args.onAccepted?.();
+                    },
+                    onRejected: () => {
+                        this.inlineDiffInstance = null;
+                        args.onRejected?.();
+                    },
+                });
+                this.inlineDiffInstance = controller;
+                controller.show();
+            })
+            .catch(() => {});
+    }
+
+    hideInlineDiff(): void {
+        if (this.inlineDiffInstance) {
+            try {
+                this.inlineDiffInstance.dispose();
+            } catch {
+                /* ignore */
+            }
+            this.inlineDiffInstance = null;
+        }
+    }
+
+    /**
+     * Lazily create and show the inline-chat widget (Ctrl+I).
+     *  Falls silently back to nothing if the editor or host isn't ready.
+     */
+    showInlineChatWidget(): void {
+        if (!this.editor || !this.monaco || !this.props.onInlineAsk) {
+            return;
+        }
+        if (this.inlineChatWidgetInstance) {
+            this.inlineChatWidgetInstance.show();
+            return;
+        }
+        const editor = this.editor;
+        const monaco = this.monaco;
+        const onInlineAsk = this.props.onInlineAsk;
+        const onAiAction = this.props.onAiAction;
+        import('../AiChat/inlineChatWidget')
+            .then(({ InlineChatWidget }) => {
+                const widget = new InlineChatWidget(editor, monaco, {
+                    onSubmit: async payload => {
+                        return onInlineAsk({
+                            question: payload.question,
+                            selectedCode: payload.selectedCode,
+                        });
+                    },
+                    onEscalateToChat: payload => {
+                        if (onAiAction) {
+                            onAiAction({
+                                action: 'ask',
+                                code: payload.selectedCode,
+                                question: payload.question,
+                                rangeLabel: payload.range
+                                    ? `lines ${payload.range.startLineNumber}-${payload.range.endLineNumber}`
+                                    : 'whole file',
+                            });
+                        }
+                    },
+                });
+                this.inlineChatWidgetInstance = widget;
+                widget.show();
+            })
+            .catch(() => {});
+    }
+
+    /**
+     * Register AI actions (context menu entries + keyboard shortcuts) with the Monaco editor.
+     *  Does nothing if no `onAiAction` prop is supplied — so the adapter works without the chat.
+     */
+    registerAiActions(): void {
+        if (!this.editor || !this.monaco || !this.props.onAiAction) {
+            return;
+        }
+        const monaco = this.monaco;
+        const dispatch = (
+            action: 'explain' | 'refactor' | 'comment' | 'fix' | 'tests' | 'ask',
+            extras: { diagnostic?: string; question?: string } = {},
+        ): void => {
+            if (!this.editor || !this.props.onAiAction) {
+                return;
+            }
+            const model = this.editor.getModel();
+            if (!model) {
+                return;
+            }
+            const sel = this.editor.getSelection();
+            const hasSelection = sel && !sel.isEmpty();
+
+            let code: string;
+            let rangeLabel: string;
+            let range: { startLine: number; startColumn: number; endLine: number; endColumn: number } | undefined;
+            let kind: 'selection' | 'codelens' | 'none' = 'selection';
+
+            if (hasSelection) {
+                code = model.getValueInRange(sel);
+                rangeLabel =
+                    sel.startLineNumber === sel.endLineNumber
+                        ? `line ${sel.startLineNumber}`
+                        : `lines ${sel.startLineNumber}-${sel.endLineNumber}`;
+                range = {
+                    startLine: sel.startLineNumber,
+                    startColumn: sel.startColumn,
+                    endLine: sel.endLineNumber,
+                    endColumn: sel.endColumn,
+                };
+                kind = 'selection';
+            } else {
+                // No selection — if the cursor is inside a function/class, use that as scope.
+                // Without this, "Explain" on a function name would send the whole file.
+                const pos = this.editor.getPosition();
+                let scope: { startLine: number; endLine: number } | null = null;
+                if (pos) {
+                    try {
+                        scope = findSymbolAtLine(model.getValue(), pos.lineNumber);
+                    } catch {
+                        /* ignore — fallback below */
+                    }
+                }
+                if (scope) {
+                    const start = scope.startLine;
+                    const end = scope.endLine;
+                    const endCol = model.getLineMaxColumn(end);
+                    const rangeObj = new monaco.Range(start, 1, end, endCol);
+                    code = model.getValueInRange(rangeObj);
+                    rangeLabel = start === end ? `line ${start}` : `lines ${start}-${end}`;
+                    range = { startLine: start, startColumn: 1, endLine: end, endColumn: endCol };
+                    kind = 'codelens';
+                } else {
+                    code = model.getValue();
+                    rangeLabel = 'whole file';
+                    // No range → insertion-at-cursor when the user later accepts.
+                    kind = 'none';
+                }
+            }
+
+            this.props.onAiAction({
+                action,
+                code,
+                rangeLabel,
+                range,
+                kind,
+                ...extras,
+            });
+        };
+
+        const actions: {
+            id: string;
+            label: string;
+            keybindings?: number[];
+            order: number;
+            run: () => void;
+        }[] = [
+            {
+                id: 'iobroker.ai.inline',
+                label: `🤖 ${I18n.t('AI: Inline chat…')}`,
+                // Browser-safe shortcut. Avoid:
+                //   Ctrl+I       → Monaco's "trigger inline suggest" (our AiInlineProvider).
+                //   Alt+I        → activates the browser menu bar on some configs.
+                //   Ctrl+K chord → Chrome/Edge jump the focus out of the editor into the omnibox
+                //                  the moment Ctrl+K is pressed, breaking any chord.
+                // Ctrl+Alt+I is consistent with the other AI shortcuts (Ctrl+Alt+E/R/C/F)
+                // and not claimed by mainstream browsers, Monaco, or common OS key mappings.
+                keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Alt | monaco.KeyCode.KeyI],
+                order: 1,
+                run: () => {
+                    // Prefer the rich inline widget when the host supplied onInlineAsk;
+                    // otherwise fall back to a simple prompt that dispatches a regular ask action.
+                    if (this.props.onInlineAsk) {
+                        this.showInlineChatWidget();
+                    } else {
+                        const q = window.prompt(I18n.t('Ask the AI about the selected code:'));
+                        if (q && q.trim()) {
+                            dispatch('ask', { question: q.trim() });
+                        }
+                    }
+                },
+            },
+            {
+                id: 'iobroker.ai.explain',
+                label: `💡 ${I18n.t('AI: Explain')}`,
+                keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Alt | monaco.KeyCode.KeyE],
+                order: 2,
+                run: () => dispatch('explain'),
+            },
+            {
+                id: 'iobroker.ai.refactor',
+                label: `🔧 ${I18n.t('AI: Refactor')}`,
+                keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Alt | monaco.KeyCode.KeyR],
+                order: 3,
+                run: () => dispatch('refactor'),
+            },
+            {
+                id: 'iobroker.ai.comment',
+                label: `💬 ${I18n.t('AI: Add comments')}`,
+                keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Alt | monaco.KeyCode.KeyC],
+                order: 4,
+                run: () => dispatch('comment'),
+            },
+            {
+                id: 'iobroker.ai.fix',
+                label: `🛠️ ${I18n.t('AI: Fix problem')}`,
+                keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Alt | monaco.KeyCode.KeyF],
+                order: 5,
+                run: () => {
+                    // Pull any diagnostic at the cursor position as context for the fix prompt.
+                    let diagnostic: string | undefined;
+                    try {
+                        const model = this.editor?.getModel();
+                        const pos = this.editor?.getPosition();
+                        if (model && pos) {
+                            const markers = monaco.editor.getModelMarkers({ resource: model.uri });
+                            const hit = markers.find(
+                                m => pos.lineNumber >= m.startLineNumber && pos.lineNumber <= m.endLineNumber,
+                            );
+                            if (hit) {
+                                diagnostic = hit.message;
+                            }
+                        }
+                    } catch {
+                        /* ignore */
+                    }
+                    dispatch('fix', { diagnostic });
+                },
+            },
+            {
+                id: 'iobroker.ai.tests',
+                label: `✅ ${I18n.t('AI: Suggest tests')}`,
+                order: 6,
+                run: () => dispatch('tests'),
+            },
+        ];
+
+        for (const a of actions) {
+            try {
+                this.editor.addAction({
+                    id: a.id,
+                    label: a.label,
+                    contextMenuGroupId: 'aichat',
+                    contextMenuOrder: a.order,
+                    keybindings: a.keybindings,
+                    run: () => a.run(),
+                });
+            } catch {
+                // Monaco throws if an id is already registered — safe to ignore on re-mount
             }
         }
+    }
+
+    /** Currently selected text + range (null if nothing selected). */
+    getEditorSelection(): {
+        text: string;
+        range: { startLine: number; startColumn: number; endLine: number; endColumn: number };
+    } | null {
+        if (!this.editor) {
+            return null;
+        }
+        const sel = this.editor.getSelection();
+        if (!sel || sel.isEmpty()) {
+            return null;
+        }
+        const model = this.editor.getModel();
+        if (!model) {
+            return null;
+        }
+        return {
+            text: model.getValueInRange(sel),
+            range: {
+                startLine: sel.startLineNumber,
+                startColumn: sel.startColumn,
+                endLine: sel.endLineNumber,
+                endColumn: sel.endColumn,
+            },
+        };
+    }
+
+    /** Full editor content. */
+    getEditorContent(): string {
+        return this.editor?.getModel()?.getValue() ?? '';
+    }
+
+    /** Current cursor position (1-based). */
+    getCursorPosition(): { line: number; column: number } | null {
+        const pos = this.editor?.getPosition();
+        return pos ? { line: pos.lineNumber, column: pos.column } : null;
+    }
+
+    /** Select + reveal a line range. Returns false if not ready. */
+    highlightLineRange(startLine: number, endLine: number): boolean {
+        if (!this.editor || !this.monaco) {
+            return false;
+        }
+        const model = this.editor.getModel();
+        if (!model) {
+            return false;
+        }
+        const totalLines = model.getLineCount();
+        const clampedStart = Math.max(1, Math.min(startLine, totalLines));
+        const clampedEnd = Math.max(clampedStart, Math.min(endLine, totalLines));
+        const endCol = model.getLineMaxColumn(clampedEnd);
+        this.editor.setSelection(new this.monaco.Range(clampedStart, 1, clampedEnd, endCol));
+        this.editor.revealLineInCenter(clampedStart);
+        return true;
+    }
+
+    /** Move cursor to a line (and optional column), revealing it. */
+    goToLine(line: number, column = 1): boolean {
+        if (!this.editor || !this.monaco) {
+            return false;
+        }
+        const model = this.editor.getModel();
+        if (!model) {
+            return false;
+        }
+        const totalLines = model.getLineCount();
+        const clamped = Math.max(1, Math.min(line, totalLines));
+        this.editor.setPosition({ lineNumber: clamped, column });
+        this.editor.revealLineInCenter(clamped);
+        this.editor.focus();
+        return true;
+    }
+
+    /** Replace the selected text (or insert at cursor if no selection). */
+    replaceSelection(text: string): boolean {
+        if (!this.editor || !this.monaco) {
+            return false;
+        }
+        const sel = this.editor.getSelection();
+        if (!sel) {
+            return false;
+        }
+        const range = new this.monaco.Range(sel.startLineNumber, sel.startColumn, sel.endLineNumber, sel.endColumn);
+        this.editor.executeEdits('', [{ range, text, forceMoveMarkers: true }]);
+        this.editor.focus();
+        return true;
+    }
+
+    /** All active Monaco markers (syntax errors, lint warnings, type errors, …). */
+    getDiagnostics(): {
+        line: number;
+        column: number;
+        endLine: number;
+        endColumn: number;
+        severity: 'error' | 'warning' | 'info' | 'hint';
+        message: string;
+        source?: string;
+    }[] {
+        if (!this.editor || !this.monaco) {
+            return [];
+        }
+        const model = this.editor.getModel();
+        if (!model) {
+            return [];
+        }
+        // MarkerSeverity: Hint=1, Info=2, Warning=4, Error=8
+        const markers = this.monaco.editor.getModelMarkers({ resource: model.uri });
+        const severityMap: Record<number, 'error' | 'warning' | 'info' | 'hint'> = {
+            8: 'error',
+            4: 'warning',
+            2: 'info',
+            1: 'hint',
+        };
+        return markers.map(m => ({
+            line: m.startLineNumber,
+            column: m.startColumn,
+            endLine: m.endLineNumber,
+            endColumn: m.endColumn,
+            severity: severityMap[m.severity] || 'info',
+            message: m.message,
+            ...(m.source ? { source: m.source } : {}),
+        }));
+    }
+
+    /** Document outline via Monaco's symbol providers; falls back to a regex scan. */
+    async getDocumentSymbols(): Promise<
+        { name: string; kind: string; line: number; endLine: number; detail?: string }[]
+    > {
+        if (!this.editor || !this.monaco) {
+            return [];
+        }
+        const model = this.editor.getModel();
+        if (!model) {
+            return [];
+        }
+        type SymItem = { name: string; kind: string; line: number; endLine: number; detail?: string };
+        const out: SymItem[] = [];
+        try {
+            const langs = this.monaco.languages as unknown as {
+                getDocumentSymbolProviders?: (m: monacoEditor.editor.ITextModel) => {
+                    provideDocumentSymbols: (
+                        m: monacoEditor.editor.ITextModel,
+                        t: monacoEditor.CancellationToken,
+                    ) =>
+                        | Promise<monacoEditor.languages.DocumentSymbol[] | undefined>
+                        | monacoEditor.languages.DocumentSymbol[]
+                        | undefined;
+                }[];
+            };
+            const providers = langs.getDocumentSymbolProviders?.(model);
+            if (providers?.length) {
+                const kindNames: Record<number, string> = {
+                    0: 'file',
+                    1: 'module',
+                    2: 'namespace',
+                    3: 'package',
+                    4: 'class',
+                    5: 'method',
+                    6: 'property',
+                    7: 'field',
+                    8: 'constructor',
+                    9: 'enum',
+                    10: 'interface',
+                    11: 'function',
+                    12: 'variable',
+                    13: 'constant',
+                    14: 'string',
+                    15: 'number',
+                    16: 'boolean',
+                    17: 'array',
+                    18: 'object',
+                    19: 'key',
+                    20: 'null',
+                    21: 'enum-member',
+                    22: 'struct',
+                    23: 'event',
+                    24: 'operator',
+                    25: 'type-parameter',
+                };
+                for (const p of providers) {
+                    const token = { isCancellationRequested: false } as monacoEditor.CancellationToken;
+                    const symbols = await p.provideDocumentSymbols(model, token);
+                    if (!symbols) {
+                        continue;
+                    }
+                    const flatten = (arr: monacoEditor.languages.DocumentSymbol[]): void => {
+                        for (const s of arr) {
+                            out.push({
+                                name: s.name,
+                                kind: kindNames[s.kind] || String(s.kind),
+                                line: s.range.startLineNumber,
+                                endLine: s.range.endLineNumber,
+                                ...(s.detail ? { detail: s.detail } : {}),
+                            });
+                            if (s.children?.length) {
+                                flatten(s.children);
+                            }
+                        }
+                    };
+                    flatten(symbols);
+                    if (out.length) {
+                        break;
+                    }
+                }
+            }
+        } catch {
+            // provider error → regex fallback below
+        }
+        if (out.length === 0) {
+            const content = model.getValue();
+            const lines = content.split('\n');
+            const patterns: { re: RegExp; kind: string }[] = [
+                { re: /^(?:export\s+)?(?:async\s+)?function\s+(\w+)/, kind: 'function' },
+                { re: /^(?:export\s+)?class\s+(\w+)/, kind: 'class' },
+                { re: /^(?:export\s+)?(?:const|let|var)\s+(\w+)/, kind: 'variable' },
+            ];
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                for (const { re, kind } of patterns) {
+                    const m = re.exec(line);
+                    if (m?.[1]) {
+                        out.push({ name: m[1], kind, line: i + 1, endLine: i + 1 });
+                        break;
+                    }
+                }
+            }
+        }
+        return out;
     }
 
     showDecorators(): void {

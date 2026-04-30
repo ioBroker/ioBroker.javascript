@@ -10,11 +10,13 @@ import type {
     DeviceObject,
     ScriptInfo,
     ChatApiMessage,
+    EditorApi,
+    EditorAiActionRequest,
+    ChatSourceRange,
 } from './AiChatTypes';
 import {
     getApiConfig,
     loadModels,
-    getProviderCredentials,
     sendChatCompletion,
     detectDevices,
     getSystemPromptDocs,
@@ -33,6 +35,13 @@ interface UseAiChatOptions {
     currentCode?: string;
     currentLanguage?: AiScriptLanguage;
     allScripts?: ScriptInfo[];
+    /** Optional handle for agent tools to inspect/manipulate the live Monaco editor. */
+    editorApi?: EditorApi;
+    /**
+     * Currently active script id — stored on each ChatSourceRange so Show-Diff
+     *  can refuse to render against the wrong script after a switch.
+     */
+    currentScriptId?: string;
 }
 
 interface UseAiChatReturn {
@@ -50,6 +59,10 @@ interface UseAiChatReturn {
     setMode: (mode: AiChatMode) => void;
     setModel: (model: string) => void;
     sendMessage: (content: string) => void;
+    /** Fire an editor-triggered AI action (context menu / shortcut / code lens). */
+    triggerAiAction: (request: EditorAiActionRequest) => void;
+    /** One-shot single-turn ask, used by the inline-chat widget (Ctrl+I). */
+    askInline: (question: string, code: string) => Promise<string>;
     clearChat: () => void;
     retryLoadModels: () => void;
 }
@@ -60,7 +73,33 @@ function nextId(): string {
 }
 
 export function useAiChat(options: UseAiChatOptions): UseAiChatReturn {
-    const { socket, runningInstances, currentCode, currentLanguage, allScripts } = options;
+    const { socket, runningInstances, currentCode, currentLanguage, allScripts, editorApi, currentScriptId } = options;
+
+    /**
+     * Build a ChatSourceRange snapshot from whatever scope the caller can provide.
+     *  Returns null when no scope is available (free-form question → insertion mode).
+     */
+    const buildSourceRange = useCallback(
+        (
+            kind: ChatSourceRange['kind'],
+            range: ChatSourceRange['range'],
+            originalText: string,
+        ): ChatSourceRange | null => {
+            if (kind === 'none' || !originalText) {
+                return null;
+            }
+            return {
+                range,
+                scriptId: currentScriptId || '',
+                scriptVersion: (currentCode || '').length,
+                kind,
+                originalText,
+            };
+        },
+        [currentScriptId, currentCode],
+    );
+    // Silence "declared but never used" if only downstream uses the helper
+    void buildSourceRange;
 
     // Restore messages from localStorage
     const [messages, setMessagesState] = useState<ChatMessage[]>(() => {
@@ -110,6 +149,13 @@ export function useAiChat(options: UseAiChatOptions): UseAiChatReturn {
     const [modelsError, setModelsError] = useState<string | null>(null);
 
     const apiConfigRef = useRef<ApiConfig | null>(null);
+
+    /**
+     * When `triggerAiAction` is calling into sendMessage, it stashes the action's
+     *  captured range here so sendMessage can attach it to the user message instead
+     *  of falling back to the current editor selection (which may differ).
+     */
+    const pendingSourceRangeRef = useRef<ChatSourceRange | null>(null);
     const devicesRef = useRef<DeviceObject[] | null>(null);
     const docsRef = useRef<string | null>(null);
 
@@ -348,7 +394,7 @@ ${docsRef.current}`;
                 return;
             }
 
-            const { apiKey, baseUrl } = getProviderCredentials(config, provider);
+            const baseUrl = provider === 'custom' ? config.gptBaseUrl || '' : '';
 
             // Add user message + placeholder for plan
             const userMessage: ChatMessage = {
@@ -383,7 +429,6 @@ ${docsRef.current}`;
                     messages: [{ role: 'user', content: planPrompt }],
                     model,
                     provider,
-                    apiKey,
                     baseUrl,
                 });
 
@@ -429,7 +474,6 @@ ${docsRef.current}`;
                     ],
                     model,
                     provider,
-                    apiKey,
                     baseUrl,
                 });
 
@@ -459,8 +503,7 @@ ${docsRef.current}`;
             }
             setIsLoading(false);
         },
-        // eslint-ignore-next-line react-hooks/exhaustive-deps
-        [model, modelProviderMap, isLoading, socket, runningInstances, currentLanguage],
+        [model, modelProviderMap, isLoading, socket, runningInstances, currentLanguage, setMessages],
     );
 
     // ─── Chat / Agent Mode ──────────────────────────────────────────
@@ -494,11 +537,28 @@ ${docsRef.current}`;
                 return;
             }
 
+            // Prefer the range captured by triggerAiAction (context menu / code lens)
+            // over the current editor selection; fall back to the live selection.
+            // No selection at all → null (insertion mode).
+            let sourceRange: ChatSourceRange | null = pendingSourceRangeRef.current;
+            pendingSourceRangeRef.current = null;
+            if (!sourceRange) {
+                try {
+                    const sel = editorApi?.getSelection?.();
+                    if (sel && sel.text) {
+                        sourceRange = buildSourceRange('selection', sel.range, sel.text);
+                    }
+                } catch {
+                    /* ignore */
+                }
+            }
+
             const userMessage: ChatMessage = {
                 id: nextId(),
                 role: 'user',
                 content,
                 timestamp: Date.now(),
+                sourceRange,
             };
 
             const assistantMessage: ChatMessage = {
@@ -506,6 +566,7 @@ ${docsRef.current}`;
                 role: 'assistant',
                 content: '',
                 timestamp: Date.now(),
+                sourceRange,
             };
 
             setMessages(prev => [...prev, userMessage, assistantMessage]);
@@ -531,7 +592,7 @@ ${docsRef.current}`;
             setLastContextInfo(`${I18n.t('Context')}: ${contextParts.join(' + ')}`);
 
             const systemMessages = await buildSystemMessages(includeAll, includeDevices, mentionedScriptIds);
-            const { apiKey, baseUrl } = getProviderCredentials(config, provider);
+            const baseUrl = provider === 'custom' ? config.gptBaseUrl || '' : '';
 
             // Enrich user message with local datapoint analysis
             let enrichedContent = cleanMessage || content;
@@ -564,10 +625,10 @@ ${docsRef.current}`;
                 ...messages.filter(m => m.role !== 'system').map(m => ({ role: m.role, content: m.content })),
                 { role: 'user', content: enrichedContent },
             ];
-            // Tool calling: only in agent mode and for non-Anthropic providers.
-            // Anthropic uses a different tool format (tool_use blocks) that requires
-            // separate request/response handling — not yet implemented.
-            const useTools = mode === 'agent' && provider !== 'anthropic';
+            // Tool calling: active in agent mode for every provider.
+            // The backend translates Anthropic's tool_use content-block format to/from
+            // the OpenAI-style tool_calls shape (see lib/anthropicAdapter.ts).
+            const useTools = mode === 'agent';
             const MAX_TOOL_ROUNDS = 5;
 
             try {
@@ -578,7 +639,6 @@ ${docsRef.current}`;
                         messages: currentMessages,
                         model,
                         provider,
-                        apiKey,
                         baseUrl,
                         ...(useTools ? { tools: IOBROKER_TOOLS } : {}),
                     });
@@ -590,7 +650,6 @@ ${docsRef.current}`;
                                 messages: currentMessages,
                                 model,
                                 provider,
-                                apiKey,
                                 baseUrl,
                             });
                             if (fallback.error) {
@@ -702,7 +761,7 @@ ${docsRef.current}`;
 
                     // Execute each tool call and add results
                     for (const toolCall of result.tool_calls) {
-                        const toolResult = await executeToolCall(socket, toolCall, allScripts);
+                        const toolResult = await executeToolCall(socket, toolCall, allScripts, editorApi);
                         currentMessages.push({
                             role: 'tool',
                             tool_call_id: toolCall.id,
@@ -716,7 +775,6 @@ ${docsRef.current}`;
             }
             setIsLoading(false);
         },
-        // eslint-ignore-next-line react-hooks/exhaustive-deps
         [
             model,
             modelProviderMap,
@@ -729,6 +787,9 @@ ${docsRef.current}`;
             allScripts,
             mode,
             sendCodeMessage,
+            setMessages,
+            buildSourceRange,
+            editorApi,
         ],
     );
 
@@ -741,6 +802,103 @@ ${docsRef.current}`;
         // Also clear input history
         window.localStorage.removeItem('Editor.aiChatHistory');
     }, [setMessages]);
+
+    /**
+     * One-shot ask that returns the AI's answer directly (no chat history mutation).
+     *  Used by the inline-chat widget so the user can see a proposal inside the editor
+     *  without opening the full chat-panel UI.
+     */
+    const askInline = useCallback(
+        async (question: string, code: string): Promise<string> => {
+            const provider = modelProviderMap[model];
+            if (!provider) {
+                return `Error: ${I18n.t('Please select a valid model')}`;
+            }
+            const config = apiConfigRef.current || (await getApiConfig(socket, runningInstances));
+            apiConfigRef.current = config;
+            if (!config) {
+                return `Error: ${I18n.t('No API keys configured')}`;
+            }
+            const instanceId = Object.keys(runningInstances)[0];
+            if (!instanceId) {
+                return `Error: ${I18n.t('No running javascript instance found')}`;
+            }
+            const baseUrl = provider === 'custom' ? config.gptBaseUrl || '' : '';
+            const lang = currentLanguage || 'javascript';
+            // System prompt steers the AI to match response format to question intent:
+            // explanations → plain text, code changes → fenced block the widget can Apply.
+            // The previous "return ONLY the replacement code" line forced code output even
+            // for "what does this do?" questions.
+            const systemPrompt =
+                `You are an assistant for writing ioBroker ${lang} scripts. ` +
+                `The user will ask a question about a snippet of their code. ` +
+                `Match your answer to the question: ` +
+                `\n- If they ask for an explanation, description, or "what does this do?", reply with clear prose (a few sentences). Do NOT repeat the code unchanged. ` +
+                `\n- If they explicitly ask for a change, refactor, fix, or rewrite, reply with a single fenced \`\`\`${lang === 'blockly' ? 'xml' : lang}\`\`\` code block containing the full replacement for the selection. You may add one short sentence before or after the block. ` +
+                `\n- If they ask something ambiguous or meta (e.g. "is this correct?"), reply in prose first and only include code if proposing a change. ` +
+                `\nioBroker globals available in scripts: on, setState, getState, schedule, sendTo, log, createState, setStateDelayed, existsState, httpGet, httpPost.`;
+            const userPrompt = code
+                ? `Code from my editor:\n\n\`\`\`${lang === 'blockly' ? 'xml' : lang}\n${code}\n\`\`\`\n\n${question}`
+                : question;
+            try {
+                const result = await sendChatCompletion(socket, instanceId, {
+                    messages: [
+                        { role: 'system', content: systemPrompt },
+                        { role: 'user', content: userPrompt },
+                    ],
+                    model,
+                    provider,
+                    baseUrl,
+                });
+                if (result.error) {
+                    return `Error: ${result.error}`;
+                }
+                return result.content || '';
+            } catch (e) {
+                return `Error: ${(e as Error).message || String(e)}`;
+            }
+        },
+        [model, modelProviderMap, runningInstances, socket, currentLanguage],
+    );
+
+    const triggerAiAction = useCallback(
+        (request: EditorAiActionRequest) => {
+            // Stash the action's captured range so sendMessage uses it
+            // instead of the live editor selection (which would be wrong if
+            // the user right-clicked on a function name with no active selection).
+            if (request.range && request.code) {
+                pendingSourceRangeRef.current = buildSourceRange(
+                    request.kind || 'codelens',
+                    request.range,
+                    request.code,
+                );
+            } else {
+                pendingSourceRangeRef.current = null;
+            }
+            // Lazy-import keeps the bundle lean if this path isn't exercised.
+            import('./aiPromptBuilder')
+                .then(({ buildActionPrompt }) => {
+                    const prompt = buildActionPrompt({
+                        action: request.action,
+                        code: request.code,
+                        language: currentLanguage || 'javascript',
+                        diagnostic: request.diagnostic,
+                        question: request.question,
+                        rangeLabel: request.rangeLabel,
+                    });
+                    if (prompt) {
+                        void sendMessage(prompt);
+                    } else {
+                        pendingSourceRangeRef.current = null;
+                    }
+                })
+                .catch(() => {
+                    pendingSourceRangeRef.current = null;
+                    setError(I18n.t('Failed to build AI action prompt'));
+                });
+        },
+        [sendMessage, currentLanguage, buildSourceRange],
+    );
 
     return {
         messages,
@@ -756,6 +914,8 @@ ${docsRef.current}`;
         setMode,
         setModel,
         sendMessage,
+        triggerAiAction,
+        askInline,
         clearChat,
         retryLoadModels: doLoadModels,
     };

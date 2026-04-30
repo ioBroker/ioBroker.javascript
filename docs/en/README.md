@@ -73,18 +73,76 @@ In the adapter settings under "AI settings", you will find API key fields for ea
 | **Custom API Base URL** | Base URL for custom providers (e.g. `http://localhost:11434/v1` for Ollama) |
 | **Custom API key** | Optional API key for custom providers (Ollama doesn't need one) |
 
-Only enter the keys for providers you want to use. Each provider has its own **Test** button.
+All API key fields are rendered as password inputs (masked), and only the keys of providers you actually want to use need to be entered. Each provider has its own **Test** button.
+
+### API Key Security
+
+API keys are handled with two layers of protection provided by the ioBroker platform:
+
+1. **`encryptedNative`** — Keys are automatically encrypted using the system secret before being written to the object database. Database dumps or object backups no longer expose the raw keys.
+2. **`protectedNative`** — Keys are never transmitted to admin web UIs or foreign adapters. Only the `javascript` adapter instance itself can read them via `this.config` (where the ioBroker runtime delivers them transparently decrypted).
+
+Because of this, the AI Chat Panel, the inline completion provider, and any other frontend component **no longer access the keys directly**. Instead, they request AI services via a `sendTo` call and let the backend resolve the correct key:
+
+```
+Frontend                      Backend (this.config, decrypted)
+────────                      ───────────────────────────────
+sendTo('chatCompletion', {    →   looks up provider → picks gptKey/claudeKey/…
+    provider: 'openai',           → performs HTTP request to provider
+    model: 'gpt-4o',              → streams response back
+    messages: [...]               
+})
+```
+
+A dedicated `sendTo` command is available for discovery:
+
+| Command | Payload | Response |
+|---------|---------|----------|
+| `getAvailableAiProviders` | `{}` | `{ providers: [{ provider: 'openai' }, { provider: 'custom', baseUrl: '…' }, …] }` |
+
+The response lists only which providers have credentials configured — it never includes the keys themselves. This allows the UI to show the correct provider icons and populate the model dropdown without pulling secrets into the browser.
+
+**Upgrade note:** After upgrading from an earlier version, the existing (unencrypted) keys will remain working until the first time you save the adapter settings. When you save, the runtime re-encrypts them. If a key appears blank after the upgrade, re-enter it once in the settings dialog and save.
 
 ### Test API Connection
 
-Each provider has a dedicated **Test** button next to its API key field. The test will:
+Each provider has a dedicated **Test** button next to its API key field. Two cases are handled:
+
+1. **Form-value test** — Immediately after entering or editing a key in the settings dialog, the `Test` button uses the current form value (which is still in the browser before saving). This lets you verify a new key before persisting it.
+2. **Stored-key test** — When the button is invoked from contexts where no form value is available (e.g. the script editor during model discovery), the backend resolves the key from `this.config` based on the selected provider.
+
+The test will:
 - Connect to the provider's API endpoint
 - Validate the API key
-- Return the number of available models
+- Return the number of available chat models
+
+The test-button icons are embedded as inline SVG data URIs with `fill="currentColor"`, so their color automatically follows the active theme (light/dark mode).
 
 ### Dynamic Model Loading
 
-When opening the AI code generator dialog in the script editor, the available models are automatically fetched from the configured API endpoint. The model dropdown is populated dynamically — no hardcoded model list is used.
+When opening the AI code generator dialog in the script editor, the available models are automatically fetched from each configured provider. The model dropdown is populated dynamically — no hardcoded model list is used.
+
+#### Non-chat model filter
+
+The provider model lists returned by OpenAI, Anthropic, Gemini, DeepSeek, and custom (Ollama/LM Studio/OpenRouter) endpoints contain many models that cannot be used for chat completion. The adapter filters these automatically so that the dropdown only shows models suitable for ioBroker script generation.
+
+The following categories are excluded:
+
+| Category | Keyword examples |
+|----------|------------------|
+| Embeddings | `embedding`, `text-embedding`, `embeddinggemma`, `bge-`, `nomic-embed`, `mxbai-embed`, `arctic-embed`, `all-minilm`, `voyage-`, `gecko`, `paraphrase-multilingual` |
+| Image generation / editing | `dall-e`, `gpt-image`, `image-edit`, `-image-preview`, `-image-latest`, `flash-image`, `nano-banana`, `stable-diffusion`, `sdxl`, `midjourney`, `flux-`, `imagen` |
+| Video generation | `sora`, `veo-`, `cogvideo`, `runway-`, `lumiere` |
+| Music generation | `lyria` |
+| Audio / speech / transcribe / realtime | `whisper`, `tts-`, `-tts`, `speech-`, `audio-preview`, `-transcribe`, `native-audio`, `flash-live`, `gpt-audio`, `realtime`, `bark-`, `xtts`, `voicebox` |
+| Moderation / safety | `moderation`, `omni-moderation`, `llama-guard`, `shieldgemma`, `prompt-guard`, `-guardian`, `safeguard` |
+| Rerankers | `rerank`, `reranker` |
+| Legacy completion (OpenAI GPT-3 era) | `babbage-`, `davinci-`, `curie-`, `text-davinci`, `instructgpt`, `code-davinci`, `code-cushman`, `-turbo-instruct` |
+| Web search / browsing endpoints | `-search-preview`, `-search-api` |
+| Legacy search / similarity | `code-search`, `text-search`, `similarity-` |
+| Specialty / single-task | `computer-use-preview`, `deep-research`, `robotics`, `aqa`, `reader-lm` (HTML→Markdown), `-nsql` (text-to-SQL), `minicheck` (fact-check), `claude-1`, `claude-instant` |
+
+The filter uses case-insensitive substring matching. If a provider adds a new non-chat model family in the future, the list can be extended in `src-editor/src/AiChat/AiChatService.ts` (see `NON_CHAT_KEYWORDS`).
 
 ### Error Handling
 
