@@ -27,6 +27,9 @@ Executes Javascript, Typescript Scripts.
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+- (copilot) Adapter requires node.js >= 22 now
+
 ### 9.2.1 (2026-04-30)
 * (@GermanBluefox) See previous changelog entries
 
