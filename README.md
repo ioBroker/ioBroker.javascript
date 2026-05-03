@@ -71,6 +71,8 @@ Executes Javascript, Typescript Scripts.
 * (@GermanBluefox) Corrected an error message with `lastSync`
 * (@klein0r) Corrected JavaScript filter
 
+[Older changelogs can be found there](CHANGELOG_OLD.md)
+
 ## License
 The MIT License (MIT)
 
