@@ -443,19 +443,19 @@ const AiChatInput: React.FC<AiChatInputProps> = ({
                                 <Box sx={{ mb: 0.75 }}>
                                     <strong>🤖 {I18n.t('Agent')}</strong> —{' '}
                                     {I18n.t(
-                                        'AI can call tools to inspect your system: read scripts, look up datapoints, browse the object tree. Use for "which scripts use this state?", "analyze my light script".',
+                                        'For larger models with tool support. The AI can read, create, and edit scripts, look up datapoints, and browse the object tree — useful for "create a script that...", "which scripts use this state?" or "analyze my light script".',
                                     )}
                                 </Box>
                                 <Box>
                                     <strong>💻 {I18n.t('Code')}</strong> —{' '}
                                     {I18n.t(
-                                        'Two-step script generator (plan then code). Use for "create a script that...", "write a Blockly rule for...". Output goes into the editor for smart-apply.',
+                                        'For smaller models without tool support. Two-step script generator (plan then code) — useful for "create a script that..." or "write a Blockly rule for...". Output goes into the editor for smart-apply.',
                                     )}
                                 </Box>
                             </Box>
                         }
                         enterDelay={400}
-                        placement="top"
+                        placement="left"
                     >
                         <Select
                             value={mode}
@@ -497,7 +497,7 @@ const AiChatInput: React.FC<AiChatInputProps> = ({
                                 value="agent"
                                 sx={{ fontSize: '0.75rem' }}
                                 title={I18n.t(
-                                    'Tool-using assistant. Best for: analyzing existing scripts, finding datapoint usages, inspecting the object tree.',
+                                    'For larger models with tool support. Best for: creating, editing, or analyzing scripts; finding datapoint usages; inspecting the object tree.',
                                 )}
                             >
                                 🤖 Agent
@@ -506,7 +506,7 @@ const AiChatInput: React.FC<AiChatInputProps> = ({
                                 value="code"
                                 sx={{ fontSize: '0.75rem' }}
                                 title={I18n.t(
-                                    'Script generator. Best for: creating new JavaScript/TypeScript or Blockly scripts from a description.',
+                                    'For smaller models without tool support. Best for: creating new JavaScript/TypeScript or Blockly scripts from a description.',
                                 )}
                             >
                                 💻 Code
