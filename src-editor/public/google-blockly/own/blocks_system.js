@@ -1042,6 +1042,40 @@ Blockly.JavaScript.forBlock['get_object_async'] = function (block) {
         '});\n';
 };
 
+// --- state exists var --------------------------------------------------
+Blockly.System.blocks['state_exists_var'] =
+    '<sep gap="5"></sep>' +
+    '<block type="state_exists_var">' +
+    '  <value name="OID">' +
+    '    <shadow type="field_oid">' +
+    '    </shadow>' +
+    '  </value>' +
+    '</block>';
+
+Blockly.Blocks['state_exists_var'] = {
+    init: function () {
+        this.appendDummyInput()
+            .appendField(Blockly.Translate('state_exists'));
+
+        this.appendValueInput('OID')
+            .setCheck(null);
+
+        this.setInputsInline(true);
+        this.setOutput(true, 'Boolean');
+
+        this.setColour(Blockly.System.HUE);
+
+        this.setTooltip(Blockly.Translate('state_exists_tooltip'));
+        this.setHelpUrl(getHelp('state_exists_help'));
+    },
+};
+
+Blockly.JavaScript.forBlock['state_exists_var'] = function (block) {
+    const vOid = Blockly.JavaScript.valueToCode(block, 'OID', Blockly.JavaScript.ORDER_ATOMIC) || '\'\'';
+
+    return [`(await existsStateAsync(${vOid}))`, Blockly.JavaScript.ORDER_ATOMIC];
+};
+
 // --- select OID --------------------------------------------------
 Blockly.System.blocks['field_oid'] =
     '<block type="field_oid">' +

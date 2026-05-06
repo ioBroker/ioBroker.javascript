@@ -827,6 +827,42 @@ Typische Anwendung dieses Blocks:
 &nbsp;
 
 
+### Datenpunkt vorhanden
+
+Dieser Block liefert einen Boolean (`true` / `false`) und gibt zurück, ob der angegebene Datenpunkt aktuell überhaupt einen Wertdatensatz in der State-DB besitzt. Die OID wird über einen Value-Input geliefert — sie kann aus dem OID-Auswahlblock (`Objekt ID`), einer String-Variable oder jedem anderen Block kommen, der eine State-ID liefert.
+
+**Wozu das Ganze?** ioBroker speichert **Objekte** (Metadaten) und **States** (Werte) getrennt. Ein Adapter kann das *Objekt* eines Datenpunkts anlegen — die ID erscheint dann im OID-Auswahldialog —, ohne jemals einen *Wert* zu schreiben. In diesem Fall führt `getState(...)` zu einer Warnung im Log:
+
+```
+warn  getState "zigbee.0.187a3efffee9e4e8.load_power" not found (3)
+```
+
+Auch eine Prüfung wie `Wert von Objekt-ID … != null` löst diese Warnung aus, weil sie bereits *während* des `getState`-Aufrufs entsteht — also bevor der Vergleich überhaupt ausgewertet wird.
+
+Der Block **Datenpunkt vorhanden** verwendet intern `existsStateAsync(...)`. Diese Funktion prüft den Cache stillschweigend und schreibt nichts ins Log, falls der State fehlt. Das ist der saubere Weg, einen `getState`-Aufruf abzusichern, wenn ein Adapter Datenpunkte vorab anlegt, aber nicht sofort befüllt (z. B. Zigbee, Tuya).
+
+Typische Anwendung — einen Lese-Vorgang gegen fehlende State-Datensätze absichern:
+
+```
+wenn [Datenpunkt vorhanden [Objekt ID "zigbee.0.…load_power"]]
+    setze [leistung] auf [Wert von Objekt-ID "zigbee.0.…load_power"]
+    log [leistung]
+```
+
+Der erzeugte JavaScript-Code:
+
+```javascript
+if ((await existsStateAsync('zigbee.0.187a3efffee9e4e8.load_power'))) {
+    let leistung = getState('zigbee.0.187a3efffee9e4e8.load_power').val;
+    console.log(leistung);
+}
+```
+
+**Hinweis:** Mit der Adapter-Einstellung *„Beim Start nicht alle Zustände abonnieren"* lässt sich `existsState` nicht synchron auswerten. Der Block erzeugt deshalb die asynchrone Form (`await existsStateAsync(...)`), die in beiden Modi korrekt funktioniert.
+
+
+&nbsp;
+
 ## Aktionsblöcke
 
 ### Exec - Kommando
