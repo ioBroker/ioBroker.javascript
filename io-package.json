@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "9.2.1",
+    "version": "9.2.2",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "9.2.2": {
+        "en": "Fix: AI chat mode tooltip no longer covers the dropdown options (issue #2201) — moved tooltip to the left of the selector\nClarified the AI chat mode descriptions in the tooltip: Agent is for larger models with tool support and handles both analysis and script creation, Code is for smaller models without tool support (uses two-step plan-then-code) — translations updated in all 11 languages\nAdded the \"is state exists\" block to blockly",
+        "de": "Fix: AI-Chat-Modus-Tooltip nicht mehr deckt die Dropdown-Optionen (Ausgabe #2201) - verschoben Tooltip auf die linke Seite des Selektors\nKI-Chat-Modus Beschreibungen im Tooltip: Agent ist für größere Modelle mit Werkzeugunterstützung und behandelt sowohl Analyse als auch Skript-Erstellung, Code ist für kleinere Modelle ohne Werkzeugunterstützung (verwendet zweistufigen Plan-then-Code) — Übersetzungen aktualisiert in allen 11 Sprachen\nDer \"is state exist\" Block wurde blockweise hinzugefügt",
+        "ru": "Исправление: инструментарий режима чата AI больше не покрывает выпадающие опции (выпуск #2201) — перемещаемый инструментарий слева от селектора\nУточнено описание режима чата ИИ в подсказке: Агент предназначен для более крупных моделей с поддержкой инструментов и обрабатывает как анализ, так и создание сценариев, Код предназначен для более мелких моделей без поддержки инструментов (использует двухэтапный план-тогда-код) — переводы обновлены на всех 11 языках\nДобавлен блок «существует государство» для блокировки",
+        "pt": "Corrigir: A dica do modo de bate-papo de IA não cobre mais as opções suspensas (questão # 2201) — moveu a dica para a esquerda do seletor\nClarified the AI chat mode descriptions in the tooltip: Agent is for major models with tool support and hands both analysis and script creation, Code is for minor models without toool support (uses two-step plan-then-code) — translations updated in all 11 languages\nAdicionado o bloco \"is state existe\" para bloquear",
+        "nl": "Fix: AI chat mode tooltip heeft geen betrekking meer op de dropdown opties (issue #2201)\nVerduidelijkt de AI chat mode beschrijvingen in de tooltip: Agent is voor grotere modellen met hulpmiddel ondersteuning en behandelt zowel analyse als script creatie, Code is voor kleinere modellen zonder hulpmiddel ondersteuning (gebruikt twee-stap plan-dan-code) Vertalingen bijgewerkt in alle 11 talen\nToegevoegd de \"is status bestaat\" blok te blokkeren",
+        "fr": "Correction : l'outil en mode chat AI ne couvre plus les options déroulantes (numéro #2201) — l'outil déplacé à gauche du sélecteur\nClarifié les descriptions des modes de chat AI dans l'infobulle : Agent est pour les modèles plus grands avec support d'outil et gère à la fois l'analyse et la création de script, Code est pour les modèles plus petits sans support d'outil (utilise le plan en deux étapes - puis-code) — traductions mises à jour dans les 11 langues\nAjout du bloc « is state exists » pour bloquer",
+        "it": "Fix: AI chat mode tooltip non copre più le opzioni di discesa (problema #2201) — spostato tooltip a sinistra del selettore\nClarified le descrizioni della modalità di chat AI nel tooltip: L'agente è per i modelli più grandi con supporto degli strumenti e gestisce sia l'analisi che la creazione di script, il codice è per i modelli più piccoli senza supporto degli strumenti (utilizza il codice a due passi) — le traduzioni aggiornate in tutte le 11 lingue\nAggiunto il blocco \"è stato esiste\" per bloccare",
+        "es": "Fijación: El uso de herramientas de modo de chat AI ya no cubre las opciones desplegables (sue #2201) — mover la punta de la herramienta a la izquierda del selector\nClarified the AI chat mode descriptions in the tooltip: Agent is for larger models with tool support and handles both analysis and script creation, Code is for smaller models without tool support (uses two-step plan-then-code) — translations updated in all 11 languages\nAñadido el bloque \"es estado existe\" para bloquear",
+        "pl": "Fix: AI chat mode tooltip już nie obejmuje opcji Dropdown (issue # 2201) - przesunięty podpowiedź po lewej stronie selektora\nWyjaśnienie opisów trybu rozmowy AI w podpowiedzi: Agent jest dla większych modeli z obsługą narzędzi i obsługuje zarówno analizy i tworzenia skryptów, Kod jest dla mniejszych modeli bez obsługi narzędzia (używa dwustopniowej plan- theen- code) - tłumaczenia zaktualizowane we wszystkich 11 językach\nDodano blokadę \"is state istnieje\"",
+        "uk": "Виправлення: Інструментарій режимів AI не більше охоплює параметри випадання (видання #2201) — пересувний інструмент для ліворуч від selector\nНаведено описи режиму AI чату в інструменті: Агент призначений для збільшення моделей з підтримкою інструментів і ручками як аналізу, так і для створення сценаріїв, Код є для менших моделей без підтримки інструменту ( використовує двокроковий план-фін-код) — переклади, оновлено у всіх 11 мовах\nДодано блок-блок \"is State існує\"",
+        "zh-cn": "固定:AI聊天模式工具提示不再覆盖下拉选项(问题#2201)——移动工具提示到选择器左侧\n整理工具提示中的 AI 聊天模式描述 : Agent 用于具有工具支持的较大模型,并同时处理分析和脚本创建, Code 用于没有工具支持的较小模型(使用双步计划-当时的代码)——所有11种语言的翻译更新\n添加“ 状态存在” 块以阻断"
+      },
       "9.2.1": {
         "en": "See previous changelog entries",
         "de": "Siehe frühere Changelog-Einträge",

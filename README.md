@@ -27,7 +27,7 @@ Executes Javascript, Typescript Scripts.
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 9.2.2 (2026-05-07)
 * (Eistee82) Fix: AI chat mode tooltip no longer covers the dropdown options (issue #2201) — moved tooltip to the left of the selector
 * (Eistee82) Clarified the AI chat mode descriptions in the tooltip: Agent is for larger models with tool support and handles both analysis and script creation, Code is for smaller models without tool support (uses two-step plan-then-code) — translations updated in all 11 languages
 * (@GermanBluefox) Added the "is state exists" block to blockly
@@ -71,12 +71,6 @@ Executes Javascript, Typescript Scripts.
 * Added retry functionality for failed model loading
 * All API calls (models + chat) are proxied server-side to avoid CORS issues with local providers
 * Strip LLM thinking artifacts from responses (for local models like Ollama)
-
-### 9.0.18 (2026-01-11)
-* (@GermanBluefox) Corrected an error message with `lastSync`
-* (@klein0r) Corrected JavaScript filter
-
-[Older changelogs can be found there](CHANGELOG_OLD.md)
 
 ## License
 The MIT License (MIT)
