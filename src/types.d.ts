@@ -705,6 +705,8 @@ export interface JavascriptContext {
     subscriptions: SubscriptionResult[];
     subscriptionsFile: FileSubscriptionResult[];
     subscriptionsObject: SubscribeObject[];
+    /** O(1) dispatch map – pattern → list of subscribers (kept in sync with subscriptionsObject) */
+    subscriptionsObjectMap: Map<string, SubscribeObject[]>;
     subscribedPatterns: Record<string, number>;
     subscribedPatternsFile: Record<string, number>;
     adapterSubs: Record<string, string[]>;
@@ -714,6 +716,8 @@ export interface JavascriptContext {
     devices: Record<string, string[]> | null;
     scheduler: Scheduler | null;
     timers: { [scriptName: string]: JavascriptTimer[] };
+    /** Reverse-index: scriptName → Set<stateId> for O(1) timer cleanup in stopScript */
+    timersByScript: Map<string, Set<string>>;
     enums: string[];
     timerId: number;
     names: { [name: string]: string | string[] }; // name: id

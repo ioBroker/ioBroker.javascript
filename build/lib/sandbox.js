@@ -2161,6 +2161,11 @@ function sandBox(script, name, verbose, debug, context) {
                     : isAck,
                 scriptName: name,
             });
+            // Keep reverse-index in sync for O(1) cleanup in stopScript
+            if (!context.timersByScript.has(name)) {
+                context.timersByScript.set(name, new Set());
+            }
+            context.timersByScript.get(name).add(id);
             return context.timerId;
         },
         clearStateDelayed: function (id, timerId) {
@@ -4401,6 +4406,11 @@ function sandBox(script, name, verbose, debug, context) {
             }
             adapter.subscribeForeignObjects(pattern);
             context.subscriptionsObject.push(subs);
+            // Keep O(1) dispatch map in sync
+            if (!context.subscriptionsObjectMap.has(pattern)) {
+                context.subscriptionsObjectMap.set(pattern, []);
+            }
+            context.subscriptionsObjectMap.get(pattern).push(subs);
             return subs;
         },
         unsubscribeObject: function (subObject) {
@@ -4418,6 +4428,15 @@ function sandBox(script, name, verbose, debug, context) {
                 if (context.subscriptionsObject[i] === subObject) {
                     adapter.unsubscribeForeignObjects(subObject.pattern);
                     context.subscriptionsObject.splice(i, 1);
+                    // Keep O(1) dispatch map in sync
+                    const mapSubs = context.subscriptionsObjectMap.get(subObject.pattern);
+                    if (mapSubs) {
+                        const pos = mapSubs.indexOf(subObject);
+                        if (pos !== -1)
+                            mapSubs.splice(pos, 1);
+                        if (!mapSubs.length)
+                            context.subscriptionsObjectMap.delete(subObject.pattern);
+                    }
                     sandbox.__engine.__subscriptionsObject--;
                     return true;
                 }
@@ -4428,6 +4447,15 @@ function sandBox(script, name, verbose, debug, context) {
                     context.subscriptionsObject[i].pattern === subObject.pattern) {
                     deleted++;
                     adapter.unsubscribeForeignObjects(subObject.pattern);
+                    // Keep O(1) dispatch map in sync
+                    const mapSubsP = context.subscriptionsObjectMap.get(subObject.pattern);
+                    if (mapSubsP) {
+                        const pos = mapSubsP.indexOf(context.subscriptionsObject[i]);
+                        if (pos !== -1)
+                            mapSubsP.splice(pos, 1);
+                        if (!mapSubsP.length)
+                            context.subscriptionsObjectMap.delete(subObject.pattern);
+                    }
                     context.subscriptionsObject.splice(i, 1);
                     sandbox.__engine.__subscriptionsObject--;
                 }
