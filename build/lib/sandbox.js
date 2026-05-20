@@ -486,10 +486,12 @@ function sandBox(script, name, verbose, debug, context) {
                         // IO-1: for…in statt Object.keys().filter().every() – kein temporäres Array pro Aufruf
                         let stateHasChanged = false;
                         for (const attr in stateAsObject) {
-                            if (attr === 'ts')
+                            if (attr === 'ts') {
                                 continue;
-                            if (stateAsObject[attr] === undefined)
+                            }
+                            if (stateAsObject[attr] === undefined) {
                                 continue;
+                            }
                             if (stateAsObject[attr] !== oldState[attr]) {
                                 stateHasChanged = true;
                                 break;
@@ -4466,10 +4468,12 @@ function sandBox(script, name, verbose, debug, context) {
                     const mapSubs = context.subscriptionsObjectMap.get(subObject.pattern);
                     if (mapSubs) {
                         const pos = mapSubs.indexOf(subObject);
-                        if (pos !== -1)
+                        if (pos !== -1) {
                             mapSubs.splice(pos, 1);
-                        if (!mapSubs.length)
+                        }
+                        if (!mapSubs.length) {
                             context.subscriptionsObjectMap.delete(subObject.pattern);
+                        }
                     }
                     sandbox.__engine.__subscriptionsObject--;
                     return true;
@@ -4485,10 +4489,12 @@ function sandBox(script, name, verbose, debug, context) {
                     const mapSubsP = context.subscriptionsObjectMap.get(subObject.pattern);
                     if (mapSubsP) {
                         const pos = mapSubsP.indexOf(context.subscriptionsObject[i]);
-                        if (pos !== -1)
+                        if (pos !== -1) {
                             mapSubsP.splice(pos, 1);
-                        if (!mapSubsP.length)
+                        }
+                        if (!mapSubsP.length) {
                             context.subscriptionsObjectMap.delete(subObject.pattern);
+                        }
                     }
                     context.subscriptionsObject.splice(i, 1);
                     sandbox.__engine.__subscriptionsObject--;

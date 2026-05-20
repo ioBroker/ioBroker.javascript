@@ -98,10 +98,7 @@ export function sandBox(
                     });
                 } else {
                     // IO-3: Object.assign statt Object.keys().forEach() – kein temporäres Keys-Array
-                    adapter.getForeignStates(
-                        pattern,
-                        (_err, _states) => _states && Object.assign(states, _states),
-                    );
+                    adapter.getForeignStates(pattern, (_err, _states) => _states && Object.assign(states, _states));
                 }
             } else {
                 context.subscribedPatterns[pattern]++;
@@ -539,9 +536,15 @@ export function sandBox(
                         // IO-1: for…in statt Object.keys().filter().every() – kein temporäres Array pro Aufruf
                         let stateHasChanged = false;
                         for (const attr in stateAsObject) {
-                            if (attr === 'ts') continue;
-                            if ((stateAsObject as Record<string, any>)[attr] === undefined) continue;
-                            if ((stateAsObject as Record<string, any>)[attr] !== (oldState as Record<string, any>)[attr]) {
+                            if (attr === 'ts') {
+                                continue;
+                            }
+                            if ((stateAsObject as Record<string, any>)[attr] === undefined) {
+                                continue;
+                            }
+                            if (
+                                (stateAsObject as Record<string, any>)[attr] !== (oldState as Record<string, any>)[attr]
+                            ) {
                                 stateHasChanged = true;
                                 break;
                             }
@@ -1788,7 +1791,7 @@ export function sandBox(
                     context.adapterSubs[alive] = context.adapterSubs[alive] || new Set();
 
                     // Set.has() is O(1) and automatically prevents duplicates
-                    const subExists = context.adapterSubs[alive].has(oPattern.id as string);
+                    const subExists = context.adapterSubs[alive].has(oPattern.id);
 
                     if (!subExists) {
                         context.adapterSubs[alive].add(oPattern.id);
@@ -5494,8 +5497,12 @@ export function sandBox(
                     const mapSubs = context.subscriptionsObjectMap.get(subObject.pattern);
                     if (mapSubs) {
                         const pos = mapSubs.indexOf(subObject);
-                        if (pos !== -1) mapSubs.splice(pos, 1);
-                        if (!mapSubs.length) context.subscriptionsObjectMap.delete(subObject.pattern);
+                        if (pos !== -1) {
+                            mapSubs.splice(pos, 1);
+                        }
+                        if (!mapSubs.length) {
+                            context.subscriptionsObjectMap.delete(subObject.pattern);
+                        }
                     }
                     sandbox.__engine.__subscriptionsObject--;
                     return true;
@@ -5513,8 +5520,12 @@ export function sandBox(
                     const mapSubsP = context.subscriptionsObjectMap.get(subObject.pattern);
                     if (mapSubsP) {
                         const pos = mapSubsP.indexOf(context.subscriptionsObject[i]);
-                        if (pos !== -1) mapSubsP.splice(pos, 1);
-                        if (!mapSubsP.length) context.subscriptionsObjectMap.delete(subObject.pattern);
+                        if (pos !== -1) {
+                            mapSubsP.splice(pos, 1);
+                        }
+                        if (!mapSubsP.length) {
+                            context.subscriptionsObjectMap.delete(subObject.pattern);
+                        }
                     }
                     context.subscriptionsObject.splice(i, 1);
                     sandbox.__engine.__subscriptionsObject--;

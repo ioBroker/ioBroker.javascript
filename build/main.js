@@ -492,7 +492,8 @@ class JavaScript extends adapter_core_1.Adapter {
                 this.sendToInstanceCache.delete(adapterName);
             }
         }
-        if (id === 'system.config' && obj?.common?.language) { // set language for debug messages
+        if (id === 'system.config' && obj?.common?.language) {
+            // set language for debug messages
             (0, words_1.setLanguage)(obj.common.language);
             this.language = obj.common.language;
             this.context.language = this.language;
@@ -2199,12 +2200,15 @@ class JavaScript extends adapter_core_1.Adapter {
         let hi = arr.length - 1;
         while (lo <= hi) {
             const mid = (lo + hi) >>> 1;
-            if (arr[mid] === id)
+            if (arr[mid] === id) {
                 return mid;
-            else if (arr[mid] < id)
+            }
+            else if (arr[mid] < id) {
                 lo = mid + 1;
-            else
+            }
+            else {
                 hi = mid - 1;
+            }
         }
         return -1;
     }
@@ -2217,10 +2221,12 @@ class JavaScript extends adapter_core_1.Adapter {
         let hi = this.stateIds.length;
         while (lo < hi) {
             const mid = (lo + hi) >>> 1;
-            if (this.stateIds[mid] < id)
+            if (this.stateIds[mid] < id) {
                 lo = mid + 1;
-            else
+            }
+            else {
                 hi = mid;
+            }
         }
         if (this.stateIds[lo] !== id) {
             this.stateIds.splice(lo, 0, id);
@@ -2361,10 +2367,12 @@ class JavaScript extends adapter_core_1.Adapter {
                         const mapSubs = this.subscriptionsObjectMap.get(sub.pattern);
                         if (mapSubs) {
                             const pos = mapSubs.indexOf(sub);
-                            if (pos !== -1)
+                            if (pos !== -1) {
                                 mapSubs.splice(pos, 1);
-                            if (!mapSubs.length)
+                            }
+                            if (!mapSubs.length) {
                                 this.subscriptionsObjectMap.delete(sub.pattern);
+                            }
                         }
                         this.unsubscribeForeignObjects(sub.pattern);
                     }
