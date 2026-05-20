@@ -15,28 +15,36 @@ export function getObjectEnumsSync(
         enumNames = [];
     }
 
+    // Use Sets for O(1) deduplication instead of Array.includes() O(n)
+    const enumIdSet = new Set(enumIds);
+    const enumNameSet = new Set(enumNames);
+
     if (context.cacheObjectEnums[idObj]) {
         for (const enumId of context.cacheObjectEnums[idObj].enumIds) {
-            if (!enumIds.includes(enumId)) {
+            if (!enumIdSet.has(enumId)) {
+                enumIdSet.add(enumId);
                 enumIds.push(enumId);
             }
         }
         for (const enumName of context.cacheObjectEnums[idObj].enumNames) {
-            if (!enumNames.includes(enumName)) {
+            if (!enumNameSet.has(enumName)) {
+                enumNameSet.add(enumName);
                 enumNames.push(enumName);
             }
         }
-        return { enumIds: enumIds, enumNames: enumNames };
+        return { enumIds, enumNames };
     }
 
-    for (let i = 0, l = context.enums.length; i < l; i++) {
-        if (context.objects[context.enums[i]]?.common?.members?.includes(idObj)) {
-            if (!enumIds.includes(context.enums[i])) {
-                enumIds.push(context.enums[i]);
+    for (const enumId of context.enums) {
+        if (context.objects[enumId]?.common?.members?.includes(idObj)) {
+            if (!enumIdSet.has(enumId)) {
+                enumIdSet.add(enumId);
+                enumIds.push(enumId);
             }
-            const name: ioBroker.StringOrTranslated = context.objects[context.enums[i]].common.name;
+            const name: ioBroker.StringOrTranslated = context.objects[enumId].common.name;
             const str: string | undefined = typeof name === 'object' ? name[gContext.language || 'en'] : name;
-            if (str && !enumNames.includes(str)) {
+            if (str && !enumNameSet.has(str)) {
+                enumNameSet.add(str);
                 enumNames.push(str);
             }
         }
@@ -52,12 +60,14 @@ export function getObjectEnumsSync(
                 //get parent enums but do not propagate our enums to parent.
                 getObjectEnumsSync(context, parent, parentEnumIds, parentEnumNames);
                 for (const enumId of parentEnumIds) {
-                    if (!enumIds.includes(enumId)) {
+                    if (!enumIdSet.has(enumId)) {
+                        enumIdSet.add(enumId);
                         enumIds.push(enumId);
                     }
                 }
                 for (const enumName of parentEnumNames) {
-                    if (!enumNames.includes(enumName)) {
+                    if (!enumNameSet.has(enumName)) {
+                        enumNameSet.add(enumName);
                         enumNames.push(enumName);
                     }
                 }
@@ -65,7 +75,7 @@ export function getObjectEnumsSync(
         }
     }
 
-    context.cacheObjectEnums[idObj] = { enumIds: enumIds, enumNames: enumNames };
+    context.cacheObjectEnums[idObj] = { enumIds, enumNames };
     return context.cacheObjectEnums[idObj];
 }
 

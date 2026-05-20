@@ -67,7 +67,8 @@ class Scheduler {
         const todayNoon = new this.Date();
         const yesterdayNoon = new this.Date();
         todayNoon.setHours(12, 0, 0, 0);
-        yesterdayNoon.setHours(-12, 0, 0, 0);
+        yesterdayNoon.setDate(yesterdayNoon.getDate() - 1);
+        yesterdayNoon.setHours(12, 0, 0, 0);
         this.todaysAstroTimes = this.suncalc.getTimes(todayNoon, this.latitude, this.longitude);
         this.yesterdaysAstroTimes = this.suncalc.getTimes(yesterdayNoon, this.latitude, this.longitude);
         this.astroList = [
@@ -103,8 +104,9 @@ class Scheduler {
             'sunsetstart',
         ];
     }
+    idCounter = 0;
     _getId() {
-        return `${Math.round(Math.random() * 1000000)}.${this.Date.now()}`;
+        return `${this.Date.now()}.${++this.idCounter}`;
     }
     recalculate() {
         const count = Object.keys(this.list).length;
@@ -148,17 +150,19 @@ class Scheduler {
                 setImmediate(id => this.list[id] && typeof this.list[id].cb === 'function' && this.list[id].cb(id), id);
             }
         }
-        const d = new this.Date();
-        d.setMilliseconds(2); // 2 ms to be sure that the next second is reached, they do not hurt anyone
-        d.setSeconds(0);
-        d.setMinutes(d.getMinutes() + 1);
-        this.timer = setTimeout(notBefore => this.checkSchedules(notBefore), d.getTime() - this.Date.now(), d.getTime());
+        if (Object.keys(this.list).length) {
+            const d = new this.Date();
+            d.setMilliseconds(2); // 2 ms to be sure that the next second is reached, they do not hurt anyone
+            d.setSeconds(0);
+            d.setMinutes(d.getMinutes() + 1);
+            this.timer = setTimeout(notBefore => this.checkSchedules(notBefore), d.getTime() - this.Date.now(), d.getTime());
+        }
+        else {
+            this.timer = null;
+        }
     }
     monthDiff(d1, d2) {
-        let months;
-        months = (d2.getFullYear() - d1.getFullYear()) * 12;
-        months -= d1.getMonth() + 1;
-        months += d2.getMonth();
+        const months = (d2.getFullYear() - d1.getFullYear()) * 12 + d2.getMonth() - d1.getMonth();
         return months <= 0 ? 0 : months;
     }
     checkSchedule(context, schedule) {
@@ -289,7 +293,7 @@ class Scheduler {
                 }
             }
             else {
-                if (start >= context.minutesOfDay || (end && end < context.minutesOfDay)) {
+                if (start > context.minutesOfDay || (end && end < context.minutesOfDay)) {
                     return false;
                 }
                 if (schedule.time.mode === 60) {
@@ -532,7 +536,8 @@ class Scheduler {
         const todayNoon = new this.Date();
         const yesterdayNoon = new this.Date();
         todayNoon.setHours(12, 0, 0, 0);
-        yesterdayNoon.setHours(-12, 0, 0, 0);
+        yesterdayNoon.setDate(yesterdayNoon.getDate() - 1);
+        yesterdayNoon.setHours(12, 0, 0, 0);
         this.todaysAstroTimes = this.suncalc.getTimes(todayNoon, this.latitude, this.longitude);
         this.yesterdaysAstroTimes = this.suncalc.getTimes(yesterdayNoon, this.latitude, this.longitude);
     }

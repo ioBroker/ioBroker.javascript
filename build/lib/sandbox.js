@@ -90,7 +90,8 @@ function sandBox(script, name, verbose, debug, context) {
                     });
                 }
                 else {
-                    adapter.getForeignStates(pattern, (_err, _states) => _states && Object.keys(_states).forEach(id => (states[id] = _states[id])));
+                    // IO-3: Object.assign statt Object.keys().forEach() – kein temporäres Keys-Array
+                    adapter.getForeignStates(pattern, (_err, _states) => _states && Object.assign(states, _states));
                 }
             }
             else {
@@ -482,9 +483,19 @@ function sandBox(script, name, verbose, debug, context) {
                     if (!adapter.config.subscribe && context.interimStateValues[id]) {
                         // if the state is changed, we will compare it with interimStateValues
                         const oldState = context.interimStateValues[id];
-                        const attrs = Object.keys(stateAsObject).filter(attr => attr !== 'ts' && stateAsObject[attr] !== undefined);
-                        if (!attrs.every(attr => stateAsObject[attr] ===
-                            oldState[attr])) {
+                        // IO-1: for…in statt Object.keys().filter().every() – kein temporäres Array pro Aufruf
+                        let stateHasChanged = false;
+                        for (const attr in stateAsObject) {
+                            if (attr === 'ts')
+                                continue;
+                            if (stateAsObject[attr] === undefined)
+                                continue;
+                            if (stateAsObject[attr] !== oldState[attr]) {
+                                stateHasChanged = true;
+                                break;
+                            }
+                        }
+                        if (stateHasChanged) {
                             // state is changed for sure, and we will call setForeignState
                             // and store new state to interimStateValues
                             context.interimStateValues[id] = stateAsObject;
@@ -735,10 +746,10 @@ function sandBox(script, name, verbose, debug, context) {
                             const chn = parts.join('.');
                             parts.pop();
                             const dev = parts.join('.');
-                            context.devices[dev] = context.devices[dev] || [];
-                            context.devices[dev].push(_id);
-                            context.channels[chn] = context.channels[chn] || [];
-                            context.channels[chn].push(_id);
+                            context.devices[dev] = context.devices[dev] || new Set();
+                            context.devices[dev].add(_id);
+                            context.channels[chn] = context.channels[chn] || new Set();
+                            context.channels[chn].add(_id);
                         }
                     }
                 }
@@ -851,7 +862,7 @@ function sandBox(script, name, verbose, debug, context) {
                 }
                 // retrieve the state ID collection for all remaining channels
                 res = res
-                    .map(id => channels[id])
+                    .map(id => [...(channels[id] || [])])
                     // and flatten the array to get only the state IDs
                     .reduce((acc, next) => acc.concat(next), []);
                 // now filter out those that don't match every ID selector for the state ID
@@ -884,7 +895,7 @@ function sandBox(script, name, verbose, debug, context) {
                 }
                 // retrieve the state ID collection for all remaining devices
                 res = res
-                    .map(id => devices[id])
+                    .map(id => [...(devices[id] || [])])
                     // and flatten the array to get only the state IDs
                     .reduce((acc, next) => acc.concat(next), []);
                 // now filter out those that don't match every ID selector for the state ID
@@ -921,12 +932,8 @@ function sandBox(script, name, verbose, debug, context) {
                     res = res.filter(id => applyEnumSelectors(id));
                 }
             }
-            const resUnique = [];
-            for (let i = 0; i < res.length; i++) {
-                if (!resUnique.includes(res[i])) {
-                    resUnique.push(res[i]);
-                }
-            }
+            // IO-2: O(1) Deduplizierung via Set statt O(n²) resUnique.includes()
+            const resUnique = [...new Set(res)];
             for (let i = 0; i < resUnique.length; i++) {
                 result[i] = resUnique[i];
             }
@@ -1355,8 +1362,8 @@ function sandBox(script, name, verbose, debug, context) {
             if (oPattern?.id && Array.isArray(oPattern.id)) {
                 const result = [];
                 for (let t = 0; t < oPattern.id.length; t++) {
-                    const pa = JSON.parse(JSON.stringify(oPattern));
-                    pa.id = oPattern.id[t];
+                    // IO-4: Spread statt JSON.parse(JSON.stringify()) – kein tiefer Clone nötig (nur primitive Felder)
+                    const pa = { ...oPattern, id: oPattern.id[t] };
                     result.push(sandbox.subscribe(pa, callbackOrChangeTypeOrId, value));
                 }
                 return result;
@@ -1431,10 +1438,11 @@ function sandBox(script, name, verbose, debug, context) {
                 const _adapter = `system.adapter.${a}`;
                 if (objects[_adapter] && objects[_adapter].common && objects[_adapter].common.subscribable) {
                     const alive = `system.adapter.${a}.alive`;
-                    context.adapterSubs[alive] = context.adapterSubs[alive] || [];
-                    const subExists = context.adapterSubs[alive].filter(sub => sub === oPattern.id).length > 0;
+                    context.adapterSubs[alive] = context.adapterSubs[alive] || new Set();
+                    // Set.has() is O(1) and automatically prevents duplicates
+                    const subExists = context.adapterSubs[alive].has(oPattern.id);
                     if (!subExists) {
-                        context.adapterSubs[alive].push(oPattern.id);
+                        context.adapterSubs[alive].add(oPattern.id);
                         adapter.sendTo(a, 'subscribe', oPattern.id);
                     }
                 }
@@ -1491,8 +1499,8 @@ function sandBox(script, name, verbose, debug, context) {
             if (objects[_adapter]?.common?.subscribable) {
                 const a = `${parts[0]}.${parts[1]}`;
                 const alive = `system.adapter.${a}.alive`;
-                context.adapterSubs[alive] = context.adapterSubs[alive] || [];
-                context.adapterSubs[alive].push(id);
+                context.adapterSubs[alive] = context.adapterSubs[alive] || new Set();
+                context.adapterSubs[alive].add(id);
                 if (sandbox.verbose) {
                     sandbox.log(`adapterSubscribe: ${a} - ${id}`, 'info');
                 }
@@ -1542,7 +1550,7 @@ function sandBox(script, name, verbose, debug, context) {
             return sandbox.subscribe(pattern, callbackOrChangeTypeOrId, value);
         },
         onEnumMembers: function (enumId, callback) {
-            if (enums.includes(enumId)) {
+            if (enums.has(enumId)) {
                 const subscriptions = {};
                 const init = () => {
                     const obj = objects[enumId];
@@ -1557,7 +1565,8 @@ function sandBox(script, name, verbose, debug, context) {
                     }
                     // Subscribe to all members of enum
                     for (const objId of members) {
-                        if (!Object.keys(subscriptions).includes(objId)) {
+                        // IO-6: `in` Operator statt Object.keys().includes() – O(1) statt O(n)
+                        if (!(objId in subscriptions)) {
                             if (objects?.[objId]?.type === 'state') {
                                 // Just subscribe to states
                                 subscriptions[objId] = sandbox.subscribe(objId, callback); // TODO: more features
@@ -2059,11 +2068,13 @@ function sandBox(script, name, verbose, debug, context) {
             const schedules = context.scheduler?.getList() || [];
             if (allScripts) {
                 Object.keys(context.scripts).forEach(name => context.scripts[name].schedules &&
-                    context.scripts[name].schedules.forEach(s => schedules.push(JSON.parse(JSON.stringify(s._ioBroker)))));
+                    // IO-8: Spread statt JSON.parse(JSON.stringify()) – _ioBroker hat nur primitive Felder
+                    context.scripts[name].schedules.forEach(s => schedules.push({ ...s._ioBroker })));
             }
             else {
                 script.schedules &&
-                    script.schedules.forEach(s => schedules.push(JSON.parse(JSON.stringify(s._ioBroker))));
+                    // IO-8: Spread statt JSON.parse(JSON.stringify())
+                    script.schedules.forEach(s => schedules.push({ ...s._ioBroker }));
             }
             return schedules;
         },
@@ -2184,7 +2195,7 @@ function sandBox(script, name, verbose, debug, context) {
                             timers[id].splice(i, 1);
                         }
                         if (sandbox.verbose) {
-                            sandbox.log(`clearStateDelayed: clear timer ${timers[id][i].id}`, 'info');
+                            sandbox.log(`clearStateDelayed: clear timer ${timers[id][i]?.id ?? timerId}`, 'info');
                         }
                     }
                 }
@@ -2194,6 +2205,17 @@ function sandBox(script, name, verbose, debug, context) {
                 else {
                     if (!timers[id].length) {
                         delete timers[id];
+                    }
+                }
+                // IO-7: timersByScript Reverse-Index aktualisieren wenn State keine Timer mehr hat
+                if (!timers[id]) {
+                    const scriptName = name; // name = Script-Name aus sandBox()-Closure
+                    const stateIds = context.timersByScript.get(scriptName);
+                    if (stateIds) {
+                        stateIds.delete(id);
+                        if (!stateIds.size) {
+                            context.timersByScript.delete(scriptName);
+                        }
                     }
                 }
                 return true;
@@ -2494,11 +2516,11 @@ function sandBox(script, name, verbose, debug, context) {
         getEnums: function (enumName) {
             const result = [];
             const r = enumName ? new RegExp(`^enum\\.${enumName}\\.`) : false;
-            for (let i = 0; i < enums.length; i++) {
-                if (!r || r.test(enums[i])) {
-                    const common = objects[enums[i]].common || {};
+            for (const enumId of enums) {
+                if (!r || r.test(enumId)) {
+                    const common = objects[enumId].common || {};
                     result.push({
-                        id: enums[i],
+                        id: enumId,
                         members: common.members || [],
                         name: common.name || '',
                     });
@@ -3159,19 +3181,32 @@ function sandBox(script, name, verbose, debug, context) {
                 adapter.sendTo(_adapter, cmd, msg, cbFunc, options);
             }
             else {
-                // Send it to all instances
-                context.adapter.getObjectView('system', 'instance', { startkey: `system.adapter.${_adapter}.`, endkey: `system.adapter.${_adapter}.\u9999` }, options, (err, res) => {
-                    if (err || !res) {
-                        sandbox.log(`sendTo failed: ${err?.message}`, 'error');
-                        return;
-                    }
-                    const instances = res.rows.map(item => item.id.substring('system.adapter.'.length));
-                    instances.forEach(instance => {
+                // IO-9: Cache sendTo broadcast instance list – avoid repeated getObjectView DB calls
+                const cached = context.sendToInstanceCache.get(_adapter);
+                if (cached) {
+                    cached.forEach(instance => {
                         sandbox.verbose &&
-                            sandbox.log(`sendTo(instance=${instance}, cmd=${cmd}, msg=${JSON.stringify(msg)}, hasCallback=${typeof callback === 'function'})`, 'info');
+                            sandbox.log(`sendTo(instance=${instance}, cmd=${cmd}, msg=${JSON.stringify(msg)}, hasCallback=${typeof callback === 'function'}) [cached]`, 'info');
                         adapter.sendTo(instance, cmd, msg, cbFunc, options);
                     });
-                });
+                }
+                else {
+                    // Send it to all instances
+                    context.adapter.getObjectView('system', 'instance', { startkey: `system.adapter.${_adapter}.`, endkey: `system.adapter.${_adapter}.\u9999` }, options, (err, res) => {
+                        if (err || !res) {
+                            sandbox.log(`sendTo failed: ${err?.message}`, 'error');
+                            return;
+                        }
+                        const instances = res.rows.map(item => item.id.substring('system.adapter.'.length));
+                        // Store in cache for subsequent calls (invalidated on system.adapter.* object change)
+                        context.sendToInstanceCache.set(_adapter, instances);
+                        instances.forEach(instance => {
+                            sandbox.verbose &&
+                                sandbox.log(`sendTo(instance=${instance}, cmd=${cmd}, msg=${JSON.stringify(msg)}, hasCallback=${typeof callback === 'function'})`, 'info');
+                            adapter.sendTo(instance, cmd, msg, cbFunc, options);
+                        });
+                    });
+                }
             }
         },
         sendto: function (_adapter, cmd, msg, callback) {
@@ -3235,7 +3270,8 @@ function sandBox(script, name, verbose, debug, context) {
                         errorInCallback(err);
                     }
                 }, ms);
-                script.intervals.push(int);
+                // IO-10: Set.add() – O(1) statt Array.push()
+                script.intervals.add(int);
                 if (sandbox.verbose) {
                     sandbox.log(`setInterval(ms=${ms})`, 'info');
                 }
@@ -3245,13 +3281,13 @@ function sandBox(script, name, verbose, debug, context) {
             return null;
         },
         clearInterval: function (id) {
-            const pos = script.intervals.indexOf(id);
-            if (pos !== -1) {
+            // IO-10: Set.has/delete – O(1) statt Array.indexOf+splice O(n)
+            if (script.intervals.has(id)) {
                 if (sandbox.verbose) {
                     sandbox.log('clearInterval() => cleared', 'info');
                 }
                 clearInterval(id);
-                script.intervals.splice(pos, 1);
+                script.intervals.delete(id);
             }
             else {
                 if (sandbox.verbose) {
@@ -3262,11 +3298,8 @@ function sandBox(script, name, verbose, debug, context) {
         setTimeout: function (callback, ms, ...args) {
             if (typeof callback === 'function') {
                 const to = setTimeout(() => {
-                    // Remove timeout from the list
-                    const pos = script.timeouts.indexOf(to);
-                    if (pos !== -1) {
-                        script.timeouts.splice(pos, 1);
-                    }
+                    // IO-10: Set.delete – O(1) statt Array.indexOf+splice O(n)
+                    script.timeouts.delete(to);
                     try {
                         callback.call(sandbox, ...args);
                     }
@@ -3277,20 +3310,21 @@ function sandBox(script, name, verbose, debug, context) {
                 if (sandbox.verbose) {
                     sandbox.log(`setTimeout(ms=${ms})`, 'info');
                 }
-                script.timeouts.push(to);
+                // IO-10: Set.add – O(1) statt Array.push
+                script.timeouts.add(to);
                 return to;
             }
             sandbox.log(`Invalid callback for setTimeout! - ${typeof callback}`, 'error');
             return null;
         },
         clearTimeout: function (id) {
-            const pos = script.timeouts.indexOf(id);
-            if (pos !== -1) {
+            // IO-10: Set.has/delete – O(1) statt Array.indexOf+splice O(n)
+            if (script.timeouts.has(id)) {
                 if (sandbox.verbose) {
                     sandbox.log('clearTimeout() => cleared', 'info');
                 }
                 clearTimeout(id);
-                script.timeouts.splice(pos, 1);
+                script.timeouts.delete(id);
             }
             else {
                 if (sandbox.verbose) {
