@@ -328,7 +328,6 @@ class JavaScript extends Adapter {
     private readonly stateIdSet: Set<string> = new Set();
 
     /** Precomputed "from" string for prepareStateObject – avoids string alloc on every setState */
-    private _adapterFrom = '';
     private readonly subscriptions: SubscriptionResult[] = [];
     private readonly subscriptionsFile: FileSubscriptionResult[] = [];
     private readonly subscriptionsObject: SubscribeObject[] = [];
@@ -851,7 +850,6 @@ class JavaScript extends Adapter {
         this.errorLogFunction = this.log;
         this.context.errorLogFunction = this.log;
         // Precompute once – avoids string template alloc on every setState call
-        this._adapterFrom = `system.adapter.${this.namespace}`;
 
         this.config.maxSetStatePerMinute = parseInt(this.config.maxSetStatePerMinute as unknown as string, 10) || 1000;
         this.config.maxTriggersPerScript = parseInt(this.config.maxTriggersPerScript as unknown as string, 10) || 100;
@@ -2186,12 +2184,11 @@ class JavaScript extends Adapter {
                     this.addGetProperty(this.states);
                 }
 
-                // remember all IDs
-                for (const id in res) {
-                    if (Object.prototype.hasOwnProperty.call(res, id)) {
-                        this.stateIds.push(id);
-                        this.stateIdSet.add(id);
-                    }
+                // remember all IDs – sort once to guarantee the sorted invariant
+                // required by binaryIndexOf() / sortedInsert() used later
+                for (const id of Object.keys(res).sort()) {
+                    this.stateIds.push(id);
+                    this.stateIdSet.add(id);
                 }
                 this.statesInitDone = true;
                 this.log.info('received all states');

@@ -273,7 +273,6 @@ class JavaScript extends adapter_core_1.Adapter {
     /** Fast O(1) lookup set – always kept in sync with stateIds */
     stateIdSet = new Set();
     /** Precomputed "from" string for prepareStateObject – avoids string alloc on every setState */
-    _adapterFrom = '';
     subscriptions = [];
     subscriptionsFile = [];
     subscriptionsObject = [];
@@ -737,7 +736,6 @@ class JavaScript extends adapter_core_1.Adapter {
         this.errorLogFunction = this.log;
         this.context.errorLogFunction = this.log;
         // Precompute once – avoids string template alloc on every setState call
-        this._adapterFrom = `system.adapter.${this.namespace}`;
         this.config.maxSetStatePerMinute = parseInt(this.config.maxSetStatePerMinute, 10) || 1000;
         this.config.maxTriggersPerScript = parseInt(this.config.maxTriggersPerScript, 10) || 100;
         if (this.supportsFeature?.('PLUGINS')) {
@@ -1780,12 +1778,11 @@ class JavaScript extends adapter_core_1.Adapter {
                 this.context.states = this.states;
                 this.addGetProperty(this.states);
             }
-            // remember all IDs
-            for (const id in res) {
-                if (Object.prototype.hasOwnProperty.call(res, id)) {
-                    this.stateIds.push(id);
-                    this.stateIdSet.add(id);
-                }
+            // remember all IDs – sort once to guarantee the sorted invariant
+            // required by binaryIndexOf() / sortedInsert() used later
+            for (const id of Object.keys(res).sort()) {
+                this.stateIds.push(id);
+                this.stateIdSet.add(id);
             }
             this.statesInitDone = true;
             this.log.info('received all states');

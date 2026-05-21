@@ -2188,6 +2188,7 @@ export function sandBox(
                 subscription = sandbox.subscribe(pattern, handler) as string | SubscriptionResult;
                 return subscription;
             }
+
             if (typeof callback === 'function') {
                 // Callback-style: once("id", (obj) => { ... })
                 return _once(callback);
@@ -2721,10 +2722,22 @@ export function sandBox(
                     sandbox.verbose &&
                         sandbox.log(`setStateDelayed: clear ${timers[id].length} running timers`, 'info');
 
+                    // collect affected scriptNames before deleting
+                    const affectedScripts = new Set<string>(timers[id].map(e => e.scriptName));
                     for (let i = 0; i < timers[id].length; i++) {
                         clearTimeout(timers[id][i].t);
                     }
                     delete timers[id];
+                    // update timersByScript reverse-index for all affected scripts
+                    for (const scriptName of affectedScripts) {
+                        const scriptSet = context.timersByScript.get(scriptName);
+                        if (scriptSet) {
+                            scriptSet.delete(id);
+                            if (!scriptSet.size) {
+                                context.timersByScript.delete(scriptName);
+                            }
+                        }
+                    }
                 } else {
                     if (sandbox.verbose) {
                         sandbox.log('setStateDelayed: no running timers', 'info');
@@ -2753,16 +2766,34 @@ export function sandBox(
                     if (timers[_id]) {
                         // optimisation
                         if (timers[_id].length === 1) {
+                            const scriptName = timers[_id][0].scriptName;
                             delete timers[_id];
+                            // update timersByScript reverse-index
+                            const scriptSet = context.timersByScript.get(scriptName);
+                            if (scriptSet) {
+                                scriptSet.delete(_id);
+                                if (!scriptSet.size) {
+                                    context.timersByScript.delete(scriptName);
+                                }
+                            }
                         } else {
                             for (let t = 0; t < timers[_id].length; t++) {
                                 if (timers[_id][t].id === _timerId) {
+                                    const scriptName = timers[_id][t].scriptName;
                                     timers[_id].splice(t, 1);
+                                    if (!timers[_id].length) {
+                                        delete timers[_id];
+                                        // update timersByScript reverse-index
+                                        const scriptSet = context.timersByScript.get(scriptName);
+                                        if (scriptSet) {
+                                            scriptSet.delete(_id);
+                                            if (!scriptSet.size) {
+                                                context.timersByScript.delete(scriptName);
+                                            }
+                                        }
+                                    }
                                     break;
                                 }
-                            }
-                            if (!timers[_id].length) {
-                                delete timers[_id];
                             }
                         }
                     }
@@ -2811,8 +2842,11 @@ export function sandBox(
             }
 
             if (timers[id]) {
+                // collect scriptNames of entries that will be removed
+                const removedScripts = new Set<string>();
                 for (let i = timers[id].length - 1; i >= 0; i--) {
                     if (timerId === undefined || timers[id][i].id === timerId) {
+                        removedScripts.add(timers[id][i].scriptName);
                         clearTimeout(timers[id][i].t);
                         if (timerId !== undefined) {
                             timers[id].splice(i, 1);
@@ -2831,12 +2865,13 @@ export function sandBox(
                 }
                 // IO-7: timersByScript Reverse-Index aktualisieren wenn State keine Timer mehr hat
                 if (!timers[id]) {
-                    const scriptName = name; // name = Script-Name aus sandBox()-Closure
-                    const stateIds = context.timersByScript.get(scriptName);
-                    if (stateIds) {
-                        stateIds.delete(id);
-                        if (!stateIds.size) {
-                            context.timersByScript.delete(scriptName);
+                    for (const scriptName of removedScripts) {
+                        const stateIds = context.timersByScript.get(scriptName);
+                        if (stateIds) {
+                            stateIds.delete(id);
+                            if (!stateIds.size) {
+                                context.timersByScript.delete(scriptName);
+                            }
                         }
                     }
                 }
