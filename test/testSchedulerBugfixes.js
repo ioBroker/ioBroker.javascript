@@ -5,7 +5,7 @@
  * Ausführen: mocha test/testSchedulerBugfixes.js --exit
  */
 
-const expect = require('chai').expect;
+const assert = require('node:assert').strict;
 const tk = require('timekeeper');
 const suncalc = require('suncalc2');
 const { Scheduler } = require('../build/lib/scheduler');
@@ -42,42 +42,42 @@ describe('Scheduler Bugfix Tests', function () {
             const s = makeScheduler();
             const d1 = new Date(2030, 0, 1);  // Jan 2030
             const d2 = new Date(2030, 0, 15); // Jan 2030
-            expect(s.monthDiff(d1, d2)).to.equal(0);
+            assert.equal(s.monthDiff(d1, d2), 0);
         });
 
         it('should return 1 for consecutive months', function () {
             const s = makeScheduler();
             const d1 = new Date(2030, 0, 1); // Jan 2030
             const d2 = new Date(2030, 1, 1); // Feb 2030
-            expect(s.monthDiff(d1, d2)).to.equal(1);
+            assert.equal(s.monthDiff(d1, d2), 1);
         });
 
         it('should return 12 for same month next year', function () {
             const s = makeScheduler();
             const d1 = new Date(2030, 0, 1); // Jan 2030
             const d2 = new Date(2031, 0, 1); // Jan 2031
-            expect(s.monthDiff(d1, d2)).to.equal(12);
+            assert.equal(s.monthDiff(d1, d2), 12);
         });
 
         it('should return 24 for same month 2 years later', function () {
             const s = makeScheduler();
             const d1 = new Date(2030, 3, 1); // Apr 2030
             const d2 = new Date(2032, 3, 1); // Apr 2032
-            expect(s.monthDiff(d1, d2)).to.equal(24);
+            assert.equal(s.monthDiff(d1, d2), 24);
         });
 
         it('should return 11 for Jan to Dec same year', function () {
             const s = makeScheduler();
             const d1 = new Date(2030, 0, 1);  // Jan 2030
             const d2 = new Date(2030, 11, 1); // Dec 2030
-            expect(s.monthDiff(d1, d2)).to.equal(11);
+            assert.equal(s.monthDiff(d1, d2), 11);
         });
 
         it('should not return negative values (returns 0)', function () {
             const s = makeScheduler();
             const d1 = new Date(2031, 5, 1);
             const d2 = new Date(2030, 1, 1);
-            expect(s.monthDiff(d1, d2)).to.equal(0);
+            assert.equal(s.monthDiff(d1, d2), 0);
         });
     });
 
@@ -87,7 +87,7 @@ describe('Scheduler Bugfix Tests', function () {
     describe('timer management', function () {
         it('should not have an active timer when no schedules exist', function () {
             const s = makeScheduler();
-            expect(s.timer).to.be.null;
+            assert.equal(s.timer, null);
         });
 
         it('should stop timer when last schedule is removed', function (done) {
@@ -99,10 +99,10 @@ describe('Scheduler Bugfix Tests', function () {
                 'testScript',
                 () => {},
             );
-            expect(id).to.not.be.null;
-            expect(s.timer).to.not.be.null;
+            assert.notEqual(id, null);
+            assert.notEqual(s.timer, null);
             s.remove(id);
-            expect(s.timer).to.be.null;
+            assert.equal(s.timer, null);
             done();
         });
 
@@ -120,10 +120,10 @@ describe('Scheduler Bugfix Tests', function () {
             // After 61 seconds the schedule will be expired and deleted
             // timer should NOT persist after list is empty
             setTimeout(() => {
-                expect(Object.keys(s.list).length).to.equal(0);
+                assert.equal(Object.keys(s.list).length, 0);
                 // Give recalculate one tick
                 setImmediate(() => {
-                    expect(s.timer).to.be.null;
+                    assert.equal(s.timer, null);
                     done();
                 });
             }, 65000);
@@ -180,7 +180,7 @@ describe('Scheduler Bugfix Tests', function () {
             for (let i = 0; i < 10000; i++) {
                 ids.add(s._getId());
             }
-            expect(ids.size).to.equal(10000);
+            assert.equal(ids.size, 10000);
         });
     });
 
@@ -193,9 +193,9 @@ describe('Scheduler Bugfix Tests', function () {
             tk.travel(time);
             const s = makeScheduler();
             const sunrise = s.todaysAstroTimes.sunrise;
-            expect(sunrise.getDate()).to.equal(21);
-            expect(sunrise.getMonth()).to.equal(5);
-            expect(sunrise.getFullYear()).to.equal(2030);
+            assert.equal(sunrise.getDate(), 21);
+            assert.equal(sunrise.getMonth(), 5);
+            assert.equal(sunrise.getFullYear(), 2030);
         });
 
         it('yesterdaysAstroTimes.sunrise should be yesterday', function () {
@@ -204,7 +204,7 @@ describe('Scheduler Bugfix Tests', function () {
             const s = makeScheduler();
             const sunrise = s.yesterdaysAstroTimes.sunrise;
             // sunrise of yesterday (June 20) should be on June 20 or June 21 at latest
-            expect(sunrise.getDate()).to.be.oneOf([20, 21]);
+            assert.ok([20, 21].includes(sunrise.getDate()));
         });
     });
 
@@ -238,13 +238,13 @@ describe('Scheduler Bugfix Tests', function () {
             };
             // March 2030: monthDiff(Jan2030, Mar2030) = 2, 2 % 2 = 0 → should fire
             const diff = s.monthDiff(new Date(2030, 0, 1), new Date(2030, 2, 1));
-            expect(diff).to.equal(2);
-            expect(diff % 2).to.equal(0); // fires
+            assert.equal(diff, 2);
+            assert.equal(diff % 2, 0); // fires
 
             // Feb 2030: monthDiff = 1, 1 % 2 = 1 → should NOT fire
             const diffFeb = s.monthDiff(new Date(2030, 0, 1), new Date(2030, 1, 1));
-            expect(diffFeb).to.equal(1);
-            expect(diffFeb % 2).to.equal(1); // does not fire
+            assert.equal(diffFeb, 1);
+            assert.equal(diffFeb % 2, 1); // does not fire
         });
     });
 });

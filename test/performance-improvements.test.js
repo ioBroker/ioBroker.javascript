@@ -1,30 +1,30 @@
 'use strict';
 /**
- * Regression-Tests für die 8 geplanten Performance-Verbesserungen
- * in src/main.ts – geschrieben VOR der Änderung.
+ * Regression tests for the 8 planned performance improvements
+ * in src/main.ts - written BEFORE the change.
  *
- * Jeder Test ist explizit als BASELINE oder EXPECTATION markiert:
- *   [BASELINE]    – dokumentiert das heutige (schlechtere) Verhalten
- *   [EXPECTATION] – verifiziert das verbesserte Verhalten nach dem Fix
+ * Each test is explicitly marked as BASELINE or EXPECTATION:
+ *   [BASELINE]    - documents the current (worse) behavior
+ *   [EXPECTATION] - verifies the improved behavior after the fix
  *
- * Alle Tests müssen nach der Änderung weiterhin grün sein.
+ * All tests must stay green after the change.
  *
  * npx mocha test/performance-improvements.test.js --timeout 30000
  */
 const assert = require('node:assert').strict;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Gemeinsame Hilfsfunktionen
+// Shared helper functions
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Erzeugt N State-IDs der Form "adapter.0.state.NNN" */
+/** Creates N state IDs in the form "adapter.0.state.NNN" */
 function makeStateIds(n) {
     const ids = [];
     for (let i = 0; i < n; i++) ids.push(`adapter.0.state.${String(i).padStart(6, '0')}`);
     return ids;
 }
 
-/** Misst die Zeit (ms) für fn() in iterations Wiederholungen */
+/** Measures the time (ms) for fn() across iterations repeats */
 function bench(fn, iterations = 1) {
     const t0 = performance.now();
     for (let i = 0; i < iterations; i++) fn();
@@ -32,10 +32,10 @@ function bench(fn, iterations = 1) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 1. sortedInsert – O(log n) statt O(n log n) sort()
+// 1. sortedInsert - O(log n) instead of O(n log n) sort()
 // ─────────────────────────────────────────────────────────────────────────────
-describe('Perf-1 · sortedInsert() statt stateIds.sort()', () => {
-    /** Binary-Search-Insert – die NEUE Implementierung */
+describe('Perf-1 · sortedInsert() instead of stateIds.sort()', () => {
+    /** Binary-search insert - the NEW implementation */
     function sortedInsert(arr, id) {
         let lo = 0;
         let hi = arr.length;
@@ -47,7 +47,7 @@ describe('Perf-1 · sortedInsert() statt stateIds.sort()', () => {
         if (arr[lo] !== id) arr.splice(lo, 0, id);
     }
 
-    it('[EXPECTATION] sortedInsert hält Array sortiert', () => {
+    it('[EXPECTATION] sortedInsert keeps the array sorted', () => {
         const arr = [];
         const ids = ['z.0', 'a.0', 'm.0', 'b.1', 'a.1'];
         for (const id of ids) sortedInsert(arr, id);
@@ -55,7 +55,7 @@ describe('Perf-1 · sortedInsert() statt stateIds.sort()', () => {
         assert.deepEqual(arr, sorted);
     });
 
-    it('[EXPECTATION] sortedInsert ignoriert Duplikate', () => {
+    it('[EXPECTATION] sortedInsert ignores duplicates', () => {
         const arr = [];
         sortedInsert(arr, 'a.0');
         sortedInsert(arr, 'a.0');
@@ -63,31 +63,31 @@ describe('Perf-1 · sortedInsert() statt stateIds.sort()', () => {
         assert.equal(arr.length, 1);
     });
 
-    it('[EXPECTATION] sortedInsert ist bei 50k Einträgen schneller als push+sort', () => {
+    it('[EXPECTATION] sortedInsert is faster than push+sort with 50k entries', () => {
         const N = 50_000;
         const ids = makeStateIds(N);
 
-        // VORHER: push + sort
+        // BEFORE: push + sort
         const tSort = bench(() => {
             const arr = [];
             for (const id of ids) { arr.push(id); arr.sort(); }
         });
 
-        // NACHHER: sortedInsert
+        // AFTER: sortedInsert
         const tInsert = bench(() => {
             const arr = [];
             for (const id of ids) sortedInsert(arr, id);
         });
 
-        // sortedInsert muss mindestens 10× schneller sein
+        // sortedInsert must be faster
         assert.ok(
             tInsert < tSort,
-            `sortedInsert (${tInsert.toFixed(0)}ms) muss schneller sein als push+sort (${tSort.toFixed(0)}ms)`,
+            `sortedInsert (${tInsert.toFixed(0)}ms) must be faster than push+sort (${tSort.toFixed(0)}ms)`,
         );
     });
 
-    it('[EXPECTATION] Ergebnisarray von sortedInsert und push+sort ist identisch', () => {
-        const ids = makeStateIds(1_000).reverse(); // umgekehrt um Schlimmstfall zu testen
+    it('[EXPECTATION] result arrays from sortedInsert and push+sort are identical', () => {
+        const ids = makeStateIds(1_000).reverse(); // reversed to test worst case
         const arrSort = [];
         const arrInsert = [];
         for (const id of ids) {
@@ -100,12 +100,12 @@ describe('Perf-1 · sortedInsert() statt stateIds.sort()', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 2. timersByScript – Reverse-Index für stopScript-Timer-Cleanup
+// 2. timersByScript - reverse index for stopScript timer cleanup
 // ─────────────────────────────────────────────────────────────────────────────
-describe('Perf-2 · timersByScript Reverse-Index für stopScript', () => {
+describe('Perf-2 · timersByScript reverse index for stopScript', () => {
     /**
-     * Simuliert den aktuellen (langsamen) Timer-Cleanup:
-     * Iteriert ALLE timers und prüft scriptName
+     * Simulates the current (slow) timer cleanup:
+     * Iterates ALL timers and checks scriptName
      */
     function stopScriptTimersSlow(timers, scriptName) {
         const cleared = [];
@@ -122,7 +122,7 @@ describe('Perf-2 · timersByScript Reverse-Index für stopScript', () => {
     }
 
     /**
-     * Simuliert den NEUEN (schnellen) Timer-Cleanup via Reverse-Index:
+     * Simulates the NEW (fast) timer cleanup via reverse index:
      * timersByScript: Map<scriptName, Set<stateId>>
      */
     function stopScriptTimersFast(timers, timersByScript, scriptName) {
@@ -143,7 +143,7 @@ describe('Perf-2 · timersByScript Reverse-Index für stopScript', () => {
         return cleared;
     }
 
-    /** Baut Test-Datensatz auf */
+    /** Builds the test dataset */
     function buildTimers(scriptCount, timersPerScript, stateCount) {
         const timers = {};
         const timersByScript = new Map();
@@ -161,9 +161,9 @@ describe('Perf-2 · timersByScript Reverse-Index für stopScript', () => {
         return { timers, timersByScript };
     }
 
-    it('[EXPECTATION] Beide Implementierungen geben dieselben Timer zurück', () => {
+    it('[EXPECTATION] both implementations return the same timers', () => {
         const { timers, timersByScript } = buildTimers(5, 10, 20);
-        // Tiefe Kopie für slow
+        // Deep copy for slow
         const timersCopy = JSON.parse(JSON.stringify(timers));
 
         const slow = stopScriptTimersSlow(timersCopy, 'script.js.script_2')
@@ -171,10 +171,10 @@ describe('Perf-2 · timersByScript Reverse-Index für stopScript', () => {
         const fast = stopScriptTimersFast(timers, timersByScript, 'script.js.script_2')
             .sort((a, b) => a - b);
 
-        assert.deepEqual(fast, slow, 'Beide Methoden müssen dieselben Timer-IDs entfernen');
+        assert.deepEqual(fast, slow, 'Both methods must remove the same timer IDs');
     });
 
-    it('[EXPECTATION] Fast-Cleanup ist bei 50 Scripts × 100 Timern schneller', () => {
+    it('[EXPECTATION] fast cleanup is faster with 50 scripts x 100 timers', () => {
         const { timers: tSlow } = buildTimers(50, 100, 200);
         const { timers: tFast, timersByScript } = buildTimers(50, 100, 200);
 
@@ -192,15 +192,15 @@ describe('Perf-2 · timersByScript Reverse-Index für stopScript', () => {
 
         assert.ok(
             tFastMs < tSlowMs,
-            `Fast (${tFastMs.toFixed(1)}ms) muss schneller sein als Slow (${tSlowMs.toFixed(1)}ms)`,
+            `Fast (${tFastMs.toFixed(1)}ms) must be faster than Slow (${tSlowMs.toFixed(1)}ms)`,
         );
     });
 
-    it('[EXPECTATION] Nach Cleanup sind keine Timer des Scripts mehr vorhanden', () => {
+    it('[EXPECTATION] no timers of the script remain after cleanup', () => {
         const { timers, timersByScript } = buildTimers(3, 5, 10);
         stopScriptTimersFast(timers, timersByScript, 'script.js.script_0');
 
-        // Keine Timer von script_0 dürfen noch existieren
+        // No timers from script_0 may still exist
         for (const stateId of Object.keys(timers)) {
             for (const entry of timers[stateId]) {
                 assert.notEqual(entry.scriptName, 'script.js.script_0');
@@ -211,46 +211,46 @@ describe('Perf-2 · timersByScript Reverse-Index für stopScript', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 3. _adapterFrom – vorberechneter String statt Allokation pro setState
+// 3. _adapterFrom - precomputed string instead of allocation per setState
 // ─────────────────────────────────────────────────────────────────────────────
-describe('Perf-3 · _adapterFrom vorberechnet im Constructor', () => {
-    it('[EXPECTATION] Vorberechneter String ist identisch mit dynamisch erzeugtem', () => {
+describe('Perf-3 · _adapterFrom precomputed in constructor', () => {
+    it('[EXPECTATION] precomputed string is identical to dynamically created string', () => {
         const namespace = 'javascript.0';
-        // Vorberechnet (einmalig im Constructor)
+        // Precomputed (once in constructor)
         const _adapterFrom = `system.adapter.${namespace}`;
-        // Dynamisch (jedes Mal neu in prepareStateObject)
+        // Dynamic (new each time in prepareStateObject)
         const dynamic = `system.adapter.${namespace}`;
         assert.equal(_adapterFrom, dynamic);
     });
 
-    it('[EXPECTATION] Vorberechneter String ist referenz-stabil (immer dieselbe Instanz)', () => {
+    it('[EXPECTATION] precomputed string is reference-stable (always the same instance)', () => {
         const namespace = 'javascript.0';
-        // Vorberechnet – EINMAL erstellt, dann wiederverwendet
+        // Precomputed - created ONCE, then reused
         const _adapterFrom = `system.adapter.${namespace}`;
 
-        // Alle Zuweisungen zeigen auf dasselbe Objekt
+        // All assignments point to the same object
         const refs = [];
         for (let i = 0; i < 1_000; i++) refs.push(_adapterFrom);
 
-        // Jede Referenz ist identisch (gleicher Wert)
-        assert.ok(refs.every(r => r === _adapterFrom), 'Alle Referenzen müssen gleich sein');
+        // Every reference is identical (same value)
+        assert.ok(refs.every(r => r === _adapterFrom), 'All references must be equal');
 
-        // Dynamische Erzeugung liefert zwar gleichen Wert, aber ist CPU-teurer
-        // (Benchmark ist hier intentional kein harter Vergleich – GC macht Heap unzuverlässig)
+        // Dynamic creation has the same value but is more CPU-expensive
+        // (Benchmark here is intentionally not a strict comparison - GC makes heap usage unreliable)
         let r2 = '';
         for (let i = 0; i < 100_000; i++) r2 = `system.adapter.${namespace}`;
-        assert.equal(_adapterFrom, r2, 'Werte müssen identisch sein');
+        assert.equal(_adapterFrom, r2, 'Values must be identical');
     });
 
-    it('[EXPECTATION] prepareStateObject setzt from korrekt wenn leer', () => {
+    it('[EXPECTATION] prepareStateObject sets from correctly when empty', () => {
         const _adapterFrom = 'system.adapter.javascript.0';
-        // Logik aus prepareStateObject – from wird gesetzt wenn leer
+        // Logic from prepareStateObject - from is set when empty
         const oState = { val: 42, ack: true, from: '' };
         oState.from = (typeof oState.from === 'string' && oState.from !== '') ? oState.from : _adapterFrom;
         assert.equal(oState.from, _adapterFrom);
     });
 
-    it('[EXPECTATION] prepareStateObject behält vorhandenes from', () => {
+    it('[EXPECTATION] prepareStateObject keeps existing from', () => {
         const _adapterFrom = 'system.adapter.javascript.0';
         const oState = { val: 42, ack: true, from: 'system.adapter.other.0' };
         oState.from = (typeof oState.from === 'string' && oState.from !== '') ? oState.from : _adapterFrom;
@@ -259,11 +259,11 @@ describe('Perf-3 · _adapterFrom vorberechnet im Constructor', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 4. loadTypeScriptDeclarations – Set statt Array.includes() in O(n²)-Loop
+// 4. loadTypeScriptDeclarations - Set instead of Array.includes() in O(n^2) loop
 // ─────────────────────────────────────────────────────────────────────────────
 describe('Perf-4 · Set<string> in loadTypeScriptDeclarations', () => {
     /**
-     * Simuliert die ALTE Implementierung (O(n²) – Array.includes in Loop)
+     * Simulates the OLD implementation (O(n^2) - Array.includes in loop)
      */
     function buildPackagesOld(installedLibs, wantsTypings) {
         const packages = ['node', '@iobroker/types'];
@@ -283,7 +283,7 @@ describe('Perf-4 · Set<string> in loadTypeScriptDeclarations', () => {
     }
 
     /**
-     * Simuliert die NEUE Implementierung (O(n) – Set.has)
+     * Simulates the NEW implementation (O(n) - Set.has)
      */
     function buildPackagesNew(installedLibs, wantsTypings) {
         const packages = ['node', '@iobroker/types'];
@@ -308,7 +308,7 @@ describe('Perf-4 · Set<string> in loadTypeScriptDeclarations', () => {
         return packages;
     }
 
-    it('[EXPECTATION] Beide Implementierungen liefern identische packages-Liste', () => {
+    it('[EXPECTATION] both implementations return an identical package list', () => {
         const installed = ['rxjs', 'lodash', 'moment', 'axios', 'dayjs'];
         const wants = ['rxjs', 'lodash', 'rxjs/operators', 'moment/locale'];
         const old = buildPackagesOld(installed, wants);
@@ -316,15 +316,15 @@ describe('Perf-4 · Set<string> in loadTypeScriptDeclarations', () => {
         assert.deepEqual(old.sort(), newP.sort());
     });
 
-    it('[EXPECTATION] Set-Implementierung ergibt keine Duplikate', () => {
+    it('[EXPECTATION] Set implementation produces no duplicates', () => {
         const installed = ['rxjs', 'rxjs', 'lodash'];
         const wants = ['rxjs', 'rxjs/operators'];
         const packages = buildPackagesNew(installed, wants);
         const unique = [...new Set(packages)];
-        assert.deepEqual(packages.sort(), unique.sort(), 'Keine Duplikate erlaubt');
+        assert.deepEqual(packages.sort(), unique.sort(), 'No duplicates allowed');
     });
 
-    it('[EXPECTATION] Set-Implementierung ist bei 500 Libs schneller', () => {
+    it('[EXPECTATION] Set implementation is faster with 500 libs', () => {
         const installed = Array.from({ length: 500 }, (_, i) => `lib-${i}`);
         const wants = Array.from({ length: 500 }, (_, i) => `lib-${i}`);
         wants.push(...Array.from({ length: 100 }, (_, i) => `lib-${i}/sub`));
@@ -333,14 +333,14 @@ describe('Perf-4 · Set<string> in loadTypeScriptDeclarations', () => {
         const tNew = bench(() => buildPackagesNew(installed, wants), 100);
 
         assert.ok(tNew < tOld,
-            `Set (${tNew.toFixed(1)}ms) muss schneller sein als Array.includes (${tOld.toFixed(1)}ms)`);
+            `Set (${tNew.toFixed(1)}ms) must be faster than Array.includes (${tOld.toFixed(1)}ms)`);
     });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5. getData – lokale Variablen statt wiederholtem res.rows[i].doc
+// 5. getData - local variables instead of repeated res.rows[i].doc
 // ─────────────────────────────────────────────────────────────────────────────
-describe('Perf-5 · Lokale Variablen in getData() Objekt-Loop', () => {
+describe('Perf-5 · local variables in getData() object loop', () => {
     function buildRows(n) {
         return Array.from({ length: n }, (_, i) => ({
             id: `adapter.0.obj.${i}`,
@@ -352,10 +352,10 @@ describe('Perf-5 · Lokale Variablen in getData() Objekt-Loop', () => {
         }));
     }
 
-    it('[EXPECTATION] Beide Loop-Varianten füllen objects identisch', () => {
+    it('[EXPECTATION] both loop variants populate objects identically', () => {
         const rows = buildRows(1_000);
 
-        // ALTE Implementierung (wiederholter Indexzugriff)
+        // OLD implementation (repeated index access)
         const objectsOld = {};
         const enumsOld = [];
         for (let i = 0; i < rows.length; i++) {
@@ -366,7 +366,7 @@ describe('Perf-5 · Lokale Variablen in getData() Objekt-Loop', () => {
             if (rows[i].doc.type === 'enum') enumsOld.push(rows[i].doc._id);
         }
 
-        // NEUE Implementierung (lokale Variable)
+        // NEW implementation (local variable)
         const objectsNew = {};
         const enumsNew = [];
         for (let i = 0; i < rows.length; i++) {
@@ -383,7 +383,7 @@ describe('Perf-5 · Lokale Variablen in getData() Objekt-Loop', () => {
         assert.deepEqual(enumsOld.sort(), enumsNew.sort());
     });
 
-    it('[EXPECTATION] Lokale-Variante ist bei 50.000 Objekten schneller', () => {
+    it('[EXPECTATION] local-variable variant is faster with 50,000 objects', () => {
         const rows = buildRows(50_000);
 
         const tOld = bench(() => {
@@ -407,11 +407,11 @@ describe('Perf-5 · Lokale Variablen in getData() Objekt-Loop', () => {
             }
         }, 10);
 
-        assert.ok(tNew <= tOld * 1.1, // 10% Toleranz
-            `Lokale Var (${tNew.toFixed(1)}ms) darf nicht schlechter als Old (${tOld.toFixed(1)}ms) sein`);
+        assert.ok(tNew <= tOld * 1.1, // 10% tolerance
+            `Local var (${tNew.toFixed(1)}ms) must not be worse than old (${tOld.toFixed(1)}ms)`);
     });
 
-    it('[EXPECTATION] Leere doc-Einträge werden korrekt übersprungen', () => {
+    it('[EXPECTATION] empty doc entries are skipped correctly', () => {
         const rows = [
             { id: 'x', doc: { _id: 'x', type: 'state', common: {} } },
             { id: 'y', doc: null },
@@ -432,9 +432,9 @@ describe('Perf-5 · Lokale Variablen in getData() Objekt-Loop', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 6. setStateCountCheckInterval – for...in statt Object.keys().forEach()
+// 6. setStateCountCheckInterval - for...in instead of Object.keys().forEach()
 // ─────────────────────────────────────────────────────────────────────────────
-describe('Perf-6 · for...in statt Object.keys().forEach() im Interval', () => {
+describe('Perf-6 · for...in instead of Object.keys().forEach() in interval', () => {
     function buildScripts(n) {
         const scripts = {};
         for (let i = 0; i < n; i++) {
@@ -446,12 +446,12 @@ describe('Perf-6 · for...in statt Object.keys().forEach() im Interval', () => {
         return scripts;
     }
 
-    it('[EXPECTATION] for...in und Object.keys().forEach() liefern identische Ergebnisse', () => {
+    it('[EXPECTATION] for...in and Object.keys().forEach() return identical results', () => {
         const scripts1 = buildScripts(100);
         const scripts2 = JSON.parse(JSON.stringify(scripts1));
         const maxPerMinute = 1000;
 
-        // ALTE Methode
+        // OLD method
         const stoppedOld = [];
         Object.keys(scripts1).forEach(id => {
             if (!scripts1[id]) return;
@@ -465,7 +465,7 @@ describe('Perf-6 · for...in statt Object.keys().forEach() im Interval', () => {
             }
         });
 
-        // NEUE Methode
+        // NEW method
         const stoppedNew = [];
         for (const id in scripts2) {
             if (!scripts2[id]) continue;
@@ -486,11 +486,11 @@ describe('Perf-6 · for...in statt Object.keys().forEach() im Interval', () => {
         );
     });
 
-    it('[EXPECTATION] for...in alloziert weniger temporäre Arrays', () => {
+    it('[EXPECTATION] for...in allocates fewer temporary arrays', () => {
         const scripts = buildScripts(500);
         const keys = Object.keys(scripts);
 
-        // Messgrenze: Object.keys() erzeugt neues Array
+        // Measurement boundary: Object.keys() creates a new array
         const tKeys = bench(() => {
             let sum = 0;
             Object.keys(scripts).forEach(id => { sum += scripts[id].setStatePerMinuteCounter; });
@@ -501,15 +501,15 @@ describe('Perf-6 · for...in statt Object.keys().forEach() im Interval', () => {
             for (const id in scripts) { sum += scripts[id].setStatePerMinuteCounter; }
         }, 10_000);
 
-        assert.ok(tForIn <= tKeys * 1.2, // 20% Toleranz da JS-Engine optimiert
-            `for...in (${tForIn.toFixed(1)}ms) darf nicht deutlich schlechter als Object.keys (${tKeys.toFixed(1)}ms) sein`);
+        assert.ok(tForIn <= tKeys * 1.2, // 20% tolerance because JS engine optimizes
+            `for...in (${tForIn.toFixed(1)}ms) must not be significantly worse than Object.keys (${tKeys.toFixed(1)}ms)`);
     });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 7. onLog – for...in statt Object.keys().forEach() bei jeder Log-Nachricht
+// 7. onLog - for...in instead of Object.keys().forEach() for each log message
 // ─────────────────────────────────────────────────────────────────────────────
-describe('Perf-7 · for...in in onLog() statt Object.keys().forEach()', () => {
+describe('Perf-7 · for...in in onLog() instead of Object.keys().forEach()', () => {
     function buildLogSubscriptions(scriptCount, handlersPerScript) {
         const subs = {};
         for (let s = 0; s < scriptCount; s++) {
@@ -526,7 +526,7 @@ describe('Perf-7 · for...in in onLog() statt Object.keys().forEach()', () => {
         return subs;
     }
 
-    it('[EXPECTATION] Beide Varianten rufen dieselben Handler auf', () => {
+    it('[EXPECTATION] both variants call the same handlers', () => {
         const logSubs = buildLogSubscriptions(5, 3);
         const msg = { severity: 'info', message: 'test' };
 
@@ -551,9 +551,9 @@ describe('Perf-7 · for...in in onLog() statt Object.keys().forEach()', () => {
         assert.deepEqual(calledOld.sort(), calledNew.sort());
     });
 
-    it('[EXPECTATION] for...in erzeugt kein temporäres Keys-Array (Korrektheit bleibt)', () => {
-        // Timing-Vergleich zwischen for...in und Object.keys() ist nicht zuverlässig –
-        // V8 optimiert beide Varianten gleich gut. Wichtig ist die funktionale Korrektheit.
+    it('[EXPECTATION] for...in creates no temporary keys array (correctness remains)', () => {
+        // Timing comparison between for...in and Object.keys() is not reliable -
+        // V8 optimizes both variants similarly. Functional correctness is what matters.
         const logSubs = buildLogSubscriptions(20, 5);
         const msg = { severity: 'debug' };
 
@@ -576,12 +576,12 @@ describe('Perf-7 · for...in in onLog() statt Object.keys().forEach()', () => {
         }
 
         assert.equal(calledOld.length, calledNew.length,
-            'Anzahl aufgerufener Handler muss identisch sein');
+            'Number of called handlers must be identical');
         assert.deepEqual(calledOld.sort(), calledNew.sort(),
-            'Aufgerufene Subscriptions müssen identisch sein');
+            'Called subscriptions must be identical');
     });
 
-    it('[EXPECTATION] Leere logSubs-Einträge werden korrekt übersprungen', () => {
+    it('[EXPECTATION] empty logSubs entries are skipped correctly', () => {
         const logSubs = {
             'script.js.a': [],
             'script.js.b': [{ severity: '*', cb: () => {}, sandbox: {} }],
@@ -599,11 +599,11 @@ describe('Perf-7 · for...in in onLog() statt Object.keys().forEach()', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 8. subscriptionsObjectMap – O(1) Dispatch statt O(n) forEach in onObjectChange
+// 8. subscriptionsObjectMap - O(1) dispatch instead of O(n) forEach in onObjectChange
 // ─────────────────────────────────────────────────────────────────────────────
 describe('Perf-8 · subscriptionsObjectMap O(1) Dispatch', () => {
     /**
-     * Simuliert ALTE Implementierung: lineares forEach
+     * Simulates OLD implementation: linear forEach
      */
     function dispatchOld(subscriptionsObject, id, obj) {
         const called = [];
@@ -617,7 +617,7 @@ describe('Perf-8 · subscriptionsObjectMap O(1) Dispatch', () => {
     }
 
     /**
-     * Simuliert NEUE Implementierung: Map-Lookup O(1)
+     * Simulates NEW implementation: O(1) map lookup
      */
     function dispatchNew(subscriptionsObjectMap, id, obj) {
         const called = [];
@@ -647,7 +647,7 @@ describe('Perf-8 · subscriptionsObjectMap O(1) Dispatch', () => {
         return { arr, map };
     }
 
-    it('[EXPECTATION] Beide Implementierungen dispatchen dieselben Callbacks', () => {
+    it('[EXPECTATION] both implementations dispatch the same callbacks', () => {
         const { arr, map } = buildSubscriptions(100, 'system.adapter.test.0');
         const obj = { _id: 'system.adapter.test.0', type: 'instance' };
 
@@ -657,7 +657,7 @@ describe('Perf-8 · subscriptionsObjectMap O(1) Dispatch', () => {
         assert.deepEqual(calledOld.sort(), calledNew.sort());
     });
 
-    it('[EXPECTATION] Map-Dispatch ist bei 1000 Subscriptions schneller', () => {
+    it('[EXPECTATION] map dispatch is faster with 1000 subscriptions', () => {
         const { arr, map } = buildSubscriptions(1_000, 'target.pattern');
         const obj = {};
 
@@ -665,25 +665,25 @@ describe('Perf-8 · subscriptionsObjectMap O(1) Dispatch', () => {
         const tNew = bench(() => dispatchNew(map, 'target.pattern', obj), 10_000);
 
         assert.ok(tNew < tOld,
-            `Map (${tNew.toFixed(1)}ms) muss schneller sein als forEach (${tOld.toFixed(1)}ms)`);
+            `Map (${tNew.toFixed(1)}ms) must be faster than forEach (${tOld.toFixed(1)}ms)`);
     });
 
-    it('[EXPECTATION] Map liefert leeres Array bei unbekanntem Pattern', () => {
+    it('[EXPECTATION] map returns an empty array for unknown pattern', () => {
         const { map } = buildSubscriptions(50, 'known.id');
         const result = dispatchNew(map, 'unknown.id', {});
         assert.deepEqual(result, []);
     });
 
-    it('[EXPECTATION] Map bleibt korrekt nach add/remove einer Subscription', () => {
+    it('[EXPECTATION] map stays correct after add/remove of a subscription', () => {
         const map = new Map();
 
-        // Subscription hinzufügen
+        // Add subscription
         const addSub = (map, sub) => {
             if (!map.has(sub.pattern)) map.set(sub.pattern, []);
             map.get(sub.pattern).push(sub);
         };
 
-        // Subscription entfernen
+        // Remove subscription
         const removeSub = (map, subToRemove) => {
             const subs = map.get(subToRemove.pattern);
             if (!subs) return;
@@ -708,17 +708,17 @@ describe('Perf-8 · subscriptionsObjectMap O(1) Dispatch', () => {
         assert.equal(map.get('p.1')[0].name, 'b');
 
         removeSub(map, sub2);
-        assert.ok(!map.has('p.1'), 'Leerer Eintrag muss aus Map entfernt werden');
-        assert.ok(map.has('p.2'), 'Anderer Eintrag darf nicht betroffen sein');
+        assert.ok(!map.has('p.1'), 'Empty entry must be removed from map');
+        assert.ok(map.has('p.2'), 'Other entry must not be affected');
     });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Gesamt-Smoke-Test: Alle Optimierungen zusammen
+// Overall smoke test: all optimizations together
 // ─────────────────────────────────────────────────────────────────────────────
-describe('Integration · Alle Optimierungen gemeinsam', () => {
-    it('[EXPECTATION] Kombinierter Hot-Path (stateChange) läuft korrekt', () => {
-        // Simuliert den onStateChange-Hot-Path mit allen Fixes
+describe('Integration · all optimizations together', () => {
+    it('[EXPECTATION] combined hot path (stateChange) runs correctly', () => {
+        // Simulates the onStateChange hot path with all fixes
         const stateIds = [];
         const stateIdSet = new Set();
         const states = {};
@@ -748,24 +748,24 @@ describe('Integration · Alle Optimierungen gemeinsam', () => {
             }
         }
 
-        // 1000 neue States einfügen
+        // Insert 1000 new states
         const ids = makeStateIds(1_000);
         for (const id of ids) onStateChange(id, { val: 1, ack: true });
 
         assert.equal(stateIds.length, 1_000);
         assert.equal(stateIdSet.size, 1_000);
 
-        // Array muss sortiert sein
+        // Array must be sorted
         for (let i = 1; i < stateIds.length; i++) {
-            assert.ok(stateIds[i - 1] <= stateIds[i], 'Array muss sortiert bleiben');
+            assert.ok(stateIds[i - 1] <= stateIds[i], 'Array must stay sorted');
         }
 
-        // 500 States entfernen
+        // Remove 500 states
         for (let i = 0; i < 500; i++) onStateChange(ids[i], null);
         assert.equal(stateIds.length, 500);
         assert.equal(stateIdSet.size, 500);
 
-        // Set und Array müssen synchron sein
+        // Set and array must stay in sync
         for (const id of stateIds) assert.ok(stateIdSet.has(id));
         for (const id of stateIdSet) assert.ok(stateIds.includes(id));
     });

@@ -1,6 +1,14 @@
-const expect = require('chai').expect;
+const assert = require('node:assert').strict;
 const { log } = require('node:console');
 const setup = require('./lib/setup');
+
+function assertHasNoKeys(obj, keys) {
+    assert.ok(keys.every(key => !Object.prototype.hasOwnProperty.call(obj, key)));
+}
+
+function assertHasAllKeys(obj, keys) {
+    assert.ok(keys.every(key => Object.prototype.hasOwnProperty.call(obj, key)));
+}
 
 let objects = null;
 let states = null;
@@ -125,7 +133,7 @@ describe.only('Test JS', function () {
                         native: {},
                     };
                     objects.setObject(script._id, script, err => {
-                        expect(err).to.be.null;
+                        assert.equal(err, null);
                         setup.startAdapter(objects, states, () => _done());
                     });
                 },
@@ -136,7 +144,7 @@ describe.only('Test JS', function () {
     it('Test JS: Check if adapter started', function (done) {
         this.timeout(30000);
         checkConnectionOfAdapter(err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
             done();
         });
     });
@@ -181,8 +189,8 @@ describe.only('Test JS', function () {
                 if (state.val === 9) {
                     removeStateChangedHandler(onStateChanged);
                     states.getState('javascript.0.testCompareTime', (err, state) => {
-                        expect(err).to.be.null;
-                        expect(state.val).to.be.equal(9);
+                        assert.equal(err, null);
+                        assert.equal(state.val, 9);
                         done();
                     });
                 } else {
@@ -193,7 +201,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
         });
     });
 
@@ -230,7 +238,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
         });
     });
 
@@ -256,11 +264,11 @@ describe.only('Test JS', function () {
             if (id === 'javascript.0.test_creation_of_state' && state.val === 5) {
                 removeStateChangedHandler(onStateChanged);
                 states.getState('javascript.0.test_creation_of_state', (err, state) => {
-                    expect(err).to.be.null;
-                    expect(state.val).to.be.equal(5);
+                    assert.equal(err, null);
+                    assert.equal(state.val, 5);
                     objects.getObject('javascript.0.test_creation_of_state', (err, obj) => {
-                        expect(err).to.be.null;
-                        expect(obj).to.be.ok;
+                        assert.equal(err, null);
+                        assert.ok(obj);
 
                         done();
                     });
@@ -271,7 +279,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
         });
     });
 
@@ -295,12 +303,12 @@ describe.only('Test JS', function () {
             if (id === 'javascript.1.test_creation_of_foreign_state' && state.val === 6) {
                 removeStateChangedHandler(onStateChanged);
                 states.getState('javascript.1.test_creation_of_foreign_state', (err, state) => {
-                    expect(err).to.be.null;
-                    expect(state).to.be.ok;
-                    expect(state.val).to.be.equal(6);
+                    assert.equal(err, null);
+                    assert.ok(state);
+                    assert.equal(state.val, 6);
                     objects.getObject('javascript.1.test_creation_of_foreign_state', (err, obj) => {
-                        expect(err).to.be.null;
-                        expect(obj).to.be.ok;
+                        assert.equal(err, null);
+                        assert.ok(obj);
                         done();
                     });
                 });
@@ -308,7 +316,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
         });
     });
 
@@ -330,24 +338,24 @@ describe.only('Test JS', function () {
         };
 
         objects.getObject('javascript.0.test_creation_of_state', (err, obj) => {
-            expect(err).to.be.null;
-            expect(obj).to.be.ok;
+            assert.equal(err, null);
+            assert.ok(obj);
             states.getState('javascript.0.test_creation_of_state', (err, state) => {
-                expect(err).to.be.null;
-                expect(state).to.be.ok;
-                expect(state.val).to.be.equal(5);
+                assert.equal(err, null);
+                assert.ok(state);
+                assert.equal(state.val, 5);
 
                 const onStateChanged = function (id, state) {
                     if (id === 'javascript.0.test_creation_of_state' && state === null) {
                         removeStateChangedHandler(onStateChanged);
 
                         states.getState('javascript.0.test_creation_of_state', (err, state) => {
-                            expect(err).to.be.null;
-                            expect(state).to.be.not.ok;
+                            assert.equal(err, null);
+                            assert.ok(!state);
 
                             objects.getObject('javascript.0.test_creation_of_state', (err, obj) => {
-                                expect(err).to.be.undefined;
-                                expect(obj).to.be.not.ok;
+                                assert.equal(err, undefined);
+                                assert.ok(!obj);
                                 done();
                             });
                         });
@@ -356,7 +364,7 @@ describe.only('Test JS', function () {
                 addStateChangedHandler(onStateChanged);
 
                 objects.setObject(script._id, script, err => {
-                    expect(err).to.be.null;
+                    assert.equal(err, null);
                 });
             });
         });
@@ -380,29 +388,29 @@ describe.only('Test JS', function () {
         };
 
         objects.getObject('javascript.1.test_creation_of_foreign_state', (err, obj) => {
-            expect(err).to.be.null;
-            expect(obj).to.be.ok;
+            assert.equal(err, null);
+            assert.ok(obj);
             states.getState('javascript.1.test_creation_of_foreign_state', (err, state) => {
-                expect(err).to.be.null;
-                expect(state).to.be.ok;
-                expect(state.val).to.be.equal(6);
+                assert.equal(err, null);
+                assert.ok(state);
+                assert.equal(state.val, 6);
 
                 // we cannot delete foreign object, even if we created it.
                 setTimeout(function () {
                     objects.getObject('javascript.1.test_creation_of_foreign_state', (err, obj) => {
-                        expect(err).to.be.null;
-                        expect(obj).to.be.ok;
+                        assert.equal(err, null);
+                        assert.ok(obj);
                         states.getState('javascript.1.test_creation_of_foreign_state', (err, state) => {
-                            expect(err).to.be.null;
-                            expect(state).to.be.ok;
-                            expect(state.val).to.be.equal(6);
+                            assert.equal(err, null);
+                            assert.ok(state);
+                            assert.equal(state.val, 6);
                             done();
                         });
                     });
                 }, 400);
 
                 objects.setObject(script._id, script, err => {
-                    expect(err).to.be.null;
+                    assert.equal(err, null);
                 });
             });
         });
@@ -433,73 +441,68 @@ describe.only('Test JS', function () {
             native: {},
         };
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
             setTimeout(function () {
                 objects.getObject('javascript.0.test_createState_init', (err, obj) => {
-                    expect(err).to.be.null;
-                    expect(obj.common.name).to.be.equal('test_createState_init'); // = id
-                    expect(obj.common.type).to.be.equal('mixed');
-                    expect(obj.native).to.not.have.any.keys('name', 'desc', 'type', 'role');
+                    assert.equal(err, null);
+                    assert.equal(obj.common.name, 'test_createState_init'); // = id
+                    assert.equal(obj.common.type, 'mixed');
+                    assertHasNoKeys(obj.native, ['name', 'desc', 'type', 'role']);
 
                     objects.getObject('javascript.0.test_createState_common', (err, obj) => {
-                        expect(err).to.be.null;
-                        expect(obj.common.name).to.be.equal('common');
-                        expect(obj.common.desc).to.be.equal('test');
-                        expect(obj.common.type).to.be.equal('array');
-                        expect(obj.native).to.not.have.any.keys('name', 'desc', 'type', 'role');
+                        assert.equal(err, null);
+                        assert.equal(obj.common.name, 'common');
+                        assert.equal(obj.common.desc, 'test');
+                        assert.equal(obj.common.type, 'array');
+                        assertHasNoKeys(obj.native, ['name', 'desc', 'type', 'role']);
 
                         objects.getObject('javascript.0.test_createState_initCommon', (err, obj) => {
-                            expect(err).to.be.null;
-                            expect(obj.common.name).to.be.equal('initCommon');
-                            expect(obj.common.desc).to.be.equal('test');
-                            expect(obj.common.type).to.be.equal('number');
-                            expect(obj.native).to.not.have.any.keys('name', 'desc', 'type', 'role');
+                            assert.equal(err, null);
+                            assert.equal(obj.common.name, 'initCommon');
+                            assert.equal(obj.common.desc, 'test');
+                            assert.equal(obj.common.type, 'number');
+                            assertHasNoKeys(obj.native, ['name', 'desc', 'type', 'role']);
 
                             objects.getObject('javascript.0.test_createState_commonNative', (err, obj) => {
-                                expect(err).to.be.null;
-                                expect(obj.common.name).to.be.equal('commonNative');
-                                expect(obj.common.desc).to.be.equal('test');
-                                expect(obj.common.type).to.be.equal('object');
-                                expect(obj.native).to.not.have.any.keys('name', 'desc', 'type', 'role');
-                                expect(obj.native).to.have.all.keys('customProperty');
+                                assert.equal(err, null);
+                                assert.equal(obj.common.name, 'commonNative');
+                                assert.equal(obj.common.desc, 'test');
+                                assert.equal(obj.common.type, 'object');
+                                assertHasNoKeys(obj.native, ['name', 'desc', 'type', 'role']);
+                                assertHasAllKeys(obj.native, ['customProperty']);
 
                                 objects.getObject('javascript.0.test_createState_initCommonNative', (err, obj) => {
-                                    expect(err).to.be.null;
-                                    expect(obj.common.name).to.be.equal('initCommonNative');
-                                    expect(obj.common.desc).to.be.equal('test');
-                                    expect(obj.common.type).to.be.equal('number');
-                                    expect(obj.native).to.not.have.any.keys('name', 'desc', 'type', 'role');
-                                    expect(obj.native).to.have.all.keys('customProperty');
+                                    assert.equal(err, null);
+                                    assert.equal(obj.common.name, 'initCommonNative');
+                                    assert.equal(obj.common.desc, 'test');
+                                    assert.equal(obj.common.type, 'number');
+                                    assertHasNoKeys(obj.native, ['name', 'desc', 'type', 'role']);
+                                    assertHasAllKeys(obj.native, ['customProperty']);
 
                                     objects.getObject('javascript.0.test_createState_initForce', (err, obj) => {
-                                        expect(err).to.be.null;
-                                        expect(obj.common.name).to.be.equal('test_createState_initForce'); // = id
-                                        expect(obj.common.type).to.be.equal('mixed');
-                                        expect(obj.native).to.not.have.any.keys('name', 'desc', 'type', 'role');
+                                        assert.equal(err, null);
+                                        assert.equal(obj.common.name, 'test_createState_initForce'); // = id
+                                        assert.equal(obj.common.type, 'mixed');
+                                        assertHasNoKeys(obj.native, ['name', 'desc', 'type', 'role']);
 
                                         objects.getObject(
                                             'javascript.0.test_createState_initForceCommon',
                                             (err, obj) => {
-                                                expect(err).to.be.null;
-                                                expect(obj.common.name).to.be.equal('initFoceCommon');
-                                                expect(obj.common.desc).to.be.equal('test');
-                                                expect(obj.common.type).to.be.equal('boolean');
-                                                expect(obj.native).to.not.have.any.keys('name', 'desc', 'type', 'role');
+                                                assert.equal(err, null);
+                                                assert.equal(obj.common.name, 'initFoceCommon');
+                                                assert.equal(obj.common.desc, 'test');
+                                                assert.equal(obj.common.type, 'boolean');
+                                                assertHasNoKeys(obj.native, ['name', 'desc', 'type', 'role']);
 
                                                 objects.getObject(
                                                     'javascript.0.test_createState_initForceCommonNative',
                                                     (err, obj) => {
-                                                        expect(err).to.be.null;
-                                                        expect(obj.common.name).to.be.equal('initForceCommonNative');
-                                                        expect(obj.common.desc).to.be.equal('test');
-                                                        expect(obj.common.type).to.be.equal('boolean');
-                                                        expect(obj.native).to.not.have.any.keys(
-                                                            'name',
-                                                            'desc',
-                                                            'type',
-                                                            'role',
-                                                        );
-                                                        expect(obj.native).to.have.all.keys('customProperty');
+                                                        assert.equal(err, null);
+                                                        assert.equal(obj.common.name, 'initForceCommonNative');
+                                                        assert.equal(obj.common.desc, 'test');
+                                                        assert.equal(obj.common.type, 'boolean');
+                                                        assertHasNoKeys(obj.native, ['name', 'desc', 'type', 'role']);
+                                                        assertHasAllKeys(obj.native, ['customProperty']);
 
                                                         done();
                                                     },
@@ -548,7 +551,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
         });
     });
 
@@ -582,7 +585,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
         });
     });
 
@@ -618,7 +621,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
         });
     });
 
@@ -659,7 +662,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
         });
     });
 
@@ -692,16 +695,16 @@ describe.only('Test JS', function () {
         };
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
             setTimeout(function () {
                 if (!fs.existsSync(__dirname + '/../tmp/objects.json')) {
                     setTimeout(function () {
-                        expect(fs.readFileSync(__dirname + '/../tmp/objects.json').toString()).to.be.equal(time);
+                        assert.equal(fs.readFileSync(__dirname + '/../tmp/objects.json').toString(), time);
                         fs.unlinkSync(__dirname + '/../tmp/objects.json');
                         done();
                     }, 500);
                 } else {
-                    expect(fs.readFileSync(__dirname + '/../tmp/objects.json').toString()).to.be.equal(time);
+                    assert.equal(fs.readFileSync(__dirname + '/../tmp/objects.json').toString(), time);
                     fs.unlinkSync(__dirname + '/../tmp/objects.json');
                     done();
                 }
@@ -736,13 +739,13 @@ describe.only('Test JS', function () {
             if (id === 'javascript.0.test_createTempFile' && state.val !== '-') {
                 const tempFilePath = state.val;
 
-                expect(tempFilePath).to.be.a('string');
-                expect(tempFilePath.startsWith(os.tmpdir())).to.be.true;
-                expect(fs.existsSync(tempFilePath)).to.be.true;
+                assert.equal(typeof tempFilePath, 'string');
+                assert.equal(tempFilePath.startsWith(os.tmpdir()), true);
+                assert.equal(fs.existsSync(tempFilePath), true);
 
                 // Check content
                 const fileContent = fs.readFileSync(tempFilePath).toString();
-                expect(fileContent).to.be.equal('CONTENT_OK');
+                assert.equal(fileContent, 'CONTENT_OK');
 
                 removeStateChangedHandler(onStateChanged);
                 done();
@@ -750,7 +753,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
         });
     });
 
@@ -810,9 +813,9 @@ describe.only('Test JS', function () {
                     let count = types.length;
                     for (let t = 0; t < types.length; t++) {
                         states.getState(`javascript.0.test_getAstroDate_${types[t]}`, (err, state) => {
-                            expect(err).to.be.null;
-                            expect(state).to.be.ok;
-                            expect(state.val).to.be.ok;
+                            assert.equal(err, null);
+                            assert.ok(state);
+                            assert.ok(state.val);
 
                             if (state) console.log(types[types.length - count] + ': ' + state.val);
                             else console.log(types[types.length - count] + ' ERROR: ' + state);
@@ -825,7 +828,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
         });
     });
 
@@ -855,8 +858,8 @@ describe.only('Test JS', function () {
             if (state.val === 4) {
                 start = state.ts;
             } else if (state.val === 5) {
-                expect(start).to.be.not.equal(0);
-                expect(state.ts - start).to.be.least(950);
+                assert.notEqual(start, 0);
+                assert.ok(state.ts - start >= 950);
 
                 removeStateChangedHandler(onStateChanged);
                 setTimeout(done, 100);
@@ -888,8 +891,8 @@ describe.only('Test JS', function () {
 
         const onStateChanged = function (id, state) {
             if (id === 'javascript.0.test_setStateDelayed_stateObject') {
-                expect(state.val).to.be.true;
-                expect(state.ack).to.be.true;
+                assert.equal(state.val, true);
+                assert.equal(state.ack, true);
 
                 removeStateChangedHandler(onStateChanged);
                 setTimeout(done, 100);
@@ -926,8 +929,8 @@ describe.only('Test JS', function () {
             if (state.val === 6) {
                 start = state.ts;
             } else if (state.val === 7) {
-                expect(start).to.be.not.equal(0);
-                expect(state.ts - start).to.be.least(900);
+                assert.notEqual(start, 0);
+                assert.ok(state.ts - start >= 900);
 
                 removeStateChangedHandler(onStateChanged);
                 setTimeout(done, 100);
@@ -959,21 +962,21 @@ describe.only('Test JS', function () {
         };
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
             checkValueOfState(
                 'javascript.0.test_setStateDelayed_overwrite',
                 8,
                 err => {
-                    expect(err).to.be.ok;
+                    assert.ok(err);
 
                     states.getState('javascript.0.test_setStateDelayed_overwrite', (err, stateStart) => {
-                        expect(err).to.be.null;
-                        expect(stateStart.val).to.be.not.equal(8);
+                        assert.equal(err, null);
+                        assert.notEqual(stateStart.val, 8);
 
                         checkValueOfState('javascript.0.test_setStateDelayed_overwrite', 9, err => {
-                            expect(err).to.be.null;
+                            assert.equal(err, null);
                             states.getState('javascript.0.test_setStateDelayed_overwrite', err => {
-                                expect(err).to.be.null;
+                                assert.equal(err, null);
                                 done();
                             });
                         });
@@ -1006,17 +1009,17 @@ describe.only('Test JS', function () {
         };
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
 
             checkValueOfState(
                 'javascript.0.test_clearStateDelayed',
                 10,
                 err => {
-                    expect(err).to.be.ok;
+                    assert.ok(err);
 
                     states.getState('javascript.0.test_clearStateDelayed', (err, stateStart) => {
-                        expect(err).to.be.null;
-                        expect(stateStart.val).to.be.not.equal(10);
+                        assert.equal(err, null);
+                        assert.notEqual(stateStart.val, 10);
                         done();
                     });
                 },
@@ -1049,17 +1052,17 @@ describe.only('Test JS', function () {
         };
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
 
             setTimeout(() => {
                 states.getState('javascript.0.test_getStateDelayed_single_result', (err, delayedResult) => {
-                    expect(err).to.be.null;
+                    assert.equal(err, null);
                     console.log('delayedResult: ' + delayedResult.val);
                     const result = JSON.parse(delayedResult.val);
-                    expect(result[0]).to.be.ok;
-                    expect(result[0].timerId).to.be.ok;
-                    expect(result[0].left).to.be.ok;
-                    expect(result[0].delay).to.be.equal(1500);
+                    assert.ok(result[0]);
+                    assert.ok(result[0].timerId);
+                    assert.ok(result[0].left);
+                    assert.equal(result[0].delay, 1500);
                     done();
                 });
             }, 500);
@@ -1090,17 +1093,17 @@ describe.only('Test JS', function () {
         };
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
 
             setTimeout(() => {
                 states.getState('javascript.0.test_getStateDelayed_all_result', (err, delayedResult) => {
                     console.log('delayedResult!: ' + delayedResult.val);
-                    expect(err).to.be.null;
+                    assert.equal(err, null);
                     const result = JSON.parse(delayedResult.val);
-                    expect(result['javascript.0.test_getStateDelayed_all'][0]).to.be.ok;
-                    expect(result['javascript.0.test_getStateDelayed_all'][0].timerId).to.be.ok;
-                    expect(result['javascript.0.test_getStateDelayed_all'][0].left).to.be.ok;
-                    expect(result['javascript.0.test_getStateDelayed_all'][0].delay).to.be.equal(2500);
+                    assert.ok(result['javascript.0.test_getStateDelayed_all'][0]);
+                    assert.ok(result['javascript.0.test_getStateDelayed_all'][0].timerId);
+                    assert.ok(result['javascript.0.test_getStateDelayed_all'][0].left);
+                    assert.equal(result['javascript.0.test_getStateDelayed_all'][0].delay, 2500);
                     done();
                 });
             }, 500);
@@ -1140,7 +1143,7 @@ describe.only('Test JS', function () {
                     // on state change by setStateChanged('changed', 4, true) - should not be run, as it not change the state, including `state.ts`
                     count++;
                 }
-                expect(start).to.be.equal(0);
+                assert.equal(start, 0);
                 if (start === 0) {
                     // on state creation
                     start = state.ts;
@@ -1150,12 +1153,12 @@ describe.only('Test JS', function () {
                 if (count === 0) {
                     // on state change by setStateChanged('changed', 5, true)
                     count++;
-                    expect(state.ts - start).to.be.least(950);
-                    expect(state.ts - start).to.be.below(1450);
+                    assert.ok(state.ts - start >= 950);
+                    assert.ok(state.ts - start < 1450);
                 } else if (count === 1) {
                     // on state change by setState('changed', 5, true)
                     count++;
-                    expect(state.ts - start).to.be.least(1450);
+                    assert.ok(state.ts - start >= 1450);
                     removeStateChangedHandler(onStateChanged);
                     setTimeout(done, 100);
                 }
@@ -1202,7 +1205,7 @@ describe.only('Test JS', function () {
         const onStateChanged = function (id, state) {
             if (id !== 'javascript.0.test_selector_toArray') return;
             removeStateChangedHandler(onStateChanged);
-            expect(state.val).to.be.equal(2);
+            assert.equal(state.val, 2);
             done();
         };
         addStateChangedHandler(onStateChanged);
@@ -1227,11 +1230,11 @@ describe.only('Test JS', function () {
         };
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
             setTimeout(function () {
                 objects.getObject(script._id, (err, obj) => {
-                    expect(err).to.be.null;
-                    expect(obj.common.enabled).to.be.false;
+                    assert.equal(err, null);
+                    assert.equal(obj.common.enabled, false);
                     done();
                 });
             }, 1000);
@@ -1268,19 +1271,19 @@ describe.only('Test JS', function () {
         };
 
         objects.setObject(stopScript._id, stopScript, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
 
             objects.getObject(stopScript._id, (err, obj) => {
-                expect(err).to.be.null;
-                expect(obj.common.enabled).to.be.false;
+                assert.equal(err, null);
+                assert.equal(obj.common.enabled, false);
 
                 objects.setObject(script._id, script, err => {
-                    expect(err).to.be.null;
+                    assert.equal(err, null);
 
                     setTimeout(() => {
                         objects.getObject(stopScript._id, (err, obj) => {
-                            expect(err).to.be.null;
-                            expect(obj.common.enabled).to.be.true;
+                            assert.equal(err, null);
+                            assert.equal(obj.common.enabled, true);
                             done();
                         });
                     }, 1000);
@@ -1305,17 +1308,17 @@ describe.only('Test JS', function () {
             native: {},
         };
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
             checkValueOfState(
                 'javascript.0.test_global_setTestState',
                 16,
                 err => {
-                    expect(err).to.be.null;
+                    assert.equal(err, null);
 
                     states.getState('javascript.0.test_global_setTestState', (err, state) => {
-                        expect(err).to.be.null;
-                        expect(state).to.be.ok;
-                        expect(state.val).to.be.equal(16);
+                        assert.equal(err, null);
+                        assert.ok(state);
+                        assert.equal(state.val, 16);
                         done();
                     });
                 },
@@ -1350,7 +1353,7 @@ describe.only('Test JS', function () {
             if (id === 'javascript.0.testVar' && state.val === 0) {
                 setTimeout(function () {
                     states.setState('javascript.0.testVar', 6, err => {
-                        expect(err).to.be.null;
+                        assert.equal(err, null);
                     });
                 }, 1000);
             }
@@ -1362,7 +1365,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
         });
     }).timeout(5000);
 
@@ -1386,7 +1389,7 @@ describe.only('Test JS', function () {
             if (id === 'javascript.0.testVar1' && state.val === 1) {
                 setTimeout(function () {
                     states.setState('javascript.0.testVar1', 1, err => {
-                        expect(err).to.be.null;
+                        assert.equal(err, null);
                     });
                 }, 1000);
             }
@@ -1398,7 +1401,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
         });
     }).timeout(5000);
 
@@ -1673,14 +1676,14 @@ describe.only('Test JS', function () {
 
             // create device
             objects.setObject(device, { common: { name: 'Device' }, type: 'device' }, (err, obj) => {
-                expect(err).to.be.null;
+                assert.equal(err, null);
                 // create channel
                 objects.setObject(channel, { common: { name: 'Channel' }, type: 'channel' }, callback);
             });
         }
 
         createObjects((err, _obj) => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
             // objects.getObject('system.adapter.javascript.0', function(err, obj) {
             //     obj.native.enableSetObject = true;
             //     objects.setObject('system.adapter.javascript.0', function(err, obj) {
@@ -1690,8 +1693,8 @@ describe.only('Test JS', function () {
                 if (id === TEST_RESULTS && state.val) {
                     cnt += 1;
                     const ar = /^(OK;no=[\d]+)/.exec(state.val) || ['', state.val];
-                    expect(ar).to.be.ok;
-                    expect(ar[1]).to.be.equal('OK;no=' + cnt);
+                    assert.ok(ar);
+                    assert.equal(ar[1], 'OK;no=' + cnt);
 
                     if (cnt >= recs.length) {
                         removeStateChangedHandler(onStateChanged);
@@ -1703,7 +1706,7 @@ describe.only('Test JS', function () {
             addStateChangedHandler(onStateChanged);
 
             // write script into Objects => start script
-            objects.setObject(script._id, script, err => expect(err).to.be.null);
+            objects.setObject(script._id, script, err => assert.equal(err, null));
         });
     });
 
@@ -1739,7 +1742,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
         });
     }).timeout(4000);
 
@@ -1783,7 +1786,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
         });
     });
 
@@ -1826,7 +1829,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
         });
     });
 
@@ -1862,7 +1865,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
         });
     }).timeout(5000);
 
@@ -1898,7 +1901,7 @@ describe.only('Test JS', function () {
         addStateChangedHandler(onStateChanged);
 
         objects.setObject(script._id, script, err => {
-            expect(err).to.be.null;
+            assert.equal(err, null);
         });
     }).timeout(5000);
 
@@ -1928,7 +1931,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, err => expect(err).to.be.null);
+        objects.setObject(script._id, script, err => assert.equal(err, null));
     }).timeout(5000);
 
     it('Test JS: test read file from "vis.0"',  done => {
@@ -1955,7 +1958,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, err => expect(err).to.be.null);
+        objects.setObject(script._id, script, err => assert.equal(err, null));
     }).timeout(5000);
     */
 
@@ -2005,7 +2008,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, err => expect(err).to.be.null);
+        objects.setObject(script._id, script, err => assert.equal(err, null));
     }).timeout(5000);
 
     it('Test JS: subscribe on file', done => {
@@ -2036,7 +2039,7 @@ describe.only('Test JS', function () {
             if (id === 'javascript.0.file' && state.val === 'abcdef') {
                 if (!fileReceived) {
                     fileReceived = true;
-                    objects.writeFile('vis.0', 'main/data.txt', '12345', err => expect(err).to.be.undefined);
+                    objects.writeFile('vis.0', 'main/data.txt', '12345', err => assert.equal(err, undefined));
 
                     setTimeout(() => {
                         removeStateChangedHandler(onStateChanged);
@@ -2044,7 +2047,7 @@ describe.only('Test JS', function () {
                     }, 3000);
                 } else {
                     // after offFile we may not receive any updates
-                    expect(state.val).to.be.false;
+                    assert.equal(state.val, false);
                 }
             }
         };
@@ -2053,11 +2056,11 @@ describe.only('Test JS', function () {
 
         objects.setObject('vis.0', { type: 'meta', common: {} }, () => {
             objects.setObject(script._id, script, err => {
-                expect(err).to.be.null;
+                assert.equal(err, null);
 
                 // let the script be started
                 setTimeout(() => {
-                    objects.writeFile('vis.0', 'main/data.txt', 'abcdef', err => expect(err).to.be.undefined);
+                    objects.writeFile('vis.0', 'main/data.txt', 'abcdef', err => assert.equal(err, undefined));
                 }, 4000);
             });
         });
@@ -2089,14 +2092,14 @@ describe.only('Test JS', function () {
             if (id === 'javascript.0.test_formatTimeDiff' && state.val) {
                 const obj = JSON.parse(state.val);
 
-                expect(obj.diff1).to.be.a('string');
-                expect(obj.diff1).to.be.equal('51:09:15');
+                assert.equal(typeof obj.diff1, 'string');
+                assert.equal(obj.diff1, '51:09:15');
 
-                expect(obj.diff2).to.be.a('string');
-                expect(obj.diff2).to.be.equal('-3069:15');
+                assert.equal(typeof obj.diff2, 'string');
+                assert.equal(obj.diff2, '-3069:15');
 
-                expect(obj.diff3).to.be.a('string');
-                expect(obj.diff3).to.be.equal('04 Days, 8 hours, 1 minute, 41 seconds');
+                assert.equal(typeof obj.diff3, 'string');
+                assert.equal(obj.diff3, '04 Days, 8 hours, 1 minute, 41 seconds');
 
                 removeStateChangedHandler(onStateChanged);
                 done();
@@ -2104,7 +2107,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, err => expect(err).to.be.null);
+        objects.setObject(script._id, script, err => assert.equal(err, null));
     });
 
     it('Test JS: test getDateObject', function (done) {
@@ -2134,29 +2137,29 @@ describe.only('Test JS', function () {
             if (id === 'javascript.0.test_getDateObject' && state.val) {
                 const obj = JSON.parse(state.val);
 
-                expect(obj.now).to.be.a('number');
+                assert.equal(typeof obj.now, 'number');
                 const d = new Date(obj.now);
 
-                expect(obj.justHour).to.be.a('string');
+                assert.equal(typeof obj.justHour, 'string');
                 const justHour = new Date(obj.justHour);
-                expect(justHour.getHours()).to.be.equal(14);
-                expect(justHour.getMinutes()).to.be.equal(0);
-                expect(justHour.getFullYear()).to.be.equal(d.getFullYear());
-                expect(justHour.getMonth()).to.be.equal(d.getMonth());
+                assert.equal(justHour.getHours(), 14);
+                assert.equal(justHour.getMinutes(), 0);
+                assert.equal(justHour.getFullYear(), d.getFullYear());
+                assert.equal(justHour.getMonth(), d.getMonth());
 
-                expect(obj.timeToday).to.be.a('string');
+                assert.equal(typeof obj.timeToday, 'string');
                 const timeToday = new Date(obj.timeToday);
-                expect(timeToday.getHours()).to.be.equal(20);
-                expect(timeToday.getMinutes()).to.be.equal(15);
-                expect(timeToday.getFullYear()).to.be.equal(d.getFullYear());
-                expect(timeToday.getMonth()).to.be.equal(d.getMonth());
+                assert.equal(timeToday.getHours(), 20);
+                assert.equal(timeToday.getMinutes(), 15);
+                assert.equal(timeToday.getFullYear(), d.getFullYear());
+                assert.equal(timeToday.getMonth(), d.getMonth());
 
-                expect(obj.byTimestamp).to.be.a('string');
+                assert.equal(typeof obj.byTimestamp, 'string');
                 const byTimestamp = new Date(obj.byTimestamp);
-                expect(byTimestamp.getUTCHours()).to.be.equal(18);
-                expect(byTimestamp.getUTCDate()).to.be.equal(18);
-                expect(byTimestamp.getUTCMonth() + 1).to.be.equal(5);
-                expect(byTimestamp.getUTCFullYear()).to.be.equal(2024);
+                assert.equal(byTimestamp.getUTCHours(), 18);
+                assert.equal(byTimestamp.getUTCDate(), 18);
+                assert.equal(byTimestamp.getUTCMonth() + 1, 5);
+                assert.equal(byTimestamp.getUTCFullYear(), 2024);
 
                 removeStateChangedHandler(onStateChanged);
                 done();
@@ -2164,7 +2167,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, err => expect(err).to.be.null);
+        objects.setObject(script._id, script, err => assert.equal(err, null));
     });
 
     it('Test JS: test getAttr', function (done) {
@@ -2196,23 +2199,23 @@ describe.only('Test JS', function () {
             if (id === 'javascript.0.test_getAttr' && state.val) {
                 const obj = JSON.parse(state.val);
 
-                expect(obj.attr1).to.be.a('string');
-                expect(obj.attr1).to.be.equal('myVal');
+                assert.equal(typeof obj.attr1, 'string');
+                assert.equal(obj.attr1, 'myVal');
 
-                expect(obj.attr2).to.be.a('number');
-                expect(obj.attr2).to.be.equal(15);
+                assert.equal(typeof obj.attr2, 'number');
+                assert.equal(obj.attr2, 15);
 
-                expect(obj.attr3).to.be.a('boolean');
-                expect(obj.attr3).to.be.equal(true);
+                assert.equal(typeof obj.attr3, 'boolean');
+                assert.equal(obj.attr3, true);
 
-                expect(obj.attr4).to.be.a('string');
-                expect(obj.attr4).to.be.equal('yes');
+                assert.equal(typeof obj.attr4, 'string');
+                assert.equal(obj.attr4, 'yes');
 
-                expect(obj.attr5).to.be.a('string');
-                expect(obj.attr5).to.be.equal('three');
+                assert.equal(typeof obj.attr5, 'string');
+                assert.equal(obj.attr5, 'three');
 
-                expect(obj.attr6).to.be.a('number');
-                expect(obj.attr6).to.be.equal(2);
+                assert.equal(typeof obj.attr6, 'number');
+                assert.equal(obj.attr6, 2);
 
                 removeStateChangedHandler(onStateChanged);
                 done();
@@ -2220,7 +2223,7 @@ describe.only('Test JS', function () {
         };
         addStateChangedHandler(onStateChanged);
 
-        objects.setObject(script._id, script, err => expect(err).to.be.null);
+        objects.setObject(script._id, script, err => assert.equal(err, null));
     });
 
     after('Test JS: Stop js-controller', function (done) {

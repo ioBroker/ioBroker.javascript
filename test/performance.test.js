@@ -1,13 +1,13 @@
 'use strict';
 /**
- * Performance & Correctness Tests für iobroker.javascript – src/main.ts
+ * Performance & correctness tests for iobroker.javascript - src/main.ts
  *
- * Führe aus mit: npx mocha test/performance.test.js
+ * Run with: npx mocha test/performance.test.js
  */
 const assert = require('node:assert').strict;
 
 // ──────────────────────────────────────────────────────────────────────────────
-// Isolierte Hilfsfunktionen (aus main.ts extrahiert)
+// Isolated helper functions (extracted from main.ts)
 // ──────────────────────────────────────────────────────────────────────────────
 
 const HTTP_STATUS_TEXTS = new Map([
@@ -22,7 +22,7 @@ const HTTP_STATUS_TEXTS = new Map([
 ]);
 const httpStatusText = code => HTTP_STATUS_TEXTS.get(code) ?? `Error ${code}`;
 
-// Minimaler Adapter-Log-Mock
+// Minimal adapter log mock
 function createLogMock() {
     const messages = [];
     return {
@@ -37,10 +37,10 @@ function createLogMock() {
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-// 1. httpStatusText – O(1) Map statt Object-Literal pro Aufruf
+// 1. httpStatusText - O(1) map instead of object literal per call
 // ──────────────────────────────────────────────────────────────────────────────
 describe('httpStatusText()', () => {
-    it('liefert korrekten Text für bekannte HTTP-Codes', () => {
+    it('returns the correct text for known HTTP codes', () => {
         assert.equal(httpStatusText(400), 'Bad Request');
         assert.equal(httpStatusText(401), 'Unauthorized');
         assert.equal(httpStatusText(403), 'Forbidden');
@@ -51,26 +51,26 @@ describe('httpStatusText()', () => {
         assert.equal(httpStatusText(503), 'Service Unavailable');
     });
 
-    it('liefert generischen Text für unbekannte Codes', () => {
+    it('returns generic text for unknown codes', () => {
         assert.equal(httpStatusText(418), 'Error 418');
         assert.equal(httpStatusText(999), 'Error 999');
         assert.equal(httpStatusText(0), 'Error 0');
     });
 
-    it('Map-Instanz wird nur EINMAL erzeugt – kein GC-Druck durch neue Objekte', () => {
+    it('creates the map instance only ONCE - no GC pressure from new objects', () => {
         const start = process.memoryUsage().heapUsed;
         for (let i = 0; i < 100_000; i++) httpStatusText(500);
         const end = process.memoryUsage().heapUsed;
-        // Heap-Delta sollte minimal sein (< 1 MB)
-        assert.ok(end - start < 1024 * 1024, `Zu viel Heap-Zuwachs: ${end - start} Bytes`);
+        // Heap delta should stay minimal (< 1 MB)
+        assert.ok(end - start < 1024 * 1024, `Too much heap growth: ${end - start} bytes`);
     });
 });
 
 // ──────────────────────────────────────────────────────────────────────────────
-// 2. stateIdSet – O(1) Lookup statt O(n) Array.includes() – Performance-Test
+// 2. stateIdSet - O(1) lookup instead of O(n) Array.includes() - performance test
 // ──────────────────────────────────────────────────────────────────────────────
 describe('stateIdSet – O(1) Lookup vs O(n) Array.includes()', () => {
-    it('Set.has() ist bei 50.000 Einträgen schneller als Array.includes()', () => {
+    it('Set.has() is faster than Array.includes() for 50,000 entries', () => {
         const N = 50_000;
         const arr = [];
         const set = new Set();
@@ -80,7 +80,7 @@ describe('stateIdSet – O(1) Lookup vs O(n) Array.includes()', () => {
             set.add(`adapter.0.state.${i}`);
         }
 
-        const target = `adapter.0.state.${N - 1}`; // worst case – letztes Element
+        const target = `adapter.0.state.${N - 1}`; // worst case - last element
 
         const t0 = performance.now();
         for (let i = 0; i < 1_000; i++) arr.includes(target);
@@ -92,11 +92,11 @@ describe('stateIdSet – O(1) Lookup vs O(n) Array.includes()', () => {
 
         assert.ok(
             tSet < tArray,
-            `Set (${tSet.toFixed(2)}ms) sollte schneller sein als Array (${tArray.toFixed(2)}ms)`,
+            `Set (${tSet.toFixed(2)}ms) should be faster than Array (${tArray.toFixed(2)}ms)`,
         );
     });
 
-    it('stateIds und stateIdSet bleiben bei add/remove synchron', () => {
+    it('stateIds and stateIdSet stay in sync on add/remove', () => {
         const stateIds = [];
         const stateIdSet = new Set();
 
@@ -116,7 +116,7 @@ describe('stateIdSet – O(1) Lookup vs O(n) Array.includes()', () => {
 
         addState('a.0.state.1');
         addState('a.0.state.2');
-        addState('a.0.state.1'); // Duplikat – darf nicht doppelt eingefügt werden
+        addState('a.0.state.1'); // Duplicate - must not be inserted twice
 
         assert.equal(stateIds.length, 2);
         assert.equal(stateIdSet.size, 2);
@@ -128,7 +128,7 @@ describe('stateIdSet – O(1) Lookup vs O(n) Array.includes()', () => {
         assert.ok(stateIdSet.has('a.0.state.2'));
     });
 
-    it('stateIdSet.has() übersteht 100.000 Lookups ohne Fehler', () => {
+    it('stateIdSet.has() handles 100,000 lookups without errors', () => {
         const set = new Set();
         for (let i = 0; i < 1_000; i++) set.add(`js.0.s.${i}`);
         let found = 0;
@@ -140,7 +140,7 @@ describe('stateIdSet – O(1) Lookup vs O(n) Array.includes()', () => {
 });
 
 // ──────────────────────────────────────────────────────────────────────────────
-// 3. nameById – O(1) reverse lookup statt O(n) linearer Scan
+// 3. nameById - O(1) reverse lookup instead of O(n) linear scan
 // ──────────────────────────────────────────────────────────────────────────────
 describe('nameById – O(1) getName() Reverse-Map', () => {
     function createNameStore() {
@@ -180,7 +180,7 @@ describe('nameById – O(1) getName() Reverse-Map', () => {
         return { addToNames, removeFromNames, getName, names, nameById };
     }
 
-    it('findet den Namen einer ID in O(1)', () => {
+    it('finds the name of an ID in O(1)', () => {
         const store = createNameStore();
         store.addToNames({ _id: 'js.0.vars.temp', common: { name: 'Temperatur' } });
         store.addToNames({ _id: 'js.0.vars.hum', common: { name: 'Humidity' } });
@@ -190,7 +190,7 @@ describe('nameById – O(1) getName() Reverse-Map', () => {
         assert.equal(store.getName('js.0.vars.unknown'), null);
     });
 
-    it('removeFromNames entfernt ID korrekt aus Reverse-Map', () => {
+    it('removeFromNames correctly removes an ID from the reverse map', () => {
         const store = createNameStore();
         store.addToNames({ _id: 'js.0.vars.temp', common: { name: 'Temperatur' } });
         store.removeFromNames('js.0.vars.temp');
@@ -199,7 +199,7 @@ describe('nameById – O(1) getName() Reverse-Map', () => {
         assert.ok(!store.nameById.has('js.0.vars.temp'));
     });
 
-    it('mehrere IDs mit gleichem Namen werden korrekt verwaltet', () => {
+    it('correctly manages multiple IDs with the same name', () => {
         const store = createNameStore();
         store.addToNames({ _id: 'js.0.a', common: { name: 'Sensor' } });
         store.addToNames({ _id: 'js.0.b', common: { name: 'Sensor' } });
@@ -209,12 +209,12 @@ describe('nameById – O(1) getName() Reverse-Map', () => {
         assert.ok(Array.isArray(store.names['Sensor']));
 
         store.removeFromNames('js.0.a');
-        // Danach noch 1 Element – sollte kein Array mehr sein
+        // After this, only 1 element remains - it should no longer be an array
         assert.equal(store.getName('js.0.a'), null);
         assert.equal(store.getName('js.0.b'), 'Sensor');
     });
 
-    it('Map.get() ist bei 10.000 Objekten deutlich schneller als linearer Scan', () => {
+    it('Map.get() is significantly faster than a linear scan with 10,000 objects', () => {
         const N = 10_000;
         const namesObj = {};
         const nameById = new Map();
@@ -243,16 +243,16 @@ describe('nameById – O(1) getName() Reverse-Map', () => {
 
         assert.ok(
             tMap < tLinear,
-            `Map (${tMap.toFixed(2)}ms) sollte schneller sein als Scan (${tLinear.toFixed(2)}ms)`,
+            `Map (${tMap.toFixed(2)}ms) should be faster than scan (${tLinear.toFixed(2)}ms)`,
         );
     });
 });
 
 // ──────────────────────────────────────────────────────────────────────────────
-// 4. onUnload – callback IMMER aufgerufen (auch wenn stopAllScripts wirft)
+// 4. onUnload - callback is ALWAYS called (even if stopAllScripts throws)
 // ──────────────────────────────────────────────────────────────────────────────
 describe('onUnload() – Shutdown Safety', () => {
-    it('ruft callback auf auch wenn stopAllScripts wirft', async () => {
+    it('calls callback even when stopAllScripts throws', async () => {
         const { log, messages } = createLogMock();
         let callbackCalled = false;
 
@@ -270,14 +270,14 @@ describe('onUnload() – Shutdown Safety', () => {
 
         await onUnload(() => { callbackCalled = true; });
 
-        assert.ok(callbackCalled, 'callback muss immer aufgerufen werden');
+        assert.ok(callbackCalled, 'callback must always be called');
         assert.ok(
             messages.some(m => m.level === 'error' && m.msg.includes('stop failed')),
-            'Fehler muss mit log.error geloggt werden',
+            'error must be logged with log.error',
         );
     });
 
-    it('ruft callback auf ohne Fehler wenn alles normal läuft', async () => {
+    it('calls callback without errors when everything runs normally', async () => {
         let called = false;
         const onUnload = async (callback) => {
             try { /* normal cleanup */ } catch { /* nothing */ } finally { callback(); }
@@ -288,16 +288,16 @@ describe('onUnload() – Shutdown Safety', () => {
 });
 
 // ──────────────────────────────────────────────────────────────────────────────
-// 5. unsubscribe() – Array-Rekursion via this (Bug-Fix Prüfung)
+// 5. unsubscribe() - array recursion via this (bugfix check)
 // ──────────────────────────────────────────────────────────────────────────────
-describe('unsubscribe() – this-Rekursion (Bug-Fix)', () => {
-    it('ruft this.unsubscribe pro Array-Element auf (kein ReferenceError)', () => {
+describe('unsubscribe() - this recursion (bugfix)', () => {
+    it('calls this.unsubscribe for each array element (no ReferenceError)', () => {
         const called = [];
 
         const obj = {
             unsubscribe(id) {
                 if (Array.isArray(id)) {
-                    id.forEach(sub => this.unsubscribe(sub)); // ← KORREKT mit this
+                    id.forEach(sub => this.unsubscribe(sub)); // Correct: use this
                     return;
                 }
                 called.push(id);
@@ -308,10 +308,10 @@ describe('unsubscribe() – this-Rekursion (Bug-Fix)', () => {
         assert.deepEqual(called, ['a.0.s.1', 'a.0.s.2', 'a.0.s.3']);
     });
 
-    it('globale unsubscribe() (ohne this) würde ReferenceError werfen – Fix bestätigt', () => {
+    it('global unsubscribe() (without this) would throw a ReferenceError - fix confirmed', () => {
         const broken = function (id) {
             if (Array.isArray(id)) {
-                // Simuliere den BUG (globale Funktion)
+                // Simulate the bug (global function)
                 id.forEach(() => { throw new ReferenceError('unsubscribe is not defined'); });
             }
         };
@@ -322,7 +322,7 @@ describe('unsubscribe() – this-Rekursion (Bug-Fix)', () => {
         );
     });
 
-    it('loggt Warnung bei leerem id', () => {
+    it('logs a warning for an empty id', () => {
         const { log, messages } = createLogMock();
         const id = '';
         if (!id) log.warn('unsubscribe: empty name');
@@ -331,10 +331,10 @@ describe('unsubscribe() – this-Rekursion (Bug-Fix)', () => {
 });
 
 // ──────────────────────────────────────────────────────────────────────────────
-// 6. dayTimeSchedules – Timer-Leak: alter Timer wird vor Neu-Setzen gecleart
+// 6. dayTimeSchedules - timer leak: clear old timer before setting a new one
 // ──────────────────────────────────────────────────────────────────────────────
-describe('dayTimeSchedules() – Memory Leak Prüfung', () => {
-    it('cleart alten Timer bevor neuer gesetzt wird', () => {
+describe('dayTimeSchedules() - memory leak check', () => {
+    it('clears the old timer before setting a new one', () => {
         const clearedIds = [];
         const origClear = globalThis.clearTimeout;
         globalThis.clearTimeout = (t) => {
@@ -345,7 +345,7 @@ describe('dayTimeSchedules() – Memory Leak Prüfung', () => {
         let dayScheduleTimer = setTimeout(() => {}, 9_999_999);
         const oldTimer = dayScheduleTimer;
 
-        // Gefixte Logik: erst clearen, dann null setzen
+        // Fixed logic: clear first, then set to null
         if (dayScheduleTimer) {
             clearTimeout(dayScheduleTimer);
             dayScheduleTimer = null;
@@ -354,13 +354,13 @@ describe('dayTimeSchedules() – Memory Leak Prüfung', () => {
 
         globalThis.clearTimeout = origClear; // restore
 
-        assert.ok(clearedIds.includes(oldTimer), 'Alter Timer muss vor Neu-Setzen gecleart sein');
-        assert.notEqual(dayScheduleTimer, null, 'Neuer Timer muss gesetzt sein');
+        assert.ok(clearedIds.includes(oldTimer), 'Old timer must be cleared before setting a new one');
+        assert.notEqual(dayScheduleTimer, null, 'New timer must be set');
 
         clearTimeout(dayScheduleTimer);
     });
 
-    it('kein Timer-Leak bei 10x schnell aufgerufenen dayTimeSchedules', () => {
+    it('has no timer leak when dayTimeSchedules is called quickly 10 times', () => {
         let timer = null;
         const clearedCount = { n: 0 };
 
@@ -376,16 +376,16 @@ describe('dayTimeSchedules() – Memory Leak Prüfung', () => {
         for (let i = 0; i < 10; i++) simulateDayTimeSchedules();
         clearTimeout(timer);
 
-        // 9 von 10 Timern wurden gecleart (der erste hatte keinen Vorgänger)
-        assert.equal(clearedCount.n, 9, 'Alle vorherigen Timer müssen gecleart worden sein');
+        // 9 out of 10 timers were cleared (the first had no predecessor)
+        assert.equal(clearedCount.n, 9, 'All previous timers must have been cleared');
     });
 });
 
 // ──────────────────────────────────────────────────────────────────────────────
-// 7. installNpm – timeout gesetzt (kein endloses Blockieren)
+// 7. installNpm - timeout set (no endless blocking)
 // ──────────────────────────────────────────────────────────────────────────────
-describe('installNpm() – Timeout-Option', () => {
-    it('übergibt timeout:120000 an child_process.exec', (done) => {
+describe('installNpm() - timeout option', () => {
+    it('passes timeout:120000 to child_process.exec', (done) => {
         const capturedOpts = [];
 
         const mockExec = (_cmd, options) => {
@@ -401,12 +401,12 @@ describe('installNpm() – Timeout-Option', () => {
 
         const child = mockExec('npm install test-lib --omit=dev', { timeout: 120_000 });
         child.on('exit', () => {
-            assert.equal(capturedOpts[0].timeout, 120_000, 'timeout muss 120.000ms sein');
+            assert.equal(capturedOpts[0].timeout, 120_000, 'timeout must be 120,000ms');
             done();
         });
     });
 
-    it('rejectet bei exit-Code != 0', (done) => {
+    it('rejects for exit code != 0', (done) => {
         const mockExec = (_cmd, _opts) => ({
             stdout: { on: () => {} },
             stderr: { on: () => {} },
@@ -427,7 +427,7 @@ describe('installNpm() – Timeout-Option', () => {
         });
 
         installNpm('broken-lib').then(
-            () => { done(new Error('Hätte rejecten sollen')); },
+            () => { done(new Error('Should have rejected')); },
             (err) => {
                 assert.ok(err.message.includes('exited with code 1'));
                 done();
@@ -437,7 +437,7 @@ describe('installNpm() – Timeout-Option', () => {
 });
 
 // ──────────────────────────────────────────────────────────────────────────────
-// 8. convertBackStringifiedValues – JSON-Parsing für object/array States
+// 8. convertBackStringifiedValues - JSON parsing for object/array states
 // ──────────────────────────────────────────────────────────────────────────────
 describe('convertBackStringifiedValues()', () => {
     const makeConverter = (objects) => (id, state) => {
@@ -454,36 +454,36 @@ describe('convertBackStringifiedValues()', () => {
         return state;
     };
 
-    it('parst JSON-String für object-Type korrekt', () => {
+    it('parses JSON string for object type correctly', () => {
         const conv = makeConverter({ 'js.0.v': { common: { type: 'object' } } });
         const result = conv('js.0.v', { val: '{"a":1,"b":2}' });
         assert.deepEqual(result.val, { a: 1, b: 2 });
     });
 
-    it('parst JSON-String für array-Type korrekt', () => {
+    it('parses JSON string for array type correctly', () => {
         const conv = makeConverter({ 'js.0.arr': { common: { type: 'array' } } });
         const result = conv('js.0.arr', { val: '[1,2,3]' });
         assert.deepEqual(result.val, [1, 2, 3]);
     });
 
-    it('behält ungültiges JSON als String', () => {
+    it('keeps invalid JSON as string', () => {
         const conv = makeConverter({ 'js.0.v': { common: { type: 'object' } } });
         const result = conv('js.0.v', { val: 'not-json{{' });
         assert.equal(result.val, 'not-json{{');
     });
 
-    it('modifiziert number-Type States nicht', () => {
+    it('does not modify number-type states', () => {
         const conv = makeConverter({ 'js.0.n': { common: { type: 'number' } } });
         const result = conv('js.0.n', { val: 42 });
         assert.equal(result.val, 42);
     });
 
-    it('gibt null zurück wenn state null ist', () => {
+    it('returns null when state is null', () => {
         const conv = makeConverter({});
         assert.equal(conv('any.id', null), null);
     });
 
-    it('gibt undefined zurück wenn state undefined ist', () => {
+    it('returns undefined when state is undefined', () => {
         const conv = makeConverter({});
         assert.equal(conv('any.id', undefined), undefined);
     });

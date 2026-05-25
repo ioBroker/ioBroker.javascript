@@ -97,7 +97,7 @@ export function sandBox(
                         }
                     });
                 } else {
-                    // IO-3: Object.assign statt Object.keys().forEach() – kein temporäres Keys-Array
+                    // IO-3: Object.assign instead of Object.keys().forEach() – no temporary keys array
                     adapter.getForeignStates(pattern, (_err, _states) => _states && Object.assign(states, _states));
                 }
             } else {
@@ -533,7 +533,7 @@ export function sandBox(
                     if (!(adapter.config as JavaScriptAdapterConfig).subscribe && context.interimStateValues[id]) {
                         // if the state is changed, we will compare it with interimStateValues
                         const oldState = context.interimStateValues[id];
-                        // IO-1: for…in statt Object.keys().filter().every() – kein temporäres Array pro Aufruf
+                        // IO-1: for…in instead of Object.keys().filter().every() – no temporary array per call
                         let stateHasChanged = false;
                         for (const attr in stateAsObject) {
                             if (attr === 'ts') {
@@ -1027,7 +1027,7 @@ export function sandBox(
                 }
             }
 
-            // IO-2: O(1) Deduplizierung via Set statt O(n²) resUnique.includes()
+            // IO-2: O(1) deduplication via Set instead of O(n²) resUnique.includes()
             const resUnique: string[] = [...new Set(res)];
 
             for (let i = 0; i < resUnique.length; i++) {
@@ -1691,7 +1691,7 @@ export function sandBox(
             if (oPattern?.id && Array.isArray(oPattern.id)) {
                 const result: (IobSchedule | string | null | undefined)[] = [];
                 for (let t = 0; t < oPattern.id.length; t++) {
-                    // IO-4: Spread statt JSON.parse(JSON.stringify()) – kein tiefer Clone nötig (nur primitive Felder)
+                    // IO-4: Spread instead of JSON.parse(JSON.stringify()) – no deep clone needed (only primitive fields)
                     const pa: Pattern = { ...oPattern, id: oPattern.id[t] };
                     result.push(
                         sandbox.subscribe(pa, callbackOrChangeTypeOrId, value) as
@@ -1944,7 +1944,7 @@ export function sandBox(
 
                     // Subscribe to all members of enum
                     for (const objId of members) {
-                        // IO-6: `in` Operator statt Object.keys().includes() – O(1) statt O(n)
+                        // IO-6: `in` operator instead of Object.keys().includes() – O(1) instead of O(n)
                         if (!(objId in subscriptions)) {
                             if (objects?.[objId]?.type === 'state') {
                                 // Just subscribe to states
@@ -2653,14 +2653,14 @@ export function sandBox(
                 Object.keys(context.scripts).forEach(
                     name =>
                         context.scripts[name].schedules &&
-                        // IO-8: Spread statt JSON.parse(JSON.stringify()) – _ioBroker hat nur primitive Felder
+                        // IO-8: Spread instead of JSON.parse(JSON.stringify()) – _ioBroker has only primitive fields
                         context.scripts[name].schedules.forEach(s =>
                             schedules.push({ ...s._ioBroker } as unknown as ScheduleName),
                         ),
                 );
             } else {
                 script.schedules &&
-                    // IO-8: Spread statt JSON.parse(JSON.stringify())
+                    // IO-8: Spread instead of JSON.parse(JSON.stringify())
                     script.schedules.forEach(s => schedules.push({ ...s._ioBroker } as unknown as ScheduleName));
             }
             return schedules;
@@ -2863,7 +2863,7 @@ export function sandBox(
                         delete timers[id];
                     }
                 }
-                // IO-7: timersByScript Reverse-Index aktualisieren wenn State keine Timer mehr hat
+                // IO-7: update the timersByScript reverse-index when a state has no more timers
                 if (!timers[id]) {
                     for (const scriptName of removedScripts) {
                         const stateIds = context.timersByScript.get(scriptName);
@@ -4093,7 +4093,7 @@ export function sandBox(
                         errorInCallback(err as Error);
                     }
                 }, ms);
-                // IO-10: Set.add() – O(1) statt Array.push()
+                // IO-10: Set.add() – O(1) instead of Array.push()
                 script.intervals.add(int);
 
                 if (sandbox.verbose) {
@@ -4105,7 +4105,7 @@ export function sandBox(
             return null;
         },
         clearInterval: function (id: NodeJS.Timeout): void {
-            // IO-10: Set.has/delete – O(1) statt Array.indexOf+splice O(n)
+            // IO-10: Set.has/delete – O(1) instead of Array.indexOf+splice O(n)
             if (script.intervals.has(id)) {
                 if (sandbox.verbose) {
                     sandbox.log('clearInterval() => cleared', 'info');
@@ -4121,7 +4121,7 @@ export function sandBox(
         setTimeout: function (callback: (args?: any[]) => void, ms: number, ...args: any[]): NodeJS.Timeout | null {
             if (typeof callback === 'function') {
                 const to = setTimeout(() => {
-                    // IO-10: Set.delete – O(1) statt Array.indexOf+splice O(n)
+                    // IO-10: Set.delete – O(1) instead of Array.indexOf+splice O(n)
                     script.timeouts.delete(to);
 
                     try {
@@ -4133,7 +4133,7 @@ export function sandBox(
                 if (sandbox.verbose) {
                     sandbox.log(`setTimeout(ms=${ms})`, 'info');
                 }
-                // IO-10: Set.add – O(1) statt Array.push
+                // IO-10: Set.add – O(1) instead of Array.push
                 script.timeouts.add(to);
                 return to;
             }
@@ -4141,7 +4141,7 @@ export function sandBox(
             return null;
         },
         clearTimeout: function (id: NodeJS.Timeout): void {
-            // IO-10: Set.has/delete – O(1) statt Array.indexOf+splice O(n)
+            // IO-10: Set.has/delete – O(1) instead of Array.indexOf+splice O(n)
             if (script.timeouts.has(id)) {
                 if (sandbox.verbose) {
                     sandbox.log('clearTimeout() => cleared', 'info');

@@ -849,8 +849,6 @@ class JavaScript extends Adapter {
     async onReady(): Promise<void> {
         this.errorLogFunction = this.log;
         this.context.errorLogFunction = this.log;
-        // Precompute once – avoids string template alloc on every setState call
-
         this.config.maxSetStatePerMinute = parseInt(this.config.maxSetStatePerMinute as unknown as string, 10) || 1000;
         this.config.maxTriggersPerScript = parseInt(this.config.maxTriggersPerScript as unknown as string, 10) || 100;
 
@@ -2186,7 +2184,8 @@ class JavaScript extends Adapter {
 
                 // remember all IDs – sort once to guarantee the sorted invariant
                 // required by binaryIndexOf() / sortedInsert() used later
-                for (const id of Object.keys(res).sort()) {
+                const keys = Object.keys(res).sort();
+                for (const id of keys) {
                     this.stateIds.push(id);
                     this.stateIdSet.add(id);
                 }

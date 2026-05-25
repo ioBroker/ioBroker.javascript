@@ -1,7 +1,7 @@
 const os = require('node:os');
 const path = require('node:path');
 const fs = require('node:fs');
-const expect = require('chai').expect;
+const assert = require('node:assert').strict;
 const Mirror = require('../build/lib/mirror');
 
 describe('Mirror', () => {
@@ -29,7 +29,7 @@ describe('Mirror', () => {
                 fs.closeSync(fs.openSync(script, 'w'));
 
                 mirror.onFileChange = (_event, file) => {
-                    expect(path.normalize(file)).to.equal(script);
+                    assert.equal(path.normalize(file), script);
 
                     done();
                 };
@@ -51,7 +51,7 @@ describe('Mirror', () => {
                 fs.symlinkSync(script, symlink);
 
                 mirror.onFileChange = (_event, file) => {
-                    expect(path.normalize(file)).to.equal(symlink);
+                    assert.equal(path.normalize(file), symlink);
 
                     done();
                 };
@@ -74,7 +74,7 @@ describe('Mirror', () => {
 
                 mirror.onFileChange = (event, file) => {
                     if (process.platform === 'linux' || process.platform === 'win32') {
-                        expect(path.normalize(file)).to.equal(path.join(symlink, path.basename(script)));
+                        assert.equal(path.normalize(file), path.join(symlink, path.basename(script)));
 
                         done();
                     }
@@ -105,7 +105,7 @@ describe('Mirror', () => {
                 fs.symlinkSync(path.join(relativeDirectory, path.basename(script)), symlink);
 
                 mirror.onFileChange = (_event, file) => {
-                    expect(path.normalize(file)).to.equal(symlink);
+                    assert.equal(path.normalize(file), symlink);
 
                     done();
                 };
@@ -130,7 +130,7 @@ describe('Mirror', () => {
 
                 mirror.onFileChange = (event, file) => {
                     if (process.platform === 'linux' || process.platform === 'win32') {
-                        expect(path.normalize(file)).to.equal(path.join(symlink, path.basename(script)));
+                        assert.equal(path.normalize(file), path.join(symlink, path.basename(script)));
 
                         done();
                     }

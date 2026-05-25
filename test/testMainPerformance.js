@@ -4,7 +4,7 @@
  * Ausführen: mocha test/testMainPerformance.js --exit
  */
 
-const expect = require('chai').expect;
+const assert = require('node:assert').strict;
 
 // ──────────────────────────────────────────────────────────────
 // Hilfsklassen um die betroffenen Methoden isoliert zu testen
@@ -158,9 +158,9 @@ describe('main.ts Performance Bug Tests', function () {
             fill(mgr, 100);
             const target = 'adapter.0.state000050';
             mgr.removeLinear(target);
-            expect(mgr.stateIds.includes(target)).to.be.false;
-            expect(mgr.stateIdSet.has(target)).to.be.false;
-            expect(mgr.stateIds.length).to.equal(99);
+            assert.equal(mgr.stateIds.includes(target), false);
+            assert.equal(mgr.stateIdSet.has(target), false);
+            assert.equal(mgr.stateIds.length, 99);
         });
 
         it('binary remove: should remove correct element', function () {
@@ -168,16 +168,16 @@ describe('main.ts Performance Bug Tests', function () {
             fill(mgr, 100);
             const target = 'adapter.0.state000050';
             mgr.removeBinary(target);
-            expect(mgr.stateIds.includes(target)).to.be.false;
-            expect(mgr.stateIdSet.has(target)).to.be.false;
-            expect(mgr.stateIds.length).to.equal(99);
+            assert.equal(mgr.stateIds.includes(target), false);
+            assert.equal(mgr.stateIdSet.has(target), false);
+            assert.equal(mgr.stateIds.length, 99);
         });
 
         it('binary remove: should handle missing element gracefully', function () {
             const mgr = new StateIdManager();
             fill(mgr, 10);
             mgr.removeBinary('does.not.exist');
-            expect(mgr.stateIds.length).to.equal(10);
+            assert.equal(mgr.stateIds.length, 10);
         });
 
         it('binary remove: array stays sorted after remove', function () {
@@ -186,7 +186,7 @@ describe('main.ts Performance Bug Tests', function () {
             mgr.removeBinary('adapter.0.state000010');
             mgr.removeBinary('adapter.0.state000040');
             const sorted = [...mgr.stateIds].sort();
-            expect(mgr.stateIds).to.deep.equal(sorted);
+            assert.deepEqual(mgr.stateIds, sorted);
         });
     });
 
@@ -195,41 +195,41 @@ describe('main.ts Performance Bug Tests', function () {
         it('Array: has() returns true after add', function () {
             const e = new EnumsArray();
             e.add('enum.rooms.living');
-            expect(e.has('enum.rooms.living')).to.be.true;
+            assert.equal(e.has('enum.rooms.living'), true);
         });
 
         it('Set: has() returns true after add', function () {
             const e = new EnumsSet();
             e.add('enum.rooms.living');
-            expect(e.has('enum.rooms.living')).to.be.true;
+            assert.equal(e.has('enum.rooms.living'), true);
         });
 
         it('Array: no duplicate on double add', function () {
             const e = new EnumsArray();
             e.add('enum.rooms.living');
             e.add('enum.rooms.living');
-            expect(e._enums.length).to.equal(1);
+            assert.equal(e._enums.length, 1);
         });
 
         it('Set: no duplicate on double add', function () {
             const e = new EnumsSet();
             e.add('enum.rooms.living');
             e.add('enum.rooms.living');
-            expect(e._enums.size).to.equal(1);
+            assert.equal(e._enums.size, 1);
         });
 
         it('Array: has() returns false after remove', function () {
             const e = new EnumsArray();
             e.add('enum.rooms.living');
             e.remove('enum.rooms.living');
-            expect(e.has('enum.rooms.living')).to.be.false;
+            assert.equal(e.has('enum.rooms.living'), false);
         });
 
         it('Set: has() returns false after remove', function () {
             const e = new EnumsSet();
             e.add('enum.rooms.living');
             e.remove('enum.rooms.living');
-            expect(e.has('enum.rooms.living')).to.be.false;
+            assert.equal(e.has('enum.rooms.living'), false);
         });
 
         it('Set: toSorted() returns same order as Array', function () {
@@ -237,7 +237,7 @@ describe('main.ts Performance Bug Tests', function () {
             const s = new EnumsSet();
             const ids = ['enum.rooms.bath', 'enum.rooms.living', 'enum.functions.light'];
             ids.forEach(id => { a.add(id); s.add(id); });
-            expect(s.toSorted()).to.deep.equal(a._enums);
+            assert.deepEqual(s.toSorted(), a._enums);
         });
     });
 
@@ -246,34 +246,34 @@ describe('main.ts Performance Bug Tests', function () {
         it('Array: add and has', function () {
             const c = new ChannelArray();
             c.add('adapter.0.room1', 'adapter.0.room1.temp');
-            expect(c.has('adapter.0.room1', 'adapter.0.room1.temp')).to.be.true;
+            assert.equal(c.has('adapter.0.room1', 'adapter.0.room1.temp'), true);
         });
 
         it('Set: add and has', function () {
             const c = new ChannelSet();
             c.add('adapter.0.room1', 'adapter.0.room1.temp');
-            expect(c.has('adapter.0.room1', 'adapter.0.room1.temp')).to.be.true;
+            assert.equal(c.has('adapter.0.room1', 'adapter.0.room1.temp'), true);
         });
 
         it('Array: remove clears entry', function () {
             const c = new ChannelArray();
             c.add('adapter.0.room1', 'adapter.0.room1.temp');
             c.remove('adapter.0.room1', 'adapter.0.room1.temp');
-            expect(c.has('adapter.0.room1', 'adapter.0.room1.temp')).to.be.false;
+            assert.equal(c.has('adapter.0.room1', 'adapter.0.room1.temp'), false);
         });
 
         it('Set: remove clears entry', function () {
             const c = new ChannelSet();
             c.add('adapter.0.room1', 'adapter.0.room1.temp');
             c.remove('adapter.0.room1', 'adapter.0.room1.temp');
-            expect(c.has('adapter.0.room1', 'adapter.0.room1.temp')).to.be.false;
+            assert.equal(c.has('adapter.0.room1', 'adapter.0.room1.temp'), false);
         });
 
         it('Set: no duplicates', function () {
             const c = new ChannelSet();
             c.add('chn', 'id1');
             c.add('chn', 'id1');
-            expect(c.channels['chn'].size).to.equal(1);
+            assert.equal(c.channels['chn'].size, 1);
         });
 
         it('Array: has duplicate risk', function () {
@@ -282,7 +282,7 @@ describe('main.ts Performance Bug Tests', function () {
             c.channels['chn'] = [];
             c.channels['chn'].push('id1');
             c.channels['chn'].push('id1'); // duplicate!
-            expect(c.channels['chn'].length).to.equal(2); // proves the bug
+            assert.equal(c.channels['chn'].length, 2); // proves the bug
         });
     });
 
@@ -324,7 +324,7 @@ describe('main.ts Performance Bug Tests', function () {
             const binaryMs = Number(process.hrtime.bigint() - t1) / 1_000_000;
 
             console.log(`    indexOf: ${linearMs.toFixed(2)}ms | binary: ${binaryMs.toFixed(2)}ms | speedup: ${(linearMs / binaryMs).toFixed(1)}x`);
-            expect(binaryMs).to.be.lessThan(linearMs);
+            assert.ok(binaryMs < linearMs);
         });
 
         it(`_enums Array.includes O(n) vs Set.has O(1) – ${N} enums`, function () {
@@ -349,7 +349,7 @@ describe('main.ts Performance Bug Tests', function () {
             const setMs = Number(process.hrtime.bigint() - t1) / 1_000_000;
 
             console.log(`    Array.includes: ${arrMs.toFixed(2)}ms | Set.has: ${setMs.toFixed(2)}ms | speedup: ${(arrMs / setMs).toFixed(1)}x`);
-            expect(setMs).to.be.lessThan(arrMs);
+            assert.ok(setMs < arrMs);
         });
 
         it(`channels Array.indexOf vs Set.has – 10000 channel ids`, function () {
@@ -373,7 +373,7 @@ describe('main.ts Performance Bug Tests', function () {
             const setMs = Number(process.hrtime.bigint() - t1) / 1_000_000;
 
             console.log(`    indexOf: ${arrMs.toFixed(2)}ms | Set.has: ${setMs.toFixed(2)}ms | speedup: ${(arrMs / setMs).toFixed(1)}x`);
-            expect(setMs).to.be.lessThan(arrMs);
+            assert.ok(setMs < arrMs);
         });
     });
 });
