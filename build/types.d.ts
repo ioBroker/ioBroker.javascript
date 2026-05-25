@@ -129,8 +129,10 @@ export interface JsScript {
     script: Script;
     onStopTimeout: number;
     onStopCb: (cb: () => void) => void;
-    intervals: NodeJS.Timeout[];
-    timeouts: NodeJS.Timeout[];
+    /** IO-10: Set for O(1) add/delete vs Array O(n) indexOf+splice */
+    intervals: Set<NodeJS.Timeout>;
+    /** IO-10: Set for O(1) add/delete vs Array O(n) indexOf+splice */
+    timeouts: Set<NodeJS.Timeout>;
     schedules: IobSchedule[];
     wizards: string[];
     name: string;
@@ -705,16 +707,22 @@ export interface JavascriptContext {
     subscriptions: SubscriptionResult[];
     subscriptionsFile: FileSubscriptionResult[];
     subscriptionsObject: SubscribeObject[];
+    /** O(1) dispatch map – pattern → list of subscribers (kept in sync with subscriptionsObject) */
+    subscriptionsObjectMap: Map<string, SubscribeObject[]>;
+    /** IO-9: Cache for sendTo broadcast – adapterName → instance ids, invalidated on system.adapter.* object change */
+    sendToInstanceCache: Map<string, string[]>;
     subscribedPatterns: Record<string, number>;
     subscribedPatternsFile: Record<string, number>;
-    adapterSubs: Record<string, string[]>;
+    adapterSubs: Record<string, Set<string>>;
     cacheObjectEnums: Record<string, { enumIds: string[]; enumNames: string[] }>;
     isEnums: boolean; // If some subscription wants enum
-    channels: Record<string, string[]> | null;
-    devices: Record<string, string[]> | null;
+    channels: Record<string, Set<string>> | null;
+    devices: Record<string, Set<string>> | null;
     scheduler: Scheduler | null;
     timers: { [scriptName: string]: JavascriptTimer[] };
-    enums: string[];
+    /** Reverse-index: scriptName → Set<stateId> for O(1) timer cleanup in stopScript */
+    timersByScript: Map<string, Set<string>>;
+    enums: Set<string>;
     timerId: number;
     names: { [name: string]: string | string[] }; // name: id
     scripts: Record<string, JsScript>;

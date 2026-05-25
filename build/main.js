@@ -227,18 +227,32 @@ const jsDeclarationServer = new virtual_tsc_1.Server(typescriptSettings_1.jsDecl
  * Stores the IDs of script objects whose change should be ignored because
  * the compiled source was just updated
  */
+const HTTP_STATUS_TEXTS = {
+    400: 'Bad Request',
+    401: 'Unauthorized',
+    403: 'Forbidden',
+    404: 'Not Found',
+    429: 'Too Many Requests / Rate Limit',
+    500: 'Internal Server Error',
+    502: 'Bad Gateway',
+    503: 'Service Unavailable',
+};
 function httpStatusText(code) {
-    const texts = {
-        400: 'Bad Request',
-        401: 'Unauthorized',
-        403: 'Forbidden',
-        404: 'Not Found',
-        429: 'Too Many Requests / Rate Limit',
-        500: 'Internal Server Error',
-        502: 'Bad Gateway',
-        503: 'Service Unavailable',
-    };
-    return texts[code] || `Error ${code}`;
+    return HTTP_STATUS_TEXTS[code] ?? `Error ${code}`;
+}
+/**
+ * Resolves the correct http/https module based on the URL string.
+ * Returns null if the URL is invalid.
+ */
+function resolveRequestModule(url) {
+    try {
+        const { protocol } = new URL(url);
+        const isHttps = protocol === 'https:';
+        return { module: isHttps ? https : http, isHttps };
+    }
+    catch {
+        return null;
+    }
 }
 class JavaScript extends adapter_core_1.Adapter {
     context;
@@ -256,15 +270,27 @@ class JavaScript extends adapter_core_1.Adapter {
     states = {};
     interimStateValues = {};
     stateIds = [];
+    /** Fast O(1) lookup set – always kept in sync with stateIds */
+    stateIdSet = new Set();
+    /** Precomputed "from" string for prepareStateObject – avoids string alloc on every setState */
     subscriptions = [];
     subscriptionsFile = [];
     subscriptionsObject = [];
+    /** O(1) dispatch map for subscriptionsObject – pattern → subscribers */
+    subscriptionsObjectMap = new Map();
+    /** IO-9: Cache for sendTo broadcast – adapterName → instance list, invalidated on object change */
+    sendToInstanceCache = new Map();
     subscribedPatterns = {};
     subscribedPatternsFile = {};
     adapterSubs = {};
     timers = {};
-    _enums = [];
+    /** Reverse-index: scriptName → Set of stateIds that have timers for this script – O(1) cleanup */
+    timersByScript = new Map();
+    /** O(1) Set for enum-id lookups – replaces sorted string[] array */
+    _enums = new Set();
     names = {}; // name: id
+    /** Reverse map: id → name for O(1) getName() lookups */
+    nameById = new Map();
     scripts = {};
     password = '';
     messageBusHandlers = {};
@@ -395,11 +421,14 @@ class JavaScript extends adapter_core_1.Adapter {
             subscriptions: this.subscriptions,
             subscriptionsFile: this.subscriptionsFile,
             subscriptionsObject: this.subscriptionsObject,
+            subscriptionsObjectMap: this.subscriptionsObjectMap,
+            sendToInstanceCache: this.sendToInstanceCache,
             subscribedPatterns: this.subscribedPatterns,
             subscribedPatternsFile: this.subscribedPatternsFile,
             adapterSubs: this.adapterSubs,
             cacheObjectEnums: {},
             timers: this.timers,
+            timersByScript: this.timersByScript,
             enums: this._enums,
             names: this.names,
             scripts: this.scripts,
@@ -446,20 +475,20 @@ class JavaScript extends adapter_core_1.Adapter {
         if (id.startsWith('enum.')) {
             // clear cache
             this.context.cacheObjectEnums = {};
-            // update this._enums array
+            // update this._enums Set
             if (obj) {
-                // If new
-                if (!this._enums.includes(id)) {
-                    this._enums.push(id);
-                    this._enums.sort();
-                }
+                this._enums.add(id);
             }
             else {
-                const pos = this._enums.indexOf(id);
-                // if deleted
-                if (pos !== -1) {
-                    this._enums.splice(pos, 1);
-                }
+                this._enums.delete(id);
+            }
+        }
+        // IO-9: Invalidate sendTo instance-cache when adapter instances change
+        if (id.startsWith('system.adapter.')) {
+            const parts = id.split('.');
+            if (parts.length >= 3) {
+                const adapterName = parts[2]; // e.g. "zigbee" from "system.adapter.zigbee.0"
+                this.sendToInstanceCache.delete(adapterName);
             }
         }
         if (id === 'system.config' && obj?.common?.language) {
@@ -494,9 +523,10 @@ class JavaScript extends adapter_core_1.Adapter {
                 /* ignore */
             });
         }
-        this.subscriptionsObject.forEach(sub => {
-            // ToDo: implement comparing with id.0.* too
-            if (sub.pattern === id) {
+        // O(1) dispatch via pattern map instead of O(n) forEach
+        const objSubs = this.subscriptionsObjectMap.get(id);
+        if (objSubs) {
+            for (const sub of objSubs) {
                 try {
                     sub.callback(id, obj);
                 }
@@ -504,7 +534,7 @@ class JavaScript extends adapter_core_1.Adapter {
                     this.log.error(`Error in callback: ${err.toString()}`);
                 }
             }
-        });
+        }
         // handle Script object updates
         if (!obj && formerObj?.type === 'script') {
             // Object Deleted just now
@@ -631,16 +661,16 @@ class JavaScript extends adapter_core_1.Adapter {
                     if (this.adapterSubs[id]) {
                         const parts = id.split('.');
                         const a = `${parts[2]}.${parts[3]}`;
-                        for (let t = 0; t < this.adapterSubs[id].length; t++) {
-                            this.log.info(`Detected coming adapter "${a}". Send subscribe: ${this.adapterSubs[id][t]}`);
-                            this.sendTo(a, 'subscribe', this.adapterSubs[id][t]);
+                        for (const sub of this.adapterSubs[id]) {
+                            this.log.info(`Detected coming adapter "${a}". Send subscribe: ${sub}`);
+                            this.sendTo(a, 'subscribe', sub);
                         }
                     }
                 }
             }
-            else if ( /*!oldState && */!this.stateIds.includes(id)) {
-                this.stateIds.push(id);
-                this.stateIds.sort();
+            else if ( /*!oldState && */!this.stateIdSet.has(id)) {
+                this.sortedInsert(id);
+                this.stateIdSet.add(id);
             }
             this.states[id] = state;
         }
@@ -649,9 +679,10 @@ class JavaScript extends adapter_core_1.Adapter {
                 delete this.states[id];
             }
             state = {};
-            const pos = this.stateIds.indexOf(id);
+            const pos = this.binaryIndexOf(this.stateIds, id);
             if (pos !== -1) {
                 this.stateIds.splice(pos, 1);
+                this.stateIdSet.delete(id);
             }
         }
         const _eventObj = (0, eventObj_1.createEventObject)(this.context, id, this.convertBackStringifiedValues(id, state), this.convertBackStringifiedValues(id, oldState));
@@ -683,20 +714,28 @@ class JavaScript extends adapter_core_1.Adapter {
         }
     }
     async onUnload(callback) {
-        await this.debugStop();
-        this.stopTimeSchedules();
-        if (this.setStateCountCheckInterval) {
-            clearInterval(this.setStateCountCheckInterval);
-            this.setStateCountCheckInterval = null;
+        try {
+            await this.debugStop();
+            this.stopTimeSchedules();
+            if (this.setStateCountCheckInterval) {
+                clearInterval(this.setStateCountCheckInterval);
+                this.setStateCountCheckInterval = null;
+            }
+            await this.stopAllScripts();
         }
-        await this.stopAllScripts();
-        if (typeof callback === 'function') {
-            callback();
+        catch (err) {
+            this.log.error(`Error during unload: ${err.message}`);
+        }
+        finally {
+            if (typeof callback === 'function') {
+                callback();
+            }
         }
     }
     async onReady() {
         this.errorLogFunction = this.log;
         this.context.errorLogFunction = this.log;
+        // Precompute once – avoids string template alloc on every setState call
         this.config.maxSetStatePerMinute = parseInt(this.config.maxSetStatePerMinute, 10) || 1000;
         this.config.maxTriggersPerScript = parseInt(this.config.maxTriggersPerScript, 10) || 100;
         if (this.supportsFeature?.('PLUGINS')) {
@@ -989,16 +1028,12 @@ class JavaScript extends adapter_core_1.Adapter {
                     const body = JSON.stringify(bodyObj);
                     const bodyBuffer = Buffer.from(body, 'utf8');
                     chatHeaders['Content-Length'] = bodyBuffer.length;
-                    let urlObj;
-                    try {
-                        urlObj = new URL(url);
-                    }
-                    catch {
+                    const resolved = resolveRequestModule(url);
+                    if (!resolved) {
                         this.sendTo(obj.from, obj.command, { error: `Invalid API URL: ${url}` }, obj.callback);
                         break;
                     }
-                    const isHttps = urlObj.protocol === 'https:';
-                    const requestModule = isHttps ? https : http;
+                    const { module: requestModule, isHttps } = resolved;
                     try {
                         const req = requestModule.request(url, {
                             method: 'POST',
@@ -1110,16 +1145,12 @@ class JavaScript extends adapter_core_1.Adapter {
                             testHeaders.Authorization = `Bearer ${apiKey}`;
                         }
                     }
-                    let urlObj;
-                    try {
-                        urlObj = new URL(url);
-                    }
-                    catch {
+                    const resolved = resolveRequestModule(url);
+                    if (!resolved) {
                         this.sendTo(obj.from, obj.command, { error: `Invalid API URL: ${url}` }, obj.callback);
                         break;
                     }
-                    const isHttps = urlObj.protocol === 'https:';
-                    const requestModule = isHttps ? https : http;
+                    const { module: requestModule, isHttps } = resolved;
                     try {
                         const req = requestModule.request(url, {
                             method: 'GET',
@@ -1234,14 +1265,16 @@ class JavaScript extends adapter_core_1.Adapter {
         }
     }
     onLog(msg) {
-        Object.keys(this.logSubscriptions).forEach((name) => this.logSubscriptions[name].forEach(handler => {
-            if (typeof handler.cb === 'function' &&
-                (handler.severity === '*' || handler.severity === msg.severity)) {
-                handler.sandbox.logHandler = handler.severity || '*';
-                handler.cb.call(handler.sandbox, msg);
-                handler.sandbox.logHandler = undefined;
+        for (const name in this.logSubscriptions) {
+            for (const handler of this.logSubscriptions[name]) {
+                if (typeof handler.cb === 'function' &&
+                    (handler.severity === '*' || handler.severity === msg.severity)) {
+                    handler.sandbox.logHandler = handler.severity || '*';
+                    handler.cb.call(handler.sandbox, msg);
+                    handler.sandbox.logHandler = undefined;
+                }
             }
-        }));
+        }
     }
     logError(scriptName, msg, e, offs) {
         const stack = e.stack ? e.stack.toString().split('\n') : e ? e.toString() : '';
@@ -1495,9 +1528,9 @@ class JavaScript extends adapter_core_1.Adapter {
         }
         // CHeck setState counter per minute and stop a script if too high
         this.setStateCountCheckInterval = setInterval(() => {
-            Object.keys(this.scripts).forEach(id => {
+            for (const id in this.scripts) {
                 if (!this.scripts[id]) {
-                    return;
+                    continue;
                 }
                 const currentSetStatePerMinuteCounter = this.scripts[id].setStatePerMinuteCounter;
                 this.scripts[id].setStatePerMinuteCounter = 0;
@@ -1515,7 +1548,7 @@ class JavaScript extends adapter_core_1.Adapter {
                     this.scripts[id].setStatePerMinuteProblemCounter--;
                     this.log.debug(`Script ${id} has NOT reached the maximum of ${this.config.maxSetStatePerMinute} setState calls per minute. Decrease problem counter to ${this.scripts[id].setStatePerMinuteProblemCounter}`);
                 }
-            });
+            }
         }, 60000);
     }
     loadTypeScriptDeclarations() {
@@ -1534,10 +1567,15 @@ class JavaScript extends adapter_core_1.Adapter {
                 .split(/[,;\s]+/)
                 .map(s => s.trim())
                 .filter(s => !!s);
+            // O(1) lookups – avoids O(n²) Array.includes inside loops
+            const installedSet = new Set(installedLibs);
+            const wantsSet = new Set(wantsTypings);
+            const packagesSet = new Set(packages);
             // Add all installed libraries the user has requested typings for to the list of packages
             for (const lib of installedLibs) {
-                if (wantsTypings.includes(lib) && !packages.includes(lib)) {
+                if (wantsSet.has(lib) && !packagesSet.has(lib)) {
                     packages.push(lib);
+                    packagesSet.add(lib);
                 }
             }
             // Some packages have submodules (e.g., rxjs/operators) that are not exposed through the main entry point
@@ -1548,8 +1586,9 @@ class JavaScript extends adapter_core_1.Adapter {
                     continue;
                 }
                 const pkgName = lib.substring(0, lib.indexOf('/'));
-                if (installedLibs.includes(pkgName) && !packages.includes(lib)) {
+                if (installedSet.has(pkgName) && !packagesSet.has(lib)) {
                     packages.push(lib);
+                    packagesSet.add(lib);
                 }
             }
         }
@@ -1583,43 +1622,38 @@ class JavaScript extends adapter_core_1.Adapter {
         if (obj) {
             // add state to state ID's list
             if (obj.type === 'state') {
-                if (!this.stateIds.includes(id)) {
-                    this.stateIds.push(id);
-                    this.stateIds.sort();
+                if (!this.stateIdSet.has(id)) {
+                    this.sortedInsert(id);
+                    this.stateIdSet.add(id);
                 }
                 if (this.context.devices && this.context.channels) {
                     const parts = id.split('.');
                     parts.pop();
                     const chn = parts.join('.');
-                    this.context.channels[chn] ||= [];
-                    this.context.channels[chn].push(id);
+                    this.context.channels[chn] ||= new Set();
+                    this.context.channels[chn].add(id);
                     parts.pop();
                     const dev = parts.join('.');
-                    this.context.devices[dev] ||= [];
-                    this.context.devices[dev].push(id);
+                    this.context.devices[dev] ||= new Set();
+                    this.context.devices[dev].add(id);
                 }
             }
         }
         else {
             // delete object from state ID's list
-            const pos = this.stateIds.indexOf(id);
+            const pos = this.binaryIndexOf(this.stateIds, id);
             if (pos !== -1) {
                 this.stateIds.splice(pos, 1);
+                this.stateIdSet.delete(id);
             }
             if (this.context.devices && this.context.channels) {
                 const parts = id.split('.');
                 parts.pop();
                 const chn = parts.join('.');
-                if (this.context.channels[chn]) {
-                    const posChn = this.context.channels[chn].indexOf(id);
-                    posChn !== -1 && this.context.channels[chn].splice(posChn, 1);
-                }
+                this.context.channels[chn]?.delete(id);
                 parts.pop();
                 const dev = parts.join('.');
-                if (this.context.devices[dev]) {
-                    const posDev = this.context.devices[dev].indexOf(id);
-                    posDev !== -1 && this.context.devices[dev].splice(posDev, 1);
-                }
+                this.context.devices[dev]?.delete(id);
             }
             delete this.folderCreationVerifiedObjects[id];
         }
@@ -1744,11 +1778,11 @@ class JavaScript extends adapter_core_1.Adapter {
                 this.context.states = this.states;
                 this.addGetProperty(this.states);
             }
-            // remember all IDs
-            for (const id in res) {
-                if (Object.prototype.hasOwnProperty.call(res, id)) {
-                    this.stateIds.push(id);
-                }
+            // remember all IDs – sort once to guarantee the sorted invariant
+            // required by binaryIndexOf() / sortedInsert() used later
+            for (const id of Object.keys(res).sort()) {
+                this.stateIds.push(id);
+                this.stateIdSet.add(id);
             }
             this.statesInitDone = true;
             this.log.info('received all states');
@@ -1768,17 +1802,18 @@ class JavaScript extends adapter_core_1.Adapter {
             this.objects = {};
             this.context.objects = this.objects;
             for (let i = 0; i < res.rows.length; i++) {
-                if (!res.rows[i].doc) {
+                const doc = res.rows[i]?.doc;
+                if (!doc) {
                     this.log.debug(`Got empty object for index ${i} (${res.rows[i].id})`);
                     continue;
                 }
-                if (this.objects[res.rows[i].doc._id] === undefined) {
+                if (this.objects[doc._id] === undefined) {
                     // If was already there, ignore
-                    this.objects[res.rows[i].doc._id] = res.rows[i].doc;
+                    this.objects[doc._id] = doc;
                 }
-                this.objects[res.rows[i].doc._id].type === 'enum' && this._enums.push(res.rows[i].doc._id);
+                doc.type === 'enum' && this._enums.add(doc._id);
                 // Collect all names
-                this.addToNames(this.objects[res.rows[i].doc._id]);
+                this.addToNames(this.objects[doc._id]);
             }
             this.addGetProperty(this.objects);
             const systemConfig = this.objects['system.config'];
@@ -1933,37 +1968,32 @@ class JavaScript extends adapter_core_1.Adapter {
                 }
                 this.names[name].push(id);
             }
+            // keep reverse-map up to date for O(1) getName()
+            this.nameById.set(id, name);
         }
     }
     removeFromNames(id) {
         const n = this.getName(id);
         if (n) {
             if (Array.isArray(this.names[n])) {
-                const pos = this.names[n].indexOf(id);
+                const arr = this.names[n];
+                const pos = arr.indexOf(id);
                 if (pos > -1) {
-                    this.names[n].splice(pos, 1);
-                    if (this.names[n].length === 1) {
-                        this.names[n] = this.names[n][0];
+                    arr.splice(pos, 1);
+                    if (arr.length === 1) {
+                        this.names[n] = arr[0];
                     }
                 }
             }
             else {
                 delete this.names[n];
             }
+            // keep reverse-map up to date for O(1) getName()
+            this.nameById.delete(id);
         }
     }
     getName(id) {
-        for (const n in this.names) {
-            if (this.names[n] && Array.isArray(this.names[n])) {
-                if (this.names[n].includes(id)) {
-                    return n;
-                }
-            }
-            else if (this.names[n] === id) {
-                return n;
-            }
-        }
-        return null;
+        return this.nameById.get(id) ?? null;
     }
     async installNpm(npmLib) {
         return new Promise((resolve, reject) => {
@@ -1977,6 +2007,7 @@ class JavaScript extends adapter_core_1.Adapter {
             const child = this.mods.child_process.exec(cmd, {
                 windowsHide: true,
                 cwd: path,
+                timeout: 120_000, // 2 minutes max – prevents infinite blocking
             });
             child.stdout?.on('data', buf => this.log.info(buf.toString('utf8')));
             child.stderr?.on('data', buf => this.log.error(buf.toString('utf8')));
@@ -2124,8 +2155,8 @@ class JavaScript extends adapter_core_1.Adapter {
         }
     }
     execute(script, name, engineType, verbose, debug) {
-        script.intervals = [];
-        script.timeouts = [];
+        script.intervals = new Set();
+        script.timeouts = new Set();
         script.schedules = [];
         script.wizards = [];
         script.name = name;
@@ -2157,13 +2188,54 @@ class JavaScript extends adapter_core_1.Adapter {
             this.logError(name, 'Error by run:', err);
         }
     }
+    /**
+     * Finds the index of `id` in a sorted array using binary search – O(log n).
+     * Returns -1 if not found. Used instead of Array.indexOf on stateIds.
+     */
+    binaryIndexOf(arr, id) {
+        let lo = 0;
+        let hi = arr.length - 1;
+        while (lo <= hi) {
+            const mid = (lo + hi) >>> 1;
+            if (arr[mid] === id) {
+                return mid;
+            }
+            else if (arr[mid] < id) {
+                lo = mid + 1;
+            }
+            else {
+                hi = mid - 1;
+            }
+        }
+        return -1;
+    }
+    /**
+     * Inserts `id` into the sorted `stateIds` array using binary search – O(log n).
+     * Much faster than push() + sort() which is O(n log n) on every insertion.
+     */
+    sortedInsert(id) {
+        let lo = 0;
+        let hi = this.stateIds.length;
+        while (lo < hi) {
+            const mid = (lo + hi) >>> 1;
+            if (this.stateIds[mid] < id) {
+                lo = mid + 1;
+            }
+            else {
+                hi = mid;
+            }
+        }
+        if (this.stateIds[lo] !== id) {
+            this.stateIds.splice(lo, 0, id);
+        }
+    }
     unsubscribe(id) {
         if (!id) {
             this.log.warn('unsubscribe: empty name');
             return;
         }
         if (Array.isArray(id)) {
-            id.forEach(sub => unsubscribe(sub));
+            id.forEach(sub => this.unsubscribe(sub));
             return;
         }
         if (id.constructor && id.constructor.name === 'RegExp') {
@@ -2180,11 +2252,8 @@ class JavaScript extends adapter_core_1.Adapter {
             const a = `${parts[0]}.${parts[1]}`;
             const alive = `system.adapter.${a}.alive`;
             if (this.adapterSubs[alive]) {
-                const pos = this.adapterSubs[alive].indexOf(id);
-                if (pos !== -1) {
-                    this.adapterSubs[alive].splice(pos, 1);
-                }
-                if (!this.adapterSubs[alive].length) {
+                this.adapterSubs[alive].delete(id);
+                if (!this.adapterSubs[alive].size) {
                     delete this.adapterSubs[alive];
                 }
             }
@@ -2291,31 +2360,46 @@ class JavaScript extends adapter_core_1.Adapter {
                 if (this.subscriptionsObject[i].name === name) {
                     const sub = this.subscriptionsObject.splice(i, 1)[0];
                     if (sub) {
+                        // Remove from O(1) dispatch map
+                        const mapSubs = this.subscriptionsObjectMap.get(sub.pattern);
+                        if (mapSubs) {
+                            const pos = mapSubs.indexOf(sub);
+                            if (pos !== -1) {
+                                mapSubs.splice(pos, 1);
+                            }
+                            if (!mapSubs.length) {
+                                this.subscriptionsObjectMap.delete(sub.pattern);
+                            }
+                        }
                         this.unsubscribeForeignObjects(sub.pattern);
                     }
                 }
             }
             // Stop all timeouts
-            for (let i = 0; i < this.scripts[name].timeouts.length; i++) {
-                clearTimeout(this.scripts[name].timeouts[i]);
+            for (const t of this.scripts[name].timeouts) {
+                clearTimeout(t);
             }
             // Stop all intervals
-            for (let i = 0; i < this.scripts[name].intervals.length; i++) {
-                clearInterval(this.scripts[name].intervals[i]);
+            for (const t of this.scripts[name].intervals) {
+                clearInterval(t);
             }
-            // Stop all delayed states (setStateDelayed timers)
-            for (const stateId of Object.keys(this.timers)) {
-                if (this.timers[stateId]) {
-                    for (let i = this.timers[stateId].length - 1; i >= 0; i--) {
-                        if (this.timers[stateId][i].scriptName === name) {
-                            clearTimeout(this.timers[stateId][i].t);
-                            this.timers[stateId].splice(i, 1);
+            // Stop all delayed states (setStateDelayed timers) – O(1) via reverse-index
+            const scriptStateIds = this.timersByScript.get(name);
+            if (scriptStateIds) {
+                for (const stateId of scriptStateIds) {
+                    if (this.timers[stateId]) {
+                        for (let i = this.timers[stateId].length - 1; i >= 0; i--) {
+                            if (this.timers[stateId][i].scriptName === name) {
+                                clearTimeout(this.timers[stateId][i].t);
+                                this.timers[stateId].splice(i, 1);
+                            }
+                        }
+                        if (!this.timers[stateId].length) {
+                            delete this.timers[stateId];
                         }
                     }
-                    if (!this.timers[stateId].length) {
-                        delete this.timers[stateId];
-                    }
                 }
+                this.timersByScript.delete(name);
             }
             // Stop all scheduled jobs
             for (let i = 0; i < this.scripts[name].schedules.length; i++) {
@@ -2562,6 +2646,11 @@ class JavaScript extends adapter_core_1.Adapter {
         this.timeScheduleTimer = setTimeout(() => this.timeSchedule(), interval);
     }
     async dayTimeSchedules() {
+        // Always clear any existing timer to prevent memory leaks on rapid re-scheduling
+        if (this.dayScheduleTimer) {
+            clearTimeout(this.dayScheduleTimer);
+            this.dayScheduleTimer = null;
+        }
         // get astrological event
         if (this.config.latitude === undefined ||
             this.config.longitude === undefined ||
@@ -2958,14 +3047,15 @@ class JavaScript extends adapter_core_1.Adapter {
 }
 function patternMatching(event, patternFunctions) {
     let matched = false;
+    const logic = patternFunctions.logic;
     for (let i = 0, len = patternFunctions.length; i < len; i++) {
         if (patternFunctions[i](event)) {
-            if (patternFunctions.logic === 'or') {
+            if (logic === 'or') {
                 return true;
             }
             matched = true;
         }
-        else if (patternFunctions.logic === 'and') {
+        else if (logic === 'and') {
             return false;
         }
     }
