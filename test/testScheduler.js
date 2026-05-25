@@ -1,4 +1,4 @@
-const expect = require('chai').expect;
+const assert = require('node:assert').strict;
 const tk = require('timekeeper');
 const suncalc = require('suncalc2');
 const { Scheduler } = require('../build/lib/scheduler');
@@ -33,7 +33,7 @@ describe('Test Scheduler', function () {
             '{"time":{"exactTime":true,"start":"23:59"},"period":{"years":1,"yearDate":31,"yearMonth":12}}',
             'someName1',
             () => {
-                expect(false).to.be.true;
+                assert.fail('Callback should not have been called');
             },
         );
         setTimeout(done, 5000);
@@ -77,7 +77,7 @@ describe('Test Scheduler', function () {
             '{"time":{"exactTime":true,"start":"' + evtName.toUpperCase() + 'x"},"period":{"days":1}}',
             'someName3',
             () => {
-                expect(false).to.be.true;
+                assert.fail('Callback should not have been called');
             },
         );
         setTimeout(done, 5000);
@@ -96,7 +96,7 @@ describe('Test Scheduler', function () {
         console.log(new Date());
         const s = new Scheduler(null, Date, suncalc, kcLat, kcLon);
         s.add('{"time":{"exactTime":true,"start":""},"period":{"days":1}}', 'someName3', () => {
-            expect(false).to.be.true;
+            assert.fail('Callback should not have been called');
         });
         setTimeout(done, 5000);
     }).timeout(65000);
@@ -106,7 +106,7 @@ describe('Test Scheduler', function () {
         let encrypted = encryptText('password', plainText);
         console.log(`Encrypted text: ${encrypted}`);
         let decrypted = decryptText('password', encrypted);
-        expect(decrypted).to.equal(plainText);
+        assert.equal(decrypted, plainText);
         done();
     });
 });

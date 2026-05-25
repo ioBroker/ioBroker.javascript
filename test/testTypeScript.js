@@ -4,7 +4,7 @@ const path = require('node:path');
 const { EOL } = require('node:os');
 const { tsCompilerOptions } = require('../build/lib/typescriptSettings');
 
-const { expect } = require('chai');
+const assert = require('node:assert').strict;
 const {
     scriptIdToTSFilename,
     transformScriptBeforeCompilation,
@@ -17,21 +17,21 @@ describe('TypeScript tools', () => {
             const source = `await wait(100)`;
             const expected = `(async () => { await wait(100); })();`;
             const transformed = transformScriptBeforeCompilation(source, false);
-            expect(transformed).to.include(expected);
+            assert.ok(transformed.includes(expected));
         });
 
         it('...but only if it is really necessary', () => {
             const source = `log("test")`;
             const expected = `log("test");\nexport {};\n`.replace(/\n/g, require('os').EOL);
             const transformed = transformScriptBeforeCompilation(source, false);
-            expect(transformed).to.equal(expected);
+            assert.equal(transformed, expected);
         });
 
         it('forces non-global scripts to be treated as modules (part 1)', () => {
             const source = `const foo = 1;`;
             const expected = /^export \{};$/m;
             const transformed = transformScriptBeforeCompilation(source, false);
-            expect(transformed).to.match(expected);
+            assert.match(transformed, expected);
         });
 
         it('forces non-global scripts to be treated as modules (part 2)', () => {
@@ -40,7 +40,7 @@ const foo = 1;`;
             const expected = /^export \{};$/m;
             const transformed = transformScriptBeforeCompilation(source, false);
             // There is an import, we don't need an empty export now
-            expect(transformed).not.to.match(expected);
+            assert.doesNotMatch(transformed, expected);
         });
 
         it('exports every exportable thing in global scripts', () => {
@@ -58,7 +58,7 @@ export class Foo {
                 .trim()
                 .replace(/\r?\n/g, EOL);
             const transformed = transformScriptBeforeCompilation(source, true);
-            expect(transformed.trim()).to.equal(expected);
+            assert.equal(transformed.trim(), expected);
         });
 
         it('wraps global augmentations in `declare global`', () => {
@@ -77,7 +77,7 @@ export {};`
                 .trim()
                 .replace(/\r?\n/g, EOL);
             const transformed = transformScriptBeforeCompilation(source, true);
-            expect(transformed.trim()).to.equal(expected);
+            assert.equal(transformed.trim(), expected);
         });
     });
 
@@ -99,7 +99,7 @@ declare global {
                 .trim()
                 .replace(/\r?\n/g, EOL);
             const transformed = transformGlobalDeclarations(source);
-            expect(transformed.trim()).to.equal(expected);
+            assert.equal(transformed.trim(), expected);
         });
 
         it('If there is no import statement, `export {};` must be added', () => {
@@ -118,7 +118,7 @@ export {};
                 .trim()
                 .replace(/\r?\n/g, EOL);
             const transformed = transformGlobalDeclarations(source);
-            expect(transformed.trim()).to.equal(expected);
+            assert.equal(transformed.trim(), expected);
         });
 
         it('should preserve already-existing declare global { ... } blocks', () => {
@@ -138,13 +138,13 @@ export {};`
                 .trim()
                 .replace(/\r?\n/g, EOL);
             const transformed = transformGlobalDeclarations(source);
-            expect(transformed.trim()).to.equal(expected);
+            assert.equal(transformed.trim(), expected);
         });
     });
 
     describe('scriptIdToTSFilename', () => {
         it('generates a valid filename from a script ID', () => {
-            expect(scriptIdToTSFilename('script.js.foo.bar.baz')).to.equal('foo/bar/baz.ts');
+            assert.equal(scriptIdToTSFilename('script.js.foo.bar.baz'), 'foo/bar/baz.ts');
         });
     });
 });
@@ -214,7 +214,7 @@ await bar();
 
             const tsCompiled = tsServer.compile(filename, transformedSource);
 
-            expect(tsCompiled.success).to.be.true;
+            assert.equal(tsCompiled.success, true);
         }).timeout(20000);
     }
 });
@@ -277,7 +277,7 @@ function test(): void {
 
             const tsCompiled = tsServer.compile(filename, transformedSource);
 
-            expect(tsCompiled.success).to.be.true;
+            assert.equal(tsCompiled.success, true);
         }).timeout(20000);
     }
 });

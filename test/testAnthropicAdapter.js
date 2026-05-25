@@ -1,4 +1,4 @@
-const expect = require('chai').expect;
+const assert = require('node:assert').strict;
 const {
     translateToolsToAnthropic,
     translateMessagesToAnthropic,
@@ -35,13 +35,13 @@ describe('Test Anthropic Adapter', function () {
 
         it('translates an OpenAI tool array to Anthropic shape', function () {
             const result = translateToolsToAnthropic(openAITools);
-            expect(result).to.have.lengthOf(2);
-            expect(result[0]).to.deep.equal({
+            assert.equal(result.length, 2);
+            assert.deepEqual(result[0], {
                 name: 'search_datapoints',
                 description: 'Search datapoints',
                 input_schema: openAITools[0].function.parameters,
             });
-            expect(result[1]).to.deep.equal({
+            assert.deepEqual(result[1], {
                 name: 'list_scripts',
                 description: 'List all scripts',
                 input_schema: openAITools[1].function.parameters,
@@ -50,14 +50,14 @@ describe('Test Anthropic Adapter', function () {
 
         it('uses parameters as input_schema (JSON Schema is shared)', function () {
             const result = translateToolsToAnthropic(openAITools);
-            expect(result[0].input_schema).to.equal(openAITools[0].function.parameters);
+            assert.equal(result[0].input_schema, openAITools[0].function.parameters);
         });
 
         it('provides a default empty object schema when parameters are missing', function () {
             const result = translateToolsToAnthropic([
                 { type: 'function', function: { name: 'no_params' } },
             ]);
-            expect(result[0].input_schema).to.deep.equal({ type: 'object', properties: {} });
+            assert.deepEqual(result[0].input_schema, { type: 'object', properties: {} });
         });
 
         it('skips tools without a function name', function () {
@@ -67,22 +67,22 @@ describe('Test Anthropic Adapter', function () {
                 null,
                 { foo: 'bar' },
             ]);
-            expect(result).to.have.lengthOf(1);
-            expect(result[0].name).to.equal('ok');
+            assert.equal(result.length, 1);
+            assert.equal(result[0].name, 'ok');
         });
 
         it('handles empty / undefined / non-array input', function () {
-            expect(translateToolsToAnthropic([])).to.deep.equal([]);
-            expect(translateToolsToAnthropic(undefined)).to.deep.equal([]);
-            expect(translateToolsToAnthropic(null)).to.deep.equal([]);
-            expect(translateToolsToAnthropic('not an array')).to.deep.equal([]);
+            assert.deepEqual(translateToolsToAnthropic([]), []);
+            assert.deepEqual(translateToolsToAnthropic(undefined), []);
+            assert.deepEqual(translateToolsToAnthropic(null), []);
+            assert.deepEqual(translateToolsToAnthropic('not an array'), []);
         });
 
         it('drops the description field cleanly when absent', function () {
             const result = translateToolsToAnthropic([
                 { type: 'function', function: { name: 'x', parameters: { type: 'object' } } },
             ]);
-            expect(result[0].description).to.equal(undefined);
+            assert.equal(result[0].description, undefined);
         });
     });
 
@@ -92,8 +92,8 @@ describe('Test Anthropic Adapter', function () {
                 { role: 'system', content: 'You are helpful.' },
                 { role: 'user', content: 'Hi' },
             ]);
-            expect(system).to.equal('You are helpful.');
-            expect(messages).to.deep.equal([{ role: 'user', content: 'Hi' }]);
+            assert.equal(system, 'You are helpful.');
+            assert.deepEqual(messages, [{ role: 'user', content: 'Hi' }]);
         });
 
         it('joins multiple system messages with double newlines', function () {
@@ -102,7 +102,7 @@ describe('Test Anthropic Adapter', function () {
                 { role: 'system', content: 'Line 2' },
                 { role: 'user', content: 'Hi' },
             ]);
-            expect(system).to.equal('Line 1\n\nLine 2');
+            assert.equal(system, 'Line 1\n\nLine 2');
         });
 
         it('converts assistant tool_calls into tool_use content blocks', function () {
@@ -123,8 +123,8 @@ describe('Test Anthropic Adapter', function () {
                     ],
                 },
             ]);
-            expect(messages).to.have.lengthOf(2);
-            expect(messages[1]).to.deep.equal({
+            assert.equal(messages.length, 2);
+            assert.deepEqual(messages[1], {
                 role: 'assistant',
                 content: [
                     { type: 'text', text: 'Let me search.' },
@@ -152,7 +152,7 @@ describe('Test Anthropic Adapter', function () {
                     ],
                 },
             ]);
-            expect(messages[0].content[0]).to.deep.equal({
+            assert.deepEqual(messages[0].content[0], {
                 type: 'tool_use',
                 id: 'c1',
                 name: 'f',
@@ -172,8 +172,8 @@ describe('Test Anthropic Adapter', function () {
                 },
                 { role: 'tool', tool_call_id: 'c1', content: 'found: lamp.state' },
             ]);
-            expect(messages).to.have.lengthOf(3);
-            expect(messages[2]).to.deep.equal({
+            assert.equal(messages.length, 3);
+            assert.deepEqual(messages[2], {
                 role: 'user',
                 content: [{ type: 'tool_result', tool_use_id: 'c1', content: 'found: lamp.state' }],
             });
@@ -194,16 +194,16 @@ describe('Test Anthropic Adapter', function () {
                 { role: 'user', content: 'Thanks' },
             ]);
             const toolResultMsg = messages.find(m => Array.isArray(m.content) && m.content[0]?.type === 'tool_result');
-            expect(toolResultMsg).to.not.equal(undefined);
-            expect(toolResultMsg.content).to.have.lengthOf(2);
-            expect(toolResultMsg.content.map(b => b.tool_use_id)).to.deep.equal(['c1', 'c2']);
+            assert.notEqual(toolResultMsg, undefined);
+            assert.equal(toolResultMsg.content.length, 2);
+            assert.deepEqual(toolResultMsg.content.map(b => b.tool_use_id), ['c1', 'c2']);
         });
 
         it('stringifies non-string tool_result content', function () {
             const { messages } = translateMessagesToAnthropic([
                 { role: 'tool', tool_call_id: 'c1', content: { key: 'value' } },
             ]);
-            expect(messages[0].content[0].content).to.equal(JSON.stringify({ key: 'value' }));
+            assert.equal(messages[0].content[0].content, JSON.stringify({ key: 'value' }));
         });
 
         it('omits assistant messages that have neither text nor tool_calls', function () {
@@ -211,7 +211,7 @@ describe('Test Anthropic Adapter', function () {
                 { role: 'user', content: 'Hi' },
                 { role: 'assistant', content: '' },
             ]);
-            expect(messages).to.have.lengthOf(1);
+            assert.equal(messages.length, 1);
         });
 
         it('omits empty user messages', function () {
@@ -219,21 +219,21 @@ describe('Test Anthropic Adapter', function () {
                 { role: 'user', content: '' },
                 { role: 'user', content: 'Real message' },
             ]);
-            expect(messages).to.have.lengthOf(1);
-            expect(messages[0].content).to.equal('Real message');
+            assert.equal(messages.length, 1);
+            assert.equal(messages[0].content, 'Real message');
         });
 
         it('handles empty/invalid input gracefully', function () {
-            expect(translateMessagesToAnthropic([])).to.deep.equal({ system: '', messages: [] });
-            expect(translateMessagesToAnthropic(undefined)).to.deep.equal({ system: '', messages: [] });
-            expect(translateMessagesToAnthropic(null)).to.deep.equal({ system: '', messages: [] });
+            assert.deepEqual(translateMessagesToAnthropic([]), { system: '', messages: [] });
+            assert.deepEqual(translateMessagesToAnthropic(undefined), { system: '', messages: [] });
+            assert.deepEqual(translateMessagesToAnthropic(null), { system: '', messages: [] });
         });
 
         it('handles assistant messages with text but no tool_calls', function () {
             const { messages } = translateMessagesToAnthropic([
                 { role: 'assistant', content: 'Just text' },
             ]);
-            expect(messages[0]).to.deep.equal({
+            assert.deepEqual(messages[0], {
                 role: 'assistant',
                 content: [{ type: 'text', text: 'Just text' }],
             });
@@ -251,9 +251,9 @@ describe('Test Anthropic Adapter', function () {
                     ],
                 },
             ]);
-            expect(messages).to.have.lengthOf(1);
-            expect(messages[0].content).to.have.lengthOf(1);
-            expect(messages[0].content[0].name).to.equal('valid');
+            assert.equal(messages.length, 1);
+            assert.equal(messages[0].content.length, 1);
+            assert.equal(messages[0].content[0].name, 'valid');
         });
     });
 
@@ -263,7 +263,7 @@ describe('Test Anthropic Adapter', function () {
                 content: [{ type: 'text', text: 'Hello, world.' }],
                 stop_reason: 'end_turn',
             });
-            expect(result).to.deep.equal({ content: 'Hello, world.' });
+            assert.deepEqual(result, { content: 'Hello, world.' });
         });
 
         it('concatenates multiple text blocks with newlines', function () {
@@ -273,7 +273,7 @@ describe('Test Anthropic Adapter', function () {
                     { type: 'text', text: 'Line 2' },
                 ],
             });
-            expect(result.content).to.equal('Line 1\nLine 2');
+            assert.equal(result.content, 'Line 1\nLine 2');
         });
 
         it('converts tool_use blocks to OpenAI tool_calls (arguments stringified)', function () {
@@ -289,9 +289,9 @@ describe('Test Anthropic Adapter', function () {
                 ],
                 stop_reason: 'tool_use',
             });
-            expect(result.content).to.equal('Let me check.');
-            expect(result.tool_calls).to.have.lengthOf(1);
-            expect(result.tool_calls[0]).to.deep.equal({
+            assert.equal(result.content, 'Let me check.');
+            assert.equal(result.tool_calls.length, 1);
+            assert.deepEqual(result.tool_calls[0], {
                 id: 'toolu_abc',
                 type: 'function',
                 function: {
@@ -312,9 +312,9 @@ describe('Test Anthropic Adapter', function () {
                     },
                 ],
             });
-            expect(result.content).to.equal('');
-            expect(result.tool_calls).to.have.lengthOf(1);
-            expect(result.tool_calls[0].function.arguments).to.equal('{}');
+            assert.equal(result.content, '');
+            assert.equal(result.tool_calls.length, 1);
+            assert.equal(result.tool_calls[0].function.arguments, '{}');
         });
 
         it('handles multiple tool_use blocks', function () {
@@ -324,22 +324,22 @@ describe('Test Anthropic Adapter', function () {
                     { type: 'tool_use', id: 't2', name: 'f2', input: { b: 2 } },
                 ],
             });
-            expect(result.tool_calls).to.have.lengthOf(2);
-            expect(result.tool_calls.map(tc => tc.id)).to.deep.equal(['t1', 't2']);
+            assert.equal(result.tool_calls.length, 2);
+            assert.deepEqual(result.tool_calls.map(tc => tc.id), ['t1', 't2']);
         });
 
         it('omits tool_calls when none are present', function () {
             const result = translateAnthropicResponseToOpenAI({
                 content: [{ type: 'text', text: 'Plain response' }],
             });
-            expect(result).to.not.have.property('tool_calls');
+            assert.ok(!Object.prototype.hasOwnProperty.call(result, 'tool_calls'));
         });
 
         it('handles empty/invalid response gracefully', function () {
-            expect(translateAnthropicResponseToOpenAI(null)).to.deep.equal({ content: '' });
-            expect(translateAnthropicResponseToOpenAI(undefined)).to.deep.equal({ content: '' });
-            expect(translateAnthropicResponseToOpenAI({})).to.deep.equal({ content: '' });
-            expect(translateAnthropicResponseToOpenAI({ content: null })).to.deep.equal({ content: '' });
+            assert.deepEqual(translateAnthropicResponseToOpenAI(null), { content: '' });
+            assert.deepEqual(translateAnthropicResponseToOpenAI(undefined), { content: '' });
+            assert.deepEqual(translateAnthropicResponseToOpenAI({}), { content: '' });
+            assert.deepEqual(translateAnthropicResponseToOpenAI({ content: null }), { content: '' });
         });
 
         it('ignores unknown content-block types', function () {
@@ -350,15 +350,15 @@ describe('Test Anthropic Adapter', function () {
                     { type: 'tool_use', id: 'x', name: 'y', input: {} },
                 ],
             });
-            expect(result.content).to.equal('Known');
-            expect(result.tool_calls).to.have.lengthOf(1);
+            assert.equal(result.content, 'Known');
+            assert.equal(result.tool_calls.length, 1);
         });
 
         it('tool_use with no input serializes to {}', function () {
             const result = translateAnthropicResponseToOpenAI({
                 content: [{ type: 'tool_use', id: 't', name: 'f' }],
             });
-            expect(result.tool_calls[0].function.arguments).to.equal('{}');
+            assert.equal(result.tool_calls[0].function.arguments, '{}');
         });
     });
 
@@ -385,14 +385,14 @@ describe('Test Anthropic Adapter', function () {
             // Assistant message must have the tool_use block intact
             const assistant = messages.find(m => m.role === 'assistant');
             const toolUse = assistant.content.find(b => b.type === 'tool_use');
-            expect(toolUse.input).to.deep.equal({ id: 'x.y' });
+            assert.deepEqual(toolUse.input, { id: 'x.y' });
 
             // Tool-result wrapped as user message
             const toolResult = messages.find(
                 m => Array.isArray(m.content) && m.content[0]?.type === 'tool_result',
             );
-            expect(toolResult.content[0].tool_use_id).to.equal('c1');
-            expect(toolResult.content[0].content).to.equal('42');
+            assert.equal(toolResult.content[0].tool_use_id, 'c1');
+            assert.equal(toolResult.content[0].content, '42');
         });
 
         it('Anthropic response → OpenAI-shape round-trip preserves tool call IDs', function () {
@@ -408,7 +408,7 @@ describe('Test Anthropic Adapter', function () {
                 ],
             };
             const openAIStyle = translateAnthropicResponseToOpenAI(anthropicResponse);
-            expect(openAIStyle.tool_calls[0].id).to.equal('toolu_01abc');
+            assert.equal(openAIStyle.tool_calls[0].id, 'toolu_01abc');
 
             // Now feed it back — simulates the continuation round
             const { messages } = translateMessagesToAnthropic([
@@ -423,7 +423,7 @@ describe('Test Anthropic Adapter', function () {
             const toolResult = messages.find(
                 m => Array.isArray(m.content) && m.content.some(b => b.type === 'tool_result'),
             );
-            expect(toolResult.content[0].tool_use_id).to.equal('toolu_01abc');
+            assert.equal(toolResult.content[0].tool_use_id, 'toolu_01abc');
         });
     });
 });
