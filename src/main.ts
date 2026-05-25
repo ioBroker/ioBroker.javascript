@@ -327,7 +327,6 @@ class JavaScript extends Adapter {
     /** Fast O(1) lookup set – always kept in sync with stateIds */
     private readonly stateIdSet: Set<string> = new Set();
 
-    /** Precomputed "from" string for prepareStateObject – avoids string alloc on every setState */
     private readonly subscriptions: SubscriptionResult[] = [];
     private readonly subscriptionsFile: FileSubscriptionResult[] = [];
     private readonly subscriptionsObject: SubscribeObject[] = [];

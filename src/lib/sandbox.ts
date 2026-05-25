@@ -2846,13 +2846,14 @@ export function sandBox(
                 const removedScripts = new Set<string>();
                 for (let i = timers[id].length - 1; i >= 0; i--) {
                     if (timerId === undefined || timers[id][i].id === timerId) {
+                        const clearedTimerId = timers[id][i].id;
                         removedScripts.add(timers[id][i].scriptName);
                         clearTimeout(timers[id][i].t);
                         if (timerId !== undefined) {
                             timers[id].splice(i, 1);
                         }
                         if (sandbox.verbose) {
-                            sandbox.log(`clearStateDelayed: clear timer ${timers[id][i]?.id ?? timerId}`, 'info');
+                            sandbox.log(`clearStateDelayed: clear timer ${clearedTimerId}`, 'info');
                         }
                     }
                 }
@@ -2863,15 +2864,22 @@ export function sandBox(
                         delete timers[id];
                     }
                 }
-                // IO-7: update the timersByScript reverse-index when a state has no more timers
-                if (!timers[id]) {
+                // IO-7: keep the timersByScript reverse-index in sync. For every script whose
+                // timer(s) we just removed, drop `id` from its set – unless that script still has
+                // another timer for this state (other scripts' timers may keep timers[id] alive).
+                if (removedScripts.size) {
+                    const remaining = timers[id]; // undefined if the whole entry was deleted
                     for (const scriptName of removedScripts) {
                         const stateIds = context.timersByScript.get(scriptName);
-                        if (stateIds) {
-                            stateIds.delete(id);
-                            if (!stateIds.size) {
-                                context.timersByScript.delete(scriptName);
-                            }
+                        if (!stateIds) {
+                            continue;
+                        }
+                        if (remaining?.some(e => e.scriptName === scriptName)) {
+                            continue;
+                        }
+                        stateIds.delete(id);
+                        if (!stateIds.size) {
+                            context.timersByScript.delete(scriptName);
                         }
                     }
                 }
