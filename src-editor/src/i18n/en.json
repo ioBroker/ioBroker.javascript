@@ -206,6 +206,7 @@
     "Shell command": "Shell command",
     "Show astronomical events": "Show astronomical events",
     "Show javascript code": "Show Javascript code",
+    "Show ioBroker state value": "Show ioBroker state value",
     "Show logs": "Show logs",
     "Show only paused scripts": "Show only paused scripts",
     "Show only running scripts": "Show only running scripts",

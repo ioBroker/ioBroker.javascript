@@ -206,6 +206,7 @@
     "Shell command": "Shell-Befehl",
     "Show astronomical events": "Astronomische Ereignisse anzeigen",
     "Show javascript code": "Javascript-Code zeigen",
+    "Show ioBroker state value": "ioBroker-Statuswert anzeigen",
     "Show logs": "Protokoll anzeigen",
     "Show only paused scripts": "Nur angehaltene Skripte zeigen",
     "Show only running scripts": "Nur laufende Skripte zeigen",

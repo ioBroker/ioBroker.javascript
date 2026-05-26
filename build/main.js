@@ -272,7 +272,6 @@ class JavaScript extends adapter_core_1.Adapter {
     stateIds = [];
     /** Fast O(1) lookup set – always kept in sync with stateIds */
     stateIdSet = new Set();
-    /** Precomputed "from" string for prepareStateObject – avoids string alloc on every setState */
     subscriptions = [];
     subscriptionsFile = [];
     subscriptionsObject = [];
@@ -735,7 +734,6 @@ class JavaScript extends adapter_core_1.Adapter {
     async onReady() {
         this.errorLogFunction = this.log;
         this.context.errorLogFunction = this.log;
-        // Precompute once – avoids string template alloc on every setState call
         this.config.maxSetStatePerMinute = parseInt(this.config.maxSetStatePerMinute, 10) || 1000;
         this.config.maxTriggersPerScript = parseInt(this.config.maxTriggersPerScript, 10) || 100;
         if (this.supportsFeature?.('PLUGINS')) {
@@ -1780,7 +1778,8 @@ class JavaScript extends adapter_core_1.Adapter {
             }
             // remember all IDs – sort once to guarantee the sorted invariant
             // required by binaryIndexOf() / sortedInsert() used later
-            for (const id of Object.keys(res).sort()) {
+            const keys = Object.keys(res).sort();
+            for (const id of keys) {
                 this.stateIds.push(id);
                 this.stateIdSet.add(id);
             }

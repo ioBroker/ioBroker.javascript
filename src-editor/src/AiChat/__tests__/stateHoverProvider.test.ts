@@ -140,7 +140,8 @@ describe('formatStateHoverMarkdown', () => {
         const md = formatStateHoverMarkdown('x', stateObj, stateVal);
         expect(md).toContain('23.4');
         expect(md).toContain('✓ ack');
-        expect(md).toMatch(/\d+ min ago|\d+s ago/);
+        // moment relative time (default 'en' locale in tests), e.g. "2 minutes ago"
+        expect(md).toMatch(/ago/);
     });
 
     it('handles missing state gracefully', () => {
