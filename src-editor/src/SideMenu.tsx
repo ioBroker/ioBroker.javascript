@@ -1305,7 +1305,14 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
         const result: (React.JSX.Element | null)[] = [];
         let reactChildren: React.JSX.Element[] | undefined;
         if (children && (reorder || this.state.expanded.includes(item.id) || item.id === ROOT_ID)) {
-            reactChildren = children.map(it => this.renderOneItem(items, it) as unknown as React.JSX.Element);
+            // Flatten the recursively returned arrays into a single list of keyed elements,
+            // so React doesn't warn about missing "key" props on the nested arrays.
+            reactChildren = children
+                .map(it => this.renderOneItem(items, it))
+                .reduce<React.JSX.Element[]>(
+                    (acc, cur) => (cur ? acc.concat(cur.filter((e): e is React.JSX.Element => !!e)) : acc),
+                    [],
+                );
         }
 
         if (reorder) {
@@ -1322,7 +1329,7 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
                         >
                             {element}
                         </Draggable>
-                        {(reactChildren as unknown as React.JSX.Element) || null}
+                        {reactChildren || null}
                     </Droppable>,
                 );
             } else {
@@ -1332,7 +1339,7 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
                         name={item.id}
                     >
                         {element}
-                        {(reactChildren as unknown as React.JSX.Element) || null}
+                        {reactChildren || null}
                     </Draggable>,
                 );
             }
@@ -1345,7 +1352,13 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
     }
 
     renderAllItems(items: ListElement[]): React.JSX.Element {
-        const result = items.filter(item => !item.parent).map(item => this.renderOneItem(items, item));
+        const result = items
+            .filter(item => !item.parent)
+            .map(item => this.renderOneItem(items, item))
+            .reduce<React.JSX.Element[]>(
+                (acc, cur) => (cur ? acc.concat(cur.filter((e): e is React.JSX.Element => !!e)) : acc),
+                [],
+            );
 
         return (
             <List
