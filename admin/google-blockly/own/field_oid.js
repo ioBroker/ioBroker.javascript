@@ -49,7 +49,7 @@ class FieldOID extends Blockly.Field {
         }
         // Prefetch the value when the pointer enters the field, so the tooltip
         // (shown by Blockly after a short delay) already contains a fresh value.
-        if (this._type === 'state' && this.fieldGroup_ && !this._hoverHandler) {
+        if (this.fieldGroup_ && !this._hoverHandler) {
             this._hoverHandler = () => this._fetchStateValue();
             this.fieldGroup_.addEventListener('mouseenter', this._hoverHandler);
         }
@@ -331,7 +331,7 @@ class FieldOID extends Blockly.Field {
         }
         const name = FieldOID._resolveObjectName(id);
         let txt = name ? name + '\n' + id : id;
-        if (this._type === 'state' && this._stateValueText) {
+        if (this._stateValueText) {
             txt += '\n= ' + this._stateValueText;
         }
         return txt;

@@ -116,6 +116,7 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
     private inlineProviderDisposable: monacoEditor.IDisposable | null = null;
     private stateHoverDisposable: monacoEditor.IDisposable | null = null;
     private showStateValueDisposable: monacoEditor.IDisposable | null = null;
+    private cronHoverDisposable: monacoEditor.IDisposable | null = null;
     private codeLensDisposable: monacoEditor.IDisposable | null = null;
     private inlineChatWidgetInstance: { dispose: () => void; show: () => void } | null = null;
     private inlineDiffInstance: { dispose: () => void } | null = null;
@@ -296,6 +297,17 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
                         .catch(() => {});
                 }
 
+                // Register cron hover provider (shows human-readable description when hovering over a cron expression)
+                if (this.monaco && !this.cronHoverDisposable) {
+                    import('../AiChat/cronHoverProvider')
+                        .then(({ registerCronHoverProvider }) => {
+                            if (this.monaco) {
+                                this.cronHoverDisposable = registerCronHoverProvider(this.monaco);
+                            }
+                        })
+                        .catch(() => {});
+                }
+
                 // Register AI inline completions if enabled
                 if (this.props.aiCompletionsEnabled && this.monaco && !this.inlineProviderDisposable) {
                     import('../AiChat/AiInlineProvider')
@@ -452,6 +464,8 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         import('../AiChat/stateHoverProvider')
             .then(({ clearStateHoverCache }) => clearStateHoverCache())
             .catch(() => {});
+        this.cronHoverDisposable?.dispose();
+        this.cronHoverDisposable = null;
         this.codeLensDisposable?.dispose();
         this.codeLensDisposable = null;
         this.inlineChatWidgetInstance?.dispose();

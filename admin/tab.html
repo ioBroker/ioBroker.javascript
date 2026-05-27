@@ -115,37 +115,39 @@
             type="text/javascript"
             src="google-blockly/own/blocks_object.js"
         ></script>
-      <script type="module" crossorigin src="./assets/index-B55739Ft.js"></script>
+      <script type="module" crossorigin src="./assets/index-_J9TORPC.js"></script>
       <link rel="modulepreload" crossorigin href="./assets/preload-helper-BDBacUwf.js">
-      <link rel="modulepreload" crossorigin href="./assets/virtual_mf-REMOTE_ENTRY_ID_iobroker_javascript__remoteEntry_js-DNrEsMrg.js">
+      <link rel="modulepreload" crossorigin href="./assets/virtual_mf-REMOTE_ENTRY_ID_iobroker_javascript__remoteEntry_js-DvKUltT9.js">
       <link rel="modulepreload" crossorigin href="./assets/iobroker_javascript__loadShare__react__loadShare__.mjs-CTZOFJS2.js">
       <link rel="modulepreload" crossorigin href="./assets/iobroker_javascript__loadShare__react__loadShare__.mjs_commonjs-proxy-CE9lvhW8.js">
       <link rel="modulepreload" crossorigin href="./assets/iobroker_javascript__loadShare__prop_mf_2_types__loadShare__.mjs-BCtSFofY.js">
-      <link rel="modulepreload" crossorigin href="./assets/createSvgIcon-DYs_tNrE.js">
+      <link rel="modulepreload" crossorigin href="./assets/createSvgIcon-D-3Bi1xe.js">
       <link rel="modulepreload" crossorigin href="./assets/iobroker_javascript__loadShare__react_mf_2_dom__loadShare__.mjs-DeVAS-oa.js">
       <link rel="modulepreload" crossorigin href="./assets/iobroker_javascript__loadShare__react_mf_2_dom__loadShare__.mjs_commonjs-proxy-RQRRZMX5.js">
       <link rel="modulepreload" crossorigin href="./assets/iobroker_javascript__loadShare___mf_0_mui_mf_1_material__loadShare__.mjs-CV1_X-Lf.js">
       <link rel="modulepreload" crossorigin href="./assets/iobroker_javascript__loadShare___mf_0_iobroker_mf_1_adapter_mf_2_react_mf_2_v5__loadShare__.mjs-DkBjPSMw.js">
-      <link rel="modulepreload" crossorigin href="./assets/index-wHNMOf-c.js">
-      <link rel="modulepreload" crossorigin href="./assets/inheritsLoose-CIXm_zPk.js">
+      <link rel="modulepreload" crossorigin href="./assets/index-Eq0hq35V.js">
+      <link rel="modulepreload" crossorigin href="./assets/inheritsLoose-hQb1iDPp.js">
       <link rel="stylesheet" crossorigin href="./assets/index-BTsjunTt.css">
     </head>
     <body>
         <noscript> You need to enable JavaScript to run this app. </noscript>
         <script>
             if (window.localStorage.getItem('App.theme') === 'dark' && !window.vendorPrefix) {
-                window.document.body.style.background = 'black';
+                window.document.body.style.backgroundColor = 'black';
+            } else if (window.vendorPrefix === 'HA') {
+                window.document.body.style.backgroundColor = '#000000';
             }
 
             // support for older blockly extensions like blockly-plus
             if (window.Blockly) {
-                window.Blockly.Constants = window.Blockly.Constants || {};
-                window.Blockly.Constants.Loops = window.Blockly.Constants.Loops || {};
-                window.Blockly.Constants.Variables = window.Blockly.Constants.Variables || {};
+                window.Blockly.Constants ||= {};
+                window.Blockly.Constants.Loops ||= {};
+                window.Blockly.Constants.Variables ||= {};
                 window.Blockly.Constants.Variables.HUE = 'rgb(165, 91, 128)';
-                window.Blockly.Constants.Logic = window.Blockly.Constants.Logic || {};
+                window.Blockly.Constants.Logic ||= {};
                 window.Blockly.Constants.Logic.HUE = 'rgb(91, 128, 165)';
-                window.Blockly.Constants.Math = window.Blockly.Constants.Logic || {};
+                window.Blockly.Constants.Math ||= {};
                 window.Blockly.Constants.Math.HUE = 'rgb(91, 103, 165)';
             }
         </script>

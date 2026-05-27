@@ -1329,7 +1329,7 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
                         >
                             {element}
                         </Draggable>
-                        {reactChildren || null}
+                        <div>{reactChildren || null}</div>
                     </Droppable>,
                 );
             } else {
