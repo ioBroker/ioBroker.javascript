@@ -8,6 +8,8 @@
         "@blockly/field-multilineinput": "^5.0.17",
         "@blockly/theme-dark": "^7.0.12",
         "@devbookhq/splitter": "^1.4.2",
+        "@emotion/react": "^11.14.0",
+        "@emotion/styled": "^11.14.1",
         "@iobroker/adapter-react-v5": "^8.2.6",
         "@iobroker/javascript-rules-dev": "^0.0.6",
         "@iobroker/type-detector": "^5.0.13",
