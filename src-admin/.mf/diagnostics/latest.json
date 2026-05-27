@@ -1,10 +1,10 @@
 {
   "latestErrorEvent": {
     "code": "TYPE-001",
-    "message": "Failed to generate type declaration. Execute the below cmd to reproduce and fix the error. #TYPE-001\nargs: {\"cmd\":\"npx tsc --project C:\\\\pWork\\\\ioBroker.javascript\\\\src-admin\\\\node_modules\\\\.federation\\\\tsconfig.db0411be19d23b6ab2ecdb80c2495ba5.json\"}\nView the docs to see how to solve: https://module-federation.io/guide/troubleshooting/type#type-001",
+    "message": "Failed to generate type declaration. Execute the below cmd to reproduce and fix the error. #TYPE-001\nargs: {\"cmd\":\"npx tsc --project /home/runner/work/ioBroker.javascript/ioBroker.javascript/src-admin/node_modules/.federation/tsconfig.7b12cc305ba87664a38e5d6b247941e1.json\"}\nView the docs to see how to solve: https://module-federation.io/guide/troubleshooting/type#type-001",
     "args": {
-      "cmd": "npx tsc --project C:\\pWork\\ioBroker.javascript\\src-admin\\node_modules\\.federation\\tsconfig.db0411be19d23b6ab2ecdb80c2495ba5.json"
+      "cmd": "npx tsc --project /home/runner/work/ioBroker.javascript/ioBroker.javascript/src-admin/node_modules/.federation/tsconfig.7b12cc305ba87664a38e5d6b247941e1.json"
     },
-    "timestamp": 1779884497735
+    "timestamp": 1779891958928
   }
 }

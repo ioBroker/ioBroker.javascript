@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "9.2.2",
+    "version": "9.2.3",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "9.2.3": {
+        "en": "Performance optimizations done\nAdded on mouse over the value of the state",
+        "de": "Leistungsoptimierungen durchgeführt\nAuf der Maus über den Wert des Zustands hinzugefügt",
+        "ru": "Оптимизация производительности\nДобавлено на мыши над стоимостью государства",
+        "pt": "Otimizações de desempenho feitas\nAdicionado no mouse sobre o valor do estado",
+        "nl": "Prestatieoptimalisaties uitgevoerd\nToegevoegd aan muis boven de waarde van de status",
+        "fr": "Optimisations des performances effectuées\nAjouté sur la souris sur la valeur de l'état",
+        "it": "Ottimizzazione delle prestazioni\nAggiunto sul mouse sopra il valore dello stato",
+        "es": "Optimizaciones de rendimiento realizadas\nAñadido en el ratón sobre el valor del estado",
+        "pl": "Optymalizacja wykonania\nDodano na myszce nad wartością stanu",
+        "uk": "Оптимізація продуктивності\nДодано на мишу над значенням держави",
+        "zh-cn": "业绩优化\n在鼠标上大于状态值"
+      },
       "9.2.2": {
         "en": "Fix: AI chat mode tooltip no longer covers the dropdown options (issue #2201) — moved tooltip to the left of the selector\nClarified the AI chat mode descriptions in the tooltip: Agent is for larger models with tool support and handles both analysis and script creation, Code is for smaller models without tool support (uses two-step plan-then-code) — translations updated in all 11 languages\nAdded the \"is state exists\" block to blockly",
         "de": "Fix: AI-Chat-Modus-Tooltip nicht mehr deckt die Dropdown-Optionen (Ausgabe #2201) - verschoben Tooltip auf die linke Seite des Selektors\nKI-Chat-Modus Beschreibungen im Tooltip: Agent ist für größere Modelle mit Werkzeugunterstützung und behandelt sowohl Analyse als auch Skript-Erstellung, Code ist für kleinere Modelle ohne Werkzeugunterstützung (verwendet zweistufigen Plan-then-Code) — Übersetzungen aktualisiert in allen 11 Sprachen\nDer \"is state exist\" Block wurde blockweise hinzugefügt",
