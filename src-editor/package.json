@@ -6,7 +6,7 @@
     "dependencies": {
         "@blockly/field-colour": "^5.0.19",
         "@blockly/field-multilineinput": "^5.0.17",
-        "@blockly/theme-dark": "^7.0.12",
+        "@blockly/theme-dark": "^8.0.4",
         "@devbookhq/splitter": "^1.4.2",
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
