@@ -59,6 +59,12 @@ export abstract class GenericBlock<
 
     private lastObjectIdChange: number = 0;
     private enableSimulationProcessing = false;
+
+    private mounted = false;
+
+    private tagCardTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    private enableSimulationTimeout: ReturnType<typeof setTimeout> | null = null;
     private lastDebugMessage = 0;
     private debugMessageTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -122,6 +128,7 @@ export abstract class GenericBlock<
     }
 
     componentWillUnmount(): void {
+        this.mounted = false;
         if (this.debugMessageTimeout) {
             clearTimeout(this.debugMessageTimeout);
             this.debugMessageTimeout = null;
@@ -129,6 +136,14 @@ export abstract class GenericBlock<
         if (this.debugHideTimeout) {
             clearTimeout(this.debugHideTimeout);
             this.debugHideTimeout = null;
+        }
+        if (this.tagCardTimeout) {
+            clearTimeout(this.tagCardTimeout);
+            this.tagCardTimeout = null;
+        }
+        if (this.enableSimulationTimeout) {
+            clearTimeout(this.enableSimulationTimeout);
+            this.enableSimulationTimeout = null;
         }
     }
 
@@ -454,6 +469,9 @@ export abstract class GenericBlock<
                 async (_attrStr: string): Promise<void> => {
                     const obj = await socket.getObject(value);
                     const icon = await this.findIcon(obj);
+                    if (!this.mounted) {
+                        return;
+                    }
                     const newState: Partial<TState> = {
                         [_attrStr]: obj || false,
                         [`${_attrStr}___icon`]: icon,
@@ -897,6 +915,7 @@ export abstract class GenericBlock<
     }
 
     componentDidMount(): void {
+        this.mounted = true;
         this.onTagChange();
         // detect changes
     }
@@ -1097,9 +1116,18 @@ export abstract class GenericBlock<
         } = this.state;
         const { socket, notFound } = this.props;
 
-        // Detect empty tag
-        if (this.state.settings && !this.state.settings.tagCard && this.state.tagCardArray?.length) {
-            setTimeout(() => {
+        // Detect empty tag (guard against re-scheduling on every render and setState after unmount)
+        if (
+            this.state.settings &&
+            !this.state.settings.tagCard &&
+            this.state.tagCardArray?.length &&
+            !this.tagCardTimeout
+        ) {
+            this.tagCardTimeout = setTimeout(() => {
+                this.tagCardTimeout = null;
+                if (!this.mounted) {
+                    return;
+                }
                 const settings: Settings = JSON.parse(JSON.stringify(this.state.settings));
                 settings.tagCard =
                     typeof this.state.tagCardArray[0] !== 'string'
@@ -1112,7 +1140,12 @@ export abstract class GenericBlock<
         // Detect changing of simulation
         if (this.state.enableSimulation !== this.props.enableSimulation && !this.enableSimulationProcessing) {
             this.enableSimulationProcessing = true;
-            setTimeout(() => {
+            this.enableSimulationTimeout = setTimeout(() => {
+                this.enableSimulationTimeout = null;
+                if (!this.mounted) {
+                    this.enableSimulationProcessing = false;
+                    return;
+                }
                 this.setState({ enableSimulation: this.props.enableSimulation }, () => {
                     this.enableSimulationProcessing = false;
                 });

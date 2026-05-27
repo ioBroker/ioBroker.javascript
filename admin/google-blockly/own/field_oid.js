@@ -26,9 +26,11 @@ class FieldOID extends Blockly.Field {
         this._stateValueText = null; // last formatted value, used by tooltip + inline display
         this._valueBadge = null; // clickable "=" badge element
         this._hoverHandler = null; // mouseenter prefetch handler
+        this._disposed = false; // set on dispose() so late async callbacks are dropped
     }
 
     dispose() {
+        this._disposed = true;
         Blockly.WidgetDiv.hideIfOwner(this);
         if (this.fieldGroup_ && this._hoverHandler) {
             this.fieldGroup_.removeEventListener('mouseenter', this._hoverHandler);
@@ -318,6 +320,9 @@ class FieldOID extends Blockly.Field {
             return;
         }
         window.main.getState(id, (err, state) => {
+            if (this._disposed) {
+                return;
+            }
             this._stateValueText = state ? FieldOID._formatStateValue(id, state) : null;
             cb && cb();
         });

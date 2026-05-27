@@ -240,8 +240,9 @@ class Log extends React.Component<LogProps, LogState> {
         const date = new Date(message.ts);
         text.push(`${date.toLocaleString()}.${paddingMs(date.getMilliseconds())}\t[${severity}]: ${message.message}`);
         if (lines.length > 300) {
-            lines.splice(0, lines.length - 300);
-            text.splice(0, lines.length - 300);
+            const cut = lines.length - 300;
+            lines.splice(0, cut);
+            text.splice(0, cut);
         }
         gText[selected] = text;
         allLines[selected] = lines;

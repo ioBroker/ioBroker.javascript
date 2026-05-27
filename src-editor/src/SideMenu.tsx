@@ -670,6 +670,14 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
         this.props.instances.forEach(instance => {
             this.props.socket.unsubscribeState(`javascript.${instance}.scriptProblem.*`, this.onProblemUpdatedBound);
         });
+        if (this.filterTimer) {
+            clearTimeout(this.filterTimer);
+            this.filterTimer = null;
+        }
+        if (this.problemsTimer) {
+            clearTimeout(this.problemsTimer);
+            this.problemsTimer = null;
+        }
     }
 
     onProblemUpdated(id: string, state: ioBroker.State | null | undefined): void {
