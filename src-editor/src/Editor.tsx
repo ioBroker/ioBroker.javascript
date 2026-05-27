@@ -114,6 +114,10 @@ declare global {
         main: {
             objects: Record<string, ioBroker.ScriptObject | ioBroker.InstanceObject | ioBroker.ChannelObject>;
             getObject: (id: string, cb: (err: Error | null | undefined, obj?: ioBroker.Object | null) => void) => void;
+            getState: (
+                id: string,
+                cb: (err: Error | null | undefined, state?: ioBroker.State | null) => void,
+            ) => void;
             instances: string[];
             selectIdDialog: (
                 initValue: string | null,
@@ -431,6 +435,11 @@ class Editor extends React.Component<EditorProps, EditorState> {
                 this.props.socket
                     .getObject(id)
                     .then(obj => cb?.(null, obj))
+                    .catch(err => cb?.(err)),
+            getState: (id: string, cb: (err: null | Error | undefined, state?: ioBroker.State | null) => void) =>
+                this.props.socket
+                    .getState(id)
+                    .then(state => cb?.(null, state))
                     .catch(err => cb?.(err)),
             instances: [],
             selectIdDialog: (

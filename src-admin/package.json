@@ -11,8 +11,10 @@
         "npm": "npm i -f"
     },
     "devDependencies": {
-        "@iobroker/adapter-react-v5": "^8.2.0",
-        "@iobroker/json-config": "^8.3.9",
+        "@emotion/react": "^11.14.0",
+        "@emotion/styled": "^11.14.1",
+        "@iobroker/adapter-react-v5": "^8.2.6",
+        "@iobroker/json-config": "^8.4.3",
         "@module-federation/runtime": "^2.2.3",
         "@module-federation/vite": "^1.13.1",
         "@mui/icons-material": "^6.5.0",

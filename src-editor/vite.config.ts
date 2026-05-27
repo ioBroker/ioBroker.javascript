@@ -39,6 +39,9 @@ export default defineConfig({
         port: 3000,
         proxy: {
             '/adapter': 'http://localhost:8081',
+            // Dev only: serve `_socket/info.js` (sets window.sysLang) from the real ioBroker,
+            // so Monaco's UI uses the ioBroker language instead of the browser language.
+            '/_socket': 'http://localhost:8081',
         },
     },
     base: './',

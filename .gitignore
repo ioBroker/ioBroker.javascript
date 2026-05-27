@@ -19,3 +19,4 @@ iob_npm.dode
 .commitinfo
 /.claude/settings.local.json
 /iobroker.*.tgz
+/src-admin/.mf/

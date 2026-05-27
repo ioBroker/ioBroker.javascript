@@ -115,6 +115,8 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
     private datapointProviderDisposable: monacoEditor.IDisposable | null = null;
     private inlineProviderDisposable: monacoEditor.IDisposable | null = null;
     private stateHoverDisposable: monacoEditor.IDisposable | null = null;
+    private showStateValueDisposable: monacoEditor.IDisposable | null = null;
+    private cronHoverDisposable: monacoEditor.IDisposable | null = null;
     private codeLensDisposable: monacoEditor.IDisposable | null = null;
     private inlineChatWidgetInstance: { dispose: () => void; show: () => void } | null = null;
     private inlineDiffInstance: { dispose: () => void } | null = null;
@@ -253,6 +255,11 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
                     automaticLayout: true,
                     glyphMargin: !!this.props.breakpoints,
                     colorDecorators: true,
+                    // Mouse-over shows the state value (same provider as the Alt+I command).
+                    // `sticky` lets the user move into the tooltip; `fixedOverflowWidgets`
+                    // prevents the tooltip from being clipped by the surrounding panels.
+                    hover: { enabled: true, delay: 200, sticky: true },
+                    fixedOverflowWidgets: true,
                 });
 
                 this.contentChangeDisposable = this.editor.onDidChangeModelContent(() => this.onChange());
@@ -274,9 +281,28 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
                 // Register state-info hover provider (shows live value when hovering over an object ID)
                 if (this.monaco && !this.stateHoverDisposable) {
                     import('../AiChat/stateHoverProvider')
-                        .then(({ registerStateHoverProvider }) => {
+                        .then(({ registerStateHoverProvider, registerShowStateValueAction }) => {
                             if (this.monaco) {
                                 this.stateHoverDisposable = registerStateHoverProvider(this.monaco, this.props.socket);
+                            }
+                            // "On button press" variant: Alt+I / context menu shows the value at the cursor.
+                            if (this.monaco && this.editor && !this.showStateValueDisposable) {
+                                this.showStateValueDisposable = registerShowStateValueAction(
+                                    this.editor,
+                                    this.monaco,
+                                    I18n.t('Show ioBroker state value'),
+                                );
+                            }
+                        })
+                        .catch(() => {});
+                }
+
+                // Register cron hover provider (shows human-readable description when hovering over a cron expression)
+                if (this.monaco && !this.cronHoverDisposable) {
+                    import('../AiChat/cronHoverProvider')
+                        .then(({ registerCronHoverProvider }) => {
+                            if (this.monaco) {
+                                this.cronHoverDisposable = registerCronHoverProvider(this.monaco);
                             }
                         })
                         .catch(() => {});
@@ -433,9 +459,13 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         this.inlineProviderDisposable = null;
         this.stateHoverDisposable?.dispose();
         this.stateHoverDisposable = null;
+        this.showStateValueDisposable?.dispose();
+        this.showStateValueDisposable = null;
         import('../AiChat/stateHoverProvider')
             .then(({ clearStateHoverCache }) => clearStateHoverCache())
             .catch(() => {});
+        this.cronHoverDisposable?.dispose();
+        this.cronHoverDisposable = null;
         this.codeLensDisposable?.dispose();
         this.codeLensDisposable = null;
         this.inlineChatWidgetInstance?.dispose();

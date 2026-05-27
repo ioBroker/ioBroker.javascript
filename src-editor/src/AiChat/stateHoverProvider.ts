@@ -17,10 +17,26 @@
  */
 
 import type * as monacoEditor from 'monaco-editor';
-import type { AdminConnection } from '@iobroker/adapter-react-v5';
+import { I18n, type AdminConnection } from '@iobroker/adapter-react-v5';
+import moment from 'moment';
+// Load the locales for the languages ioBroker supports (en is built into moment).
+import 'moment/locale/de';
+import 'moment/locale/es';
+import 'moment/locale/fr';
+import 'moment/locale/it';
+import 'moment/locale/nl';
+import 'moment/locale/pl';
+import 'moment/locale/pt';
+import 'moment/locale/ru';
+import 'moment/locale/uk';
+import 'moment/locale/zh-cn';
 
-/** Regex for a plausible ioBroker object ID: adapter.instance.something[.more] */
-const OBJECT_ID_PATTERN = /^[a-zA-Z_][a-zA-Z0-9_-]*\.\d+(?:\.[A-Za-z0-9_.\-/:#]+)+$/;
+/**
+ * Regex for a plausible ioBroker object ID: adapter.instance.something[.more].
+ * The first segment may start with a digit so that user folders like `0_userdata.0.*`
+ * (the default location for user-created states) are recognised too.
+ */
+const OBJECT_ID_PATTERN = /^[a-zA-Z0-9_][a-zA-Z0-9_-]*\.\d+(?:\.[A-Za-z0-9_.\-/:#]+)+$/;
 
 /**
  * Try to find the string-literal that contains the cursor position, and return its
@@ -133,25 +149,8 @@ function formatAgo(ts: number | undefined): string {
     if (!ts) {
         return '';
     }
-    const now = Date.now();
-    const diff = now - ts;
-    if (diff < 0) {
-        return new Date(ts).toLocaleString();
-    }
-    const s = Math.floor(diff / 1000);
-    if (s < 60) {
-        return `${s}s ago`;
-    }
-    const m = Math.floor(s / 60);
-    if (m < 60) {
-        return `${m} min ago`;
-    }
-    const h = Math.floor(m / 60);
-    if (h < 24) {
-        return `${h} h ago`;
-    }
-    const d = Math.floor(h / 24);
-    return d < 30 ? `${d} d ago` : new Date(ts).toLocaleDateString();
+    // Localized relative time ("vor 3 Minuten", "3 minutes ago", …) in the ioBroker language.
+    return moment(ts).locale(I18n.getLanguage()).fromNow();
 }
 
 /**
@@ -324,4 +323,31 @@ export function registerStateHoverProvider(
             });
         },
     };
+}
+
+/**
+ * Register an editor action that shows the state value of the ID under the cursor
+ * without needing the mouse — i.e. "on button press". It reuses the hover provider
+ * above by triggering Monaco's built-in hover at the current cursor position, so it
+ * shows exactly the same rich tooltip (value, type, role, unit, …).
+ *
+ * The action is added to the editor context menu and bound to Alt+I.
+ * Returns an IDisposable that unregisters the action.
+ */
+export function registerShowStateValueAction(
+    editor: monacoEditor.editor.IStandaloneCodeEditor,
+    monaco: typeof monacoEditor,
+    label: string,
+): monacoEditor.IDisposable {
+    return editor.addAction({
+        id: 'iobroker.showStateValue',
+        label,
+        keybindings: [monaco.KeyMod.Alt | monaco.KeyCode.KeyI],
+        contextMenuGroupId: 'navigation',
+        contextMenuOrder: 1.5,
+        run: ed => {
+            // Show the hover (and thus our state tooltip) at the keyboard cursor position.
+            ed.trigger('iobroker.showStateValue', 'editor.action.showHover', {});
+        },
+    });
 }

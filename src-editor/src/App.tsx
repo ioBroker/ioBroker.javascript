@@ -259,7 +259,7 @@ export default class App extends GenericApp<AppProps, AppState> {
         let changed = false;
         const newState: Partial<AppState> = {};
 
-        if (id.match(/^system\.adapter\.[-_\w\d]+\$/)) {
+        if (id.startsWith('system.adapter.')) {
             // update instances
             if (id.startsWith(`system.adapter.${this.adapterName}.`)) {
                 const idNum = parseInt(id.split('.').pop() || '0', 10) || 0;
@@ -288,7 +288,9 @@ export default class App extends GenericApp<AppProps, AppState> {
             }
         }
 
-        changed && this.setState(newState as AppState);
+        if (changed) {
+            this.setState(newState as AppState);
+        }
     };
 
     onHostChanged = (id: string, obj: ioBroker.Object | null | undefined): void => {

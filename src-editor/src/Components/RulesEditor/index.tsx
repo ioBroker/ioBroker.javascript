@@ -98,7 +98,7 @@ const RulesEditor = ({
                         const messages = [...gDebugMessages, { blockId: msg.blockId, data: msg.data, ts: msg.ts }];
                         // Delete all messages older than 5 seconds and if the length is bigger than 200
                         if (messages.length > 200) {
-                            messages.splice(0, 200 - messages.length);
+                            messages.splice(0, messages.length - 200);
                         }
                         for (let m = messages.length - 1; m >= 0; m--) {
                             if (messages[m].ts < now - 5000) {

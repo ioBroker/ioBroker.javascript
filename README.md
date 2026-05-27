@@ -29,7 +29,8 @@ Executes Javascript, Typescript Scripts.
 ## Changelog
 
 ### **WORK IN PROGRESS**
-* (arteck) performance optimization
+* (arteck) Performance optimizations done
+* (@GermanBluefox) Added on mouse over the value of the state
 
 ### 9.2.2 (2026-05-07)
 * (Eistee82) Fix: AI chat mode tooltip no longer covers the dropdown options (issue #2201) — moved tooltip to the left of the selector

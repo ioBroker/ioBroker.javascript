@@ -20,10 +20,26 @@ class FieldOID extends Blockly.Field {
         this.SERIALIZABLE = true;
         this.spellcheck_ = false;
         this.maxDisplayLength = 200;
+
+        // Live value display (only meaningful for state IDs)
+        this._showValue = false; // whether the value is shown inline next to the ID
+        this._stateValueText = null; // last formatted value, used by tooltip + inline display
+        this._valueBadge = null; // clickable "=" badge element
+        this._hoverHandler = null; // mouseenter prefetch handler
+        this._disposed = false; // set on dispose() so late async callbacks are dropped
     }
 
     dispose() {
+        this._disposed = true;
         Blockly.WidgetDiv.hideIfOwner(this);
+        if (this.fieldGroup_ && this._hoverHandler) {
+            this.fieldGroup_.removeEventListener('mouseenter', this._hoverHandler);
+            this._hoverHandler = null;
+        }
+        if (this._valueBadge) {
+            this._valueBadge.remove();
+            this._valueBadge = null;
+        }
         super.dispose();
     }
 
@@ -33,6 +49,13 @@ class FieldOID extends Blockly.Field {
         if (id) {
             this.updateIcon_(id);
         }
+        // Prefetch the value when the pointer enters the field, so the tooltip
+        // (shown by Blockly after a short delay) already contains a fresh value.
+        if (this.fieldGroup_ && !this._hoverHandler) {
+            this._hoverHandler = () => this._fetchStateValue();
+            this.fieldGroup_.addEventListener('mouseenter', this._hoverHandler);
+        }
+        this._ensureValueBadge();
     }
 
     static _resolveObjectName(id) {
@@ -138,13 +161,14 @@ class FieldOID extends Blockly.Field {
         const xPad = margin !== undefined ? margin :
             (this.isFullBlockField() ? 0 : constants.FIELD_BORDER_RECT_X_PADDING);
         const iconOffset = this._getIconOffset();
+        const badgeOffset = this._getBadgeOffset();
 
         let textWidth = 0;
         if (this.textElement_) {
             textWidth = this.textElement_.getComputedTextLength();
         }
 
-        let totalWidth = 2 * xPad + textWidth + iconOffset;
+        let totalWidth = 2 * xPad + textWidth + iconOffset + badgeOffset;
         let totalHeight = constants.FIELD_TEXT_HEIGHT;
         if (!this.isFullBlockField()) {
             totalHeight = Math.max(totalHeight, constants.FIELD_BORDER_RECT_HEIGHT);
@@ -155,6 +179,7 @@ class FieldOID extends Blockly.Field {
 
         this.positionTextElement_(xPad + iconOffset, textWidth);
         this.positionBorderRect_();
+        this._positionValueBadge(totalWidth, xPad, totalHeight);
     }
 
     updateIcon_(id) {
@@ -256,6 +281,125 @@ class FieldOID extends Blockly.Field {
         tryNext(remaining);
     }
 
+    // ---- Live state value: tooltip (always) + clickable inline badge ----
+
+    /** Format a state value for display: value + unit, truncated, with a "not acked" marker. */
+    static _formatStateValue(id, state) {
+        if (!state || state.val === undefined || state.val === null) {
+            return 'null';
+        }
+        let v = state.val;
+        if (typeof v === 'object') {
+            try {
+                v = JSON.stringify(v);
+            } catch (e) {
+                v = String(v);
+            }
+        } else {
+            v = String(v);
+        }
+        if (v.length > 60) {
+            v = v.substring(0, 60) + '…';
+        }
+        const objects = window.main && window.main.objects;
+        const common = objects && objects[id] && objects[id].common;
+        if (common && common.unit) {
+            v += ' ' + common.unit;
+        }
+        if (state.ack === false) {
+            v += ' (?)'; // value not acknowledged
+        }
+        return v;
+    }
+
+    /** Fetch the current value from the backend and remember it for tooltip/inline display. */
+    _fetchStateValue(cb) {
+        const id = this.getValue();
+        if (!id || !window.main || typeof window.main.getState !== 'function') {
+            cb && cb();
+            return;
+        }
+        window.main.getState(id, (err, state) => {
+            if (this._disposed) {
+                return;
+            }
+            this._stateValueText = state ? FieldOID._formatStateValue(id, state) : null;
+            cb && cb();
+        });
+    }
+
+    /** Tooltip text: object name + ID + (for states) the current value. */
+    _composeTooltip() {
+        const id = this.getValue();
+        if (!id) {
+            return '';
+        }
+        const name = FieldOID._resolveObjectName(id);
+        let txt = name ? name + '\n' + id : id;
+        if (this._stateValueText) {
+            txt += '\n= ' + this._stateValueText;
+        }
+        return txt;
+    }
+
+    _getBadgeOffset() {
+        return this._valueBadge ? 18 : 0;
+    }
+
+    /** Create the clickable "=" badge for state fields (once, lazily). */
+    _ensureValueBadge() {
+        if (this._type !== 'state' || this._valueBadge || !this.fieldGroup_ || !this.getValue()) {
+            return;
+        }
+        const badge = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        badge.setAttribute('class', 'blocklyText');
+        badge.setAttribute('text-anchor', 'middle');
+        badge.style.fill = '#2196f3';
+        badge.style.fontWeight = 'bold';
+        badge.style.cursor = 'pointer';
+        badge.textContent = '=';
+        const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+        title.textContent = 'Show/hide current value';
+        badge.appendChild(title);
+        // Don't let a click on the badge open the ID-selector dialog or start a drag.
+        const stop = e => e.stopPropagation();
+        badge.addEventListener('pointerdown', stop);
+        badge.addEventListener('mousedown', stop);
+        badge.addEventListener('click', e => {
+            e.stopPropagation();
+            this._toggleValue();
+        });
+        this._valueBadge = badge;
+        this.fieldGroup_.appendChild(badge);
+        if (this.sourceBlock_ && this.sourceBlock_.rendered) {
+            this.forceRerender();
+        }
+    }
+
+    /** Position the badge at the right edge of the field. */
+    _positionValueBadge(totalWidth, xPad, totalHeight) {
+        if (!this._valueBadge) {
+            return;
+        }
+        this._valueBadge.setAttribute('x', String(totalWidth - xPad - 9));
+        this._valueBadge.setAttribute('y', String(totalHeight / 2 + 4));
+    }
+
+    /** Toggle inline value display (the "button press" behaviour). */
+    _toggleValue() {
+        this._showValue = !this._showValue;
+        if (this._valueBadge) {
+            this._valueBadge.textContent = this._showValue ? '×' : '=';
+        }
+        if (this._showValue) {
+            this._stateValueText = this._stateValueText || '…';
+            this.forceRerender();
+            this._fetchStateValue(() => this.forceRerender());
+        } else {
+            this.forceRerender();
+        }
+    }
+
     setValue(id) {
         if (id === null) {
             return;  // No change if null.
@@ -289,11 +433,16 @@ class FieldOID extends Blockly.Field {
 
         this.updateIcon_(id);
         super.setValue(id);
-        super.setTooltip(id);
+        // Tooltip is a function so it always reflects the latest fetched value.
+        super.setTooltip(() => this._composeTooltip());
+        this._ensureValueBadge();
     }
 
     getDisplayText_() {
         let text = this._idName || this.text_;
+        if (this._showValue && this._stateValueText) {
+            text = (text || '') + '  =  ' + this._stateValueText;
+        }
         if (!text) {
             // Prevent the field from disappearing if empty.
             return Blockly.Field.NBSP;
