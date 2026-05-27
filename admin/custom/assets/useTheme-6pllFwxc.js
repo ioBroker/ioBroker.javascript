@@ -1,1 +1,0 @@
-import{U as n,d as m}from"./createTheme-DdK5zYI1.js";import{c as s}from"./ConfigCustomJavascriptSet__loadShare__react__loadShare__.mjs-0SjJESw9.js";function o(e){return Object.keys(e).length===0}function r(e=null){const t=s(n);return!t||o(t)?e:t}const u=m();function f(e=u){return r(e)}export{r as a,f as u};

@@ -27,8 +27,7 @@ Executes Javascript, Typescript Scripts.
 -->
 
 ## Changelog
-
-### **WORK IN PROGRESS**
+### 9.2.3 (2026-05-27)
 * (arteck) Performance optimizations done
 * (@GermanBluefox) Added on mouse over the value of the state
 
@@ -65,17 +64,6 @@ Executes Javascript, Typescript Scripts.
 * (@GermanBluefox) All delayed writings are stopped by the script stop
 * (@GermanBluefox) Added check if a script has been modified by another user/window
 * (@GermanBluefox) Make the instance number more prominent
-
-### 9.1.1 (2026-03-19)
-* (GermanBluefox) Small GUI optimizations
-* Added support for custom OpenAI-compatible API endpoints (e.g. Ollama, LM Studio, Google Gemini, DeepSeek, OpenRouter)
-* Added configurable base URL in adapter settings
-* Models are now fetched dynamically from the configured API endpoint
-* Added the "Test API connection" button in adapter settings
-* Added error handling with user-friendly messages for unreachable providers
-* Added retry functionality for failed model loading
-* All API calls (models + chat) are proxied server-side to avoid CORS issues with local providers
-* Strip LLM thinking artifacts from responses (for local models like Ollama)
 
 ## License
 The MIT License (MIT)
