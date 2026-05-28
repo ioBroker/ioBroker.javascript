@@ -59,7 +59,7 @@
     "wake_on_lan": "^1.0.0"
   },
   "devDependencies": {
-    "@alcalzone/release-script": "^5.1.1",
+    "@alcalzone/release-script": "^5.2.0",
     "@alcalzone/release-script-plugin-iobroker": "^5.1.2",
     "@alcalzone/release-script-plugin-license": "^5.1.1",
     "@iobroker/adapter-dev": "^1.5.0",
