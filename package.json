@@ -45,7 +45,7 @@
     "@iobroker/types": "^7.1.1",
     "@types/node": "^25.6.0",
     "axios": "^1.15.0",
-    "jsonata": "^2.1.0",
+    "jsonata": "^2.2.1",
     "jszip": "^3.10.1",
     "node-inspect": "^2.0.0",
     "node-schedule": "2.1.1",
