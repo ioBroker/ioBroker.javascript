@@ -1111,10 +1111,10 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
         if (
             this.state.statusFilter &&
             item.type !== 'folder' &&
-            ((this.state.statusFilter === 'running' && !item.enabled) ||
-                (this.state.statusFilter === 'paused' && item.enabled) ||
+            ((this.state.statusFilter === 'running' && !(item as ListElementScript).enabled) ||
+                (this.state.statusFilter === 'paused' && (item as ListElementScript).enabled) ||
                 (this.state.statusFilter === 'problems' &&
-                    (!item.enabled || this.state.problems.indexOf(item.id) === -1)))
+                    (!(item as ListElementScript).enabled || this.state.problems.indexOf(item.id) === -1)))
         ) {
             return true;
         }
@@ -1122,10 +1122,51 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
         return item.id === GLOBAL_ID && !this.state.expertMode;
     }
 
+    /**
+     * Returns true if an item would actually be rendered under the current filters.
+     * For scripts: checks isFilteredOut directly.
+     * For folders: checks recursively that at least one child has visible content.
+     */
+    hasVisibleContent(item: ListElement, items: ListElement[]): boolean {
+        if (item.type !== 'folder') {
+            return !this.isFilteredOut(item);
+        }
+        // A folder is visible only when at least one of its children is visible
+        return items.some(i => i.parent === item.id && this.hasVisibleContent(i, items));
+    }
+
+    countDescendantScripts(item: ListElement, items: ListElement[]): number {
+        let count = 0;
+        const directChildren = items.filter(i => i.parent === item.id);
+        for (const child of directChildren) {
+            if (child.type === 'folder') {
+                count += this.countDescendantScripts(child, items);
+            } else {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    countVisibleDescendantScripts(item: ListElement, items: ListElement[]): number {
+        let count = 0;
+        const directChildren = items.filter(i => i.parent === item.id);
+        for (const child of directChildren) {
+            if (child.type === 'folder') {
+                count += this.countVisibleDescendantScripts(child, items);
+            } else if (!this.isFilteredOut(child)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     renderListItem(
         item: ListElement,
         children: ListElement[],
         childrenFiltered: ListElement[],
+        totalDescendants: number = 0,
+        visibleDescendants: number = 0,
     ): React.JSX.Element | null {
         if (item.id === ROOT_ID && !this.state.reorder) {
             return null;
@@ -1207,12 +1248,13 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
         }
 
         let childrenCount = null;
-        if ((childrenFiltered && childrenFiltered.length) || (children && children.length)) {
+        if (item.type === 'folder' && totalDescendants > 0) {
+            const isFiltered = !!(this.state.statusFilter || this.state.typeFilter);
             childrenCount = (
                 <span style={styles.childrenCount}>
-                    {childrenFiltered && childrenFiltered.length !== children.length
-                        ? `${childrenFiltered.length}(${children.length})`
-                        : children.length}
+                    {isFiltered && visibleDescendants !== totalDescendants
+                        ? `${visibleDescendants}(${totalDescendants})`
+                        : totalDescendants}
                 </span>
             );
         }
@@ -1295,7 +1337,7 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
     renderOneItem(items: ListElement[], item: ListElement /* , dragging */): (React.JSX.Element | null)[] | null {
         const childrenFiltered: ListElement[] =
             this.state.statusFilter || this.state.typeFilter
-                ? items.filter(i => (i.parent === item.id ? !this.isFilteredOut(i) : false))
+                ? items.filter(i => i.parent === item.id && this.hasVisibleContent(i, items))
                 : [];
 
         const children: ListElement[] = items.filter(i => i.parent === item.id);
@@ -1309,7 +1351,13 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
         }
         const reorder = this.state.reorder && !this.props.debugMode;
 
-        const element = this.renderListItem(item, children, childrenFiltered);
+        const totalDescendants = item.type === 'folder' ? this.countDescendantScripts(item, items) : 0;
+        const visibleDescendants =
+            item.type === 'folder' && (this.state.statusFilter || this.state.typeFilter)
+                ? this.countVisibleDescendantScripts(item, items)
+                : totalDescendants;
+
+        const element = this.renderListItem(item, children, childrenFiltered, totalDescendants, visibleDescendants);
         const result: (React.JSX.Element | null)[] = [];
         let reactChildren: React.JSX.Element[] | undefined;
         if (children && (reorder || this.state.expanded.includes(item.id) || item.id === ROOT_ID)) {

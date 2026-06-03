@@ -39,6 +39,32 @@ const SCRIPT_CODE_MARKER = 'script.js.';
 
 const pattern2RegEx = commonTools.pattern2RegEx;
 
+// Pre-compiled RegExp constants for formatTimeDiff – avoids recompiling on every call
+const FTD_TEST_D = /(?<!\\)[DTД]/;
+const FTD_REPL_DD = /(?<!\\)(?:DD|TT|ДД)/g;
+const FTD_REPL_D = /(?<!\\)[DTД]/g;
+const FTD_TEST_H = /(?<!\\)[hSч]/;
+const FTD_REPL_HH = /(?<!\\)(?:hh|SS|чч)/g;
+const FTD_REPL_H = /(?<!\\)[hSч]/g;
+const FTD_TEST_M = /(?<!\\)[mм]/;
+const FTD_REPL_MM = /(?<!\\)(?:mm|мм)/g;
+const FTD_REPL_M = /(?<!\\)[mм]/g;
+const FTD_TEST_S = /(?<!\\)[sс]/;
+const FTD_REPL_SS = /(?<!\\)(?:ss|сс)/g;
+const FTD_REPL_S = /(?<!\\)[sс]/g;
+const FTD_UNESCAPE = [
+    [/\\[DTД]/g, '$1'],
+    [/\\[hSч]/g, '$1'],
+    [/\\[mм]/g, '$1'],
+    [/\\[sс]/g, '$1'],
+] as const;
+
+/** Cache for selector-string → RegExp to avoid recompiling identical patterns */
+const _selectorRegExpCache = new Map<string, RegExp>();
+
+/** Monotonically increasing handler-ID counter – avoids Date.now()+random collisions */
+let _handlerIdCounter = 1;
+
 export function sandBox(
     script: JsScript,
     name: string,
@@ -164,6 +190,39 @@ export function sandBox(
         }
     }
 
+    /** Returns true when patId is a plain exact state-ID (no wildcards, no RegExp notation). */
+    function _isExactId(patId: unknown): patId is string {
+        return (
+            !!patId &&
+            typeof patId === 'string' &&
+            !patId.includes('*') &&
+            !patId.includes('?') &&
+            !patId.startsWith('/')
+        );
+    }
+
+    /** Removes a subscription from the O(1) dispatch index (subscriptionsMap / subscriptionsWildcard). */
+    function _removeFromDispatchIndex(ctx: JavascriptContext, sub: SubscriptionResult): void {
+        const patId = sub.pattern?.id;
+        if (_isExactId(patId)) {
+            const bucket = ctx.subscriptionsMap.get(patId);
+            if (bucket) {
+                const pos = bucket.indexOf(sub);
+                if (pos !== -1) {
+                    bucket.splice(pos, 1);
+                }
+                if (bucket.length === 0) {
+                    ctx.subscriptionsMap.delete(patId);
+                }
+            }
+        } else {
+            const wPos = ctx.subscriptionsWildcard.indexOf(sub);
+            if (wPos !== -1) {
+                ctx.subscriptionsWildcard.splice(wPos, 1);
+            }
+        }
+    }
+
     function getPatternCompareFunctions(pattern: Pattern): PatternEventCompareFunction[] & { logic?: 'and' | 'or' } {
         let func: PatternEventCompareFunction;
         const functions: PatternEventCompareFunction[] & { logic?: 'and' | 'or' } = [];
@@ -230,16 +289,17 @@ export function sandBox(
      * @param str The selector string to transform into a regular expression
      */
     function selectorStringToRegExp(str: string): RegExp {
+        const cached = _selectorRegExpCache.get(str);
+        if (cached) {
+            return cached;
+        }
         const startsWithWildcard = str[0] === '*';
         const endsWithWildcard = str[str.length - 1] === '*';
-
-        // Sanitize the selector, so it is safe to use in a RegEx
-        // Taken from https://stackoverflow.com/a/3561711/10179833 but modified
-        // since * has a special meaning in our selector and should not be escaped
         // eslint-disable-next-line no-useless-escape
-        str = str.replace(/[-\/\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '.*');
-
-        return new RegExp((startsWithWildcard ? '' : '^') + str + (endsWithWildcard ? '' : '$'));
+        const escaped = str.replace(/[-\/\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '.*');
+        const re = new RegExp((startsWithWildcard ? '' : '^') + escaped + (endsWithWildcard ? '' : '$'));
+        _selectorRegExpCache.set(str, re);
+        return re;
     }
 
     /**
@@ -803,8 +863,8 @@ export function sandBox(
                 if (!context.channels || !context.devices) {
                     context.channels = {};
                     context.devices = {};
-                    for (const _id in objects) {
-                        if (Object.prototype.hasOwnProperty.call(objects, _id) && objects[_id].type === 'state') {
+                    for (const _id of Object.keys(objects)) {
+                        if (objects[_id].type === 'state') {
                             const parts = _id.split('.');
                             parts.pop();
                             const chn = parts.join('.');
@@ -825,8 +885,8 @@ export function sandBox(
             if (name === 'schedule') {
                 if (!context.schedules) {
                     context.schedules = [];
-                    for (const _id in objects) {
-                        if (Object.prototype.hasOwnProperty.call(objects, _id) && objects[_id].type === 'schedule') {
+                    for (const _id of Object.keys(objects)) {
+                        if (objects[_id].type === 'schedule') {
                             context.schedules.push(_id);
                         }
                     }
@@ -1229,7 +1289,7 @@ export function sandBox(
                 return 0;
             }
 
-            const handler = { id: Date.now() + Math.floor(Math.random() * 10000), cb: callback, sandbox, severity };
+            const handler = { id: _handlerIdCounter++, cb: callback, sandbox, severity };
             context.logSubscriptions[sandbox.scriptName] = context.logSubscriptions[sandbox.scriptName] || [];
             context.logSubscriptions[sandbox.scriptName].push(handler);
             context.updateLogSubscriptions();
@@ -1808,6 +1868,16 @@ export function sandBox(
             subs.patternCompareFunctions = getPatternCompareFunctions(oPattern);
             context.subscriptions.push(subs);
 
+            // O(1) dispatch index: exact string IDs go into the map, everything else into the wildcard array
+            if (_isExactId(oPattern.id)) {
+                if (!context.subscriptionsMap.has(oPattern.id)) {
+                    context.subscriptionsMap.set(oPattern.id, []);
+                }
+                context.subscriptionsMap.get(oPattern.id)!.push(subs);
+            } else {
+                context.subscriptionsWildcard.push(subs);
+            }
+
             if (oPattern.enumName || oPattern.enumId) {
                 context.isEnums = true;
             }
@@ -1815,13 +1885,13 @@ export function sandBox(
         },
         getSubscriptions: function (): Record<string, { name: string; pattern: Pattern }[]> {
             const result: Record<string, { name: string; pattern: Pattern }[]> = {};
-            for (let s = 0; s < context.subscriptions.length; s++) {
-                result[context.subscriptions[s].pattern.id as string] =
-                    result[context.subscriptions[s].pattern.id as string] || [];
-                result[context.subscriptions[s].pattern.id as string].push({
-                    name: context.subscriptions[s].name,
-                    pattern: context.subscriptions[s].pattern,
-                });
+            // Iterate over the O(1) dispatch index instead of the flat array
+            for (const [id, bucket] of context.subscriptionsMap) {
+                result[id] = bucket.map(s => ({ name: s.name, pattern: s.pattern }));
+            }
+            for (const s of context.subscriptionsWildcard) {
+                const key = s.pattern.id as string;
+                (result[key] ??= []).push({ name: s.name, pattern: s.pattern });
             }
             if (sandbox.verbose) {
                 sandbox.log(`getSubscriptions() => ${JSON.stringify(result)}`, 'info');
@@ -1886,8 +1956,11 @@ export function sandBox(
             if (isObject(idOrObject)) {
                 for (let i = context.subscriptions.length - 1; i >= 0; i--) {
                     if (context.subscriptions[i] === idOrObject) {
-                        unsubscribePattern(script, context.subscriptions[i].pattern.id as string);
+                        const sub = context.subscriptions[i];
+                        unsubscribePattern(script, sub.pattern.id as string);
                         context.subscriptions.splice(i, 1);
+                        // Remove from O(1) dispatch structures
+                        _removeFromDispatchIndex(context, sub);
                         sandbox.__engine.__subscriptions--;
                         return true;
                     }
@@ -1898,8 +1971,11 @@ export function sandBox(
             for (let i = context.subscriptions.length - 1; i >= 0; i--) {
                 if (context.subscriptions[i].name === name && context.subscriptions[i].pattern.id === idOrObject) {
                     deleted++;
-                    unsubscribePattern(script, context.subscriptions[i].pattern.id as string);
+                    const sub = context.subscriptions[i];
+                    unsubscribePattern(script, sub.pattern.id as string);
                     context.subscriptions.splice(i, 1);
+                    // Remove from O(1) dispatch structures
+                    _removeFromDispatchIndex(context, sub);
                     sandbox.__engine.__subscriptions--;
                 }
             }
@@ -3154,7 +3230,7 @@ export function sandBox(
                     }
                     let result: ioBroker.Object | null | undefined;
                     try {
-                        result = JSON.parse(JSON.stringify(objects[id]));
+                        result = objects[id] ? structuredClone(objects[id]) : undefined;
                     } catch (err: unknown) {
                         void adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
                             val: true,
@@ -3177,9 +3253,12 @@ export function sandBox(
                 }
                 if (enumName) {
                     const e = eventObj.getObjectEnumsSync(context, id);
-                    const obj = JSON.parse(JSON.stringify(objects[id]));
-                    obj.enumIds = JSON.parse(JSON.stringify(e.enumIds));
-                    obj.enumNames = JSON.parse(JSON.stringify(e.enumNames));
+                    const obj = structuredClone(objects[id]) as ioBroker.Object & {
+                        enumIds: string[];
+                        enumNames: string[];
+                    };
+                    obj.enumIds = structuredClone(e.enumIds);
+                    obj.enumNames = structuredClone(e.enumNames);
                     if (typeof enumName === 'string') {
                         const r = new RegExp(`^enum\\.${enumName}\\.`);
                         for (let i = obj.enumIds.length - 1; i >= 0; i--) {
@@ -3196,7 +3275,7 @@ export function sandBox(
                 }
                 let result: ioBroker.Object | null | undefined;
                 try {
-                    result = JSON.parse(JSON.stringify(objects[id]));
+                    result = structuredClone(objects[id]);
                 } catch (err: unknown) {
                     void adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
                         val: true,
@@ -3285,7 +3364,7 @@ export function sandBox(
             if (sandbox.verbose) {
                 sandbox.log(`getEnums(enumName=${enumName}) => ${JSON.stringify(result)}`, 'info');
             }
-            return JSON.parse(JSON.stringify(result));
+            return structuredClone(result);
         },
         createAlias: function (
             name: string,
@@ -4019,7 +4098,14 @@ export function sandBox(
                             }
 
                             const instances = res.rows.map(item => item.id.substring('system.adapter.'.length));
-                            // Store in cache for subsequent calls (invalidated on system.adapter.* object change)
+                            // Store in cache for subsequent calls (invalidated on system.adapter.* object change).
+                            // LRU eviction: keep the map bounded to avoid unbounded memory growth.
+                            if (context.sendToInstanceCache.size >= 200) {
+                                const firstKey = context.sendToInstanceCache.keys().next().value;
+                                if (firstKey !== undefined) {
+                                    context.sendToInstanceCache.delete(firstKey);
+                                }
+                            }
                             context.sendToInstanceCache.set(_adapter, instances);
 
                             instances.forEach(instance => {
@@ -4521,12 +4607,10 @@ export function sandBox(
             const neg = diff < 0;
             diff = Math.abs(diff);
 
-            if (/(?<!\\)(D|T|Д)/.test(text)) {
+            if (FTD_TEST_D.test(text)) {
                 const days = Math.floor(diff / day);
 
-                text = text
-                    .replace(/(?<!\\)(DD|TT|ДД)/g, days.toString().padStart(2, '0'))
-                    .replace(/(?<!\\)(D|T|Д)/g, days.toString());
+                text = text.replace(FTD_REPL_DD, days.toString().padStart(2, '0')).replace(FTD_REPL_D, days.toString());
 
                 if (sandbox.verbose) {
                     sandbox.log(`formatTimeDiff(format=${format}, text=${text}, days=${days})`, 'debug');
@@ -4535,12 +4619,12 @@ export function sandBox(
                 diff -= days * day;
             }
 
-            if (/(?<!\\)(h|S|ч)/.test(text)) {
+            if (FTD_TEST_H.test(text)) {
                 const hours = Math.floor(diff / hour);
 
                 text = text
-                    .replace(/(?<!\\)(hh|SS|чч)/g, hours.toString().padStart(2, '0'))
-                    .replace(/(?<!\\)(h|S|ч)/g, hours.toString());
+                    .replace(FTD_REPL_HH, hours.toString().padStart(2, '0'))
+                    .replace(FTD_REPL_H, hours.toString());
 
                 if (sandbox.verbose) {
                     sandbox.log(`formatTimeDiff(format=${format}, text=${text}, hours=${hours})`, 'debug');
@@ -4549,12 +4633,12 @@ export function sandBox(
                 diff -= hours * hour;
             }
 
-            if (/(?<!\\)(m|м)/.test(text)) {
+            if (FTD_TEST_M.test(text)) {
                 const minutes = Math.floor(diff / minute);
 
                 text = text
-                    .replace(/(?<!\\)(mm|мм)/g, minutes.toString().padStart(2, '0'))
-                    .replace(/(?<!\\)(m|м)/g, minutes.toString());
+                    .replace(FTD_REPL_MM, minutes.toString().padStart(2, '0'))
+                    .replace(FTD_REPL_M, minutes.toString());
 
                 if (sandbox.verbose) {
                     sandbox.log(`formatTimeDiff(format=${format}, text=${text}, minutes=${minutes})`, 'debug');
@@ -4563,23 +4647,20 @@ export function sandBox(
                 diff -= minutes * minute;
             }
 
-            if (/(?<!\\)(s|с)/.test(text)) {
+            if (FTD_TEST_S.test(text)) {
                 const seconds = Math.floor(diff / second);
 
                 text = text
-                    .replace(/(?<!\\)(ss|сс)/g, seconds.toString().padStart(2, '0'))
-                    .replace(/(?<!\\)(s|с)/g, seconds.toString());
+                    .replace(FTD_REPL_SS, seconds.toString().padStart(2, '0'))
+                    .replace(FTD_REPL_S, seconds.toString());
 
                 sandbox.verbose &&
                     sandbox.log(`formatTimeDiff(format=${format}, text=${text}, seconds=${seconds})`, 'debug');
-                // diff -= seconds * second; // no milliseconds
             }
 
-            text = text
-                .replace(/\\(D|T|Д)/g, '$1')
-                .replace(/\\(h|S|ч)/g, '$1')
-                .replace(/\\(m|м)/g, '$1')
-                .replace(/\\(s|с)/g, '$1');
+            for (const [pattern, replacement] of FTD_UNESCAPE) {
+                text = text.replace(pattern, replacement);
+            }
 
             if (sandbox.verbose) {
                 sandbox.log(`formatTimeDiff(format=${format}, text=${text})`, 'debug');
@@ -5374,7 +5455,7 @@ export function sandBox(
             context.messageBusHandlers[sandbox.scriptName][messageName] =
                 context.messageBusHandlers[sandbox.scriptName][messageName] || [];
 
-            const handler = { id: Date.now() + Math.floor(Math.random() * 10000), cb: callback, sandbox };
+            const handler = { id: _handlerIdCounter++, cb: callback, sandbox };
             context.messageBusHandlers[sandbox.scriptName][messageName].push(handler);
 
             sandbox.__engine.__subscriptionsMessage += 1;
@@ -5397,22 +5478,17 @@ export function sandBox(
             let found = false;
             if (ctx) {
                 if (typeof idOrName === 'number') {
-                    for (const messageName in ctx) {
-                        if (Object.prototype.hasOwnProperty.call(ctx, messageName)) {
-                            for (let i = 0; i < ctx[messageName].length; i++) {
-                                if (ctx[messageName][i].id === idOrName) {
-                                    ctx[messageName].splice(i, 1);
-                                    if (!ctx[messageName].length) {
-                                        delete ctx[messageName];
-                                        sandbox.__engine.__subscriptionsMessage--;
-                                    }
-                                    found = true;
-                                    break;
+                    outer: for (const messageName of Object.keys(ctx)) {
+                        for (let i = 0; i < ctx[messageName].length; i++) {
+                            if (ctx[messageName][i].id === idOrName) {
+                                ctx[messageName].splice(i, 1);
+                                if (!ctx[messageName].length) {
+                                    delete ctx[messageName];
+                                    sandbox.__engine.__subscriptionsMessage--;
                                 }
+                                found = true;
+                                break outer;
                             }
-                        }
-                        if (found) {
-                            break;
                         }
                     }
                 } else if (idOrName && ctx[idOrName]) {
@@ -5767,9 +5843,9 @@ export function sandBox(
                     sandbox.log(`extendObject(id=${id}, obj=${JSON.stringify(obj)})`, 'info');
                 }
                 if (callback) {
-                    adapter.extendForeignObject(id, JSON.parse(JSON.stringify(obj)), callback);
+                    adapter.extendForeignObject(id, structuredClone(obj), callback);
                 } else {
-                    void adapter.extendForeignObject(id, JSON.parse(JSON.stringify(obj)));
+                    void adapter.extendForeignObject(id, structuredClone(obj));
                 }
             }
         };
@@ -5827,6 +5903,12 @@ export function sandBox(
             configurable: false,
             writable: false,
         });
+    }
+
+    // Freeze deeply nested objects that are exposed to scripts to prevent mutation
+    // Note: __engine must NOT be frozen because its counter properties are mutated at runtime
+    if (sandbox.console && typeof sandbox.console === 'object') {
+        Object.freeze(sandbox.console);
     }
 
     return sandbox;
