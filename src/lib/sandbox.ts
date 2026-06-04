@@ -53,13 +53,16 @@ const FTD_TEST_S = /(?<!\\)[sс]/;
 const FTD_REPL_SS = /(?<!\\)(?:ss|сс)/g;
 const FTD_REPL_S = /(?<!\\)[sс]/g;
 const FTD_UNESCAPE = [
-    [/\\[DTД]/g, '$1'],
-    [/\\[hSч]/g, '$1'],
-    [/\\[mм]/g, '$1'],
-    [/\\[sс]/g, '$1'],
+    [/\\([DTД])/g, '$1'],
+    [/\\([hSч])/g, '$1'],
+    [/\\([mм])/g, '$1'],
+    [/\\([sс])/g, '$1'],
 ] as const;
 
-/** Cache for selector-string → RegExp to avoid recompiling identical patterns */
+/** Maximum number of cached selector RegExps before FIFO eviction kicks in */
+const _SELECTOR_REGEXP_CACHE_MAX = 1000;
+
+/** Cache for selector-string → RegExp to avoid recompiling identical patterns (FIFO-bounded) */
 const _selectorRegExpCache = new Map<string, RegExp>();
 
 /** Monotonically increasing handler-ID counter – avoids Date.now()+random collisions */
@@ -298,6 +301,15 @@ export function sandBox(
         // eslint-disable-next-line no-useless-escape
         const escaped = str.replace(/[-\/\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '.*');
         const re = new RegExp((startsWithWildcard ? '' : '^') + escaped + (endsWithWildcard ? '' : '$'));
+
+        // FIFO eviction: drop the oldest entry once the cache exceeds its limit
+        if (_selectorRegExpCache.size >= _SELECTOR_REGEXP_CACHE_MAX) {
+            const oldestKey = _selectorRegExpCache.keys().next().value;
+            if (oldestKey !== undefined) {
+                _selectorRegExpCache.delete(oldestKey);
+            }
+        }
+
         _selectorRegExpCache.set(str, re);
         return re;
     }
@@ -5905,7 +5917,7 @@ export function sandBox(
         });
     }
 
-    // Freeze deeply nested objects that are exposed to scripts to prevent mutation
+    // Shallow-freeze the console object exposed to scripts to prevent its methods from being overwritten
     // Note: __engine must NOT be frozen because its counter properties are mutated at runtime
     if (sandbox.console && typeof sandbox.console === 'object') {
         Object.freeze(sandbox.console);
@@ -5913,3 +5925,4 @@ export function sandBox(
 
     return sandbox;
 }
+
