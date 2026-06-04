@@ -705,6 +705,10 @@ export interface JavascriptContext {
         error: (text: string, ...args: any[]) => void;
     };
     subscriptions: SubscriptionResult[];
+    /** O(1) dispatch map for state subscriptions with exact (non-wildcard) string IDs – kept in sync with subscriptions. */
+    subscriptionsMap: Map<string, SubscriptionResult[]>;
+    /** Subscriptions with RegExp, wildcard or undefined pattern.id – iterated linearly on every state change. */
+    subscriptionsWildcard: SubscriptionResult[];
     subscriptionsFile: FileSubscriptionResult[];
     subscriptionsObject: SubscribeObject[];
     /** O(1) dispatch map – pattern → list of subscribers (kept in sync with subscriptionsObject) */

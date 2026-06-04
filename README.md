@@ -27,6 +27,10 @@ Executes Javascript, Typescript Scripts.
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (arteck) Performance optimizations part 2
+* (arteck) fix filter in tab scripts
+
 ### 9.2.3 (2026-05-27)
 * (arteck) Performance optimizations done
 * (@GermanBluefox) Added on mouse over the value of the state
