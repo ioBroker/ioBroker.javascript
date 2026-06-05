@@ -328,6 +328,16 @@ class JavaScript extends Adapter {
     private readonly stateIdSet: Set<string> = new Set();
 
     private readonly subscriptions: SubscriptionResult[] = [];
+    /**
+     * O(1) dispatch map for subscriptions with exact (non-wildcard) string IDs.
+     * Always kept in sync with `subscriptions`.
+     */
+    private readonly subscriptionsMap: Map<string, SubscriptionResult[]> = new Map();
+    /**
+     * Subscriptions whose pattern.id is a RegExp, contains wildcards (*,?), or is undefined.
+     * These must still be checked linearly on every state change.
+     */
+    private readonly subscriptionsWildcard: SubscriptionResult[] = [];
     private readonly subscriptionsFile: FileSubscriptionResult[] = [];
     private readonly subscriptionsObject: SubscribeObject[] = [];
     /** O(1) dispatch map for subscriptionsObject – pattern → subscribers */
@@ -508,6 +518,8 @@ class JavaScript extends Adapter {
             stateIds: this.stateIds,
             errorLogFunction: this.errorLogFunction,
             subscriptions: this.subscriptions,
+            subscriptionsMap: this.subscriptionsMap,
+            subscriptionsWildcard: this.subscriptionsWildcard,
             subscriptionsFile: this.subscriptionsFile,
             subscriptionsObject: this.subscriptionsObject,
             subscriptionsObjectMap: this.subscriptionsObjectMap,
@@ -793,19 +805,51 @@ class JavaScript extends Adapter {
                 this.stateIdSet.delete(id);
             }
         }
-        const _eventObj = createEventObject(
-            this.context,
-            id,
-            this.convertBackStringifiedValues(id, state),
-            this.convertBackStringifiedValues(id, oldState),
-        );
+
+        // Collect matching subscriptions:
+        // 1. O(1) exact-id map lookup – only buckets for this specific state id
+        // 2. Linear scan over wildcard/regex subscriptions (unavoidable)
+        // EventObj is created lazily – only when at least one subscription must be dispatched.
+        const exactSubs = this.subscriptionsMap.get(id);
+        const wildcardSubs = this.subscriptionsWildcard;
+        const hasWork = (exactSubs && exactSubs.length > 0) || wildcardSubs.length > 0;
+
+        if (!hasWork) {
+            return;
+        }
+
+        let _eventObj: EventObj | null = null;
+        const getEvent = (): EventObj => {
+            if (!_eventObj) {
+                _eventObj = createEventObject(
+                    this.context,
+                    id,
+                    this.convertBackStringifiedValues(id, state),
+                    this.convertBackStringifiedValues(id, oldState),
+                );
+            }
+            return _eventObj;
+        };
+
+        if (exactSubs) {
+            for (let i = 0, l = exactSubs.length; i < l; i++) {
+                const sub = exactSubs[i];
+                if (sub?.patternCompareFunctions && patternMatching(getEvent(), sub.patternCompareFunctions)) {
+                    try {
+                        sub.callback(getEvent());
+                    } catch (err: any) {
+                        this.log.error(`Error in callback: ${err.toString()}`);
+                    }
+                }
+            }
+        }
 
         // if this state matches any subscriptions
-        for (let i = 0, l = this.subscriptions.length; i < l; i++) {
-            const sub = this.subscriptions[i];
-            if (sub?.patternCompareFunctions && patternMatching(_eventObj, sub.patternCompareFunctions)) {
+        for (let i = 0, l = wildcardSubs.length; i < l; i++) {
+            const sub = wildcardSubs[i];
+            if (sub?.patternCompareFunctions && patternMatching(getEvent(), sub.patternCompareFunctions)) {
                 try {
-                    sub.callback(_eventObj);
+                    sub.callback(getEvent());
                 } catch (err: any) {
                     this.log.error(`Error in callback: ${err.toString()}`);
                 }
@@ -1589,7 +1633,7 @@ class JavaScript extends Adapter {
     }
 
     onLog(msg: any): void {
-        for (const name in this.logSubscriptions) {
+        for (const name of Object.keys(this.logSubscriptions)) {
             for (const handler of this.logSubscriptions[name]) {
                 if (
                     typeof handler.cb === 'function' &&
@@ -1892,9 +1936,9 @@ class JavaScript extends Adapter {
             }
         }
 
-        // CHeck setState counter per minute and stop a script if too high
+        // Check setState counter per minute and stop a script if too high
         this.setStateCountCheckInterval = setInterval(() => {
-            for (const id in this.scripts) {
+            for (const id of Object.keys(this.scripts)) {
                 if (!this.scripts[id]) {
                     continue;
                 }
@@ -1920,7 +1964,7 @@ class JavaScript extends Adapter {
                     );
                 }
             }
-        }, 60000);
+        }, 60_000).unref();
     }
 
     private loadTypeScriptDeclarations(): void {
@@ -2784,6 +2828,29 @@ class JavaScript extends Adapter {
             for (let i = this.subscriptions.length - 1; i >= 0; i--) {
                 if (this.subscriptions[i].name === name) {
                     const sub = this.subscriptions.splice(i, 1)[0];
+                    // Also remove from O(1) dispatch structures
+                    if (
+                        sub?.pattern.id &&
+                        typeof sub.pattern.id === 'string' &&
+                        !sub.pattern.id.includes('*') &&
+                        !sub.pattern.id.includes('?')
+                    ) {
+                        const bucket = this.subscriptionsMap.get(sub.pattern.id);
+                        if (bucket) {
+                            const pos = bucket.indexOf(sub);
+                            if (pos !== -1) {
+                                bucket.splice(pos, 1);
+                            }
+                            if (bucket.length === 0) {
+                                this.subscriptionsMap.delete(sub.pattern.id);
+                            }
+                        }
+                    } else {
+                        const wPos = this.subscriptionsWildcard.indexOf(sub);
+                        if (wPos !== -1) {
+                            this.subscriptionsWildcard.splice(wPos, 1);
+                        }
+                    }
                     if (sub?.pattern.id) {
                         this.unsubscribe(sub.pattern.id);
                     }
@@ -3667,19 +3734,18 @@ function patternMatching(
     event: EventObj,
     patternFunctions: PatternEventCompareFunction[] & { logic?: 'and' | 'or' },
 ): boolean {
-    let matched = false;
-    const logic = patternFunctions.logic;
+    const logic = patternFunctions.logic ?? 'and';
     for (let i = 0, len = patternFunctions.length; i < len; i++) {
-        if (patternFunctions[i](event)) {
-            if (logic === 'or') {
-                return true;
-            }
-            matched = true;
-        } else if (logic === 'and') {
-            return false;
+        const result = patternFunctions[i](event);
+        if (logic === 'and' && !result) {
+            return false; // short-circuit AND – one false is enough
+        }
+        if (logic === 'or' && result) {
+            return true; // short-circuit OR – one true is enough
         }
     }
-    return matched;
+    // AND: all passed → true; OR: none matched → false
+    return logic === 'and';
 }
 
 // If started as allInOne mode => return function to create an instance

@@ -36,7 +36,15 @@ function getObjectEnumsSync(context, idObj, enumIds, enumNames) {
                 enumIds.push(enumId);
             }
             const name = context.objects[enumId].common.name;
-            const str = typeof name === 'object' ? name[gContext.language || 'en'] : name;
+            // Use the provided context.language (fallback to 'en') instead of gContext which may be undefined
+            const lang = (context && context.language) || 'en';
+            let str;
+            if (typeof name === 'object') {
+                str = name[lang];
+            }
+            else {
+                str = name;
+            }
             if (str && !enumNameSet.has(str)) {
                 enumNameSet.add(str);
                 enumNames.push(str);

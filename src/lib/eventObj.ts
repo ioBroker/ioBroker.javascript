@@ -42,7 +42,14 @@ export function getObjectEnumsSync(
                 enumIds.push(enumId);
             }
             const name: ioBroker.StringOrTranslated = context.objects[enumId].common.name;
-            const str: string | undefined = typeof name === 'object' ? name[gContext.language || 'en'] : name;
+            // Use the provided context.language (fallback to 'en') instead of gContext which may be undefined
+            const lang = (context && (context.language as string)) || 'en';
+            let str: string | undefined;
+            if (typeof name === 'object') {
+                str = (name as Record<string, string>)[lang];
+            } else {
+                str = name as string | undefined;
+            }
             if (str && !enumNameSet.has(str)) {
                 enumNameSet.add(str);
                 enumNames.push(str);
