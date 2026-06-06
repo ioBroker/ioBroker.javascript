@@ -33,6 +33,8 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.isExactId = isExactId;
+exports.removeFromDispatchIndex = removeFromDispatchIndex;
 exports.sandBox = sandBox;
 const jsonataMod = __importStar(require("jsonata"));
 const adapter_core_1 = require("@iobroker/adapter-core");
@@ -68,6 +70,36 @@ const _SELECTOR_REGEXP_CACHE_MAX = 1000;
 const _selectorRegExpCache = new Map();
 /** Monotonically increasing handler-ID counter – avoids Date.now()+random collisions */
 let _handlerIdCounter = 1;
+/** Returns true when patId is a plain exact state-ID (no wildcards, no RegExp notation). */
+function isExactId(patId) {
+    return (!!patId && typeof patId === 'string' && !patId.includes('*') && !patId.includes('?') && !patId.startsWith('/'));
+}
+/**
+ * Removes a subscription from the O(1) dispatch index (subscriptionsMap / subscriptionsWildcard).
+ * Must use the same exact-id classification as the subscribe side (isExactId),
+ * otherwise entries leak in the structure that was not searched.
+ */
+function removeFromDispatchIndex(ctx, sub) {
+    const patId = sub.pattern?.id;
+    if (isExactId(patId)) {
+        const bucket = ctx.subscriptionsMap.get(patId);
+        if (bucket) {
+            const pos = bucket.indexOf(sub);
+            if (pos !== -1) {
+                bucket.splice(pos, 1);
+            }
+            if (bucket.length === 0) {
+                ctx.subscriptionsMap.delete(patId);
+            }
+        }
+    }
+    else {
+        const wPos = ctx.subscriptionsWildcard.indexOf(sub);
+        if (wPos !== -1) {
+            ctx.subscriptionsWildcard.splice(wPos, 1);
+        }
+    }
+}
 function sandBox(script, name, verbose, debug, context) {
     const consts = constsMod;
     const words = wordsMod;
@@ -174,36 +206,6 @@ function sandBox(script, name, verbose, debug, context) {
             if (!context.subscribedPatternsFile[key]) {
                 void adapter.unsubscribeForeignFiles(id, fileNamePattern);
                 delete context.subscribedPatternsFile[key];
-            }
-        }
-    }
-    /** Returns true when patId is a plain exact state-ID (no wildcards, no RegExp notation). */
-    function _isExactId(patId) {
-        return (!!patId &&
-            typeof patId === 'string' &&
-            !patId.includes('*') &&
-            !patId.includes('?') &&
-            !patId.startsWith('/'));
-    }
-    /** Removes a subscription from the O(1) dispatch index (subscriptionsMap / subscriptionsWildcard). */
-    function _removeFromDispatchIndex(ctx, sub) {
-        const patId = sub.pattern?.id;
-        if (_isExactId(patId)) {
-            const bucket = ctx.subscriptionsMap.get(patId);
-            if (bucket) {
-                const pos = bucket.indexOf(sub);
-                if (pos !== -1) {
-                    bucket.splice(pos, 1);
-                }
-                if (bucket.length === 0) {
-                    ctx.subscriptionsMap.delete(patId);
-                }
-            }
-        }
-        else {
-            const wPos = ctx.subscriptionsWildcard.indexOf(sub);
-            if (wPos !== -1) {
-                ctx.subscriptionsWildcard.splice(wPos, 1);
             }
         }
     }
@@ -1521,7 +1523,7 @@ function sandBox(script, name, verbose, debug, context) {
             subs.patternCompareFunctions = getPatternCompareFunctions(oPattern);
             context.subscriptions.push(subs);
             // O(1) dispatch index: exact string IDs go into the map, everything else into the wildcard array
-            if (_isExactId(oPattern.id)) {
+            if (isExactId(oPattern.id)) {
                 if (!context.subscriptionsMap.has(oPattern.id)) {
                     context.subscriptionsMap.set(oPattern.id, []);
                 }
@@ -1606,7 +1608,7 @@ function sandBox(script, name, verbose, debug, context) {
                         unsubscribePattern(script, sub.pattern.id);
                         context.subscriptions.splice(i, 1);
                         // Remove from O(1) dispatch structures
-                        _removeFromDispatchIndex(context, sub);
+                        removeFromDispatchIndex(context, sub);
                         sandbox.__engine.__subscriptions--;
                         return true;
                     }
@@ -1621,7 +1623,7 @@ function sandBox(script, name, verbose, debug, context) {
                     unsubscribePattern(script, sub.pattern.id);
                     context.subscriptions.splice(i, 1);
                     // Remove from O(1) dispatch structures
-                    _removeFromDispatchIndex(context, sub);
+                    removeFromDispatchIndex(context, sub);
                     sandbox.__engine.__subscriptions--;
                 }
             }
@@ -4740,11 +4742,33 @@ function sandBox(script, name, verbose, debug, context) {
                 if (sandbox.verbose) {
                     sandbox.log(`extendObject(id=${id}, obj=${JSON.stringify(obj)})`, 'info');
                 }
+                let objClone;
+                try {
+                    objClone = structuredClone(obj);
+                }
+                catch (err) {
+                    // e.g. DataCloneError when the object contains functions
+                    void adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
+                        val: true,
+                        ack: true,
+                        c: 'extendObject',
+                    });
+                    sandbox.log(`Object "${id}" can't be copied: ${JSON.stringify(err)}`, 'error');
+                    if (typeof callback === 'function') {
+                        try {
+                            callback.call(sandbox, new Error(`Object "${id}" can't be copied`));
+                        }
+                        catch (err) {
+                            errorInCallback(err);
+                        }
+                    }
+                    return;
+                }
                 if (callback) {
-                    adapter.extendForeignObject(id, structuredClone(obj), callback);
+                    adapter.extendForeignObject(id, objClone, callback);
                 }
                 else {
-                    void adapter.extendForeignObject(id, structuredClone(obj));
+                    void adapter.extendForeignObject(id, objClone);
                 }
             }
         };
