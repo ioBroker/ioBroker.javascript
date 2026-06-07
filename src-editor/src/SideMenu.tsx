@@ -1111,10 +1111,9 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
         if (
             this.state.statusFilter &&
             item.type !== 'folder' &&
-            ((this.state.statusFilter === 'running' && !(item as ListElementScript).enabled) ||
-                (this.state.statusFilter === 'paused' && (item as ListElementScript).enabled) ||
-                (this.state.statusFilter === 'problems' &&
-                    (!(item as ListElementScript).enabled || this.state.problems.indexOf(item.id) === -1)))
+            ((this.state.statusFilter === 'running' && !item.enabled) ||
+                (this.state.statusFilter === 'paused' && item.enabled) ||
+                (this.state.statusFilter === 'problems' && (!item.enabled || !this.state.problems.includes(item.id))))
         ) {
             return true;
         }
@@ -1365,10 +1364,9 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
             // so React doesn't warn about missing "key" props on the nested arrays.
             reactChildren = children
                 .map(it => this.renderOneItem(items, it))
-                .reduce<React.JSX.Element[]>(
-                    (acc, cur) => (cur ? acc.concat(cur.filter((e): e is React.JSX.Element => !!e)) : acc),
-                    [],
-                );
+                .reduce<
+                    React.JSX.Element[]
+                >((acc, cur) => (cur ? acc.concat(cur.filter((e): e is React.JSX.Element => !!e)) : acc), []);
         }
 
         if (reorder) {
