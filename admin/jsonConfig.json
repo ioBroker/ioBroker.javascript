@@ -144,6 +144,17 @@
                         "marginBottom": 16
                     }
                 },
+                "credentialType": {
+                    "newLine": true,
+                    "type": "select",
+                    "options": [
+                        { "label": "System credentials", "value": "manager" },
+                        { "label": "Manual", "value": "manual" }
+                    ],
+                    "label": "Credentials type",
+                    "hidden": "!data.useCredentials",
+                    "default": "manual"
+                },
                 "gptKey": {
                     "newLine": true,
                     "type": "password",
@@ -158,7 +169,7 @@
                     "label": "Test OpenAI",
                     "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik0xMiAyQzYuNDggMiAyIDUuNTggMiAxMGMwIDIuMjQgMS4xMiA0LjI3IDIuOTMgNS43Mkw0IDIwbDQuMzUtMi4xOEM5LjUgMTguMjcgMTAuNzIgMTguNSAxMiAxOC41YzUuNTIgMCAxMC0zLjU4IDEwLThTMTcuNTIgMiAxMiAyem0tMSAxMUg4di0yaDNWOGgydjNoM3YyaC0zdjNoLTJ2LTN6Ii8+PC9zdmc+",
                     "command": "testApiConnection",
-                    "jsonData": "{\"apiKey\": \"${data.gptKey}\", \"provider\": \"openai\"}",
+                    "jsonData": "{\"apiKey\": \"${data.gptKey}\", \"provider\": \"openai\", \"credentialType\": \"${data.credentialType}\", \"credentialIdGptKey\": \"${data.credentialIdGptKey}\"}",
                     "variant": "outlined",
                     "disabled": "!data.gptKey",
                     "xs": 12,
@@ -179,7 +190,7 @@
                     "label": "Test Anthropic",
                     "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik0xMiAyTDMgMjBoNGwxLjUtNGg3bDEuNSA0aDRMMTIgMnptMCA2bDIuNSA3aC01TDEyIDh6Ii8+PC9zdmc+",
                     "command": "testApiConnection",
-                    "jsonData": "{\"apiKey\": \"${data.claudeKey}\", \"provider\": \"anthropic\"}",
+                    "jsonData": "{\"apiKey\": \"${data.claudeKey}\", \"provider\": \"anthropic\", \"credentialType\": \"${data.credentialType}\", \"credentialIdClaudeKey\": \"${data.credentialIdClaudeKey}\"}",
                     "variant": "outlined",
                     "disabled": "!data.claudeKey",
                     "xs": 12,
@@ -200,7 +211,7 @@
                     "label": "Test Gemini",
                     "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik0xMiAxbDMgN2g3bC01LjUgNC41TDE4LjUgMjAgMTIgMTUuNSA1LjUgMjBsMi03LjVMMiA4aDd6Ii8+PC9zdmc+",
                     "command": "testApiConnection",
-                    "jsonData": "{\"apiKey\": \"${data.geminiKey}\", \"provider\": \"gemini\"}",
+                    "jsonData": "{\"apiKey\": \"${data.geminiKey}\", \"provider\": \"gemini\", \"credentialType\": \"${data.credentialType}\", \"credentialIdGeminiKey\": \"${data.credentialIdGeminiKey}\"}",
                     "variant": "outlined",
                     "disabled": "!data.geminiKey",
                     "xs": 12,
@@ -221,7 +232,7 @@
                     "label": "Test DeepSeek",
                     "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik0xMCAyYTggOCAwIDAgMSA2LjMyIDEyLjkxbDQuMzkgNC4zOC0xLjQyIDEuNDItNC4zOC00LjM5QTggOCAwIDEgMSAxMCAyem0wIDJhNiA2IDAgMSAwIDAgMTIgNiA2IDAgMCAwIDAtMTJ6Ii8+PC9zdmc+",
                     "command": "testApiConnection",
-                    "jsonData": "{\"apiKey\": \"${data.deepseekKey}\", \"provider\": \"deepseek\"}",
+                    "jsonData": "{\"apiKey\": \"${data.deepseekKey}\", \"provider\": \"deepseek\", \"credentialType\": \"${data.credentialType}\", \"credentialIdDeepseekKey\": \"${data.credentialIdDeepseekKey}\"}",
                     "variant": "outlined",
                     "disabled": "!data.deepseekKey",
                     "xs": 12,
@@ -250,7 +261,7 @@
                     "label": "Test Custom API",
                     "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik00IDFoMTZ2NUg0VjF6bTEgMXYzaDE0VjJINXptLTEgNmgxNnY1SDRWOHptMSAxdjNoMTRWOUg1em0tMSA2aDE2djVINHYtNXptMSAxdjNoMTR2LTNINXptMi0xMmgydjFIN1Yzem0wIDZoMnYxSDdWOXptMCA2aDJ2MUg3di0xeiIvPjwvc3ZnPg==",
                     "command": "testApiConnection",
-                    "jsonData": "{\"apiKey\": \"${data.gptBaseUrlKey}\", \"baseUrl\": \"${data.gptBaseUrl}\", \"provider\": \"openai\"}",
+                    "jsonData": "{\"apiKey\": \"${data.gptBaseUrlKey}\", \"baseUrl\": \"${data.gptBaseUrl}\", \"provider\": \"openai\", \"credentialType\": \"${data.credentialType}\", \"credentialIdGptBaseUrlKey\": \"${data.credentialIdGptBaseUrlKey}\"}",
                     "variant": "outlined",
                     "disabled": "!data.gptBaseUrl",
                     "xs": 12,

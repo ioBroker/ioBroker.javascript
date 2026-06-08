@@ -27,7 +27,18 @@ export interface JavaScriptAdapterConfig {
     maxSetStatePerMinute: number;
     maxTriggersPerScript: number;
     gptKey: string;
+    claudeKey: string;
+    geminiKey: string;
+    deepseekKey: string;
+    gptBaseUrlKey: string;
+    gptBaseUrl: string;
     password?: string;
+    credentialType?: 'manual' | 'manager';
+    credentialIdGptKey?: string;
+    credentialIdClaudeKey?: string;
+    credentialIdGeminiKey?: string;
+    credentialIdDeepseekKey?: string;
+    credentialIdGptBaseUrlKey?: string;
 }
 
 export type LogMessage = {
