@@ -14,6 +14,7 @@ const config = {
                 './Components': './src/Components.tsx',
             },
             remotes: {},
+            dts: false,
             shared: moduleFederationShared(JSON.parse(readFileSync('./package.json').toString())),
         }),
         // react(),

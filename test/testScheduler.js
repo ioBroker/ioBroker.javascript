@@ -52,7 +52,7 @@ describe('Test Scheduler', function () {
         console.log(new Date());
         const s = new Scheduler(null, Date, suncalc, kcLat, kcLon);
         s.add(
-            '{"time":{"exactTime":true,"start":"' + evtName.toUpperCase() + '"},"period":{"days":1}}',
+            `{"time":{"exactTime":true,"start":"${  evtName.toUpperCase()  }"},"period":{"days":1}}`,
             'someName2',
             () => {
                 console.log(new Date());
@@ -74,7 +74,7 @@ describe('Test Scheduler', function () {
         console.log(new Date());
         const s = new Scheduler(null, Date, suncalc, kcLat, kcLon);
         s.add(
-            '{"time":{"exactTime":true,"start":"' + evtName.toUpperCase() + 'x"},"period":{"days":1}}',
+            `{"time":{"exactTime":true,"start":"${  evtName.toUpperCase()  }x"},"period":{"days":1}}`,
             'someName3',
             () => {
                 assert.fail('Callback should not have been called');

@@ -460,7 +460,7 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
             const absoluteFile = Path.resolve(filename);
             const json = JSON.stringify(this.data);
             FS.writeFileSync(absoluteFile, json);
-            print('Saved profile to ' + absoluteFile);
+           print(`Saved profile to ${absoluteFile}`);
         }
     }
 */

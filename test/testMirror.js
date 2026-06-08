@@ -14,7 +14,7 @@ describe('Mirror', () => {
 
             const noop = () => {};
 
-            mirror = new Mirror({
+            mirror = new (Mirror.Mirror || Mirror)({
                 diskRoot: watched,
                 adapter: {
                     namespace: 'javascript.0',

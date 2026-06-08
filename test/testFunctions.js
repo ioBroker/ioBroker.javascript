@@ -53,7 +53,7 @@ function removeObjectChangedHandler(handler) {
 function checkConnectionOfAdapter(cb, counter) {
     counter = counter || 0;
     if (counter > 20) {
-        cb && cb('Cannot check connection');
+        cb?.('Cannot check connection');
         return;
     }
 
@@ -671,7 +671,7 @@ describe.only('Test JS', function () {
         const time = new Date().toString();
         const fs = require('node:fs');
 
-        if (fs.existsSync(__dirname + '/../tmp/objects.json')) fs.unlinkSync(__dirname + '/../tmp/objects.json');
+        if (fs.existsSync(`${__dirname  }/../tmp/objects.json`)) fs.unlinkSync(`${__dirname  }/../tmp/objects.json`);
 
         // add a script
         const script = {
@@ -697,15 +697,15 @@ describe.only('Test JS', function () {
         objects.setObject(script._id, script, err => {
             assert.equal(err, null);
             setTimeout(function () {
-                if (!fs.existsSync(__dirname + '/../tmp/objects.json')) {
+                if (!fs.existsSync(`${__dirname  }/../tmp/objects.json`)) {
                     setTimeout(function () {
-                        assert.equal(fs.readFileSync(__dirname + '/../tmp/objects.json').toString(), time);
-                        fs.unlinkSync(__dirname + '/../tmp/objects.json');
+                        assert.equal(fs.readFileSync(`${__dirname  }/../tmp/objects.json`).toString(), time);
+                        fs.unlinkSync(`${__dirname  }/../tmp/objects.json`);
                         done();
                     }, 500);
                 } else {
-                    assert.equal(fs.readFileSync(__dirname + '/../tmp/objects.json').toString(), time);
-                    fs.unlinkSync(__dirname + '/../tmp/objects.json');
+                    assert.equal(fs.readFileSync(`${__dirname  }/../tmp/objects.json`).toString(), time);
+                    fs.unlinkSync(`${__dirname  }/../tmp/objects.json`);
                     done();
                 }
             }, 500);
@@ -798,14 +798,14 @@ describe.only('Test JS', function () {
             if (types.includes(id.substring('javascript.0.test_getAstroDate_'.length))) {
                 typesChanged[id] = true;
                 console.log(
-                    'State change ' +
-                        id +
-                        ' / ' +
-                        Object.keys(typesChanged).length +
-                        '-' +
-                        types.length +
-                        ' = ' +
-                        JSON.stringify(state),
+                    `State change ${ 
+                        id 
+                        } / ${ 
+                        Object.keys(typesChanged).length 
+                        }-${ 
+                        types.length 
+                        } = ${ 
+                        JSON.stringify(state)}`,
                 );
                 if (Object.keys(typesChanged).length === types.length) {
                     removeStateChangedHandler(onStateChanged);
@@ -817,8 +817,8 @@ describe.only('Test JS', function () {
                             assert.ok(state);
                             assert.ok(state.val);
 
-                            if (state) console.log(types[types.length - count] + ': ' + state.val);
-                            else console.log(types[types.length - count] + ' ERROR: ' + state);
+                            if (state) console.log(`${types[types.length - count]  }: ${  state.val}`);
+                            else console.log(`${types[types.length - count]  } ERROR: ${  state}`);
                             if (!--count) done();
                         });
                     }
@@ -1057,7 +1057,7 @@ describe.only('Test JS', function () {
             setTimeout(() => {
                 states.getState('javascript.0.test_getStateDelayed_single_result', (err, delayedResult) => {
                     assert.equal(err, null);
-                    console.log('delayedResult: ' + delayedResult.val);
+                    console.log(`delayedResult: ${  delayedResult.val}`);
                     const result = JSON.parse(delayedResult.val);
                     assert.ok(result[0]);
                     assert.ok(result[0].timerId);
@@ -1097,7 +1097,7 @@ describe.only('Test JS', function () {
 
             setTimeout(() => {
                 states.getState('javascript.0.test_getStateDelayed_all_result', (err, delayedResult) => {
-                    console.log('delayedResult!: ' + delayedResult.val);
+                    console.log(`delayedResult!: ${  delayedResult.val}`);
                     assert.equal(err, null);
                     const result = JSON.parse(delayedResult.val);
                     assert.ok(result['javascript.0.test_getStateDelayed_all'][0]);
@@ -1536,17 +1536,17 @@ describe.only('Test JS', function () {
             createState(TEST_RESULTS, '', true, { name: 'Testresults', type: 'string' });
 
             function addResult(name, val) {
-                results += name + (val !== undefined ? '=' + val : '') + ';\r\n';
+                results += `${name + (val !== undefined ? `=${  val}` : '')  };\r\n`;
             }
 
             function handler(result, req, obj) {
                 log(
-                    'handler: result=' +
-                        JSON.stringify(result) +
-                        ' / req=' +
-                        JSON.stringify(req) +
-                        ' / obj=' +
-                        JSON.stringify(obj),
+                    `handler: result=${ 
+                        JSON.stringify(result) 
+                        } / req=${ 
+                        JSON.stringify(req) 
+                        } / obj=${ 
+                        JSON.stringify(obj)}`,
                 );
                 if (
                     obj.state.ts <= result.initTs &&
@@ -1559,11 +1559,11 @@ describe.only('Test JS', function () {
                 }
                 if (typeof result.val === 'object') {
                     Object.keys(result.val).forEach(n => {
-                        addResult('obj.state.' + n + '=' + obj.state[n] + ' val.' + n + '=' + result.val[n]);
+                        addResult(`obj.state.${  n  }=${  obj.state[n]  } val.${  n  }=${  result.val[n]}`);
                         result.nok = result.nok || result.val[n] !== obj.state[n];
                     });
                 } else if (result.val !== undefined) {
-                    addResult('obj.state.val=' + obj.state.val + ' val=' + result.val);
+                    addResult(`obj.state.val=${  obj.state.val  } val=${  result.val}`);
                     result.nok = result.nok || result.val !== obj.state.val;
                 }
                 result.callCount += 1;
@@ -1606,15 +1606,15 @@ describe.only('Test JS', function () {
                             setTimeout(() => {
                                 unsubscribe(sub);
                                 results =
-                                    (req.callCount === req.cnt && req.nok === false ? 'OK;' : 'NOK;') +
-                                    'no=' +
-                                    req.no +
-                                    ';' +
-                                    results +
-                                    'callCount=' +
-                                    req.callCount +
-                                    ';cnt=' +
-                                    req.cnt;
+                                    `${req.callCount === req.cnt && req.nok === false ? 'OK;' : 'NOK;' 
+                                    }no=${ 
+                                    req.no 
+                                    };${ 
+                                    results 
+                                    }callCount=${ 
+                                    req.callCount 
+                                    };cnt=${ 
+                                    req.cnt}`;
                                 setState(TEST_RESULTS, results, true, callback);
                             }, req.tio);
 
@@ -1694,7 +1694,7 @@ describe.only('Test JS', function () {
                     cnt += 1;
                     const ar = /^(OK;no=[\d]+)/.exec(state.val) || ['', state.val];
                     assert.ok(ar);
-                    assert.equal(ar[1], 'OK;no=' + cnt);
+                    assert.equal(ar[1], `OK;no=${  cnt}`);
 
                     if (cnt >= recs.length) {
                         removeStateChangedHandler(onStateChanged);
@@ -1713,7 +1713,7 @@ describe.only('Test JS', function () {
     it('Test JS: test schedule seconds', function (done) {
         const d = new Date();
 
-        console.log('Must wait 2 seconds[' + ((d.getSeconds() + 2) % 60) + ' * * * * *]' + d.toISOString());
+        console.log(`Must wait 2 seconds[${  (d.getSeconds() + 2) % 60  } * * * * *]${  d.toISOString()}`);
         // add a script
         const script = {
             _id: 'script.js.test_schedule_seconds',
@@ -1749,12 +1749,12 @@ describe.only('Test JS', function () {
     it('Test JS: test schedule minutes', function (done) {
         const d = new Date();
         console.log(
-            'Must wait ' +
-                (60 - d.getSeconds()) +
-                ' seconds[' +
-                ((d.getMinutes() + 1) % 60) +
-                ' * * * *] ' +
-                d.toISOString(),
+            `Must wait ${ 
+                60 - d.getSeconds() 
+                } seconds[${ 
+                (d.getMinutes() + 1) % 60 
+                } * * * *] ${ 
+                d.toISOString()}`,
         );
         this.timeout((64 - d.getSeconds()) * 1000);
 

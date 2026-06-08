@@ -46,7 +46,7 @@ import type { CompileResult } from 'virtual-tsc/build/util';
 import { Mirror } from './lib/mirror';
 import ProtectFs from './lib/protectFs';
 import { setLanguage, getLanguage } from './lib/words';
-import { sandBox } from './lib/sandbox';
+import { sandBox, removeFromDispatchIndex } from './lib/sandbox';
 import { requestModuleNameByUrl } from './lib/nodeModulesManagement';
 import { resolveProviderCredentials, resolveTestCredentials, listAvailableProviders } from './lib/aiProviderResolver';
 import {
@@ -2828,28 +2828,10 @@ class JavaScript extends Adapter {
             for (let i = this.subscriptions.length - 1; i >= 0; i--) {
                 if (this.subscriptions[i].name === name) {
                     const sub = this.subscriptions.splice(i, 1)[0];
-                    // Also remove from O(1) dispatch structures
-                    if (
-                        sub?.pattern.id &&
-                        typeof sub.pattern.id === 'string' &&
-                        !sub.pattern.id.includes('*') &&
-                        !sub.pattern.id.includes('?')
-                    ) {
-                        const bucket = this.subscriptionsMap.get(sub.pattern.id);
-                        if (bucket) {
-                            const pos = bucket.indexOf(sub);
-                            if (pos !== -1) {
-                                bucket.splice(pos, 1);
-                            }
-                            if (bucket.length === 0) {
-                                this.subscriptionsMap.delete(sub.pattern.id);
-                            }
-                        }
-                    } else {
-                        const wPos = this.subscriptionsWildcard.indexOf(sub);
-                        if (wPos !== -1) {
-                            this.subscriptionsWildcard.splice(wPos, 1);
-                        }
+                    // Also remove from the O(1) dispatch structures – shared helper to keep the
+                    // exact-id classification identical to the subscribe side in sandbox.ts
+                    if (sub) {
+                        removeFromDispatchIndex(this.context, sub);
                     }
                     if (sub?.pattern.id) {
                         this.unsubscribe(sub.pattern.id);
