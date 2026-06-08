@@ -314,7 +314,7 @@ export class NodeInspector {
                     if (this.delayedContext) {
                         console.log('Send to debugger: readyToDebug');
                         void this.scripts[this.mainScriptId]?.then(data => {
-                            // console.log('Send to debugger: readyToDebug ' + JSON.stringify(data));
+                            // console.log(`Send to debugger: readyToDebug ${JSON.stringify(data)}`);
                             sendToHost({
                                 cmd: 'readyToDebug',
                                 scriptId: this.mainScriptId,
@@ -338,7 +338,7 @@ export class NodeInspector {
                     this.Debugger.resume();
                     return;
                 }
-                //console.warn(fullName + ': => \n' + JSON.stringify(params, null, 2));
+                //console.warn(`${fullName}: => \n${JSON.stringify(params, null, 2)}`);
                 this.Debugger.emit(name, params);
 
                 if (!alreadyPausedOnFirstLine) {
@@ -368,7 +368,7 @@ export class NodeInspector {
             }
 
             if (domain === 'Runtime') {
-                //console.warn(fullName + ': => \n' + JSON.stringify(params, null, 2));
+                //console.warn(`${fullName}: => \n${JSON.stringify(params, null, 2)}`);
             }
             if (domain === 'Runtime' && name === 'consoleAPICalled') {
                 const text = params.args[0].value;

@@ -87,7 +87,7 @@ export function getObjectEnumsSync(
 }
 
 function doGetter(obj: Record<string, any>, name: string, ret: any): any {
-    //adapter.log.debug('getter: ' + name + ' returns ' + ret);
+    //adapter.log.debug(`getter: ${name} returns ${ret}`);
     Object.defineProperty(obj, name, { value: ret });
     return ret;
 }
