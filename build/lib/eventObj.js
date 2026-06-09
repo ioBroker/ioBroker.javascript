@@ -79,7 +79,7 @@ function getObjectEnumsSync(context, idObj, enumIds, enumNames) {
     return context.cacheObjectEnums[idObj];
 }
 function doGetter(obj, name, ret) {
-    //adapter.log.debug('getter: ' + name + ' returns ' + ret);
+    //adapter.log.debug(`getter: ${name} returns ${ret}`);
     Object.defineProperty(obj, name, { value: ret });
     return ret;
 }
