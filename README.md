@@ -30,6 +30,7 @@ Executes Javascript, Typescript Scripts.
 ### **WORK IN PROGRESS**
 * (arteck) Performance optimizations part 2
 * (arteck) fix filter in tab scripts
+* (@GermanBluefox) Implemented the support for credentials manager in the configuration
 
 ### 9.2.3 (2026-05-27)
 * (arteck) Performance optimizations done

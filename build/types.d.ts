@@ -40,6 +40,12 @@ export interface JavaScriptAdapterConfig {
     geminiKey: string;
     deepseekKey: string;
     password?: string;
+    credentialType?: 'manual' | 'manager';
+    credentialIdGptKey?: string;
+    credentialIdClaudeKey?: string;
+    credentialIdGeminiKey?: string;
+    credentialIdDeepseekKey?: string;
+    credentialIdGptBaseUrlKey?: string;
 }
 
 export type CommonAlias = {

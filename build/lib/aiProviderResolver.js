@@ -10,7 +10,8 @@
  * These functions are extracted so they can be unit-tested in isolation.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PROVIDER_KEY_FIELD = void 0;
+exports.PROVIDER_CREDENTIAL_ID_FIELD = exports.PROVIDER_KEY_FIELD = void 0;
+exports.getProviderCredentialId = getProviderCredentialId;
 exports.resolveProviderCredentials = resolveProviderCredentials;
 exports.resolveTestCredentials = resolveTestCredentials;
 exports.listAvailableProviders = listAvailableProviders;
@@ -22,6 +23,26 @@ exports.PROVIDER_KEY_FIELD = {
     deepseek: 'deepseekKey',
     custom: 'gptBaseUrlKey',
 };
+/**
+ * Maps each provider to the adapter-config field holding the ID of its credential
+ * in the central credential store (used in `manager` mode).
+ */
+exports.PROVIDER_CREDENTIAL_ID_FIELD = {
+    openai: 'credentialIdGptKey',
+    anthropic: 'credentialIdClaudeKey',
+    gemini: 'credentialIdGeminiKey',
+    deepseek: 'credentialIdDeepseekKey',
+    custom: 'credentialIdGptBaseUrlKey',
+};
+/**
+ * Returns the configured credential ID (e.g. `system.credentials.anthropic`) for a provider
+ * in `manager` mode, or an empty string if none/unknown provider.
+ */
+function getProviderCredentialId(config, provider) {
+    const cfg = config || {};
+    const field = exports.PROVIDER_CREDENTIAL_ID_FIELD[provider];
+    return field ? (cfg[field] || '').toString().trim() : '';
+}
 /**
  * Resolve API key and base URL for a provider from adapter config.
  * Optional `messageBaseUrl` takes precedence over the stored `gptBaseUrl`
@@ -60,18 +81,24 @@ function resolveTestCredentials(config, provider, messageApiKey, messageBaseUrl)
 function listAvailableProviders(config) {
     const cfg = config || {};
     const providers = [];
-    if ((cfg.gptKey || '').trim()) {
+    const manager = cfg.credentialType === 'manager';
+    // A key-based provider is "available" if it has a stored key (manual mode)
+    // or a selected credential ID (manager mode).
+    const has = (provider, key) => manager ? !!getProviderCredentialId(cfg, provider) : !!(key || '').trim();
+    if (has('openai', cfg.gptKey)) {
         providers.push({ provider: 'openai' });
     }
-    if ((cfg.claudeKey || '').trim()) {
+    if (has('anthropic', cfg.claudeKey)) {
         providers.push({ provider: 'anthropic' });
     }
-    if ((cfg.geminiKey || '').trim()) {
+    if (has('gemini', cfg.geminiKey)) {
         providers.push({ provider: 'gemini' });
     }
-    if ((cfg.deepseekKey || '').trim()) {
+    if (has('deepseek', cfg.deepseekKey)) {
         providers.push({ provider: 'deepseek' });
     }
+    // The custom/OpenAI-compatible endpoint is identified by its base URL (the key is optional,
+    // e.g. local Ollama), so its availability does not depend on the credential mode.
     if ((cfg.gptBaseUrl || '').trim()) {
         providers.push({ provider: 'custom', baseUrl: cfg.gptBaseUrl });
     }

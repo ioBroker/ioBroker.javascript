@@ -1,6 +1,8 @@
 const assert = require('node:assert').strict;
 const {
     PROVIDER_KEY_FIELD,
+    PROVIDER_CREDENTIAL_ID_FIELD,
+    getProviderCredentialId,
     resolveProviderCredentials,
     resolveTestCredentials,
     listAvailableProviders,
@@ -14,6 +16,48 @@ describe('Test AI Provider Resolver', function () {
             assert.equal(PROVIDER_KEY_FIELD.gemini, 'geminiKey');
             assert.equal(PROVIDER_KEY_FIELD.deepseek, 'deepseekKey');
             assert.equal(PROVIDER_KEY_FIELD.custom, 'gptBaseUrlKey');
+        });
+    });
+
+    describe('PROVIDER_CREDENTIAL_ID_FIELD', function () {
+        it('maps every supported provider to its credential-id field', function () {
+            assert.equal(PROVIDER_CREDENTIAL_ID_FIELD.openai, 'credentialIdGptKey');
+            assert.equal(PROVIDER_CREDENTIAL_ID_FIELD.anthropic, 'credentialIdClaudeKey');
+            assert.equal(PROVIDER_CREDENTIAL_ID_FIELD.gemini, 'credentialIdGeminiKey');
+            assert.equal(PROVIDER_CREDENTIAL_ID_FIELD.deepseek, 'credentialIdDeepseekKey');
+            assert.equal(PROVIDER_CREDENTIAL_ID_FIELD.custom, 'credentialIdGptBaseUrlKey');
+        });
+    });
+
+    describe('getProviderCredentialId', function () {
+        const cfg = {
+            credentialIdGptKey: 'system.credentials.openai',
+            credentialIdClaudeKey: 'system.credentials.anthropic',
+            credentialIdGeminiKey: 'system.credentials.gemini',
+            credentialIdDeepseekKey: 'system.credentials.deepseek',
+            credentialIdGptBaseUrlKey: 'system.credentials.custom',
+        };
+
+        it('returns the configured credential ID per provider', function () {
+            assert.equal(getProviderCredentialId(cfg, 'openai'), 'system.credentials.openai');
+            assert.equal(getProviderCredentialId(cfg, 'anthropic'), 'system.credentials.anthropic');
+            assert.equal(getProviderCredentialId(cfg, 'gemini'), 'system.credentials.gemini');
+            assert.equal(getProviderCredentialId(cfg, 'deepseek'), 'system.credentials.deepseek');
+            assert.equal(getProviderCredentialId(cfg, 'custom'), 'system.credentials.custom');
+        });
+
+        it('returns empty string for unknown provider', function () {
+            assert.equal(getProviderCredentialId(cfg, 'unknown'), '');
+        });
+
+        it('handles missing/empty config gracefully', function () {
+            assert.equal(getProviderCredentialId(undefined, 'openai'), '');
+            assert.equal(getProviderCredentialId(null, 'openai'), '');
+            assert.equal(getProviderCredentialId({}, 'openai'), '');
+        });
+
+        it('trims whitespace from the configured ID', function () {
+            assert.equal(getProviderCredentialId({ credentialIdGptKey: '  system.credentials.openai \n' }, 'openai'), 'system.credentials.openai');
         });
     });
 
@@ -231,6 +275,45 @@ describe('Test AI Provider Resolver', function () {
             const serialized = JSON.stringify(res);
             assert.ok(!serialized.includes('sk-should-never-appear'));
             assert.ok(!serialized.includes('SECRET'));
+        });
+
+        describe('manager mode (credentialType=manager)', function () {
+            it('lists providers by selected credential ID, ignoring manual keys', function () {
+                const res = listAvailableProviders({
+                    credentialType: 'manager',
+                    // manual keys are present but must be ignored in manager mode
+                    gptKey: 'sk-ignored',
+                    claudeKey: 'sk-ignored',
+                    credentialIdGptKey: 'system.credentials.openai',
+                    credentialIdGeminiKey: 'system.credentials.gemini',
+                });
+                assert.deepEqual(res, [{ provider: 'openai' }, { provider: 'gemini' }]);
+            });
+
+            it('does not list a provider whose manual key is set but credential ID is empty', function () {
+                const res = listAvailableProviders({
+                    credentialType: 'manager',
+                    claudeKey: 'sk-ant-set-but-ignored',
+                    credentialIdClaudeKey: '',
+                });
+                assert.deepEqual(res, []);
+            });
+
+            it('custom provider still depends only on the base URL (key optional)', function () {
+                const res = listAvailableProviders({
+                    credentialType: 'manager',
+                    gptBaseUrl: 'http://localhost:11434/v1',
+                });
+                assert.deepEqual(res, [{ provider: 'custom', baseUrl: 'http://localhost:11434/v1' }]);
+            });
+
+            it('does not include the credential ID secrets are never resolved here', function () {
+                const res = listAvailableProviders({
+                    credentialType: 'manager',
+                    credentialIdGptKey: 'system.credentials.openai',
+                });
+                assert.deepEqual(res, [{ provider: 'openai' }]);
+            });
         });
     });
 });

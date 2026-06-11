@@ -38,7 +38,13 @@ import * as axios from 'axios';
 import * as wake_on_lan from 'wake_on_lan';
 import * as nodeSchedule from 'node-schedule';
 
-import { getAbsoluteDefaultDataDir, Adapter, EXIT_CODES, type AdapterOptions } from '@iobroker/adapter-core';
+import {
+    getAbsoluteDefaultDataDir,
+    Adapter,
+    Credentials,
+    EXIT_CODES,
+    type AdapterOptions,
+} from '@iobroker/adapter-core';
 import type SentryPlugin from '@iobroker/plugin-sentry';
 import type { GetTimesResult } from 'suncalc';
 import type { CompileResult } from 'virtual-tsc/build/util';
@@ -48,7 +54,12 @@ import ProtectFs from './lib/protectFs';
 import { setLanguage, getLanguage } from './lib/words';
 import { sandBox } from './lib/sandbox';
 import { requestModuleNameByUrl } from './lib/nodeModulesManagement';
-import { resolveProviderCredentials, resolveTestCredentials, listAvailableProviders } from './lib/aiProviderResolver';
+import {
+    resolveProviderCredentials,
+    resolveTestCredentials,
+    listAvailableProviders,
+    getProviderCredentialId,
+} from './lib/aiProviderResolver';
 import {
     translateToolsToAnthropic,
     translateMessagesToAnthropic,
@@ -392,6 +403,15 @@ class JavaScript extends Adapter {
     private stopCounters: Record<string, number> = {};
 
     private setStateCountCheckInterval: NodeJS.Timeout | null = null;
+
+    /**
+     * Decrypted AI API keys cached from the central credential store (manager mode),
+     * keyed by credential ID (e.g. `system.credentials.anthropic`). Kept fresh by the
+     * subscriptions set up in `subscribeAiCredentials`.
+     */
+    private readonly aiCredentialCache: Map<string, string> = new Map();
+    /** Unsubscribe callbacks for the AI credential subscriptions (manager mode). */
+    private aiCredentialUnsubscribers: (() => Promise<void>)[] = [];
 
     private globalScript = '';
     /** Generated declarations for global TypeScripts */
@@ -879,6 +899,7 @@ class JavaScript extends Adapter {
                 clearInterval(this.setStateCountCheckInterval);
                 this.setStateCountCheckInterval = null;
             }
+            await this.unsubscribeAiCredentials();
             await this.stopAllScripts();
         } catch (err: unknown) {
             this.log.error(`Error during unload: ${(err as Error).message}`);
@@ -942,6 +963,122 @@ class JavaScript extends Adapter {
         }
 
         await this.main();
+    }
+
+    /** Read and decrypt a single AI credential's key from the central store; returns '' (and logs) on error. */
+    private async readAiCredentialKey(id: string): Promise<string> {
+        try {
+            const cred = await Credentials.getCredentials<Credentials.KeyCredentials>(this, id);
+            return (cred?.values?.key || '').trim();
+        } catch (e) {
+            this.log.warn(`Cannot read AI credential "${id}": ${e instanceof Error ? e.message : String(e)}`);
+            return '';
+        }
+    }
+
+    /**
+     * Resolve the API key (and base URL) for an AI provider.
+     *
+     * In `manual` mode the key comes from the encryptedNative adapter config.
+     * In `manager` mode the config only stores the ID of a credential in the central
+     * ioBroker credential store (`system.credentials.*`); the actual key is taken from the
+     * `aiCredentialCache` (kept fresh by `subscribeAiCredentials`) or, for credentials we are
+     * not subscribed to (e.g. a not-yet-saved selection in the settings dialog), read directly.
+     *
+     * The settings-dialog Test button may pass form values that are not saved yet
+     * (`messageApiKey` / `messageCredentialId` / `credentialType`); those win over the stored config.
+     */
+    private async resolveAiCredentials(
+        provider: string,
+        opts: {
+            messageBaseUrl?: string;
+            messageApiKey?: string;
+            messageCredentialId?: string;
+            credentialType?: 'manual' | 'manager';
+        } = {},
+    ): Promise<{ apiKey: string; baseUrl: string }> {
+        const mode = opts.credentialType || this.config.credentialType || 'manual';
+        if (mode === 'manager') {
+            // The base URL is not a secret and is resolved the same way in both modes.
+            const { baseUrl } = resolveProviderCredentials(this.config, provider, opts.messageBaseUrl);
+            const id = (opts.messageCredentialId || getProviderCredentialId(this.config, provider)).trim();
+            if (!id) {
+                return { apiKey: '', baseUrl };
+            }
+            // Prefer the cached value kept fresh by the credential subscription.
+            const cached = this.aiCredentialCache.get(id);
+            const apiKey = cached !== undefined ? cached : await this.readAiCredentialKey(id);
+            return { apiKey, baseUrl };
+        }
+        // Manual mode. The Test button sends the current form key (maybe empty) — let it win.
+        if (opts.messageApiKey !== undefined) {
+            return resolveTestCredentials(this.config, provider, opts.messageApiKey, opts.messageBaseUrl);
+        }
+        return resolveProviderCredentials(this.config, provider, opts.messageBaseUrl);
+    }
+
+    /**
+     * In `manager` mode, subscribe to all configured AI credentials so that edits made in the
+     * admin credential manager (Settings → Credentials) are picked up live, without restarting
+     * the adapter (the `system.credentials.*` objects are global, not part of the instance config).
+     * The decrypted keys are cached and kept fresh by the subscription handlers.
+     */
+    private async subscribeAiCredentials(): Promise<void> {
+        // Always start from a clean state (idempotent — also used to re-subscribe).
+        await this.unsubscribeAiCredentials();
+        if (this.config.credentialType !== 'manager') {
+            return;
+        }
+        // Collect the distinct credential IDs configured across all AI providers.
+        const ids = new Set<string>();
+        for (const provider of ['openai', 'anthropic', 'gemini', 'deepseek', 'custom'] as const) {
+            const id = getProviderCredentialId(this.config, provider);
+            if (id) {
+                ids.add(id);
+            }
+        }
+        for (const id of ids) {
+            try {
+                const unsubscribe = await Credentials.subscribeCredentials<Credentials.KeyCredentials>(
+                    this,
+                    id,
+                    (changedId, cred) => {
+                        if (cred) {
+                            this.aiCredentialCache.set(changedId, (cred.values?.key || '').trim());
+                            this.log.debug(`AI credential "${changedId}" updated`);
+                        } else {
+                            // The credential was deleted
+                            this.aiCredentialCache.delete(changedId);
+                            this.log.debug(`AI credential "${changedId}" was deleted`);
+                        }
+                    },
+                );
+                this.aiCredentialUnsubscribers.push(unsubscribe);
+                // Prime the cache with the current value (the handler may only fire on later changes).
+                this.aiCredentialCache.set(id, await this.readAiCredentialKey(id));
+            } catch (e) {
+                this.log.warn(
+                    `Cannot subscribe to AI credential "${id}": ${e instanceof Error ? e.message : String(e)}`,
+                );
+            }
+        }
+        if (this.aiCredentialUnsubscribers.length) {
+            this.log.debug(`Subscribed to ${this.aiCredentialUnsubscribers.length} AI credential(s)`);
+        }
+    }
+
+    /** Tear down all AI credential subscriptions and clear the cache. */
+    private async unsubscribeAiCredentials(): Promise<void> {
+        const unsubscribers = this.aiCredentialUnsubscribers;
+        this.aiCredentialUnsubscribers = [];
+        this.aiCredentialCache.clear();
+        for (const unsubscribe of unsubscribers) {
+            try {
+                await unsubscribe();
+            } catch (e) {
+                this.log.warn(`Cannot unsubscribe from AI credential: ${e instanceof Error ? e.message : String(e)}`);
+            }
+        }
     }
 
     onMessage(obj: ioBroker.Message): void {
@@ -1245,25 +1382,30 @@ class JavaScript extends Adapter {
 
             case 'chatCompletion': {
                 // Proxy chat completion requests to an OpenAI-compatible API endpoint.
-                // API keys are resolved server-side from encryptedNative config — they never
-                // leave the adapter (frontend only sends `provider`, not the key).
-                if (obj.callback) {
+                // API keys are resolved server-side from the encryptedNative config or the central
+                // credentials manager — they never leave the adapter (frontend only sends `provider`).
+                void (async () => {
+                    if (!obj.callback) {
+                        return;
+                    }
                     const chatModel = (obj.message?.model || '').trim();
                     const messages = obj.message?.messages;
                     const tools = obj.message?.tools;
                     const provider = (obj.message?.provider || 'openai').trim();
-                    const { apiKey, baseUrl } = resolveProviderCredentials(this.config, provider, obj.message?.baseUrl);
+                    const { apiKey, baseUrl } = await this.resolveAiCredentials(provider, {
+                        messageBaseUrl: obj.message?.baseUrl,
+                    });
                     // Anthropic, Gemini, and DeepSeek always require an API key; OpenAI-compatible allows empty key with custom base URL
                     if (
                         !apiKey &&
                         (provider === 'anthropic' || provider === 'gemini' || provider === 'deepseek' || !baseUrl)
                     ) {
                         this.sendTo(obj.from, obj.command, { error: 'No API key provided' }, obj.callback);
-                        break;
+                        return;
                     }
                     if (!chatModel || !messages) {
                         this.sendTo(obj.from, obj.command, { error: 'Model and messages are required' }, obj.callback);
-                        break;
+                        return;
                     }
 
                     let url: string;
@@ -1320,7 +1462,7 @@ class JavaScript extends Adapter {
                     const resolved = resolveRequestModule(url);
                     if (!resolved) {
                         this.sendTo(obj.from, obj.command, { error: `Invalid API URL: ${url}` }, obj.callback);
-                        break;
+                        return;
                     }
                     const { module: requestModule, isHttps } = resolved;
 
@@ -1425,7 +1567,7 @@ class JavaScript extends Adapter {
                             obj.callback,
                         );
                     }
-                }
+                })();
                 break;
             }
 
@@ -1433,21 +1575,24 @@ class JavaScript extends Adapter {
                 // Test connection to an OpenAI-compatible API endpoint.
                 // The settings-dialog Test button sends the current form value as `apiKey`
                 // (so users can test before saving); otherwise we fall back to the stored key.
-                if (obj.callback) {
+                void (async () => {
+                    if (!obj.callback) {
+                        return;
+                    }
                     const provider = (obj.message?.provider || 'openai').trim();
-                    const { apiKey, baseUrl } = resolveTestCredentials(
-                        this.config,
-                        provider,
-                        obj.message?.apiKey,
-                        obj.message?.baseUrl,
-                    );
+                    const { apiKey, baseUrl } = await this.resolveAiCredentials(provider, {
+                        messageApiKey: obj.message?.apiKey,
+                        messageBaseUrl: obj.message?.baseUrl,
+                        messageCredentialId: obj.message?.credentialId,
+                        credentialType: obj.message?.credentialType,
+                    });
                     // Anthropic, Gemini, and DeepSeek always require an API key; OpenAI-compatible allows empty key with custom base URL
                     if (
                         !apiKey &&
                         (provider === 'anthropic' || provider === 'gemini' || provider === 'deepseek' || !baseUrl)
                     ) {
                         this.sendTo(obj.from, obj.command, { error: 'No API key provided' }, obj.callback);
-                        break;
+                        return;
                     }
 
                     let url: string;
@@ -1477,7 +1622,7 @@ class JavaScript extends Adapter {
                     const resolved = resolveRequestModule(url);
                     if (!resolved) {
                         this.sendTo(obj.from, obj.command, { error: `Invalid API URL: ${url}` }, obj.callback);
-                        break;
+                        return;
                     }
                     const { module: requestModule, isHttps } = resolved;
 
@@ -1577,7 +1722,7 @@ class JavaScript extends Adapter {
                             obj.callback,
                         );
                     }
-                }
+                })();
                 break;
             }
 
@@ -1770,6 +1915,10 @@ class JavaScript extends Adapter {
         // Store allowSelfSignedCerts on the context, so sandbox HTTP functions can use it
         // without setting the global process.env.NODE_TLS_REJECT_UNAUTHORIZED (which affects all adapters in compact mode)
         this.context.allowSelfSignedCerts = this.config.allowSelfSignedCerts;
+
+        // In `manager` credential mode, subscribe to the configured AI credentials so changes in the
+        // central credential store are picked up live (the keys are cached for the AI sendTo handlers).
+        await this.subscribeAiCredentials();
 
         const doc = await this.getObjectViewAsync('script', 'javascript', {});
         if (doc?.rows?.length) {

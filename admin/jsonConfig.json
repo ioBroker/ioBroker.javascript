@@ -152,26 +152,37 @@
                         { "label": "Manual", "value": "manual" }
                     ],
                     "label": "Credentials type",
-                    "hidden": "!data.useCredentials",
-                    "default": "manual"
+                    "default": "manual",
+                    "xs": 12,
+                    "sm": 6
                 },
                 "gptKey": {
                     "newLine": true,
                     "type": "password",
                     "label": "ChatGPT API key",
+                    "hidden": "data.credentialType === 'manager'",
                     "xs": 12,
                     "sm": 9,
                     "help": "platform.openai.com",
                     "helpLink": "https://platform.openai.com/api-keys"
+                },
+                "credentialIdGptKey": {
+                    "newLine": true,
+                    "type": "credential",
+                    "credentialType": "ai",
+                    "label": "ChatGPT credential",
+                    "hidden": "data.credentialType !== 'manager'",
+                    "xs": 12,
+                    "sm": 9
                 },
                 "_testOpenAi": {
                     "type": "sendTo",
                     "label": "Test OpenAI",
                     "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik0xMiAyQzYuNDggMiAyIDUuNTggMiAxMGMwIDIuMjQgMS4xMiA0LjI3IDIuOTMgNS43Mkw0IDIwbDQuMzUtMi4xOEM5LjUgMTguMjcgMTAuNzIgMTguNSAxMiAxOC41YzUuNTIgMCAxMC0zLjU4IDEwLThTMTcuNTIgMiAxMiAyem0tMSAxMUg4di0yaDNWOGgydjNoM3YyaC0zdjNoLTJ2LTN6Ii8+PC9zdmc+",
                     "command": "testApiConnection",
-                    "jsonData": "{\"apiKey\": \"${data.gptKey}\", \"provider\": \"openai\", \"credentialType\": \"${data.credentialType}\", \"credentialIdGptKey\": \"${data.credentialIdGptKey}\"}",
+                    "jsonData": "{\"apiKey\": \"${data.gptKey}\", \"provider\": \"openai\", \"credentialType\": \"${data.credentialType}\", \"credentialId\": \"${data.credentialIdGptKey}\"}",
                     "variant": "outlined",
-                    "disabled": "!data.gptKey",
+                    "disabled": "data.credentialType === 'manager' ? !data.credentialIdGptKey : !data.gptKey",
                     "xs": 12,
                     "sm": 3,
                     "showProcess": true
@@ -180,19 +191,29 @@
                     "newLine": true,
                     "type": "password",
                     "label": "Anthropic API key",
+                    "hidden": "data.credentialType === 'manager'",
                     "xs": 12,
                     "sm": 9,
                     "help": "console.anthropic.com",
                     "helpLink": "https://console.anthropic.com/settings/keys"
+                },
+                "credentialIdClaudeKey": {
+                    "newLine": true,
+                    "type": "credential",
+                    "credentialType": "ai",
+                    "label": "Anthropic credential",
+                    "hidden": "data.credentialType !== 'manager'",
+                    "xs": 12,
+                    "sm": 9
                 },
                 "_testClaude": {
                     "type": "sendTo",
                     "label": "Test Anthropic",
                     "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik0xMiAyTDMgMjBoNGwxLjUtNGg3bDEuNSA0aDRMMTIgMnptMCA2bDIuNSA3aC01TDEyIDh6Ii8+PC9zdmc+",
                     "command": "testApiConnection",
-                    "jsonData": "{\"apiKey\": \"${data.claudeKey}\", \"provider\": \"anthropic\", \"credentialType\": \"${data.credentialType}\", \"credentialIdClaudeKey\": \"${data.credentialIdClaudeKey}\"}",
+                    "jsonData": "{\"apiKey\": \"${data.claudeKey}\", \"provider\": \"anthropic\", \"credentialType\": \"${data.credentialType}\", \"credentialId\": \"${data.credentialIdClaudeKey}\"}",
                     "variant": "outlined",
-                    "disabled": "!data.claudeKey",
+                    "disabled": "data.credentialType === 'manager' ? !data.credentialIdClaudeKey : !data.claudeKey",
                     "xs": 12,
                     "sm": 3,
                     "showProcess": true
@@ -201,19 +222,29 @@
                     "newLine": true,
                     "type": "password",
                     "label": "Gemini API key",
+                    "hidden": "data.credentialType === 'manager'",
                     "xs": 12,
                     "sm": 9,
                     "help": "aistudio.google.com",
                     "helpLink": "https://aistudio.google.com/apikey"
+                },
+                "credentialIdGeminiKey": {
+                    "newLine": true,
+                    "type": "credential",
+                    "credentialType": "ai",
+                    "label": "Gemini credential",
+                    "hidden": "data.credentialType !== 'manager'",
+                    "xs": 12,
+                    "sm": 9
                 },
                 "_testGemini": {
                     "type": "sendTo",
                     "label": "Test Gemini",
                     "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik0xMiAxbDMgN2g3bC01LjUgNC41TDE4LjUgMjAgMTIgMTUuNSA1LjUgMjBsMi03LjVMMiA4aDd6Ii8+PC9zdmc+",
                     "command": "testApiConnection",
-                    "jsonData": "{\"apiKey\": \"${data.geminiKey}\", \"provider\": \"gemini\", \"credentialType\": \"${data.credentialType}\", \"credentialIdGeminiKey\": \"${data.credentialIdGeminiKey}\"}",
+                    "jsonData": "{\"apiKey\": \"${data.geminiKey}\", \"provider\": \"gemini\", \"credentialType\": \"${data.credentialType}\", \"credentialId\": \"${data.credentialIdGeminiKey}\"}",
                     "variant": "outlined",
-                    "disabled": "!data.geminiKey",
+                    "disabled": "data.credentialType === 'manager' ? !data.credentialIdGeminiKey : !data.geminiKey",
                     "xs": 12,
                     "sm": 3,
                     "showProcess": true
@@ -222,19 +253,29 @@
                     "newLine": true,
                     "type": "password",
                     "label": "DeepSeek API key",
+                    "hidden": "data.credentialType === 'manager'",
                     "xs": 12,
                     "sm": 9,
                     "help": "platform.deepseek.com",
                     "helpLink": "https://platform.deepseek.com/api_keys"
+                },
+                "credentialIdDeepseekKey": {
+                    "newLine": true,
+                    "type": "credential",
+                    "credentialType": "ai",
+                    "label": "DeepSeek credential",
+                    "hidden": "data.credentialType !== 'manager'",
+                    "xs": 12,
+                    "sm": 9
                 },
                 "_testDeepseek": {
                     "type": "sendTo",
                     "label": "Test DeepSeek",
                     "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik0xMCAyYTggOCAwIDAgMSA2LjMyIDEyLjkxbDQuMzkgNC4zOC0xLjQyIDEuNDItNC4zOC00LjM5QTggOCAwIDEgMSAxMCAyem0wIDJhNiA2IDAgMSAwIDAgMTIgNiA2IDAgMCAwIDAtMTJ6Ii8+PC9zdmc+",
                     "command": "testApiConnection",
-                    "jsonData": "{\"apiKey\": \"${data.deepseekKey}\", \"provider\": \"deepseek\", \"credentialType\": \"${data.credentialType}\", \"credentialIdDeepseekKey\": \"${data.credentialIdDeepseekKey}\"}",
+                    "jsonData": "{\"apiKey\": \"${data.deepseekKey}\", \"provider\": \"deepseek\", \"credentialType\": \"${data.credentialType}\", \"credentialId\": \"${data.credentialIdDeepseekKey}\"}",
                     "variant": "outlined",
-                    "disabled": "!data.deepseekKey",
+                    "disabled": "data.credentialType === 'manager' ? !data.credentialIdDeepseekKey : !data.deepseekKey",
                     "xs": 12,
                     "sm": 3,
                     "showProcess": true
@@ -251,17 +292,26 @@
                 "gptBaseUrlKey": {
                     "type": "text",
                     "label": "Custom API key",
+                    "hidden": "data.credentialType === 'manager'",
                     "xs": 12,
                     "sm": 4,
                     "help": "Custom API key help",
                     "placeholder": "optional"
+                },
+                "credentialIdGptBaseUrlKey": {
+                    "type": "credential",
+                    "credentialType": "ai",
+                    "label": "Custom API credential",
+                    "hidden": "data.credentialType !== 'manager'",
+                    "xs": 12,
+                    "sm": 4
                 },
                 "_testCustom": {
                     "type": "sendTo",
                     "label": "Test Custom API",
                     "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik00IDFoMTZ2NUg0VjF6bTEgMXYzaDE0VjJINXptLTEgNmgxNnY1SDRWOHptMSAxdjNoMTRWOUg1em0tMSA2aDE2djVINHYtNXptMSAxdjNoMTR2LTNINXptMi0xMmgydjFIN1Yzem0wIDZoMnYxSDdWOXptMCA2aDJ2MUg3di0xeiIvPjwvc3ZnPg==",
                     "command": "testApiConnection",
-                    "jsonData": "{\"apiKey\": \"${data.gptBaseUrlKey}\", \"baseUrl\": \"${data.gptBaseUrl}\", \"provider\": \"openai\", \"credentialType\": \"${data.credentialType}\", \"credentialIdGptBaseUrlKey\": \"${data.credentialIdGptBaseUrlKey}\"}",
+                    "jsonData": "{\"apiKey\": \"${data.gptBaseUrlKey}\", \"baseUrl\": \"${data.gptBaseUrl}\", \"provider\": \"openai\", \"credentialType\": \"${data.credentialType}\", \"credentialId\": \"${data.credentialIdGptBaseUrlKey}\"}",
                     "variant": "outlined",
                     "disabled": "!data.gptBaseUrl",
                     "xs": 12,
