@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "9.2.3",
+    "version": "9.2.4",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "9.2.4": {
+        "en": "Performance optimizations part 2\nfix filter in tab scripts\nFixed a subscription leak on script stop for RegExp-notation string ids (dispatch index)\n`extendObject` no longer throws into the script when the object contains non-clonable values (e.g. functions)",
+        "de": "Performance Optimierungen Teil 2\nfix-filter in tab-scripts\nBehebung eines Abonnementlecks bei Skriptstopp für RegExp-Notation String-IDs (Dispatch-Index)\n`extendObject` wirft nicht mehr in das Skript, wenn das Objekt nicht-klonbare Werte (z.B. Funktionen) enthält",
+        "ru": "Оптимизация производительности часть 2\nисправить фильтр в скриптах вкладок\nИсправлена утечка подписки на остановке скрипта для строковых идентификаторов RegExp-notation (индекс отправки)\n«extendObject» больше не бросается в сценарий, когда объект содержит неклонируемые значения (например, функции)",
+        "pt": "Otimização de desempenho parte 2\ncorrigir o filtro nos scripts de páginas\nCorrigido um vazamento de assinatura na parada do script para IDs de strings de notação RegExp (índice de distribuição)\n`extendObject` já não é lançado no script quando o objeto contém valores não clonáveis (por exemplo, funções)",
+        "nl": "Prestatieoptimalisaties deel 2\nfilter herstellen in tabscripts\nVaste een abonnement lek op scriptstop voor RegExp-notatie string-id's (verzendindex)\nHet object wordt niet meer in het script gegooid als het object niet-kloonbare waarden bevat (bv. functies)",
+        "fr": "Optimisation des performances partie 2\ncorrection du filtre dans les scripts des onglets\nCorrection d'une fuite d'abonnement sur l'arrêt du script pour les ids de chaîne RegExp-notation (index de distribution)\n`extendObject` ne lance plus dans le script lorsque l'objet contient des valeurs non-clonables (par exemple des fonctions)",
+        "it": "Ottimizzazione delle prestazioni parte 2\ncorrezione del filtro negli script di scheda\nRisolto una perdita di abbonamento sulla fermata dello script per RegExp-notation string ids (indice dispatch)\n`extendObject` non getta più nello script quando l'oggetto contiene valori non clonabili (ad esempio funzioni)",
+        "es": "Optimizaciones de rendimiento parte 2\nfijar filtro en scripts de pestaña\nSe ha fijado una fuga de suscripción en la parada de script para los ids de cadena RegExp (índice de despacha)\n`extendObject` ya no se lanza al script cuando el objeto contiene valores no visibles (por ejemplo, funciones)",
+        "pl": "Optymalizacja wydajności część 2\nnaprawić filtr w skryptach kart\nNaprawiono przeciek subskrypcji przy zatrzymaniu skryptu dla idów łańcuchowych RegExp- notation (wskaźnik wysyłkowy)\n'extendObject' nie wrzuca się już do skryptu, gdy obiekt zawiera wartości niemodne (np. funkcje)",
+        "uk": "Оптимізація продуктивності частини 2\nвиправити фільтр в скриптах вкладок\nВиправлено протікання підписки на сценарій зупинки для рядкових полів RegExp-notation (диспетчерський індекс)\n`extendObject` не завантажується в скрипт, коли об’єкт містить неклоновані значення (наприклад, функції)",
+        "zh-cn": "业绩优化第2部分\n在标签脚本中修正过滤器\n修复 RegExp Notation 字符串 IDs( 发送索引) 的脚本站订阅漏洞\n当对象包含不可克隆值(例如函数)时,`extend Object'不再丢入脚本"
+      },
       "9.2.3": {
         "en": "Performance optimizations done\nAdded on mouse over the value of the state",
         "de": "Leistungsoptimierungen durchgeführt\nAuf der Maus über den Wert des Zustands hinzugefügt",
@@ -117,19 +130,6 @@
         "pl": "Poprawiony komunikat błędu z 'last Sync'\nPoprawiony filtr JavaScript",
         "uk": "Виправлено повідомлення про помилку з `last Синхронізація й\nВиправлений JavaScript-фільтр",
         "zh-cn": "更正错误消息为“ last 同步 `\n已更正的 JavaScript 过滤器"
-      },
-      "9.0.17": {
-        "en": "Added possibility to encrypt scripts with password (only for vendors)",
-        "de": "Zusätzliche Möglichkeit, Skripte mit Passwort zu verschlüsseln (nur für Hersteller)",
-        "ru": "Добавлена возможность шифрования скриптов с помощью пароля (только для продавцов)",
-        "pt": "Adicionada possibilidade de criptografar scripts com senha (somente para fornecedores)",
-        "nl": "Toegevoegd mogelijkheid om scripts te versleutelen met wachtwoord (alleen voor leveranciers)",
-        "fr": "Ajout de la possibilité de chiffrer les scripts avec le mot de passe (seulement pour les fournisseurs)",
-        "it": "Aggiunta possibilità di crittografare gli script con password (solo per i fornitori)",
-        "es": "Añadido posibilidad de cifrar scripts con contraseña (sólo para proveedores)",
-        "pl": "Dodano możliwość szyfrowania skryptów hasłem (tylko dla sprzedawców)",
-        "uk": "Додана можливість шифрування сценаріїв з паролем (тільки для постачальників)",
-        "zh-cn": "添加使用密码加密脚本的可能性( 只针对供应商)"
       }
     },
     "platform": "Javascript/Node.js",

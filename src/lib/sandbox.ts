@@ -68,6 +68,39 @@ const _selectorRegExpCache = new Map<string, RegExp>();
 /** Monotonically increasing handler-ID counter – avoids Date.now()+random collisions */
 let _handlerIdCounter = 1;
 
+/** Returns true when patId is a plain exact state-ID (no wildcards, no RegExp notation). */
+export function isExactId(patId: unknown): patId is string {
+    return (
+        !!patId && typeof patId === 'string' && !patId.includes('*') && !patId.includes('?') && !patId.startsWith('/')
+    );
+}
+
+/**
+ * Removes a subscription from the O(1) dispatch index (subscriptionsMap / subscriptionsWildcard).
+ * Must use the same exact-id classification as the subscribe side (isExactId),
+ * otherwise entries leak in the structure that was not searched.
+ */
+export function removeFromDispatchIndex(ctx: JavascriptContext, sub: SubscriptionResult): void {
+    const patId = sub.pattern?.id;
+    if (isExactId(patId)) {
+        const bucket = ctx.subscriptionsMap.get(patId);
+        if (bucket) {
+            const pos = bucket.indexOf(sub);
+            if (pos !== -1) {
+                bucket.splice(pos, 1);
+            }
+            if (bucket.length === 0) {
+                ctx.subscriptionsMap.delete(patId);
+            }
+        }
+    } else {
+        const wPos = ctx.subscriptionsWildcard.indexOf(sub);
+        if (wPos !== -1) {
+            ctx.subscriptionsWildcard.splice(wPos, 1);
+        }
+    }
+}
+
 export function sandBox(
     script: JsScript,
     name: string,
@@ -189,39 +222,6 @@ export function sandBox(
             if (!context.subscribedPatternsFile[key]) {
                 void adapter.unsubscribeForeignFiles(id, fileNamePattern);
                 delete context.subscribedPatternsFile[key];
-            }
-        }
-    }
-
-    /** Returns true when patId is a plain exact state-ID (no wildcards, no RegExp notation). */
-    function _isExactId(patId: unknown): patId is string {
-        return (
-            !!patId &&
-            typeof patId === 'string' &&
-            !patId.includes('*') &&
-            !patId.includes('?') &&
-            !patId.startsWith('/')
-        );
-    }
-
-    /** Removes a subscription from the O(1) dispatch index (subscriptionsMap / subscriptionsWildcard). */
-    function _removeFromDispatchIndex(ctx: JavascriptContext, sub: SubscriptionResult): void {
-        const patId = sub.pattern?.id;
-        if (_isExactId(patId)) {
-            const bucket = ctx.subscriptionsMap.get(patId);
-            if (bucket) {
-                const pos = bucket.indexOf(sub);
-                if (pos !== -1) {
-                    bucket.splice(pos, 1);
-                }
-                if (bucket.length === 0) {
-                    ctx.subscriptionsMap.delete(patId);
-                }
-            }
-        } else {
-            const wPos = ctx.subscriptionsWildcard.indexOf(sub);
-            if (wPos !== -1) {
-                ctx.subscriptionsWildcard.splice(wPos, 1);
             }
         }
     }
@@ -1881,7 +1881,7 @@ export function sandBox(
             context.subscriptions.push(subs);
 
             // O(1) dispatch index: exact string IDs go into the map, everything else into the wildcard array
-            if (_isExactId(oPattern.id)) {
+            if (isExactId(oPattern.id)) {
                 if (!context.subscriptionsMap.has(oPattern.id)) {
                     context.subscriptionsMap.set(oPattern.id, []);
                 }
@@ -1972,7 +1972,7 @@ export function sandBox(
                         unsubscribePattern(script, sub.pattern.id as string);
                         context.subscriptions.splice(i, 1);
                         // Remove from O(1) dispatch structures
-                        _removeFromDispatchIndex(context, sub);
+                        removeFromDispatchIndex(context, sub);
                         sandbox.__engine.__subscriptions--;
                         return true;
                     }
@@ -1987,7 +1987,7 @@ export function sandBox(
                     unsubscribePattern(script, sub.pattern.id as string);
                     context.subscriptions.splice(i, 1);
                     // Remove from O(1) dispatch structures
-                    _removeFromDispatchIndex(context, sub);
+                    removeFromDispatchIndex(context, sub);
                     sandbox.__engine.__subscriptions--;
                 }
             }
@@ -5854,10 +5854,30 @@ export function sandBox(
                 if (sandbox.verbose) {
                     sandbox.log(`extendObject(id=${id}, obj=${JSON.stringify(obj)})`, 'info');
                 }
+                let objClone: Partial<ioBroker.Object>;
+                try {
+                    objClone = structuredClone(obj);
+                } catch (err: unknown) {
+                    // e.g. DataCloneError when the object contains functions
+                    void adapter.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
+                        val: true,
+                        ack: true,
+                        c: 'extendObject',
+                    });
+                    sandbox.log(`Object "${id}" can't be copied: ${JSON.stringify(err)}`, 'error');
+                    if (typeof callback === 'function') {
+                        try {
+                            callback.call(sandbox, new Error(`Object "${id}" can't be copied`));
+                        } catch (err: unknown) {
+                            errorInCallback(err as Error);
+                        }
+                    }
+                    return;
+                }
                 if (callback) {
-                    adapter.extendForeignObject(id, structuredClone(obj), callback);
+                    adapter.extendForeignObject(id, objClone, callback);
                 } else {
-                    void adapter.extendForeignObject(id, structuredClone(obj));
+                    void adapter.extendForeignObject(id, objClone);
                 }
             }
         };

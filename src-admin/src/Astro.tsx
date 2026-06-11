@@ -118,8 +118,8 @@ class Astro extends ConfigGeneric<ConfigGenericProps, AstroState> {
         });
     }
 
-    componentDidMount(): void {
-        super.componentDidMount();
+    async componentDidMount(): Promise<void> {
+        await super.componentDidMount();
         this.mounted = true;
         const newState: Partial<AstroState> = {};
         ATTRIBUTES.forEach(attr => {

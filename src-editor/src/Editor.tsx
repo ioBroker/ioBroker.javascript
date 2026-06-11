@@ -114,10 +114,7 @@ declare global {
         main: {
             objects: Record<string, ioBroker.ScriptObject | ioBroker.InstanceObject | ioBroker.ChannelObject>;
             getObject: (id: string, cb: (err: Error | null | undefined, obj?: ioBroker.Object | null) => void) => void;
-            getState: (
-                id: string,
-                cb: (err: Error | null | undefined, state?: ioBroker.State | null) => void,
-            ) => void;
+            getState: (id: string, cb: (err: Error | null | undefined, state?: ioBroker.State | null) => void) => void;
             instances: string[];
             selectIdDialog: (
                 initValue: string | null,
