@@ -29,6 +29,7 @@ Executes Javascript, Typescript Scripts.
 ## Changelog
 ### **WORK IN PROGRESS**
 * (@GermanBluefox) Implemented the support for credentials manager in the configuration
+* (@GermanBluefox) Added the possiblilty to execute scripts from AI agent
 
 ### 9.2.4 (2026-06-08)
 * (arteck) Performance optimizations part 2

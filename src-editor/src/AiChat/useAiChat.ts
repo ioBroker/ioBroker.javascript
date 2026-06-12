@@ -317,6 +317,8 @@ ioBroker object hierarchy: adapter.instance.device.channel.state
 - The channel/device often has the human-readable name (e.g. "Living Room Sensor")
 When looking up info about a datapoint, ALWAYS also check its parent channel/device for the device name and context. Use get_object_info which returns the full parent hierarchy automatically.
 
+To verify code or diagnose runtime behaviour, you can use the run_script tool: it executes a JavaScript/TypeScript snippet in the live engine (verbose mode) and returns everything it logged, then auto-stops it. Log the values you want to inspect via log(...) / console.log(...). It runs against the live system, so prefer read-only diagnostics (getState, $, getObject) and only call setState when the user explicitly asked to change something.
+
 Available API and syntax rules:
 ${docsRef.current}`;
 
@@ -761,7 +763,7 @@ ${docsRef.current}`;
 
                     // Execute each tool call and add results
                     for (const toolCall of result.tool_calls) {
-                        const toolResult = await executeToolCall(socket, toolCall, allScripts, editorApi);
+                        const toolResult = await executeToolCall(socket, toolCall, allScripts, editorApi, instanceId);
                         currentMessages.push({
                             role: 'tool',
                             tool_call_id: toolCall.id,

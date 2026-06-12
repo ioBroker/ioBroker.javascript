@@ -420,6 +420,8 @@ class JavaScript extends Adapter {
     // have access to, because it depends on the compilation order
     private knownGlobalDeclarationsByScript: Record<string, string> = {};
     private globalScriptLines = 0;
+    /** Running counter to build unique names for ad-hoc scripts started via the "execute" message */
+    private executeCounter = 0;
     // compiler instance for typescript
     private tsServer: Server;
 
@@ -1774,6 +1776,27 @@ class JavaScript extends Adapter {
                 }
                 break;
             }
+
+            case 'execute': {
+                if (obj.callback) {
+                    void this.executeScript(obj.message)
+                        .then(result => this.sendTo(obj.from, obj.command, result, obj.callback))
+                        .catch(err =>
+                            this.sendTo(
+                                obj.from,
+                                obj.command,
+                                {
+                                    ok: false,
+                                    error: `Internal error: ${err as Error}`,
+                                    logs: [],
+                                    output: '',
+                                },
+                                obj.callback,
+                            ),
+                        );
+                }
+                break;
+            }
         }
     }
 
@@ -2789,7 +2812,20 @@ class JavaScript extends Adapter {
         }
     }
 
-    execute(script: JsScript, name: string, engineType: ScriptType, verbose: boolean, debug: boolean): void {
+    execute(
+        script: JsScript,
+        name: string,
+        engineType: ScriptType,
+        verbose: boolean,
+        debug: boolean,
+        /**
+         * Optional sink for the "execute" message API. When provided, the script runs in an
+         * ephemeral diagnostic mode: every log line (the script's own `log()`/`console.*` output
+         * AND all verbose internal operations) is forwarded to this collector instead of the
+         * adapter log, and no `scriptProblem` state is written.
+         */
+        logCollector?: ((severity: ioBroker.LogLevel, message: string) => void) | null,
+    ): void {
         script.intervals = new Set();
         script.timeouts = new Set();
         script.schedules = [];
@@ -2801,13 +2837,28 @@ class JavaScript extends Adapter {
         script.subscribesFile = {};
         script.setStatePerMinuteCounter = 0;
         script.setStatePerMinuteProblemCounter = 0;
-        void this.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
-            val: false,
-            ack: true,
-            expire: 1000,
-        });
+        if (!logCollector) {
+            void this.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
+                val: false,
+                ack: true,
+                expire: 1000,
+            });
+        }
 
         const sandbox = sandBox(script, name, verbose, debug, this.context);
+
+        // Redirect every log line into the collector. As `console.*`, the global `log()` and all
+        // `sandbox.verbose && sandbox.log(...)` calls go through `sandbox.log`, this captures the
+        // full picture for the caller while keeping the adapter log clean.
+        if (logCollector) {
+            sandbox.log = (msg: string, severity?: ioBroker.LogLevel): void => {
+                let text: unknown = msg;
+                if (text && typeof text !== 'string') {
+                    text = util.format(text);
+                }
+                logCollector(severity || 'info', text as string);
+            };
+        }
 
         try {
             script.script.runInNewContext(sandbox, {
@@ -2816,13 +2867,149 @@ class JavaScript extends Adapter {
                 // lineOffset: this.globalScriptLines
             });
         } catch (err: unknown) {
-            void this.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
-                val: true,
-                ack: true,
-                c: 'execute',
-            });
-            this.logError(name, 'Error by run:', err as Error);
+            if (logCollector) {
+                const e = err as Error;
+                const stack = (e?.stack ? e.stack.toString() : String(err))
+                    .split('\n')
+                    .map(line => this.fixLineNo(line))
+                    .join('\n');
+                logCollector('error', `Error by run: ${stack}`);
+            } else {
+                void this.setState(`scriptProblem.${name.substring(SCRIPT_CODE_MARKER.length)}`, {
+                    val: true,
+                    ack: true,
+                    c: 'execute',
+                });
+                this.logError(name, 'Error by run:', err as Error);
+            }
         }
+    }
+
+    /**
+     * Run an ad-hoc script sent via the `execute` message and return everything it logged.
+     *
+     * The script is compiled (JavaScript or TypeScript), executed with the same sandbox API as a
+     * regular script (verbose by default, so internal operations like setState/subscribe are logged
+     * too), left running for `timeout` ms to collect asynchronous output, and afterwards stopped and
+     * fully cleaned up (timers, subscriptions, schedules). It is ephemeral: no script object or
+     * states are created.
+     *
+     * Expected `message`:
+     * - `source` / `code` (string, required) – the script source
+     * - `engineType` (string, optional) – `TypeScript/ts` to compile as TypeScript, otherwise JavaScript
+     * - `verbose` (boolean, optional, default `true`) – log internal sandbox operations
+     * - `logLevel` (silly|debug|info|warn|error, optional, default `silly`) – minimum severity to return
+     * - `timeout` (number ms, optional, default 5000, clamped to 0…60000) – collection window
+     * - `maxLogs` (number, optional, default 5000) – cap on returned log lines
+     */
+    async executeScript(message: any): Promise<{
+        ok: boolean;
+        error?: string;
+        engineType: 'Javascript/js' | 'TypeScript/ts';
+        runtime: number;
+        truncated: boolean;
+        logs: { ts: number; severity: ioBroker.LogLevel; message: string }[];
+        output: string;
+    }> {
+        const LEVELS: ioBroker.LogLevel[] = ['silly', 'debug', 'info', 'warn', 'error'];
+
+        const source: unknown = message?.source ?? message?.code;
+        const engineTypeStr = (message?.engineType || '').toString().toLowerCase();
+        const isTypeScript = engineTypeStr.startsWith('typescript') || engineTypeStr === 'ts';
+        const engineType: 'Javascript/js' | 'TypeScript/ts' = isTypeScript ? 'TypeScript/ts' : 'Javascript/js';
+
+        const empty = (error: string): {
+            ok: boolean;
+            error: string;
+            engineType: 'Javascript/js' | 'TypeScript/ts';
+            runtime: number;
+            truncated: boolean;
+            logs: { ts: number; severity: ioBroker.LogLevel; message: string }[];
+            output: string;
+        } => ({ ok: false, error, engineType, runtime: 0, truncated: false, logs: [], output: '' });
+
+        if (typeof source !== 'string' || !source.trim()) {
+            return empty('No source code provided');
+        }
+
+        if (this.context.debugMode) {
+            return empty('Cannot execute a script while a debug session is active');
+        }
+
+        let timeout = parseInt(message?.timeout as string, 10);
+        if (isNaN(timeout)) {
+            timeout = 5000;
+        }
+        timeout = Math.max(0, Math.min(timeout, 60000));
+
+        const verbose = message?.verbose !== false;
+        const minLevel: ioBroker.LogLevel = LEVELS.includes(message?.logLevel) ? message.logLevel : 'silly';
+        let maxLogs = parseInt(message?.maxLogs as string, 10);
+        if (isNaN(maxLogs) || maxLogs <= 0) {
+            maxLogs = 5000;
+        }
+
+        const name = `${SCRIPT_CODE_MARKER}__execute_${++this.executeCounter}`;
+
+        // Compile the source the same way regular scripts are compiled
+        let createdScript: JsScript | false;
+        if (isTypeScript) {
+            const transformedSource = transformScriptBeforeCompilation(source, false);
+            const filename = scriptIdToTSFilename(name);
+            let tsCompiled: CompileResult;
+            try {
+                tsCompiled = this.tsServer.compile(filename, transformedSource);
+            } catch (err: unknown) {
+                return empty(`TypeScript compilation failed: ${err as Error}`);
+            }
+            if (!tsCompiled.success) {
+                const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource).join('\n');
+                return empty(`TypeScript compilation failed:\n${errors}`);
+            }
+            createdScript = this.createVM(`${this.globalScript}\n${tsCompiled.result || ''}`, name, false);
+        } else {
+            createdScript = this.createVM(`${this.globalScript}\n${source}`, name, true);
+        }
+
+        if (!createdScript) {
+            return empty('Compilation failed');
+        }
+
+        const logs: { ts: number; severity: ioBroker.LogLevel; message: string }[] = [];
+        let truncated = false;
+        const collector = (severity: ioBroker.LogLevel, msg: string): void => {
+            if (logs.length >= maxLogs) {
+                truncated = true;
+                return;
+            }
+            logs.push({ ts: Date.now(), severity, message: msg });
+        };
+
+        this.scripts[name] = createdScript;
+        this.execute(createdScript, name, engineType, verbose, false, collector);
+
+        // Let asynchronous output (timeouts, awaited code, triggered subscriptions) accumulate
+        if (timeout) {
+            await new Promise<void>(resolve => setTimeout(resolve, timeout));
+        }
+
+        // Stop and clean up the ephemeral script (timers, subscriptions, schedules, …)
+        await this.stopScript(name, true);
+
+        const minIdx = LEVELS.indexOf(minLevel);
+        const filtered = logs.filter(entry => {
+            const idx = LEVELS.indexOf(entry.severity);
+            return idx < 0 || idx >= minIdx;
+        });
+
+        return {
+            ok: true,
+            engineType,
+            runtime: timeout,
+            truncated,
+            logs: filtered,
+            output: filtered.map(entry => `[${entry.severity}] ${entry.message}`).join('\n'),
+        };
     }
 
     /**
@@ -2925,14 +3112,18 @@ class JavaScript extends Adapter {
         }
     }
 
-    async stopScript(name: string): Promise<boolean> {
+    async stopScript(name: string, silent?: boolean): Promise<boolean> {
         if (!this.scripts[name]) {
             return false;
         }
 
-        this.log.info(`${name}: Stopping script`);
+        // `silent` is used for ephemeral scripts started via the "execute" message – they have no
+        // `scriptEnabled` state and should not appear in the adapter log.
+        if (!silent) {
+            this.log.info(`${name}: Stopping script`);
 
-        await this.setState(`scriptEnabled.${name.substring(SCRIPT_CODE_MARKER.length)}`, false, true);
+            await this.setState(`scriptEnabled.${name.substring(SCRIPT_CODE_MARKER.length)}`, false, true);
+        }
 
         if (this.messageBusHandlers[name]) {
             delete this.messageBusHandlers[name];
