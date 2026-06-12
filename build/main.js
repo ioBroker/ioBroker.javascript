@@ -2437,7 +2437,11 @@ class JavaScript extends adapter_core_1.Adapter {
         }
         timeout = Math.max(0, Math.min(timeout, 60000));
         const verbose = message?.verbose !== false;
-        const minLevel = LEVELS.includes(message?.logLevel) ? message.logLevel : 'silly';
+        const minLevel = message?.logLevel
+            ? LEVELS.includes(message?.logLevel)
+                ? message.logLevel
+                : 'silly'
+            : 'silly';
         let maxLogs = parseInt(message?.maxLogs, 10);
         if (isNaN(maxLogs) || maxLogs <= 0) {
             maxLogs = 5000;

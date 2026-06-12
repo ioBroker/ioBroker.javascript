@@ -2902,7 +2902,14 @@ class JavaScript extends Adapter {
      * - `timeout` (number ms, optional, default 5000, clamped to 0…60000) – collection window
      * - `maxLogs` (number, optional, default 5000) – cap on returned log lines
      */
-    async executeScript(message: any): Promise<{
+    async executeScript(message: {
+        source: string;
+        engineType?: 'Javascript/js' | 'TypeScript/ts';
+        timeout?: number | string;
+        verbose?: boolean;
+        logLevel?: ioBroker.LogLevel;
+        maxLogs?: number | string;
+    }): Promise<{
         ok: boolean;
         error?: string;
         engineType: 'Javascript/js' | 'TypeScript/ts';
@@ -2913,12 +2920,14 @@ class JavaScript extends Adapter {
     }> {
         const LEVELS: ioBroker.LogLevel[] = ['silly', 'debug', 'info', 'warn', 'error'];
 
-        const source: unknown = message?.source ?? message?.code;
+        const source: unknown = message?.source ?? (message as any)?.code;
         const engineTypeStr = (message?.engineType || '').toString().toLowerCase();
         const isTypeScript = engineTypeStr.startsWith('typescript') || engineTypeStr === 'ts';
         const engineType: 'Javascript/js' | 'TypeScript/ts' = isTypeScript ? 'TypeScript/ts' : 'Javascript/js';
 
-        const empty = (error: string): {
+        const empty = (
+            error: string,
+        ): {
             ok: boolean;
             error: string;
             engineType: 'Javascript/js' | 'TypeScript/ts';
@@ -2943,7 +2952,11 @@ class JavaScript extends Adapter {
         timeout = Math.max(0, Math.min(timeout, 60000));
 
         const verbose = message?.verbose !== false;
-        const minLevel: ioBroker.LogLevel = LEVELS.includes(message?.logLevel) ? message.logLevel : 'silly';
+        const minLevel: ioBroker.LogLevel = message?.logLevel
+            ? LEVELS.includes(message?.logLevel)
+                ? message.logLevel
+                : 'silly'
+            : 'silly';
         let maxLogs = parseInt(message?.maxLogs as string, 10);
         if (isNaN(maxLogs) || maxLogs <= 0) {
             maxLogs = 5000;
