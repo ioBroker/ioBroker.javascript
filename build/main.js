@@ -823,6 +823,10 @@ class JavaScript extends adapter_core_1.Adapter {
     }
     /** Read and decrypt a single AI credential's key from the central store; returns '' (and logs) on error. */
     async readAiCredentialKey(id) {
+        if (!adapter_core_1.Credentials?.getCredentials) {
+            this.log.warn(`Cannot read AI credential "${id}": Credentials API is only with 7.2 js-controller available`);
+            return '';
+        }
         try {
             const cred = await adapter_core_1.Credentials.getCredentials(this, id);
             return (cred?.values?.key || '').trim();
@@ -874,6 +878,10 @@ class JavaScript extends adapter_core_1.Adapter {
         // Always start from a clean state (idempotent — also used to re-subscribe).
         await this.unsubscribeAiCredentials();
         if (this.config.credentialType !== 'manager') {
+            return;
+        }
+        if (!adapter_core_1.Credentials?.subscribeCredentials) {
+            this.log.warn(`Cannot subscribe AI credential: Credentials API is only with 7.2 js-controller available`);
             return;
         }
         // Collect the distinct credential IDs configured across all AI providers.
