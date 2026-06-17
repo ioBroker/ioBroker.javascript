@@ -548,7 +548,13 @@
     "gptBaseUrlKey": "",
     "claudeKey": "",
     "geminiKey": "",
-    "deepseekKey": ""
+    "deepseekKey": "",
+    "credentialType": "manual",
+    "credentialIdGptKey": "",
+    "credentialIdClaudeKey": "",
+    "credentialIdGeminiKey": "",
+    "credentialIdDeepseekKey": "",
+    "credentialIdGptBaseUrlKey": ""
   },
   "encryptedNative": [
     "gptKey",

@@ -124,6 +124,39 @@ export const IOBROKER_TOOLS = [
             },
         },
     },
+    {
+        type: 'function' as const,
+        function: {
+            name: 'run_script',
+            description:
+                'Execute a JavaScript or TypeScript snippet in the live ioBroker javascript engine and get back everything it logged. The code runs with the full script API (log, console.*, setState, getState, on, schedule, $, exec, httpGet, …) in VERBOSE mode, so internal operations (setState/getState/subscribe/…) are logged too — ideal for diagnosing behaviour or inspecting values. The snippet runs for a short window and is then automatically STOPPED and fully cleaned up (timers, subscriptions, schedules removed); it does NOT create a persistent script. Use `log(...)` or `console.log(...)` in the code to surface the values you want to inspect. WARNING: side effects are real (e.g. setState changes actual devices) — prefer read-only diagnostics unless the user explicitly asked to change something.',
+            parameters: {
+                type: 'object',
+                properties: {
+                    source: {
+                        type: 'string',
+                        description:
+                            'The JavaScript (or TypeScript) source to execute. Log the values you want to inspect via log(...) / console.log(...). Top-level await is supported.',
+                    },
+                    engineType: {
+                        type: 'string',
+                        description: 'Optional. "TypeScript/ts" to run the code as TypeScript. Defaults to JavaScript.',
+                    },
+                    timeout: {
+                        type: 'number',
+                        description:
+                            'Optional. Milliseconds to keep the script alive to collect asynchronous logs before it is stopped (default 5000, max 60000). Increase when waiting for timers, subscriptions or HTTP responses.',
+                    },
+                    logLevel: {
+                        type: 'string',
+                        description:
+                            'Optional minimum severity to return: silly, debug, info, warn, error. Default silly (everything).',
+                    },
+                },
+                required: ['source'],
+            },
+        },
+    },
 
     // ─── Monaco editor interaction ──────────────────────────────────────────
     {
@@ -592,12 +625,67 @@ function editorApiMissing(): string {
     });
 }
 
+interface ExecuteResult {
+    ok: boolean;
+    error?: string;
+    engineType?: string;
+    runtime?: number;
+    truncated?: boolean;
+    logs?: { ts: number; severity: string; message: string }[];
+    output?: string;
+}
+
+/**
+ * Run an ad-hoc script in the live javascript engine via the adapter's "execute" message and
+ * return the collected logs. The script is ephemeral – the backend stops and cleans it up after
+ * the collection window.
+ */
+async function runScript(
+    socket: AdminConnection,
+    instanceId: string | undefined,
+    args: Record<string, unknown>,
+): Promise<string> {
+    if (!instanceId) {
+        return JSON.stringify({ error: 'No running javascript instance found to execute the script.' });
+    }
+    const source = args.source;
+    if (!source || typeof source !== 'string') {
+        return JSON.stringify({ error: 'No source code provided.' });
+    }
+    try {
+        const result = (await socket.sendTo(instanceId, 'execute', {
+            source,
+            engineType: args.engineType,
+            timeout: args.timeout,
+            logLevel: args.logLevel,
+        })) as ExecuteResult | null;
+
+        if (!result || result.ok === false) {
+            return JSON.stringify({
+                error: result?.error || 'Execution failed',
+                logs: result?.logs || [],
+            });
+        }
+        return JSON.stringify({
+            engineType: result.engineType,
+            runtime: result.runtime,
+            truncated: result.truncated || false,
+            logCount: result.logs?.length || 0,
+            logs: result.logs || [],
+            output: result.output || '',
+        });
+    } catch (e) {
+        return JSON.stringify({ error: `Failed to execute script: ${e instanceof Error ? e.message : String(e)}` });
+    }
+}
+
 /** Execute a tool call and return the result as a string. */
 export async function executeToolCall(
     socket: AdminConnection,
     toolCall: ToolCall,
     scripts?: ScriptInfo[],
     editorApi?: EditorApi,
+    instanceId?: string,
 ): Promise<string> {
     let args: Record<string, unknown>;
     try {
@@ -625,6 +713,8 @@ export async function executeToolCall(
             return readScript(scripts || [], args.id as string);
         case 'list_scripts':
             return listScripts(scripts || []);
+        case 'run_script':
+            return runScript(socket, instanceId, args);
 
         // ── Monaco editor tools (editorApi may be undefined if the editor isn't mounted) ──
         case 'get_editor_selection': {

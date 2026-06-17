@@ -207,6 +207,69 @@ describe('editor tool handlers', () => {
         });
     });
 
+    describe('run_script', () => {
+        it('sends an "execute" message to the instance and returns the collected logs', async () => {
+            const sendTo = vi.fn().mockResolvedValue({
+                ok: true,
+                engineType: 'Javascript/js',
+                runtime: 5000,
+                truncated: false,
+                logs: [{ ts: 1, severity: 'info', message: 'hello' }],
+                output: '[info] hello',
+            });
+            const socket = { sendTo } as any;
+            const res = JSON.parse(
+                await executeToolCall(
+                    socket,
+                    toolCall('run_script', { source: 'log("hello");' }),
+                    [],
+                    undefined,
+                    'javascript.0',
+                ),
+            );
+            expect(sendTo).toHaveBeenCalledWith('javascript.0', 'execute', {
+                source: 'log("hello");',
+                engineType: undefined,
+                timeout: undefined,
+                logLevel: undefined,
+            });
+            expect(res.logCount).toBe(1);
+            expect(res.output).toBe('[info] hello');
+            expect(res.logs[0].message).toBe('hello');
+        });
+
+        it('reports an error when no instance is available', async () => {
+            const res = JSON.parse(
+                await executeToolCall(stubSocket, toolCall('run_script', { source: 'log(1);' }), [], undefined),
+            );
+            expect(res.error).toContain('No running javascript instance');
+        });
+
+        it('reports an error when no source is provided', async () => {
+            const socket = { sendTo: vi.fn() } as any;
+            const res = JSON.parse(
+                await executeToolCall(socket, toolCall('run_script', {}), [], undefined, 'javascript.0'),
+            );
+            expect(res.error).toContain('No source code');
+        });
+
+        it('surfaces a backend execution error', async () => {
+            const socket = {
+                sendTo: vi.fn().mockResolvedValue({ ok: false, error: 'TypeScript compilation failed', logs: [] }),
+            } as any;
+            const res = JSON.parse(
+                await executeToolCall(
+                    socket,
+                    toolCall('run_script', { source: 'const x: =' }),
+                    [],
+                    undefined,
+                    'javascript.0',
+                ),
+            );
+            expect(res.error).toContain('TypeScript compilation failed');
+        });
+    });
+
     describe('backward compatibility', () => {
         it('existing ioBroker tools still work without editorApi', async () => {
             const res = JSON.parse(await executeToolCall(stubSocket, toolCall('unknown_tool_name'), []));
