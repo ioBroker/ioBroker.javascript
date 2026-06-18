@@ -27,7 +27,7 @@ Executes Javascript, Typescript Scripts.
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 9.3.1 (2026-06-18)
 * (@GermanBluefox) Added the possibility to execute one-way scripts without saving it
 
 ### 9.3.0 (2026-06-17)
@@ -47,9 +47,6 @@ Executes Javascript, Typescript Scripts.
 * (Eistee82) Fix: AI chat mode tooltip no longer covers the dropdown options (issue #2201) — moved tooltip to the left of the selector
 * (Eistee82) Clarified the AI chat mode descriptions in the tooltip: Agent is for larger models with tool support and handles both analysis and script creation, Code is for smaller models without tool support (uses two-step plan-then-code) — translations updated in all 11 languages
 * (@GermanBluefox) Added the "is state exists" block to blockly
-
-### 9.2.1 (2026-04-30)
-* (@GermanBluefox) See previous changelog entries
 
 ## License
 The MIT License (MIT)

@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 9.2.1 (2026-04-30)
+* (@GermanBluefox) See previous changelog entries
+
 ## 9.2.0 (2026-04-30)
 * (@GermanBluefox) Agent keys are encrypted now. You must enter your keys anew!
 * (Eistee82) AI API keys are now stored encrypted and only used server-side (`encryptedNative` + `protectedNative`); the frontend never sees them
