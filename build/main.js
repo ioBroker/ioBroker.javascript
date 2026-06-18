@@ -335,6 +335,7 @@ class JavaScript extends adapter_core_1.Adapter {
     executeCounter = 0;
     // compiler instance for typescript
     tsServer;
+    logCollectors = [];
     ignoreObjectChange = new Set();
     debugState = {
         scriptName: '',
@@ -1461,6 +1462,14 @@ class JavaScript extends adapter_core_1.Adapter {
                 }
             }
         }
+        // Special case if some script is executed now with "execute" command, and we see "script.js.__execute_X:" at the beginning
+        if (this.logCollectors.length) {
+            for (const logCollector of this.logCollectors) {
+                if (msg.message.includes(`${logCollector.name}:`)) {
+                    logCollector.collector(msg.severity, msg.message);
+                }
+            }
+        }
     }
     logError(scriptName, msg, e, offs) {
         const stack = e.stack ? e.stack.toString().split('\n') : e ? e.toString() : '';
@@ -2370,19 +2379,7 @@ class JavaScript extends adapter_core_1.Adapter {
                 expire: 1000,
             });
         }
-        const sandbox = (0, sandbox_1.sandBox)(script, name, verbose, debug, this.context);
-        // Redirect every log line into the collector. As `console.*`, the global `log()` and all
-        // `sandbox.verbose && sandbox.log(...)` calls go through `sandbox.log`, this captures the
-        // full picture for the caller while keeping the adapter log clean.
-        if (logCollector) {
-            sandbox.log = (msg, severity) => {
-                let text = msg;
-                if (text && typeof text !== 'string') {
-                    text = util.format(text);
-                }
-                logCollector(severity || 'info', text);
-            };
-        }
+        const sandbox = (0, sandbox_1.sandBox)(script, name, verbose, debug, this.context, logCollector);
         try {
             script.script.runInNewContext(sandbox, {
                 filename: name,
@@ -2488,6 +2485,8 @@ class JavaScript extends adapter_core_1.Adapter {
             }
             logs.push({ ts: Date.now(), severity, message: msg });
         };
+        this.logCollectors.push({ name, collector });
+        this.updateLogSubscriptions();
         this.scripts[name] = createdScript;
         this.execute(createdScript, name, engineType, verbose, false, collector);
         // Let asynchronous output (timeouts, awaited code, triggered subscriptions) accumulate
@@ -2496,6 +2495,11 @@ class JavaScript extends adapter_core_1.Adapter {
         }
         // Stop and clean up the ephemeral script (timers, subscriptions, schedules, …)
         await this.stopScript(name, true);
+        const pos = this.logCollectors.findIndex(it => it.name === name);
+        if (pos !== -1) {
+            this.logCollectors.splice(pos, 1);
+        }
+        this.updateLogSubscriptions();
         const minIdx = LEVELS.indexOf(minLevel);
         const filtered = logs.filter(entry => {
             const idx = LEVELS.indexOf(entry.severity);
@@ -2584,26 +2588,31 @@ class JavaScript extends adapter_core_1.Adapter {
     }
     // Analyze if logs are still required or not
     updateLogSubscriptions() {
-        let found = false;
-        // go through all scripts and check if some script still requires logs
-        Object.keys(this.logSubscriptions).forEach(scriptName => {
-            if (!this.logSubscriptions?.[scriptName] || !this.logSubscriptions[scriptName].length) {
-                delete this.logSubscriptions[scriptName];
-            }
-            else {
-                found = true;
-            }
-        });
+        let found = '';
+        if (this.logCollectors.length) {
+            found = this.logCollectors[0].name;
+        }
+        else {
+            // go through all scripts and check if some script still requires logs
+            Object.keys(this.logSubscriptions).forEach(scriptName => {
+                if (!this.logSubscriptions?.[scriptName] || !this.logSubscriptions[scriptName].length) {
+                    delete this.logSubscriptions[scriptName];
+                }
+                else {
+                    found = scriptName;
+                }
+            });
+        }
         if (this.requireLog) {
             if (found && !this.logSubscribed) {
                 this.logSubscribed = true;
                 void this.requireLog(this.logSubscribed);
-                this.log.info(`Subscribed to log messages (found logSubscriptions)`);
+                this.log.info(`Subscribed to log messages (at least because of ${found})`);
             }
             else if (!found && this.logSubscribed) {
                 this.logSubscribed = false;
                 void this.requireLog(this.logSubscribed);
-                this.log.info(`Unsubscribed from log messages (not found logSubscriptions)`);
+                this.log.info(`Unsubscribed from log messages (not found any subscribers)`);
             }
         }
     }
