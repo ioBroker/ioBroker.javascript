@@ -150,8 +150,6 @@ export interface JsScript {
     setStatePerMinuteProblemCounter: number;
 }
 
-export type LogMessage = any;
-
 export type AstroRule = {
     astro: AstroEvent;
     shift: number;
@@ -183,7 +181,9 @@ export type SandboxType = {
     $: (selector: string) => any;
     log: (msg: string, severity?: ioBroker.LogLevel) => void;
     onLog: (severity: ioBroker.LogLevel, callback: (info: any) => void) => number;
-    onLogUnregister: (idOrCallbackOrSeverity: number | ((msg: string) => void)) => void;
+    onLogUnregister: (
+        idOrCallbackOrSeverity: number | ioBroker.LogLevel | ((info: ioBroker.LogMessage) => void),
+    ) => void;
     exec: (
         cmd: string,
         options: ExecOptions | ((error: Error | null | string, stdout?: string, stderr?: string) => void),
@@ -744,7 +744,7 @@ export interface JavascriptContext {
         string,
         {
             sandbox: SandboxType;
-            cb: (info: LogMessage) => void;
+            cb: (info: ioBroker.LogMessage) => void;
             id: number;
             severity: ioBroker.LogLevel | '*';
         }[]

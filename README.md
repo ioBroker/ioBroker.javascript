@@ -27,9 +27,11 @@ Executes Javascript, Typescript Scripts.
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Added the possibility to execute one-way scripts without saving it
+
 ### 9.3.0 (2026-06-17)
 * (@GermanBluefox) Implemented the support for credentials manager in the configuration
-* (@GermanBluefox) Added the possiblilty to execute scripts from AI agent
 
 ### 9.2.4 (2026-06-08)
 * (arteck) Performance optimizations part 2

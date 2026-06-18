@@ -15,7 +15,6 @@ import type {
     IobSchedule,
     JavascriptContext,
     JsScript,
-    LogMessage,
     Pattern,
     PushoverOptions,
     SandboxType,
@@ -107,6 +106,7 @@ export function sandBox(
     verbose: boolean | undefined,
     debug: boolean | undefined,
     context: JavascriptContext,
+    logCollector?: ((severity: ioBroker.LogLevel, message: string) => void) | null,
 ): SandboxType {
     const consts = constsMod;
     const words = wordsMod;
@@ -1269,7 +1269,7 @@ export function sandBox(
             return result;
         },
         log: function (msg: string, severity?: ioBroker.LogLevel): void {
-            severity = severity || 'info';
+            severity ||= 'info';
 
             // disable log in log handler (prevent endless loops)
             if (sandbox.logHandler && (sandbox.logHandler === severity || sandbox.logHandler === '*')) {
@@ -1285,13 +1285,15 @@ export function sandBox(
                 msg = mods.util.format(msg);
             }
 
-            if (debugMode) {
+            if (logCollector) {
+                logCollector(severity, msg);
+            } else if (debugMode) {
                 console.log(`${severity}$$${name}$$${msg}`, Date.now());
             } else {
                 adapter.log[severity](`${name}: ${msg}`);
             }
         },
-        onLog: function (severity: ioBroker.LogLevel, callback: (info: LogMessage) => void): number {
+        onLog: function (severity: ioBroker.LogLevel, callback: (info: ioBroker.LogMessage) => void): number {
             if (!['info', 'error', 'debug', 'silly', 'warn', '*'].includes(severity)) {
                 sandbox.log(`Unknown severity "${severity}"`, 'warn');
                 return 0;
@@ -1308,11 +1310,12 @@ export function sandBox(
 
             sandbox.__engine.__subscriptionsLog += 1;
 
-            sandbox.verbose &&
+            if (sandbox.verbose) {
                 sandbox.log(
                     `onLog(severity=${severity}, id=${handler.id}) - logSubscriptions=${sandbox.__engine.__subscriptionsLog}`,
                     'info',
                 );
+            }
 
             if (
                 sandbox.__engine.__subscriptionsLog %
@@ -1328,16 +1331,17 @@ export function sandBox(
             return handler.id;
         },
         onLogUnregister: function (
-            idOrCallbackOrSeverity: number | ioBroker.LogLevel | ((info: LogMessage) => void),
+            idOrCallbackOrSeverity: number | ioBroker.LogLevel | ((info: ioBroker.LogMessage) => void),
         ): boolean {
             let found = false;
 
             if (context.logSubscriptions?.[sandbox.scriptName]) {
-                sandbox.verbose &&
+                if (sandbox.verbose) {
                     sandbox.log(
                         `onLogUnregister(idOrCallbackOrSeverity=${JSON.stringify(idOrCallbackOrSeverity)}) - logSubscriptions=${sandbox.__engine.__subscriptionsLog}`,
                         'info',
                     );
+                }
 
                 for (let i = 0; i < context.logSubscriptions[sandbox.scriptName].length; i++) {
                     if (
@@ -1345,11 +1349,12 @@ export function sandBox(
                         context.logSubscriptions[sandbox.scriptName][i].id === idOrCallbackOrSeverity ||
                         context.logSubscriptions[sandbox.scriptName][i].severity === idOrCallbackOrSeverity
                     ) {
-                        sandbox.verbose &&
+                        if (sandbox.verbose) {
                             sandbox.log(
                                 `onLogUnregister(idOrCallbackOrSeverity=${JSON.stringify(idOrCallbackOrSeverity)}, removing id=${context.logSubscriptions[sandbox.scriptName][i].id})`,
                                 'info',
                             );
+                        }
 
                         context.logSubscriptions[sandbox.scriptName].splice(i, 1);
                         i--;
@@ -1361,12 +1366,11 @@ export function sandBox(
                         if (typeof idOrCallbackOrSeverity === 'number') {
                             break;
                         }
-                    } else {
-                        sandbox.verbose &&
-                            sandbox.log(
-                                `onLogUnregister(idOrCallbackOrSeverity=${JSON.stringify(idOrCallbackOrSeverity)}) NOT = ${JSON.stringify(context.logSubscriptions[sandbox.scriptName][i])}`,
-                                'info',
-                            );
+                    } else if (sandbox.verbose) {
+                        sandbox.log(
+                            `onLogUnregister(idOrCallbackOrSeverity=${JSON.stringify(idOrCallbackOrSeverity)}) NOT = ${JSON.stringify(context.logSubscriptions[sandbox.scriptName][i])}`,
+                            'info',
+                        );
                     }
                 }
             }
@@ -4077,11 +4081,12 @@ export function sandBox(
 
             // If specific instance
             if (_adapter.match(/\.[0-9]+$/)) {
-                sandbox.verbose &&
+                if (sandbox.verbose) {
                     sandbox.log(
                         `sendTo(instance=${_adapter}, cmd=${cmd}, msg=${JSON.stringify(msg)}, hasCallback=${typeof callback === 'function'})`,
                         'info',
                     );
+                }
 
                 adapter.sendTo(_adapter, cmd, msg, cbFunc, options);
             } else {
@@ -4089,11 +4094,12 @@ export function sandBox(
                 const cached = context.sendToInstanceCache.get(_adapter);
                 if (cached) {
                     cached.forEach(instance => {
-                        sandbox.verbose &&
+                        if (sandbox.verbose) {
                             sandbox.log(
                                 `sendTo(instance=${instance}, cmd=${cmd}, msg=${JSON.stringify(msg)}, hasCallback=${typeof callback === 'function'}) [cached]`,
                                 'info',
                             );
+                        }
                         adapter.sendTo(instance, cmd, msg, cbFunc, options);
                     });
                 } else {
@@ -4121,11 +4127,12 @@ export function sandBox(
                             context.sendToInstanceCache.set(_adapter, instances);
 
                             instances.forEach(instance => {
-                                sandbox.verbose &&
+                                if (sandbox.verbose) {
                                     sandbox.log(
                                         `sendTo(instance=${instance}, cmd=${cmd}, msg=${JSON.stringify(msg)}, hasCallback=${typeof callback === 'function'})`,
                                         'info',
                                     );
+                                }
                                 adapter.sendTo(instance, cmd, msg, cbFunc, options);
                             });
                         },
