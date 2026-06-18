@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "9.2.4",
+    "version": "9.3.0",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "9.3.0": {
+        "en": "Implemented the support for credentials manager in the configuration\nAdded the possiblilty to execute scripts from AI agent",
+        "de": "Die Unterstützung für den Anmeldeinformationsmanager wurde in der Konfiguration implementiert.\nEs wurde die Möglichkeit hinzugefügt, Skripte vom KI-Agenten auszuführen.",
+        "ru": "В конфигурацию добавлена поддержка менеджера учетных данных.\nДобавлена возможность выполнения скриптов из ИИ-агента.",
+        "pt": "Implementei o suporte para o gerenciador de credenciais na configuração.\nAdicionada a possibilidade de executar scripts a partir de um agente de IA.",
+        "nl": "De ondersteuning voor de referentiebeheerder is geïmplementeerd in de configuratie.\nDe mogelijkheid om scripts uit te voeren via een AI-agent is toegevoegd.",
+        "fr": "La prise en charge du gestionnaire d'identifiants a été implémentée dans la configuration.\nAjout de la possibilité d'exécuter des scripts depuis un agent d'IA",
+        "it": "Implementato il supporto per il gestore delle credenziali nella configurazione\nAggiunta la possibilità di eseguire script dall'agente IA",
+        "es": "Se implementó la compatibilidad con el administrador de credenciales en la configuración.\nSe agregó la posibilidad de ejecutar scripts desde el agente de IA.",
+        "pl": "Wprowadzono obsługę menedżera poświadczeń w konfiguracji\nDodano możliwość wykonywania skryptów z poziomu agenta AI",
+        "uk": "Реалізовано підтримку менеджера облікових даних у конфігурації\nДодано можливість виконання скриптів з агента штучного інтелекту",
+        "zh-cn": "在配置中实现了对凭据管理器的支持\n增加了从 AI 代理执行脚本的功能。"
+      },
       "9.2.4": {
         "en": "Performance optimizations part 2\nfix filter in tab scripts\nFixed a subscription leak on script stop for RegExp-notation string ids (dispatch index)\n`extendObject` no longer throws into the script when the object contains non-clonable values (e.g. functions)",
         "de": "Performance Optimierungen Teil 2\nfix-filter in tab-scripts\nBehebung eines Abonnementlecks bei Skriptstopp für RegExp-Notation String-IDs (Dispatch-Index)\n`extendObject` wirft nicht mehr in das Skript, wenn das Objekt nicht-klonbare Werte (z.B. Funktionen) enthält",
@@ -117,19 +130,6 @@
         "pl": "Małe optymalizacje GUI\nDodano obsługę własnych punktów końcowych kompatybilnych z OpenAI (np. Ollama, LM Studio, Google Gemini, DeepSeek, OpenRouter)\nDodano konfigurowalny podstawowy adres URL w ustawieniach adaptera\nModele są teraz odbierane dynamicznie z skonfigurowanego punktu końcowego API\nDodano przycisk \"Test API connection\" w ustawieniach adaptera\nDodano obsługę błędów z komunikatami przyjaznymi dla użytkownika dla nieosiągalnych dostawców\nDodano funkcję ponownego testowania dla nieudanego obciążenia modelu\nWszystkie połączenia API (modele + czat) są proxied server- side, aby uniknąć problemów CORS z lokalnymi dostawcami\nStrip LLM myśli artefakty z odpowiedzi (dla lokalnych modeli takich jak Ollama)",
         "uk": "Малі оптимізації інтерфейсу\nДодано підтримку користувацького OpenAI-сумісного API endpoints (наприклад, Ollama, LM Studio, Google Gemini, DeepSeek, OpenRouter)\nДодано налаштування URL-адреси бази в налаштуваннях адаптера\nМоделі тепер динамічно від налаштованої точки API\nДодано кнопку \"Test API підключення\" в налаштуваннях адаптера\nДодана обробка помилок з зручними повідомленнями для ненадійних постачальників\nДодано функцію трейдингу для завантаження моделі\nУсі виклики API (модельи + чат) проксіовані сервери, щоб уникнути проблем з локальними постачальниками\nСмуга LLM мислення артефакти відповідей (для місцевих моделей, таких як Ollama)",
         "zh-cn": "小图形界面优化\n添加自定义的 OpenAI 兼容 API 端点支持( 如 Ollama, LM Studio, Google 双子座, DeepSeek, OpenRouter)\n在适配器设置中添加可配置的基础 URL\n现在从配置的 API 端点动态获取模型\n在适配器设置中添加“ 测试 API 连接” 按钮\n为无法访问的提供者处理方便用户的信件时添加错误处理\n为失败的模型加载添加了重试功能\n所有 API 呼叫( 模式 + 聊天) 均为代理服务器侧面, 以避免 CORS 与本地供应商发生问题\n从回应中脱去LLM思考文物(为奥拉马等本地模型)"
-      },
-      "9.0.18": {
-        "en": "Corrected error message with `lastSync`\nCorrected JavaScript filter",
-        "de": "Korrigierte Fehlermeldung mit `last Synthetisch `\nJavaScript-Filter korrigiert",
-        "ru": "Исправленное сообщение об ошибке с \"последним\" синхронизация пункт\nИсправленный фильтр JavaScript",
-        "pt": "Mensagem de erro corrigida com ` last Sincronizar `\nFiltro JavaScript corrigido",
-        "nl": "Gecorrigeerde foutmelding met de laatste Synchroniseren Wat\nGecorrigeerd JavaScript filter",
-        "fr": "Message d'erreur corrigé avec `dernier Synchronisation \"\nFiltre JavaScript corrigé",
-        "it": "Messaggio di errore corretto con `ultimo Traduzione: #\nFiltro JavaScript corretto",
-        "es": "Mensaje de error corregido con `último Sync `\nFiltro de JavaScript corregido",
-        "pl": "Poprawiony komunikat błędu z 'last Sync'\nPoprawiony filtr JavaScript",
-        "uk": "Виправлено повідомлення про помилку з `last Синхронізація й\nВиправлений JavaScript-фільтр",
-        "zh-cn": "更正错误消息为“ last 同步 `\n已更正的 JavaScript 过滤器"
       }
     },
     "platform": "Javascript/Node.js",
