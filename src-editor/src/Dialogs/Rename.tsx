@@ -24,6 +24,8 @@ interface DialogRenameProps {
     id: string;
     instance: number | null;
     instances: number[];
+    /** Maps an instance number to the host it runs on */
+    instanceHosts?: Record<number, string>;
     folder: boolean;
 }
 
@@ -87,6 +89,8 @@ class DialogRename extends React.Component<DialogRenameProps, DialogRenameState>
     };
 
     render(): React.JSX.Element {
+        const instanceHosts = this.props.instanceHosts || {};
+
         return (
             <Dialog
                 onClose={() => false}
@@ -136,14 +140,22 @@ class DialogRename extends React.Component<DialogRenameProps, DialogRenameState>
                                     onChange={e => this.setState({ instance: parseInt(e.target.value as string, 10) })}
                                     inputProps={{ name: 'instance', id: 'instance' }}
                                 >
-                                    {this.props.instances.map(instance => (
-                                        <MenuItem
-                                            key={instance}
-                                            value={instance}
-                                        >
-                                            {instance || '0'}
-                                        </MenuItem>
-                                    ))}
+                                    {this.props.instances.map(instance => {
+                                        const host = instanceHosts[instance];
+                                        return (
+                                            <MenuItem
+                                                key={instance}
+                                                value={instance}
+                                            >
+                                                {instance || '0'}
+                                                {host ? (
+                                                    <span style={{ opacity: 0.6, marginLeft: 8, fontSize: 'smaller' }}>
+                                                        {`@ ${host}`}
+                                                    </span>
+                                                ) : null}
+                                            </MenuItem>
+                                        );
+                                    })}
                                 </Select>
                             </FormControl>
                         )}

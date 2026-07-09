@@ -1,7 +1,7 @@
 {
     "name": "iobroker-admin-component-javascript",
     "private": true,
-    "version": "9.3.0",
+    "version": "9.3.1",
     "type": "module",
     "scripts": {
         "start": "vite --port 4173",

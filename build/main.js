@@ -948,7 +948,9 @@ class JavaScript extends adapter_core_1.Adapter {
                             this.messageBusHandlers[name][obj.message.message]) {
                             this.messageBusHandlers[name][obj.message.message].forEach(handler => {
                                 const sandbox = handler.sandbox;
-                                sandbox.verbose && sandbox.log(`onMessage: ${JSON.stringify(obj.message)}`, 'info');
+                                if (sandbox.verbose) {
+                                    sandbox.log(`onMessage: ${JSON.stringify(obj.message)}`, 'info');
+                                }
                                 try {
                                     if (obj.callback) {
                                         handler.cb.call(sandbox, obj.message.data, (result) => {
@@ -960,8 +962,9 @@ class JavaScript extends adapter_core_1.Adapter {
                                     }
                                     else {
                                         handler.cb.call(sandbox, obj.message.data, (result) => {
-                                            sandbox.verbose &&
+                                            if (sandbox.verbose) {
                                                 sandbox.log(`onMessage result: ${JSON.stringify(result)}`, 'info');
+                                            }
                                         });
                                     }
                                 }

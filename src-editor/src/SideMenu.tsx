@@ -504,6 +504,7 @@ interface SideDrawerProps {
     onImport?: () => void;
     onRename: (oldId: string, newId: string, newName?: string, newInstance?: number) => void;
     instances: number[];
+    instanceHosts: Record<number, string>;
     scripts: Record<string, ioBroker.ScriptObject | ioBroker.ChannelObject>;
     runningInstances: Record<string, boolean>;
     expertMode: boolean;
@@ -2175,6 +2176,7 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
                     folder={renamingItem.type === 'folder'}
                     instance={(renamingItem as ListElementScript).instance}
                     instances={this.props.instances}
+                    instanceHosts={this.props.instanceHosts}
                     onClose={() => this.setState({ renaming: null })}
                     onRename={(oldId, newId, newName, newInstance) =>
                         this.props.onRename && this.props.onRename(oldId, newId, newName, newInstance)
