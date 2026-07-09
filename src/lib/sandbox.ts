@@ -3,8 +3,6 @@ import * as jsonataMod from 'jsonata';
 import type { SendMailOptions } from 'nodemailer';
 import type { AxiosError, AxiosHeaderValue, AxiosResponse, ResponseType } from 'axios';
 
-import { commonTools } from '@iobroker/adapter-core';
-
 import { isObject, isArray, promisify, getHttpRequestConfig } from './tools';
 import type {
     JavaScriptAdapterConfig,
@@ -36,8 +34,6 @@ import type { AstroEvent } from './consts';
 
 const SCRIPT_CODE_MARKER = 'script.js.';
 
-const pattern2RegEx = commonTools.pattern2RegEx;
-
 // Pre-compiled RegExp constants for formatTimeDiff – avoids recompiling on every call
 const FTD_TEST_D = /(?<!\\)[DTД]/;
 const FTD_REPL_DD = /(?<!\\)(?:DD|TT|ДД)/g;
@@ -66,6 +62,42 @@ const _selectorRegExpCache = new Map<string, RegExp>();
 
 /** Monotonically increasing handler-ID counter – avoids Date.now()+random collisions */
 let _handlerIdCounter = 1;
+
+/** All characters that may not appear in an object ID. */
+export const FORBIDDEN_CHARS = /[^._\-/ :!#$%&()+=@^{}|~\p{Ll}\p{Lu}\p{Nd}]+/gu;
+
+/**
+ * Checks if a pattern is valid
+ *
+ * @param pattern The pattern to check for validity
+ */
+export function isValidPattern(pattern: string): boolean {
+    pattern = pattern.replace(/\*/g, '');
+
+    return !FORBIDDEN_CHARS.test(pattern);
+}
+/**
+ * Converts ioB pattern into regex.
+ *
+ * This funtion was copied from js-controller, as for the tests it is required, that function must be defined here.
+ * Else the adapter-core tries to find js-controller and it is not installed.
+ *
+ * @param pattern - Regex string to use it in new RegExp(pattern)
+ */
+export function pattern2RegEx(pattern: string): string {
+    pattern = (pattern || '').toString();
+
+    if (!isValidPattern(pattern)) {
+        throw new Error(`The pattern "${pattern}" is not a valid ID pattern`);
+    }
+
+    const startsWithWildcard = pattern[0] === '*';
+    const endsWithWildcard = pattern[pattern.length - 1] === '*';
+
+    pattern = pattern.replace(/[-/\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '.*');
+
+    return (startsWithWildcard ? '' : '^') + pattern + (endsWithWildcard ? '' : '$');
+}
 
 /** Returns true when patId is a plain exact state-ID (no wildcards, no RegExp notation). */
 export function isExactId(patId: unknown): patId is string {
@@ -1680,11 +1712,12 @@ export function sandBox(
                 );
                 context.tempDirectories[sandbox.scriptName] = tempDirPath;
 
-                sandbox.verbose &&
+                if (sandbox.verbose) {
                     sandbox.log(
                         `createTempFile(fileName=${fileName}, tempDirPath=${tempDirPath}) created temp directory in ${os.tmpdir()}`,
                         'info',
                     );
+                }
             }
 
             const filePath = path.join(tempDirPath, fileName);
@@ -1705,8 +1738,9 @@ export function sandBox(
             }
 
             fs.writeFileSync(filePath, data);
-            sandbox.verbose &&
+            if (sandbox.verbose) {
                 sandbox.log(`createTempFile(fileName=${fileName}, fileDir=${fileDir}, filePath=${filePath})`, 'info');
+            }
 
             return filePath;
         },
@@ -2047,11 +2081,12 @@ export function sandBox(
                         }
                     }
 
-                    sandbox.verbose &&
+                    if (sandbox.verbose) {
                         sandbox.log(
                             `onEnumMembers(id=${enumId}, members=${JSON.stringify(Object.keys(subscriptions))})`,
                             'info',
                         );
+                    }
                 };
 
                 init();
@@ -2116,11 +2151,12 @@ export function sandBox(
 
             sandbox.__engine.__subscriptionsFile += 1;
 
-            sandbox.verbose &&
+            if (sandbox.verbose) {
                 sandbox.log(
                     `onFile(id=${id}, fileNamePattern=${fileNamePattern}) - fileSubscriptions=${sandbox.__engine.__subscriptionsFile}`,
                     'info',
                 );
+            }
 
             if (
                 sandbox.__engine.__subscriptionsFile %
@@ -2150,8 +2186,9 @@ export function sandBox(
                 fileRegEx,
                 callback: (id: string, fileName: string, size: number | null, withFile: boolean): void => {
                     try {
-                        sandbox.verbose &&
+                        if (sandbox.verbose) {
                             sandbox.log(`onFile changed(id=${id}, fileName=${fileName}, size=${size})`, 'info');
+                        }
 
                         if (withFile && (size || 0) > 0) {
                             adapter
@@ -2190,11 +2227,12 @@ export function sandBox(
                 return false;
             }
 
-            sandbox.verbose &&
+            if (sandbox.verbose) {
                 sandbox.log(
                     `offFile(idOrObject=${JSON.stringify(idOrObject)}, fileNamePattern=${JSON.stringify(fileNamePattern)}) - fileSubscriptions=${sandbox.__engine.__subscriptionsFile}`,
                     'info',
                 );
+            }
 
             if (idOrObject && typeof idOrObject === 'object') {
                 if (Array.isArray(idOrObject)) {
@@ -2212,11 +2250,12 @@ export function sandBox(
                             context.subscriptionsFile[i].fileNamePattern,
                         );
 
-                        sandbox.verbose &&
+                        if (sandbox.verbose) {
                             sandbox.log(
                                 `offFile(type=object, fileNamePattern=${JSON.stringify(fileNamePattern)}, removing id=${context.subscriptionsFile[i].id})`,
                                 'info',
                             );
+                        }
 
                         context.subscriptionsFile.splice(i, 1);
                         sandbox.__engine.__subscriptionsFile--;
@@ -2247,11 +2286,12 @@ export function sandBox(
                         context.subscriptionsFile[i].fileNamePattern,
                     );
 
-                    sandbox.verbose &&
+                    if (sandbox.verbose) {
                         sandbox.log(
                             `offFile(type=string, fileNamePattern=${fileNamePattern}, removing id=${context.subscriptionsFile[i].id})`,
                             'info',
                         );
+                    }
 
                     context.subscriptionsFile.splice(i, 1);
                     sandbox.__engine.__subscriptionsFile--;
@@ -2302,11 +2342,12 @@ export function sandBox(
                 (typeof pattern === 'string' && pattern[0] === '{') ||
                 (typeof pattern === 'object' && (pattern as SchedulerRule).period)
             ) {
-                sandbox.verbose &&
+                if (sandbox.verbose) {
                     sandbox.log(
                         `schedule(wizard=${typeof pattern === 'object' ? JSON.stringify(pattern) : pattern})`,
                         'info',
                     );
+                }
 
                 if (!context.scheduler) {
                     sandbox.log(
@@ -2419,11 +2460,12 @@ export function sandBox(
                         );
                     }
 
-                    sandbox.verbose &&
+                    if (sandbox.verbose) {
                         sandbox.log(
                             `schedule(astro=${astroPattern.astro}, offset=${astroPattern.shift}) is tomorrow, waiting until ${date.toISOString()}`,
                             'info',
                         );
+                    }
 
                     // Calculate new schedule in the next day
                     sandbox.setTimeout(() => {
@@ -2460,11 +2502,12 @@ export function sandBox(
                     }, 2000);
                 }, ts.getTime() - Date.now());
 
-                sandbox.verbose &&
+                if (sandbox.verbose) {
                     sandbox.log(
                         `schedule(astro=${astroPattern.astro}, offset=${astroPattern.shift}) is today, waiting until ${ts.toISOString()}`,
                         'info',
                     );
+                }
             } else {
                 // fix a problem with sunday and 7
                 if (typeof pattern === 'string') {
@@ -2557,11 +2600,12 @@ export function sandBox(
                         const cronExp = `${s ?? '0'} ${m ?? '0'} ${h ?? '0'} * * *`;
 
                         if (cronExp !== currentExp) {
-                            sandbox.verbose &&
+                            if (sandbox.verbose) {
                                 sandbox.log(
                                     `scheduleById(id=${id}): Init with expression ${cronExp} from ${time}`,
                                     'info',
                                 );
+                            }
                             currentExp = cronExp;
 
                             if (scheduleId) {
@@ -2609,8 +2653,9 @@ export function sandBox(
 
             sandbox.on(triggerDef, obj => {
                 if (obj?.state?.val) {
-                    sandbox.verbose &&
+                    if (sandbox.verbose) {
                         sandbox.log(`scheduleById(id=${id}): Update with value ${obj.state.val}`, 'info');
+                    }
                     init(obj.state.val.toString());
                 }
             });
@@ -2803,16 +2848,18 @@ export function sandBox(
                 id = `${adapter.namespace}.${id}`;
             }
 
-            sandbox.verbose &&
+            if (sandbox.verbose) {
                 sandbox.log(
                     `setStateDelayed(id=${id}, state=${JSON.stringify(state)}, isAck=${isAck}, delay=${delay}, clearRunning=${clearRunning})`,
                     'info',
                 );
+            }
 
             if (clearRunning) {
                 if (timers[id]) {
-                    sandbox.verbose &&
+                    if (sandbox.verbose) {
                         sandbox.log(`setStateDelayed: clear ${timers[id].length} running timers`, 'info');
+                    }
 
                     // collect affected scriptNames before deleting
                     const affectedScripts = new Set<string>(timers[id].map(e => e.scriptName));
@@ -3113,21 +3160,23 @@ export function sandBox(
                     );
                 } else {
                     if (states[id]) {
-                        sandbox.verbose &&
+                        if (sandbox.verbose) {
                             sandbox.log(
                                 `getState(id=${id}, timerId=${JSON.stringify(timers[id])}) => ${JSON.stringify(states[id])}`,
                                 'info',
                             );
+                        }
                         if (context.interimStateValues[id] !== undefined) {
                             return context.convertBackStringifiedValues(id, context.interimStateValues[id]);
                         }
                         return context.convertBackStringifiedValues(id, states[id]);
                     } else if (states[`${adapter.namespace}.${id}`]) {
-                        sandbox.verbose &&
+                        if (sandbox.verbose) {
                             sandbox.log(
                                 `getState(id=${id}, timerId=${JSON.stringify(timers[id])}) => ${JSON.stringify(states[`${adapter.namespace}.${id}`])}`,
                                 'info',
                             );
+                        }
                         if (context.interimStateValues[`${adapter.namespace}.${id}`] !== undefined) {
                             return context.convertBackStringifiedValues(
                                 id,
@@ -3206,11 +3255,12 @@ export function sandBox(
             }
         },
         getIdByName: function (name: string, alwaysArray?: boolean): string | string[] | null {
-            sandbox.verbose &&
+            if (sandbox.verbose) {
                 sandbox.log(
                     `getIdByName(name=${name}, alwaysArray=${alwaysArray}) => ${JSON.stringify(context.names[name])}`,
                     'info',
                 );
+            }
             if (Object.prototype.hasOwnProperty.call(context.names, name)) {
                 if (alwaysArray) {
                     return !Array.isArray(context.names[name]) ? [context.names[name]] : context.names[name];
@@ -3256,14 +3306,16 @@ export function sandBox(
                         sandbox.log(`Object "${id}" can't be copied: ${JSON.stringify(err)}`, 'error');
                         return cb(null, null);
                     }
-                    sandbox.verbose &&
+                    if (sandbox.verbose) {
                         sandbox.log(`getObject(id=${id}, enumName=${enumName}) => ${JSON.stringify(result)}`, 'info');
+                    }
                     cb(err, result);
                 });
             } else {
                 if (!objects[id]) {
-                    sandbox.verbose &&
+                    if (sandbox.verbose) {
                         sandbox.log(`getObject(id=${id}, enumName=${enumName}) => does not exist`, 'info');
+                    }
                     sandbox.log(`Object "${id}" does not exist`, 'warn');
                     return null;
                 }
@@ -3284,8 +3336,9 @@ export function sandBox(
                             }
                         }
                     }
-                    sandbox.verbose &&
+                    if (sandbox.verbose) {
                         sandbox.log(`getObject(id=${id}, enumName=${enumName}) => ${JSON.stringify(obj)}`, 'info');
+                    }
 
                     return obj;
                 }
@@ -3301,8 +3354,9 @@ export function sandBox(
                     sandbox.log(`Object "${id}" can't be copied: ${JSON.stringify(err)}`, 'error');
                     return null;
                 }
-                sandbox.verbose &&
+                if (sandbox.verbose) {
                     sandbox.log(`getObject(id=${id}, enumName=${enumName}) => ${JSON.stringify(result)}`, 'info');
+                }
                 return result;
             }
         },
@@ -4172,8 +4226,9 @@ export function sandBox(
                     });
                 }
             } else {
-                sandbox.verbose &&
+                if (sandbox.verbose) {
                     sandbox.log(`sendToHost(adapter=${host}, cmd=${cmd}, msg=${JSON.stringify(msg)})`, 'info');
+                }
                 adapter.sendToHost(host, cmd, msg, callback);
             }
         },
@@ -4673,8 +4728,9 @@ export function sandBox(
                     .replace(FTD_REPL_SS, seconds.toString().padStart(2, '0'))
                     .replace(FTD_REPL_S, seconds.toString());
 
-                sandbox.verbose &&
+                if (sandbox.verbose) {
                     sandbox.log(`formatTimeDiff(format=${format}, text=${text}, seconds=${seconds})`, 'debug');
+                }
             }
 
             for (const [pattern, replacement] of FTD_UNESCAPE) {
@@ -4851,8 +4907,9 @@ export function sandBox(
                     }, 0);
                 }
             } else {
-                sandbox.verbose &&
+                if (sandbox.verbose) {
                     sandbox.log(`rename(adapter=${_adapter}, oldName=${oldName}, newName=${newName})`, 'info');
+                }
                 if (callback) {
                     adapter.rename(_adapter, oldName, newName, callback);
                 } else {

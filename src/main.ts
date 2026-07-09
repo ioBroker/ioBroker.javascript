@@ -1115,7 +1115,9 @@ class JavaScript extends Adapter {
                             this.messageBusHandlers[name][obj.message.message].forEach(handler => {
                                 const sandbox = handler.sandbox;
 
-                                sandbox.verbose && sandbox.log(`onMessage: ${JSON.stringify(obj.message)}`, 'info');
+                                if (sandbox.verbose) {
+                                    sandbox.log(`onMessage: ${JSON.stringify(obj.message)}`, 'info');
+                                }
 
                                 try {
                                     if (obj.callback) {
@@ -1128,8 +1130,9 @@ class JavaScript extends Adapter {
                                         });
                                     } else {
                                         handler.cb.call(sandbox, obj.message.data, (result: any) => {
-                                            sandbox.verbose &&
+                                            if (sandbox.verbose) {
                                                 sandbox.log(`onMessage result: ${JSON.stringify(result)}`, 'info');
+                                            }
                                         });
                                     }
                                 } catch (err: unknown) {
