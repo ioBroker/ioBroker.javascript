@@ -33,18 +33,19 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.FORBIDDEN_CHARS = void 0;
+exports.isValidPattern = isValidPattern;
+exports.pattern2RegEx = pattern2RegEx;
 exports.isExactId = isExactId;
 exports.removeFromDispatchIndex = removeFromDispatchIndex;
 exports.sandBox = sandBox;
 const jsonataMod = __importStar(require("jsonata"));
-const adapter_core_1 = require("@iobroker/adapter-core");
 const tools_1 = require("./tools");
 const constsMod = __importStar(require("./consts"));
 const wordsMod = __importStar(require("./words"));
 const eventObjMod = __importStar(require("./eventObj"));
 const patternCompareFunctions_1 = require("./patternCompareFunctions");
 const SCRIPT_CODE_MARKER = 'script.js.';
-const pattern2RegEx = adapter_core_1.commonTools.pattern2RegEx;
 // Pre-compiled RegExp constants for formatTimeDiff – avoids recompiling on every call
 const FTD_TEST_D = /(?<!\\)[DTД]/;
 const FTD_REPL_DD = /(?<!\\)(?:DD|TT|ДД)/g;
@@ -70,6 +71,35 @@ const _SELECTOR_REGEXP_CACHE_MAX = 1000;
 const _selectorRegExpCache = new Map();
 /** Monotonically increasing handler-ID counter – avoids Date.now()+random collisions */
 let _handlerIdCounter = 1;
+/** All characters that may not appear in an object ID. */
+exports.FORBIDDEN_CHARS = /[^._\-/ :!#$%&()+=@^{}|~\p{Ll}\p{Lu}\p{Nd}]+/gu;
+/**
+ * Checks if a pattern is valid
+ *
+ * @param pattern The pattern to check for validity
+ */
+function isValidPattern(pattern) {
+    pattern = pattern.replace(/\*/g, '');
+    return !exports.FORBIDDEN_CHARS.test(pattern);
+}
+/**
+ * Converts ioB pattern into regex.
+ *
+ * This funtion was copied from js-controller, as for the tests it is required, that function must be defined here.
+ * Else the adapter-core tries to find js-controller and it is not installed.
+ *
+ * @param pattern - Regex string to use it in new RegExp(pattern)
+ */
+function pattern2RegEx(pattern) {
+    pattern = (pattern || '').toString();
+    if (!isValidPattern(pattern)) {
+        throw new Error(`The pattern "${pattern}" is not a valid ID pattern`);
+    }
+    const startsWithWildcard = pattern[0] === '*';
+    const endsWithWildcard = pattern[pattern.length - 1] === '*';
+    pattern = pattern.replace(/[-/\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '.*');
+    return (startsWithWildcard ? '' : '^') + pattern + (endsWithWildcard ? '' : '$');
+}
 /** Returns true when patId is a plain exact state-ID (no wildcards, no RegExp notation). */
 function isExactId(patId) {
     return (!!patId && typeof patId === 'string' && !patId.includes('*') && !patId.includes('?') && !patId.startsWith('/'));
@@ -1387,8 +1417,9 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                 // create temp directory
                 tempDirPath = fs.mkdtempSync(path.join(os.tmpdir(), `${sandbox.scriptName.substring(SCRIPT_CODE_MARKER.length)}-`));
                 context.tempDirectories[sandbox.scriptName] = tempDirPath;
-                sandbox.verbose &&
+                if (sandbox.verbose) {
                     sandbox.log(`createTempFile(fileName=${fileName}, tempDirPath=${tempDirPath}) created temp directory in ${os.tmpdir()}`, 'info');
+                }
             }
             const filePath = path.join(tempDirPath, fileName);
             // is sub dir?
@@ -1401,8 +1432,9 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                 return undefined;
             }
             fs.writeFileSync(filePath, data);
-            sandbox.verbose &&
+            if (sandbox.verbose) {
                 sandbox.log(`createTempFile(fileName=${fileName}, fileDir=${fileDir}, filePath=${filePath})`, 'info');
+            }
             return filePath;
         },
         subscribe: function (pattern, 
@@ -1663,8 +1695,9 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                             }
                         }
                     }
-                    sandbox.verbose &&
+                    if (sandbox.verbose) {
                         sandbox.log(`onEnumMembers(id=${enumId}, members=${JSON.stringify(Object.keys(subscriptions))})`, 'info');
+                    }
                 };
                 init();
                 sandbox.subscribeObject(enumId, obj => obj && init());
@@ -1694,8 +1727,9 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                 return fileNamePattern.map(filePattern => sandbox.onFile(id, filePattern, withFileOrCallback, callback));
             }
             sandbox.__engine.__subscriptionsFile += 1;
-            sandbox.verbose &&
+            if (sandbox.verbose) {
                 sandbox.log(`onFile(id=${id}, fileNamePattern=${fileNamePattern}) - fileSubscriptions=${sandbox.__engine.__subscriptionsFile}`, 'info');
+            }
             if (sandbox.__engine.__subscriptionsFile %
                 adapter.config.maxTriggersPerScript ===
                 0) {
@@ -1717,8 +1751,9 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                 fileRegEx,
                 callback: (id, fileName, size, withFile) => {
                     try {
-                        sandbox.verbose &&
+                        if (sandbox.verbose) {
                             sandbox.log(`onFile changed(id=${id}, fileName=${fileName}, size=${size})`, 'info');
+                        }
                         if (withFile && (size || 0) > 0) {
                             adapter
                                 .readFileAsync(id, fileName)
@@ -1751,8 +1786,9 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                 sandbox.log('offFile: your js-controller does not support yet file unsubscribes. Please update to js-controller@4.1.x or newer', 'warn');
                 return false;
             }
-            sandbox.verbose &&
+            if (sandbox.verbose) {
                 sandbox.log(`offFile(idOrObject=${JSON.stringify(idOrObject)}, fileNamePattern=${JSON.stringify(fileNamePattern)}) - fileSubscriptions=${sandbox.__engine.__subscriptionsFile}`, 'info');
+            }
             if (idOrObject && typeof idOrObject === 'object') {
                 if (Array.isArray(idOrObject)) {
                     const result = [];
@@ -1764,8 +1800,9 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                 for (let i = context.subscriptionsFile.length - 1; i >= 0; i--) {
                     if (context.subscriptionsFile[i] === idOrObject) {
                         unsubscribeFile(script, context.subscriptionsFile[i].id, context.subscriptionsFile[i].fileNamePattern);
-                        sandbox.verbose &&
+                        if (sandbox.verbose) {
                             sandbox.log(`offFile(type=object, fileNamePattern=${JSON.stringify(fileNamePattern)}, removing id=${context.subscriptionsFile[i].id})`, 'info');
+                        }
                         context.subscriptionsFile.splice(i, 1);
                         sandbox.__engine.__subscriptionsFile--;
                         return true;
@@ -1786,8 +1823,9 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                     context.subscriptionsFile[i].fileNamePattern === fileNamePattern) {
                     deleted++;
                     unsubscribeFile(script, context.subscriptionsFile[i].id, context.subscriptionsFile[i].fileNamePattern);
-                    sandbox.verbose &&
+                    if (sandbox.verbose) {
                         sandbox.log(`offFile(type=string, fileNamePattern=${fileNamePattern}, removing id=${context.subscriptionsFile[i].id})`, 'info');
+                    }
                     context.subscriptionsFile.splice(i, 1);
                     sandbox.__engine.__subscriptionsFile--;
                 }
@@ -1820,8 +1858,9 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
             }
             if ((typeof pattern === 'string' && pattern[0] === '{') ||
                 (typeof pattern === 'object' && pattern.period)) {
-                sandbox.verbose &&
+                if (sandbox.verbose) {
                     sandbox.log(`schedule(wizard=${typeof pattern === 'object' ? JSON.stringify(pattern) : pattern})`, 'info');
+                }
                 if (!context.scheduler) {
                     sandbox.log(`Cannot schedule "${typeof pattern === 'object' ? JSON.stringify(pattern) : pattern}" because scheduler is not available`, 'error');
                     return null;
@@ -1893,8 +1932,9 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                     if (sandbox.__engine.__schedules % adapterConfig.maxTriggersPerScript === 0) {
                         sandbox.log(`More than ${sandbox.__engine.__schedules} schedules registered. Check your script!`, 'warn');
                     }
-                    sandbox.verbose &&
+                    if (sandbox.verbose) {
                         sandbox.log(`schedule(astro=${astroPattern.astro}, offset=${astroPattern.shift}) is tomorrow, waiting until ${date.toISOString()}`, 'info');
+                    }
                     // Calculate new schedule in the next day
                     sandbox.setTimeout(() => {
                         if (sandbox.__engine.__schedules > 0) {
@@ -1923,8 +1963,9 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                         sandbox.schedule(astroPattern, callback);
                     }, 2000);
                 }, ts.getTime() - Date.now());
-                sandbox.verbose &&
+                if (sandbox.verbose) {
                     sandbox.log(`schedule(astro=${astroPattern.astro}, offset=${astroPattern.shift}) is today, waiting until ${ts.toISOString()}`, 'info');
+                }
             }
             else {
                 // fix a problem with sunday and 7
@@ -2003,8 +2044,9 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                     if (isValid) {
                         const cronExp = `${s ?? '0'} ${m ?? '0'} ${h ?? '0'} * * *`;
                         if (cronExp !== currentExp) {
-                            sandbox.verbose &&
+                            if (sandbox.verbose) {
                                 sandbox.log(`scheduleById(id=${id}): Init with expression ${cronExp} from ${time}`, 'info');
+                            }
                             currentExp = cronExp;
                             if (scheduleId) {
                                 sandbox.clearSchedule(scheduleId);
@@ -2044,8 +2086,9 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
             }
             sandbox.on(triggerDef, obj => {
                 if (obj?.state?.val) {
-                    sandbox.verbose &&
+                    if (sandbox.verbose) {
                         sandbox.log(`scheduleById(id=${id}): Update with value ${obj.state.val}`, 'info');
+                    }
                     init(obj.state.val.toString());
                 }
             });
@@ -2195,12 +2238,14 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
             if (!objects[id] && objects[`${adapter.namespace}.${id}`]) {
                 id = `${adapter.namespace}.${id}`;
             }
-            sandbox.verbose &&
+            if (sandbox.verbose) {
                 sandbox.log(`setStateDelayed(id=${id}, state=${JSON.stringify(state)}, isAck=${isAck}, delay=${delay}, clearRunning=${clearRunning})`, 'info');
+            }
             if (clearRunning) {
                 if (timers[id]) {
-                    sandbox.verbose &&
+                    if (sandbox.verbose) {
                         sandbox.log(`setStateDelayed: clear ${timers[id].length} running timers`, 'info');
+                    }
                     // collect affected scriptNames before deleting
                     const affectedScripts = new Set(timers[id].map(e => e.scriptName));
                     for (let i = 0; i < timers[id].length; i++) {
@@ -2447,16 +2492,18 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                 }
                 else {
                     if (states[id]) {
-                        sandbox.verbose &&
+                        if (sandbox.verbose) {
                             sandbox.log(`getState(id=${id}, timerId=${JSON.stringify(timers[id])}) => ${JSON.stringify(states[id])}`, 'info');
+                        }
                         if (context.interimStateValues[id] !== undefined) {
                             return context.convertBackStringifiedValues(id, context.interimStateValues[id]);
                         }
                         return context.convertBackStringifiedValues(id, states[id]);
                     }
                     else if (states[`${adapter.namespace}.${id}`]) {
-                        sandbox.verbose &&
+                        if (sandbox.verbose) {
                             sandbox.log(`getState(id=${id}, timerId=${JSON.stringify(timers[id])}) => ${JSON.stringify(states[`${adapter.namespace}.${id}`])}`, 'info');
+                        }
                         if (context.interimStateValues[`${adapter.namespace}.${id}`] !== undefined) {
                             return context.convertBackStringifiedValues(id, context.interimStateValues[`${adapter.namespace}.${id}`]);
                         }
@@ -2514,8 +2561,9 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
             }
         },
         getIdByName: function (name, alwaysArray) {
-            sandbox.verbose &&
+            if (sandbox.verbose) {
                 sandbox.log(`getIdByName(name=${name}, alwaysArray=${alwaysArray}) => ${JSON.stringify(context.names[name])}`, 'info');
+            }
             if (Object.prototype.hasOwnProperty.call(context.names, name)) {
                 if (alwaysArray) {
                     return !Array.isArray(context.names[name]) ? [context.names[name]] : context.names[name];
@@ -2558,15 +2606,17 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                         sandbox.log(`Object "${id}" can't be copied: ${JSON.stringify(err)}`, 'error');
                         return cb(null, null);
                     }
-                    sandbox.verbose &&
+                    if (sandbox.verbose) {
                         sandbox.log(`getObject(id=${id}, enumName=${enumName}) => ${JSON.stringify(result)}`, 'info');
+                    }
                     cb(err, result);
                 });
             }
             else {
                 if (!objects[id]) {
-                    sandbox.verbose &&
+                    if (sandbox.verbose) {
                         sandbox.log(`getObject(id=${id}, enumName=${enumName}) => does not exist`, 'info');
+                    }
                     sandbox.log(`Object "${id}" does not exist`, 'warn');
                     return null;
                 }
@@ -2584,8 +2634,9 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                             }
                         }
                     }
-                    sandbox.verbose &&
+                    if (sandbox.verbose) {
                         sandbox.log(`getObject(id=${id}, enumName=${enumName}) => ${JSON.stringify(obj)}`, 'info');
+                    }
                     return obj;
                 }
                 let result;
@@ -2601,8 +2652,9 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                     sandbox.log(`Object "${id}" can't be copied: ${JSON.stringify(err)}`, 'error');
                     return null;
                 }
-                sandbox.verbose &&
+                if (sandbox.verbose) {
                     sandbox.log(`getObject(id=${id}, enumName=${enumName}) => ${JSON.stringify(result)}`, 'info');
+                }
                 return result;
             }
         },
@@ -3378,8 +3430,9 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                 }
             }
             else {
-                sandbox.verbose &&
+                if (sandbox.verbose) {
                     sandbox.log(`sendToHost(adapter=${host}, cmd=${cmd}, msg=${JSON.stringify(msg)})`, 'info');
+                }
                 adapter.sendToHost(host, cmd, msg, callback);
             }
         },
@@ -3846,8 +3899,9 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                 text = text
                     .replace(FTD_REPL_SS, seconds.toString().padStart(2, '0'))
                     .replace(FTD_REPL_S, seconds.toString());
-                sandbox.verbose &&
+                if (sandbox.verbose) {
                     sandbox.log(`formatTimeDiff(format=${format}, text=${text}, seconds=${seconds})`, 'debug');
+                }
             }
             for (const [pattern, replacement] of FTD_UNESCAPE) {
                 text = text.replace(pattern, replacement);
@@ -3991,8 +4045,9 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                 }
             }
             else {
-                sandbox.verbose &&
+                if (sandbox.verbose) {
                     sandbox.log(`rename(adapter=${_adapter}, oldName=${oldName}, newName=${newName})`, 'info');
+                }
                 if (callback) {
                     adapter.rename(_adapter, oldName, newName, callback);
                 }
