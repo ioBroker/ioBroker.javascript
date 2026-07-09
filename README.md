@@ -27,6 +27,9 @@ Executes Javascript, Typescript Scripts.
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Showed host name in the instance selection dialog
+
 ### 9.3.1 (2026-06-18)
 * (@GermanBluefox) Added the possibility to execute one-way scripts without saving it
 

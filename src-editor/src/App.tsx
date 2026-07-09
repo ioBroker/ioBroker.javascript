@@ -141,6 +141,7 @@ interface AppState extends GenericAppState {
     ready: boolean;
     scriptsHash: number;
     instances: number[];
+    instanceHosts: Record<number, string>;
     updating: boolean;
     resizing: boolean;
     selected: string | null;
@@ -272,11 +273,18 @@ export default class App extends GenericApp<AppProps, AppState> {
                         // request alive
                         void this.socket.subscribeState(`${obj._id}.alive`, this.onInstanceAliveChange);
                     }
+                    // remember/update on which host this instance runs
+                    if (obj.common?.host && this.state.instanceHosts[idNum] !== obj.common.host) {
+                        newState.instanceHosts = { ...this.state.instanceHosts, [idNum]: obj.common.host };
+                        changed = true;
+                    }
                 } else if (!obj && this.state.instances.includes(idNum)) {
                     this.socket.unsubscribeState(`${id}.alive`, this.onInstanceAliveChange);
                     newState.instances = [...this.state.instances];
                     const pos = newState.instances.indexOf(idNum);
                     newState.instances.splice(pos, 1);
+                    newState.instanceHosts = { ...this.state.instanceHosts };
+                    delete newState.instanceHosts[idNum];
                     changed = true;
                 }
             }
@@ -317,6 +325,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                 ready: false,
                 scriptsHash: 0,
                 instances: [],
+                instanceHosts: {},
                 updating: false,
                 resizing: false,
                 selected: null,
@@ -345,6 +354,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                 const instancesResult = await this.subscribeOnInstances();
                 newState.instances = instancesResult.instances;
                 newState.runningInstances = instancesResult.runningInstances;
+                newState.instanceHosts = instancesResult.instanceHosts;
 
                 this.javascriptPassword = this.socket.systemConfig?.native.javascriptPassword || '';
 
@@ -387,11 +397,24 @@ export default class App extends GenericApp<AppProps, AppState> {
         );
     }
 
-    async subscribeOnInstances(): Promise<{ instances: number[]; runningInstances: Record<string, boolean> }> {
+    async subscribeOnInstances(): Promise<{
+        instances: number[];
+        runningInstances: Record<string, boolean>;
+        instanceHosts: Record<number, string>;
+    }> {
         const instancesArray = await this.socket.getAdapterInstances(this.adapterName);
         const instances: number[] = instancesArray.map(obj => parseInt(obj._id.split('.').pop() || '0')).sort();
         const runningInstances: Record<string, boolean> = {};
         instances.forEach(id => (runningInstances[`system.adapter.${this.adapterName}.${id}`] = false));
+
+        // remember on which host every instance runs
+        const instanceHosts: Record<number, string> = {};
+        instancesArray.forEach(obj => {
+            const idNum = parseInt(obj._id.split('.').pop() || '0', 10) || 0;
+            if (obj?.common?.host) {
+                instanceHosts[idNum] = obj.common.host;
+            }
+        });
 
         // subscribe on instances
         for (let i = 0; i < instances.length; i++) {
@@ -402,7 +425,7 @@ export default class App extends GenericApp<AppProps, AppState> {
             await this.socket.subscribeState(id, this.onInstanceAliveChange);
         }
 
-        return { instances, runningInstances };
+        return { instances, runningInstances, instanceHosts };
     }
 
     async readAllScripts(): Promise<Record<string, ioBroker.ChannelObject | ioBroker.ScriptObject>> {
@@ -1292,6 +1315,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                             scripts={this.scripts}
                             scriptsHash={this.state.scriptsHash}
                             instances={this.state.instances}
+                            instanceHosts={this.state.instanceHosts}
                             onRename={this.onRename.bind(this)}
                             socket={this.socket}
                             selectId={this.state.menuSelectId}
