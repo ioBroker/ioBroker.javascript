@@ -618,9 +618,17 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
         else {
             context.logWithLineInfo(`State "${id}" not found`);
             if (typeof callback === 'function') {
+                const err = new Error(`State "${id}" not found`);
+                // Attribute the error to the calling script. Otherwise, if the user does not catch the
+                // rejected promise (e.g. `await setStateAsync(...)` on a non-existing state), the resulting
+                // unhandled rejection would be created inside the adapter code and therefore be treated as
+                // an internal adapter error by the global error handler in main.ts - which restarts the
+                // whole adapter. The synthetic stack frame contains the script marker (script.js.*), so the
+                // handler recognizes it as a script error, logs it and keeps the adapter running.
+                err.stack = `Error: State "${id}" not found\n    at ${name}:1:1`;
                 setImmediate(() => {
                     try {
-                        callback.call(sandbox, new Error(`State "${id}" not found`));
+                        callback.call(sandbox, err);
                     }
                     catch (err) {
                         errorInCallback(err);
