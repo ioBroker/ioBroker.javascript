@@ -10,7 +10,7 @@
         "@devbookhq/splitter": "^1.4.2",
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
-        "@iobroker/adapter-react-v5": "^8.2.10",
+        "@iobroker/adapter-react-v5": "^8.3.1",
         "@iobroker/javascript-rules-dev": "^0.0.6",
         "@iobroker/type-detector": "^5.0.13",
         "@iobroker/types": "^7.2.2",
