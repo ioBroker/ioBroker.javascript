@@ -26,7 +26,7 @@
         "@types/reactour": "^1.18.5",
         "@vitejs/plugin-react": "^5.2.0",
         "blockly": "^11.2.2",
-        "file-selector": "^2.1.2",
+        "file-selector": "^4.0.2",
         "jszip": "^3.10.1",
         "moment": "^2.30.1",
         "monaco-editor": "~0.55.1",
