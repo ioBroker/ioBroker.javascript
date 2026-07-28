@@ -50,7 +50,7 @@
         "node-inspect": "^2.0.0",
         "node-schedule": "2.1.1",
         "nodemailer": "^8.0.11",
-        "prettier": "^3.8.4",
+        "prettier": "^3.9.5",
         "promisify-child-process": "^5.0.1",
         "semver": "^7.8.4",
         "suncalc2": "^1.8.1",
