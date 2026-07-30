@@ -1,5 +1,5 @@
 import React from 'react';
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/gui-components';
 import { GenericBlock } from '../GenericBlock';
 import type {
     RuleBlockConfigActionSetState,
@@ -7,8 +7,6 @@ import type {
     RuleBlockDescription,
     RuleContext,
     RuleInputAny,
-    RuleInputNumber,
-    RuleInputObjectID,
     RuleTagCardTitle,
     GenericBlockProps,
 } from '@iobroker/javascript-rules-dev';
@@ -269,7 +267,7 @@ class ActionSetStateDelayed extends GenericBlock<RuleBlockConfigActionSetStateDe
             defaultValue: 1000,
             noHelperText: true,
             attr: 'delay',
-        } as RuleInputNumber);
+        });
 
         inputs.push({
             backText: 'clear running',
@@ -295,7 +293,7 @@ class ActionSetStateDelayed extends GenericBlock<RuleBlockConfigActionSetStateDe
             attr: 'oid',
             defaultValue: '',
             checkReadOnly: true,
-        } as RuleInputObjectID);
+        });
 
         this.setState({ inputs }, () =>
             super.onTagChange(null, () => {

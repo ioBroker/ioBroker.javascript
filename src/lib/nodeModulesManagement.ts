@@ -13,7 +13,9 @@ export async function requestModuleNameByUrl(url: string): Promise<string> {
             { windowsHide: true, encoding: 'utf8', shell: false },
             (error: ExecFileException | null, stdout: string) => {
                 if (error) {
-                    reject(error as Error);
+                    // "ExecFileException" is assembled with Omit<>, which drops its relation to
+                    // Error, so re-wrap it and keep the original as "cause"
+                    reject(new Error(error.message, { cause: error }));
                 } else {
                     if (typeof stdout !== 'string') {
                         reject(

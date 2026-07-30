@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Fab, Tooltip } from '@mui/material';
 
 import { HelpOutlineOutlined as HelpOutlineOutlinedIcon } from '@mui/icons-material';
-import type { IobTheme } from '@iobroker/adapter-react-v5';
+import type { IobTheme } from '@iobroker/gui-components';
 
 const styles: Record<string, any> = {
     tooltip: (theme: IobTheme): React.CSSProperties => ({

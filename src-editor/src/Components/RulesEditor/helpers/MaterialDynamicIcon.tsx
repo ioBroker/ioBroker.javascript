@@ -9,7 +9,7 @@ import {
     Subject,
     PlayForWork,
     Brightness3,
-    HelpOutline,
+    HelpOutlined,
     Storage,
     AccessTime,
     PlayArrow,
@@ -17,7 +17,7 @@ import {
     Help,
     type SvgIconComponent,
 } from '@mui/icons-material';
-import type { AdminConnection } from '@iobroker/adapter-react-v5';
+import type { AdminConnection } from '@iobroker/gui-components';
 
 const ICON_CACHE: Record<string, Promise<ioBroker.AdapterObject | null | undefined>> = {};
 
@@ -31,7 +31,8 @@ const objIcon: Record<string, SvgIconComponent> = {
     Subject,
     PlayForWork,
     Brightness3,
-    HelpOutline,
+    // Key stays "HelpOutline": it is the icon name stored in saved rules
+    HelpOutline: HelpOutlined,
     Storage,
     AccessTime,
     PlayArrow,

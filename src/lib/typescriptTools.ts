@@ -211,22 +211,20 @@ export function resolveTypings(
 function mustBeHoisted(s: Statement & { modifiers?: Modifier[] }, isGlobal?: boolean): boolean {
     return !!(
         // Import/export statements must be moved to the top
-        (
-            isImportDeclaration(s) ||
-            isImportEqualsDeclaration(s) ||
-            isExportDeclaration(s) ||
-            isExportAssignment(s) ||
-            // as well as many declarations
-            isTypeAliasDeclaration(s) ||
-            isInterfaceDeclaration(s) ||
-            isModuleDeclaration(s) ||
-            isEnumDeclaration(s) ||
-            (isGlobal &&
-                // in global scripts we don't wrap classes and functions, so they can be accessed from non-global scripts
-                (isClassDeclaration(s) || isFunctionDeclaration(s))) ||
-            // and declare ... / export ... statements
-            s.modifiers?.some(s => s.kind === SyntaxKind.DeclareKeyword || s.kind === SyntaxKind.ExportKeyword)
-        )
+        isImportDeclaration(s) ||
+        isImportEqualsDeclaration(s) ||
+        isExportDeclaration(s) ||
+        isExportAssignment(s) ||
+        // as well as many declarations
+        isTypeAliasDeclaration(s) ||
+        isInterfaceDeclaration(s) ||
+        isModuleDeclaration(s) ||
+        isEnumDeclaration(s) ||
+        (isGlobal &&
+            // in global scripts we don't wrap classes and functions, so they can be accessed from non-global scripts
+            (isClassDeclaration(s) || isFunctionDeclaration(s))) ||
+        // and declare ... / export ... statements
+        s.modifiers?.some(s => s.kind === SyntaxKind.DeclareKeyword || s.kind === SyntaxKind.ExportKeyword)
     );
 }
 

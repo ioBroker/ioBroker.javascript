@@ -14,7 +14,7 @@ import {
     type IobTheme,
     type GenericAppProps,
     type GenericAppState,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import { MdMenu as IconMenuClosed, MdArrowBack as IconMenuOpened, MdVisibility as IconShowLog } from 'react-icons/md';
 
@@ -1041,11 +1041,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                                     common: {
                                         name,
                                         expert: true,
-                                        engineType: engineType as
-                                            | 'TypeScript/ts'
-                                            | 'Blockly'
-                                            | 'Rules'
-                                            | 'Javascript/js',
+                                        engineType: engineType,
                                         engine,
                                         enabled,
                                         source,

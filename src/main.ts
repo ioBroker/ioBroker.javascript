@@ -576,7 +576,7 @@ class JavaScript extends Adapter {
             prepareStateObject: this.prepareStateObject.bind(this),
             debugMode,
             getAbsoluteDefaultDataDir,
-            adapter: this as unknown as ioBroker.Adapter,
+            adapter: this,
             logError: this.logError.bind(this),
             allowSelfSignedCerts: false,
         };
@@ -1935,7 +1935,7 @@ class JavaScript extends Adapter {
                 const sentryInstance = this.getPluginInstance('sentry');
                 if (sentryInstance) {
                     const sentryObject = sentryInstance.getSentryObject();
-                    sentryObject?.captureException(err as Error);
+                    sentryObject?.captureException(err);
                 }
             }
             // Keep the adapter from crashing when the included typings cannot be read
@@ -3373,9 +3373,9 @@ class JavaScript extends Adapter {
             obj.common.engineType ||= '' as 'TypeScript/ts' | 'Blockly' | 'Rules' | 'Javascript/js';
 
             if (
-                (obj.common.engineType as ScriptType).toLowerCase().startsWith('javascript') ||
-                (obj.common.engineType as ScriptType) === 'Blockly' ||
-                (obj.common.engineType as ScriptType) === 'Rules'
+                obj.common.engineType.toLowerCase().startsWith('javascript') ||
+                obj.common.engineType === 'Blockly' ||
+                obj.common.engineType === 'Rules'
             ) {
                 // Javascript
                 this.log.info(`${name}: start JavaScript (${obj.common.engineType})`);
@@ -3390,13 +3390,7 @@ class JavaScript extends Adapter {
                     return false;
                 }
                 this.scripts[name] = createdScript;
-                this.execute(
-                    this.scripts[name],
-                    sourceFn,
-                    obj.common.engineType as ScriptType,
-                    obj.common.verbose,
-                    obj.common.debug,
-                );
+                this.execute(this.scripts[name], sourceFn, obj.common.engineType, obj.common.verbose, obj.common.debug);
                 return true;
             }
 
@@ -3461,13 +3455,7 @@ class JavaScript extends Adapter {
                     return false;
                 }
                 this.scripts[name] = createdScript;
-                this.execute(
-                    this.scripts[name],
-                    name,
-                    obj.common.engineType as ScriptType,
-                    obj.common.verbose,
-                    obj.common.debug,
-                );
+                this.execute(this.scripts[name], name, obj.common.engineType, obj.common.verbose, obj.common.debug);
                 return true;
             }
 

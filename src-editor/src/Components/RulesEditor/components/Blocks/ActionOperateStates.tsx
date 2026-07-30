@@ -1,14 +1,11 @@
 import React from 'react';
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/gui-components';
 import { GenericBlock } from '../GenericBlock';
 import { renderValue } from '../../helpers/utils';
 import type {
     RuleBlockConfigActionOperationState,
     RuleBlockDescription,
     RuleInputAny,
-    RuleInputNameText,
-    RuleInputObjectID,
-    RuleInputSelect,
     GenericBlockProps,
 } from '@iobroker/javascript-rules-dev';
 
@@ -57,7 +54,7 @@ class ActionOperateStates extends GenericBlock<RuleBlockConfigActionOperationSta
             attr: 'oid1',
             defaultValue: '',
             checkReadOnly: false,
-        } as RuleInputObjectID);
+        });
 
         inputs.push({
             nameRender: 'renderSelect',
@@ -71,7 +68,7 @@ class ActionOperateStates extends GenericBlock<RuleBlockConfigActionOperationSta
             doNotTranslate: true,
             defaultValue: '+',
             attr: 'operation',
-        } as RuleInputSelect);
+        });
 
         inputs.push({
             nameRender: 'renderObjectID',
@@ -79,20 +76,20 @@ class ActionOperateStates extends GenericBlock<RuleBlockConfigActionOperationSta
             attr: 'oid2',
             defaultValue: '',
             checkReadOnly: false,
-        } as RuleInputObjectID);
+        });
 
         inputs.push({
             nameRender: 'renderNameText',
             defaultValue: 'store in',
             attr: 'textEqual',
-        } as RuleInputNameText);
+        });
 
         inputs.push({
             nameRender: 'renderObjectID',
             attr: 'oidResult',
             defaultValue: '',
             checkReadOnly: true,
-        } as RuleInputObjectID);
+        });
 
         this.setState({ inputs }, () =>
             super.onTagChange(null, () => {

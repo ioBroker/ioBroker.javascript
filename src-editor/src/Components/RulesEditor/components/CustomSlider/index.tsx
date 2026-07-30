@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { Slider } from '@mui/material';
 
-import { Utils } from '@iobroker/adapter-react-v5';
+import { Utils } from '@iobroker/gui-components';
 
 import cls from './style.module.scss';
 

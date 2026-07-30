@@ -1,11 +1,10 @@
 import React from 'react';
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/gui-components';
 import type {
     RuleBlockConfigActionSetState,
     RuleBlockDescription,
     RuleContext,
     RuleInputAny,
-    RuleInputObjectID,
     RuleTagCardTitle,
     GenericBlockProps,
 } from '@iobroker/javascript-rules-dev';
@@ -288,7 +287,7 @@ class ActionSetState extends GenericBlock<RuleBlockConfigActionSetState> {
             attr: 'oid',
             defaultValue: '',
             checkReadOnly: true,
-        } as RuleInputObjectID);
+        });
 
         this.setState({ inputs }, () =>
             super.onTagChange(null, () => {

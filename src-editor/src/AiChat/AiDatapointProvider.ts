@@ -1,5 +1,5 @@
 import type * as monacoEditor from 'monaco-editor';
-import type { AdminConnection } from '@iobroker/adapter-react-v5';
+import type { AdminConnection } from '@iobroker/gui-components';
 
 // Patterns that trigger datapoint autocomplete
 const TRIGGER_PATTERNS = [
@@ -56,7 +56,7 @@ async function loadObjects(socket: AdminConnection): Promise<ObjectInfo[]> {
         const roomMap: Record<string, string> = {};
         const funcMap: Record<string, string> = {};
         for (const enumId of Object.keys(enums)) {
-            const enumObj = enums[enumId] as ioBroker.EnumObject;
+            const enumObj = enums[enumId];
             const members = enumObj.common?.members;
             if (!members) {
                 continue;

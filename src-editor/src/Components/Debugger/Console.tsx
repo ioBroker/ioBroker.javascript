@@ -8,7 +8,7 @@ import {
     MdVerticalAlignBottom as IconBottom,
 } from 'react-icons/md';
 
-import { I18n, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
+import { I18n, type IobTheme, Utils } from '@iobroker/gui-components';
 
 const TOOLBOX_WIDTH = 34;
 
@@ -120,7 +120,7 @@ interface ConsoleState {
 }
 
 class Console extends React.Component<ConsoleProps, ConsoleState> {
-    private readonly messagesEnd: React.RefObject<HTMLDivElement>;
+    private readonly messagesEnd: React.RefObject<HTMLDivElement | null>;
 
     constructor(props: ConsoleProps) {
         super(props);

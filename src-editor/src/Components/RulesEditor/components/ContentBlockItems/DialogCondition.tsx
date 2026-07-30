@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText } from '@mui/material';
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/gui-components';
 
 interface DialogConditionProps {
     onClose: () => void;

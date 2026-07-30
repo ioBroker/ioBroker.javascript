@@ -5,7 +5,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Fab, IconBut
 
 import { MdGTranslate as IconNoCheck, MdClose as Close } from 'react-icons/md';
 
-import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n } from '@iobroker/gui-components';
 import type { DebuggerLocation, SetBreakpointParameterType } from './Debugger/types';
 import type { EditorAiActionRequest } from '../AiChat/AiChatTypes';
 import { findSymbolAtLine } from '../AiChat/aiCodeLensProvider';
@@ -82,7 +82,7 @@ function errorMessageToHtml(message: string): string {
 }
 
 class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState> {
-    private readonly monacoDiv: React.RefObject<HTMLDivElement> | null = null;
+    private readonly monacoDiv: React.RefObject<HTMLDivElement | null> | null = null;
 
     private editor: monacoEditor.editor.IStandaloneCodeEditor | null = null;
 
@@ -258,7 +258,7 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
                     // Mouse-over shows the state value (same provider as the Alt+I command).
                     // `sticky` lets the user move into the tooltip; `fixedOverflowWidgets`
                     // prevents the tooltip from being clipped by the surrounding panels.
-                    hover: { enabled: true, delay: 200, sticky: true },
+                    hover: { enabled: 'on', delay: 200, sticky: true },
                     fixedOverflowWidgets: true,
                 });
 

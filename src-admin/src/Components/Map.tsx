@@ -34,8 +34,8 @@ interface MapState {
 
 let mapKeyCounter = 0;
 
-class Map extends Component<MapProps, MapState> {
-    divRef: React.RefObject<HTMLDivElement>;
+export default class Map extends Component<MapProps, MapState> {
+    divRef: React.RefObject<HTMLDivElement | null>;
     marker: Marker<any> | null;
     map?: LeafletMap;
     latLongTimer?: ReturnType<typeof setTimeout> | null;
@@ -193,5 +193,3 @@ class Map extends Component<MapProps, MapState> {
         );
     }
 }
-
-export default Map;

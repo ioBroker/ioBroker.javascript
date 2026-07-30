@@ -2,9 +2,9 @@ import React, { Component, Fragment } from 'react';
 import cls from './style.module.scss';
 
 import { Menu, MenuItem, IconButton } from '@mui/material';
-import { HelpOutline as IconHelp } from '@mui/icons-material';
+import { HelpOutlined as IconHelp } from '@mui/icons-material';
 
-import { getSelectIdIcon, I18n, Utils, DialogSelectID, DialogError, DialogMessage } from '@iobroker/adapter-react-v5';
+import { getSelectIdIcon, I18n, Utils, DialogSelectID, DialogError, DialogMessage } from '@iobroker/gui-components';
 
 import CustomButton from '../CustomButton';
 import CustomCheckbox from '../CustomCheckbox';
@@ -533,7 +533,7 @@ export abstract class GenericBlock<
                         theme={this.props.theme}
                         imagePrefix="../.."
                         dialogName="javascript"
-                        themeType={Utils.getThemeName()}
+                        themeType={Utils.getThemeType()}
                         socket={socket}
                         selected={value}
                         onClose={() => {

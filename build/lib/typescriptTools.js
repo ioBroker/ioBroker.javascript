@@ -156,7 +156,7 @@ function resolveTypings(pkg, adapterScopedPackageName, wrapInDeclareModule) {
 function mustBeHoisted(s, isGlobal) {
     return !!(
     // Import/export statements must be moved to the top
-    ((0, typescript_1.isImportDeclaration)(s) ||
+    (0, typescript_1.isImportDeclaration)(s) ||
         (0, typescript_1.isImportEqualsDeclaration)(s) ||
         (0, typescript_1.isExportDeclaration)(s) ||
         (0, typescript_1.isExportAssignment)(s) ||
@@ -169,7 +169,7 @@ function mustBeHoisted(s, isGlobal) {
             // in global scripts we don't wrap classes and functions, so they can be accessed from non-global scripts
             ((0, typescript_1.isClassDeclaration)(s) || (0, typescript_1.isFunctionDeclaration)(s))) ||
         // and declare ... / export ... statements
-        s.modifiers?.some(s => s.kind === typescript_1.SyntaxKind.DeclareKeyword || s.kind === typescript_1.SyntaxKind.ExportKeyword)));
+        s.modifiers?.some(s => s.kind === typescript_1.SyntaxKind.DeclareKeyword || s.kind === typescript_1.SyntaxKind.ExportKeyword));
 }
 function canBeExported(s) {
     return (

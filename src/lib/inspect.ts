@@ -305,7 +305,7 @@ export class NodeInspector {
                     // load text of a script
                     this.scripts[this.mainScriptId] = this.Debugger.getScriptSource({
                         scriptId: this.mainScriptId,
-                    } as Debugger.GetScriptSourceParameterType).then((script: Debugger.GetScriptSourceReturnType) => ({
+                    }).then((script: Debugger.GetScriptSourceReturnType) => ({
                         script: script.scriptSource,
                         scriptId: this.mainScriptId,
                     }));
@@ -764,7 +764,7 @@ function processCommand(data: DebugCommand): void {
     } else if (data.cmd === 'end') {
         process.exit();
     } else if (data.cmd === 'source') {
-        inspector.Debugger.getScriptSource({ scriptId: data.scriptId } as Debugger.GetScriptSourceParameterType).then(
+        inspector.Debugger.getScriptSource({ scriptId: data.scriptId }).then(
             (script: Debugger.GetScriptSourceReturnType) =>
                 sendToHost({ cmd: 'script', scriptId: data.scriptId, text: script.scriptSource }),
         );
@@ -789,7 +789,7 @@ function processCommand(data: DebugCommand): void {
                         lineNumber: bp.lineNumber,
                         columnNumber: bp.columnNumber,
                     },
-                } as Debugger.SetBreakpointParameterType)
+                })
                     .then((result: Debugger.SetBreakpointReturnType) => ({
                         id: result.breakpointId,
                         location: result.actualLocation,
@@ -807,7 +807,7 @@ function processCommand(data: DebugCommand): void {
     } else if (data.cmd === 'cb') {
         void Promise.all(
             (data.breakpoints as Debugger.BreakpointId[])?.map(breakpointId =>
-                inspector.Debugger.removeBreakpoint({ breakpointId } as Debugger.RemoveBreakpointParameterType)
+                inspector.Debugger.removeBreakpoint({ breakpointId })
                     .then(() => breakpointId)
                     .catch((e: unknown) => {
                         console.error(`[DEBUGGER]: Cannot clear breakpoint: ${e as Error}`);
@@ -857,7 +857,7 @@ function processCommand(data: DebugCommand): void {
                     inspector.Runtime.getProperties({
                         objectId: scope.object.objectId,
                         generatePreview: true,
-                    } as Runtime.GetPropertiesParameterType)
+                    })
                         .then((result: { result: DebugVariable[] }) => {
                             return { type: scope.type, properties: result };
                         })
@@ -876,7 +876,7 @@ function processCommand(data: DebugCommand): void {
             scopeNumber: data.scopeNumber,
             newValue: data.newValue,
             callFrameId: data.callFrameId,
-        } as Debugger.SetVariableValueParameterType)
+        })
             .catch((e: unknown) => {
                 console.error(`Cannot setValue "${data.variableName}": ${e as Error}`);
                 sendToHost({
@@ -904,7 +904,7 @@ function processCommand(data: DebugCommand): void {
                     objectGroup: 'node-inspect',
                     returnByValue: true,
                     generatePreview: true,
-                } as Debugger.EvaluateOnCallFrameParameterType)
+                })
                     // @ts-expect-error fix later
                     .then(({ result, wasThrown }: Debugger.EvaluateOnCallFrameReturnType) => {
                         if (wasThrown) {
@@ -926,7 +926,7 @@ function processCommand(data: DebugCommand): void {
     } else if (data.cmd === 'stopOnException') {
         inspector.Debugger.setPauseOnExceptions({
             state: data.state ? 'all' : 'none',
-        } as Debugger.SetPauseOnExceptionsParameterType).catch((e: unknown) =>
+        }).catch((e: unknown) =>
             sendToHost({
                 cmd: 'stopOnException',
                 variableName: `Cannot stopOnException: ${e as Error}`,

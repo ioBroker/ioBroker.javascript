@@ -17,7 +17,7 @@
  */
 
 import type * as monacoEditor from 'monaco-editor';
-import { I18n, type AdminConnection } from '@iobroker/adapter-react-v5';
+import { I18n, type AdminConnection } from '@iobroker/gui-components';
 import moment from 'moment';
 // Load the locales for the languages ioBroker supports (en is built into moment).
 import 'moment/locale/de';
@@ -117,7 +117,9 @@ function getText(v: unknown): string {
         const rec = v as Record<string, string>;
         return rec.en || rec.de || Object.values(rec)[0] || '';
     }
-    return String(v as number | boolean | bigint | symbol);
+    // Everything object-like was handled above, so only primitives are left here
+    const primitive = v as number | boolean | bigint | symbol;
+    return String(primitive);
 }
 
 function formatValue(val: unknown): string {
@@ -142,7 +144,9 @@ function formatValue(val: unknown): string {
             return '`<object>`';
         }
     }
-    return String(val as bigint | symbol);
+    // Everything object-like was handled above, so only primitives are left here
+    const primitive = val as bigint | symbol;
+    return String(primitive);
 }
 
 function formatAgo(ts: number | undefined): string {
@@ -256,7 +260,7 @@ async function fetchObjectAndState(
     let obj: ioBroker.AnyObject | null = null;
     let state: ioBroker.State | null = null;
     try {
-        obj = ((await socket.getObject(id)) || null) as ioBroker.AnyObject | null;
+        obj = (await socket.getObject(id)) || null;
     } catch {
         obj = null;
     }

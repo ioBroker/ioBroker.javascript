@@ -7,7 +7,7 @@ import { ListItemButton, ListItemText, Input, InputAdornment, IconButton, List, 
 
 import { MdCheck as CheckIcon, MdAdd as IconAdd, MdDelete as IconDelete } from 'react-icons/md';
 
-import { I18n, type IobTheme, type ThemeType } from '@iobroker/adapter-react-v5';
+import { I18n, type IobTheme, type ThemeType } from '@iobroker/gui-components';
 import type { DebugScopes, CallFrame, DebugValue, DebugVariable, DebugObject } from './types';
 
 const styles: Record<string, any> = {
@@ -150,15 +150,7 @@ interface StackProps {
         newValue: {
             value: any;
             valueType:
-                | 'string'
-                | 'number'
-                | 'object'
-                | 'boolean'
-                | 'undefined'
-                | 'null'
-                | 'bigint'
-                | 'symbol'
-                | 'function';
+                'string' | 'number' | 'object' | 'boolean' | 'undefined' | 'null' | 'bigint' | 'symbol' | 'function';
         };
         callFrameId: string | undefined;
     }) => void;
@@ -211,7 +203,7 @@ function previewToObject(obj: DebugObject): Record<string, any> | string {
 }
 
 class Stack extends React.Component<StackProps, StackState> {
-    private readonly editRef: React.RefObject<HTMLInputElement>;
+    private readonly editRef: React.RefObject<HTMLInputElement | null>;
 
     private scopeValue: boolean | undefined | number | string | null = null;
 

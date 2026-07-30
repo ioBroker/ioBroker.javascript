@@ -1,4 +1,4 @@
-import { type CompilerOptions, ScriptTarget /*, ModuleResolutionKind, ModuleKind */ } from 'typescript';
+import { type CompilerOptions, ModuleKind, ScriptTarget } from 'typescript';
 
 // Node.js 18+ supports the features of ES2022
 // consider changing this, so we get to support the newest features too
@@ -14,16 +14,22 @@ export const tsCompilerOptions: CompilerOptions = {
     // This flag was introduced in TS 4.4 and may break a lot of legacy scripts
     // Better keep it turned off
     useUnknownInCatchVariables: false,
-    // In order to run scripts as a Node.js vm.Script,
-    // we MUST target ES5, otherwise the compiled
-    // scripts may include `import` keywords, which are not
-    // supported by vm.Script.
-    target: ScriptTarget.ES5,
-    // This is required for QueryResults to be iterable (https://github.com/ioBroker/ioBroker.javascript/pull/663#issuecomment-721645705)
-    downlevelIteration: true,
-    // Specify the module resolution strategy
-    // moduleResolution: ModuleResolutionKind.NodeNext,
-    // module: ModuleKind.ESNext,
+    // Scripts are executed as a Node.js `vm.Script`, which does not support the `import` keyword,
+    // so the emitted code must be CommonJS. This has to be set explicitly: TypeScript only defaults
+    // `module` to CommonJS for the ES5/ES3 targets and would emit ES modules for the target below.
+    module: ModuleKind.CommonJS,
+    // Node.js 18+ runs ES2022 natively, so nothing has to be downleveled. This also makes
+    // `downlevelIteration` obsolete - QueryResults stays iterable without it
+    // (https://github.com/ioBroker/ioBroker.javascript/pull/663#issuecomment-721645705).
+    target: ScriptTarget.ES2022,
+    // From ES2022 on, TypeScript would emit class fields as native declarations ([[Define]]
+    // semantics). Keep the previous assignment semantics (`this.x = ...` in the constructor),
+    // so existing user scripts behave unchanged.
+    useDefineForClassFields: false,
+    // `virtual-tsc` overwrites `moduleResolution` with "node10", which TypeScript 6 reports as a
+    // deprecation error. It cannot be configured from here, so deprecations have to be tolerated
+    // until that is fixed upstream.
+    ignoreDeprecations: '6.0',
     lib: [`lib.${targetTsLib}.d.ts`],
 };
 

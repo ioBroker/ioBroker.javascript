@@ -9,7 +9,8 @@
         "checkJs": true,
         "noEmit": true,
         "target": "es6",
-        "moduleResolution": "node",
+        "module": "node16",
+        "moduleResolution": "node16",
         "skipLibCheck": true,
         "types": ["@types/node", "@iobroker/types"]
     }

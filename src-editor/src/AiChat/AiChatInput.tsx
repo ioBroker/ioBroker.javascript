@@ -14,7 +14,7 @@ import {
     Typography,
 } from '@mui/material';
 import { Send, Code, AlternateEmail } from '@mui/icons-material';
-import { I18n, type ThemeType } from '@iobroker/adapter-react-v5';
+import { I18n, type ThemeType } from '@iobroker/gui-components';
 
 import type { ScriptInfo, AiProviderName, AiChatMode } from './AiChatTypes';
 import { PROVIDER_ICON_FILES, ICON_STYLE } from './AiChatService';
@@ -350,8 +350,10 @@ const AiChatInput: React.FC<AiChatInputProps> = ({
                                 <ListItemText
                                     primary={option.label}
                                     secondary={option.description}
-                                    primaryTypographyProps={{ fontSize: '0.8rem', fontWeight: 500 }}
-                                    secondaryTypographyProps={{ fontSize: '0.7rem' }}
+                                    slotProps={{
+                                        primary: { sx: { fontSize: '0.8rem', fontWeight: 500 } },
+                                        secondary: { sx: { fontSize: '0.7rem' } },
+                                    }}
                                 />
                             </ListItemButton>
                         ))}
@@ -459,7 +461,7 @@ const AiChatInput: React.FC<AiChatInputProps> = ({
                     >
                         <Select
                             value={mode}
-                            onChange={e => onModeChange(e.target.value as AiChatMode)}
+                            onChange={e => onModeChange(e.target.value)}
                             size="small"
                             variant="standard"
                             disableUnderline

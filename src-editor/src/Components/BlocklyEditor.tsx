@@ -2,15 +2,14 @@ import React from 'react';
 
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import { Cancel as IconCancel, Check as IconOk } from '@mui/icons-material';
-// @ts-expect-error no types
-import DarkTheme from '@blockly/theme-dark';
 
-import { I18n, Message as DialogMessage, type ThemeType } from '@iobroker/adapter-react-v5';
+import { I18n, Message as DialogMessage, type ThemeType } from '@iobroker/gui-components';
 
 import DialogError from '../Dialogs/Error';
 import DialogExport from '../Dialogs/Export';
 import DialogImport from '../Dialogs/Import';
 import { type BlocklyType, type BlockSvg, type WorkspaceSvg, type CustomBlock, initBlockly } from './blockly-plugins';
+import { getBlocklyDarkTheme } from './blocklyDarkTheme';
 
 let languageBlocklyLoaded = false;
 let languageOwnLoaded = false;
@@ -773,7 +772,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         // https://developers.google.com/blockly/reference/js/blockly.blocklyoptions_interface.md
         this.blocklyWorkspace = BlocklyEditor.Blockly.inject(this.blockly, {
             renderer: 'thrasos',
-            theme: this.state.themeType === 'dark' ? DarkTheme : 'classic',
+            theme: this.state.themeType === 'dark' ? getBlocklyDarkTheme() : 'classic',
             media: 'google-blockly/media/',
             toolbox: toolboxXml,
             zoom: {
@@ -846,8 +845,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         if (window.Blockly?.FieldOID?.DISPLAY_MODE_KEYS) {
             const workspace = this.blocklyWorkspace;
             const origConfigureContextMenu = workspace.configureContextMenu as unknown as
-                | ((options: unknown[], e: Event) => void)
-                | undefined;
+                ((options: unknown[], e: Event) => void) | undefined;
             // Blockly's configureContextMenu uses internal types not easily importable
             (
                 workspace as unknown as { configureContextMenu: (options: unknown[], e: Event) => void }
@@ -879,7 +877,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
 
     updateBackground(): void {
         if (this.state.themeType === 'dark') {
-            this.blocklyWorkspace?.setTheme(DarkTheme);
+            this.blocklyWorkspace?.setTheme(getBlocklyDarkTheme());
         } else if (this.blocklyWorkspace) {
             this.blocklyWorkspace.getThemeManager();
             this.blocklyWorkspace.setTheme(BlocklyEditor.Blockly.Themes.Classic);
@@ -1105,7 +1103,9 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
             return [
                 <div
                     key="blocklyDOM"
-                    ref={el => (this.blockly = el)}
+                    ref={el => {
+                        this.blockly = el;
+                    }}
                     style={{
                         // marginLeft: 180,
                         width: '100%', // 'calc(100% - 180px)',

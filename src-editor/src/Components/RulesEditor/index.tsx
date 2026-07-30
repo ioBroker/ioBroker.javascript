@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 
-import { I18n, type IobTheme, type ThemeName, type ThemeType, Utils } from '@iobroker/adapter-react-v5';
+import { I18n, type IobTheme, type ThemeName, type ThemeType, Utils } from '@iobroker/gui-components';
 import type { DebugMessage, RuleUserRules } from '@iobroker/javascript-rules-dev';
 
 import cls from './style.module.scss';

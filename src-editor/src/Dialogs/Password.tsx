@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { Button, DialogTitle, DialogContent, DialogActions, Dialog, TextField } from '@mui/material';
 
 import { Check as IconOk, Cancel as IconCancel } from '@mui/icons-material';
-import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n } from '@iobroker/gui-components';
 
 export default function PasswordDialog(props: {
     onEntered: (password: string | null) => void;

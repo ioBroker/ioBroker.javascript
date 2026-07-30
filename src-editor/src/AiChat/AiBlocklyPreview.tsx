@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Box } from '@mui/material';
-// @ts-expect-error no types
-import DarkTheme from '@blockly/theme-dark';
-import type { ThemeType } from '@iobroker/adapter-react-v5';
+import type { ThemeType } from '@iobroker/gui-components';
+
+import { getBlocklyDarkTheme } from '../Components/blocklyDarkTheme';
 
 interface AiBlocklyPreviewProps {
     xml: string;
@@ -49,7 +49,7 @@ const AiBlocklyPreview: React.FC<AiBlocklyPreviewProps> = ({ xml, themeType }) =
                 move: { scrollbars: false, drag: false, wheel: false },
                 sounds: false,
                 renderer: 'thrasos',
-                theme: themeType === 'dark' ? DarkTheme : 'classic',
+                theme: themeType === 'dark' ? getBlocklyDarkTheme() : 'classic',
                 media: 'google-blockly/media/',
             });
 

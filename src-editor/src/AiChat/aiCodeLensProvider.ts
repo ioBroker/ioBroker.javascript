@@ -16,7 +16,7 @@
  */
 
 import type * as monacoEditor from 'monaco-editor';
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/gui-components';
 
 /** A discovered top-level symbol that deserves a code-lens row. */
 export interface CodeLensSymbol {

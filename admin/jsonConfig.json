@@ -119,7 +119,7 @@
                     "lg": 12,
                     "url": "custom/customComponents.js",
                     "name": "ConfigCustomJavascriptSet/Components/Astro",
-                    "bundlerType": "module"
+                    "guiApi": 2
                 },
                 "createAstroStates": {
                     "newLine": true,

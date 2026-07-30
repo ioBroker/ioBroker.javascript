@@ -1,5 +1,5 @@
 import React from 'react';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { ThemeProvider } from '@mui/material/styles';
 
@@ -29,7 +29,7 @@ import {
     nl as nlLocale,
 } from 'date-fns/locale';
 
-import { I18n, Theme } from '@iobroker/adapter-react-v5';
+import { I18n, Theme } from '@iobroker/gui-components';
 import { ConfigGeneric, type ConfigGenericProps, type ConfigGenericState } from '@iobroker/json-config';
 
 import Map from './Components/Map';

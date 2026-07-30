@@ -3,7 +3,7 @@
 	strict mode in order to make use of control flow analysis
 */
 
-import { Equals, AssignableTo } from 'alcalzone-shared/build/esm/types';
+import type { Equals, AssignableTo } from 'alcalzone-shared/types';
 
 // Used to test the types
 function assertTrue<T extends true>() {

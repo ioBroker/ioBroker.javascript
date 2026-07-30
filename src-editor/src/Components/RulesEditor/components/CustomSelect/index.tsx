@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FormControl, FormHelperText, Input, MenuItem, Select } from '@mui/material';
 
-import { I18n, Utils } from '@iobroker/adapter-react-v5';
+import { I18n, Utils } from '@iobroker/gui-components';
 
 import cls from './style.module.scss';
 import CustomCheckbox from '../CustomCheckbox';

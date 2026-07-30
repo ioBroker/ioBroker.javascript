@@ -15,7 +15,7 @@
  */
 
 import type * as monacoEditor from 'monaco-editor';
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/gui-components';
 import { applyCodeEdit, type EditRange } from './applyCodeEdit';
 
 /* ────────────────────────────────────────────────────────────────────── *

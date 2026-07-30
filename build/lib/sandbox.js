@@ -519,9 +519,7 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
         }
         let stateAsObject;
         // modify state here, to make it available in callback
-        if (stateNotNull === null ||
-            typeof stateNotNull !== 'object' ||
-            stateNotNull.val === undefined) {
+        if (stateNotNull === null || typeof stateNotNull !== 'object' || stateNotNull.val === undefined) {
             stateAsObject = context.prepareStateObject(id, {
                 val: stateNotNull,
                 ack: isAck === true || isAck === 'true',

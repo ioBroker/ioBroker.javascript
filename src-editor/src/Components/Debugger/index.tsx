@@ -27,7 +27,7 @@ import {
     MdWarning as IconException,
 } from 'react-icons/md';
 
-import { type AdminConnection, I18n, type IobTheme, type ThemeName, type ThemeType } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n, type IobTheme, type ThemeName, type ThemeType } from '@iobroker/gui-components';
 
 import DialogError from '../../Dialogs/Error';
 import Editor from './Editor';
@@ -39,10 +39,8 @@ import type {
     DebuggerLocation,
     SetBreakpointParameterType,
     DebugCommandToBackEnd,
-    DebugCommandToBackEndScope,
     DebugCommandFromBackEnd,
     DebugScopes,
-    DebugCommandToBackEndSetBreakpoint,
 } from './types';
 
 const styles: Record<string, any> = {
@@ -303,7 +301,7 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
         if (frame) {
             const scopes = frame.scopeChain.filter(scope => scope.type !== 'global');
             if (scopes.length) {
-                this.sendToInstance({ cmd: 'scope', scopes } as DebugCommandToBackEndScope);
+                this.sendToInstance({ cmd: 'scope', scopes });
             } else if (this.state.scopes.global || this.state.scopes.local || this.state.scopes.closure) {
                 this.setState({ scopes: {} });
             }
@@ -589,7 +587,7 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
                                     this.sendToInstance({
                                         breakpoints: [bp],
                                         cmd: 'sb',
-                                    } as DebugCommandToBackEndSetBreakpoint);
+                                    });
                                     this.setState({ queryBreakpoints: null });
                                 }}
                                 key={i}

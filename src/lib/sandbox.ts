@@ -437,7 +437,7 @@ export function sandBox(
                         native: {
                             autocreated: 'by automatic ensure logic',
                         },
-                    } as ioBroker.FolderObject);
+                    });
                 } catch (err: any) {
                     sandbox.log(`Could not automatically create folder object ${idToCheck}: ${err.message}`, 'info');
                 }
@@ -570,17 +570,13 @@ export function sandBox(
 
         let stateAsObject: ioBroker.State;
         // modify state here, to make it available in callback
-        if (
-            stateNotNull === null ||
-            typeof stateNotNull !== 'object' ||
-            (stateNotNull as ioBroker.SettableState).val === undefined
-        ) {
+        if (stateNotNull === null || typeof stateNotNull !== 'object' || stateNotNull.val === undefined) {
             stateAsObject = context.prepareStateObject(id, {
                 val: stateNotNull as ioBroker.StateValue,
                 ack: isAck === true || isAck === 'true',
             });
         } else {
-            stateAsObject = context.prepareStateObject(id, stateNotNull as ioBroker.SettableState);
+            stateAsObject = context.prepareStateObject(id, stateNotNull);
         }
 
         // set as comment: from which script this state was set.
@@ -1174,8 +1170,7 @@ export function sandBox(
                                 void callback(
                                     err,
                                     context.convertBackStringifiedValues(this[0], state) as
-                                        | iobJS.TypedState<T>
-                                        | iobJS.AbsentState,
+                                        iobJS.TypedState<T> | iobJS.AbsentState,
                                 );
                             },
                         );
@@ -1186,12 +1181,10 @@ export function sandBox(
                     }
                     if (context.interimStateValues[this[0]] !== undefined) {
                         return context.convertBackStringifiedValues(this[0], context.interimStateValues[this[0]]) as
-                            | iobJS.TypedState<T>
-                            | iobJS.AbsentState;
+                            iobJS.TypedState<T> | iobJS.AbsentState;
                     }
                     return context.convertBackStringifiedValues(this[0], states[this[0]]) as
-                        | iobJS.TypedState<T>
-                        | iobJS.AbsentState;
+                        iobJS.TypedState<T> | iobJS.AbsentState;
                 }
             };
             result.getStateAsync = async function <T extends ioBroker.StateValue = any>(): Promise<
@@ -1200,23 +1193,17 @@ export function sandBox(
                 if ((adapter.config as JavaScriptAdapterConfig).subscribe) {
                     const state = await adapter.getForeignStateAsync(this[0]);
                     return context.convertBackStringifiedValues(this[0], state) as
-                        | iobJS.TypedState<T>
-                        | iobJS.AbsentState
-                        | null;
+                        iobJS.TypedState<T> | iobJS.AbsentState | null;
                 }
                 if (!this[0]) {
                     return null;
                 }
                 if (context.interimStateValues[this[0]] !== undefined) {
                     return context.convertBackStringifiedValues(this[0], context.interimStateValues[this[0]]) as
-                        | iobJS.TypedState<T>
-                        | iobJS.AbsentState
-                        | null;
+                        iobJS.TypedState<T> | iobJS.AbsentState | null;
                 }
                 return context.convertBackStringifiedValues(this[0], states[this[0]]) as
-                    | iobJS.TypedState<T>
-                    | iobJS.AbsentState
-                    | null;
+                    iobJS.TypedState<T> | iobJS.AbsentState | null;
             };
             result.setState = function (
                 state: ioBroker.SettableState | ioBroker.StateValue,
@@ -1270,7 +1257,7 @@ export function sandBox(
                 if (typeof isAck !== 'boolean') {
                     callback = clearRunning as () => void;
                     clearRunning = delay as boolean;
-                    delay = isAck as number;
+                    delay = isAck;
                     isAck = undefined;
                 }
                 if (typeof delay !== 'number') {
@@ -1284,7 +1271,7 @@ export function sandBox(
                 }
                 let count = this.length;
                 for (let i = 0; i < this.length; i++) {
-                    sandbox.setStateDelayed(this[i], state, isAck as boolean, delay, clearRunning, () => {
+                    sandbox.setStateDelayed(this[i], state, isAck, delay, clearRunning, () => {
                         if (!--count && typeof callback === 'function') {
                             callback();
                         }
@@ -1417,7 +1404,7 @@ export function sandBox(
             callback?: (error: Error | null | string, stdout?: string, stderr?: string) => void,
         ): undefined | ChildProcess {
             if (typeof options === 'function') {
-                callback = options as (error: Error | null | string, stdout?: string, stderr?: string) => void;
+                callback = options;
                 options = {};
             }
             if (!(adapter.config as JavaScriptAdapterConfig).enableExec) {
@@ -1501,15 +1488,7 @@ export function sandBox(
             ) => void,
         ): void {
             if (typeof options === 'function') {
-                callback = options as (
-                    error: Error | null,
-                    result: {
-                        statusCode: number | null;
-                        data: any;
-                        headers: Record<string, string>;
-                        responseTime: number;
-                    },
-                ) => void;
+                callback = options;
                 options = {};
             }
 
@@ -1618,18 +1597,7 @@ export function sandBox(
             }
 
             const config = {
-                ...getHttpRequestConfig(
-                    url,
-                    options as {
-                        timeout?: number;
-                        responseType?: ResponseType;
-                        headers?: Record<string, string>;
-                        basicAuth?: { user: string; password: string } | null;
-                        bearerAuth?: string;
-                        validateCertificate?: boolean;
-                    },
-                    context.allowSelfSignedCerts,
-                ),
+                ...getHttpRequestConfig(url, options, context.allowSelfSignedCerts),
                 method: 'post',
                 data,
             };
@@ -1774,11 +1742,8 @@ export function sandBox(
                 const result: (IobSchedule | string | null | undefined)[] = [];
                 for (const p of pattern) {
                     result.push(
-                        sandbox.subscribe(p as SchedulerRule | string, callbackOrChangeTypeOrId, value) as
-                            | IobSchedule
-                            | string
-                            | null
-                            | undefined,
+                        sandbox.subscribe(p, callbackOrChangeTypeOrId, value) as
+                            IobSchedule | string | null | undefined,
                     );
                 }
                 return result;
@@ -1805,10 +1770,7 @@ export function sandBox(
                     const pa: Pattern = { ...oPattern, id: oPattern.id[t] };
                     result.push(
                         sandbox.subscribe(pa, callbackOrChangeTypeOrId, value) as
-                            | IobSchedule
-                            | string
-                            | null
-                            | undefined,
+                            IobSchedule | string | null | undefined,
                     );
                 }
                 return result;
@@ -2075,8 +2037,7 @@ export function sandBox(
                             if (objects?.[objId]?.type === 'state') {
                                 // Just subscribe to states
                                 subscriptions[objId] = sandbox.subscribe(objId, callback) as
-                                    | string
-                                    | SubscriptionResult; // TODO: more features
+                                    string | SubscriptionResult; // TODO: more features
                             }
                         }
                     }
@@ -2144,8 +2105,7 @@ export function sandBox(
                 return fileNamePattern.map(
                     filePattern =>
                         sandbox.onFile(id, filePattern, withFileOrCallback, callback) as
-                            | undefined
-                            | FileSubscriptionResult,
+                            undefined | FileSubscriptionResult,
                 );
             }
 
@@ -2679,9 +2639,9 @@ export function sandBox(
 
             if (
                 (!(adapter.config as JavaScriptAdapterConfig).latitude &&
-                    ((adapter.config as JavaScriptAdapterConfig).latitude as unknown as number) !== 0) ||
+                    (adapter.config as JavaScriptAdapterConfig).latitude !== 0) ||
                 (!(adapter.config as JavaScriptAdapterConfig).longitude &&
-                    ((adapter.config as JavaScriptAdapterConfig).longitude as unknown as number) !== 0)
+                    (adapter.config as JavaScriptAdapterConfig).longitude !== 0)
             ) {
                 sandbox.log('Longitude or latitude does not set. Cannot use astro.', 'error');
                 return;
@@ -2830,12 +2790,12 @@ export function sandBox(
             if (typeof isAck !== 'boolean') {
                 callback = clearRunning as (err?: Error | null) => void;
                 clearRunning = delay as boolean;
-                delay = isAck as number;
+                delay = isAck;
                 isAck = undefined;
             }
             if (typeof delay !== 'number') {
                 callback = clearRunning as (err?: Error | null) => void;
-                clearRunning = delay as boolean;
+                clearRunning = delay;
                 delay = 0;
             }
             if (typeof clearRunning !== 'boolean') {
@@ -3453,7 +3413,7 @@ export function sandBox(
                 common = undefined;
             }
             if (typeof forceCreation === 'function') {
-                callback = forceCreation as (err: Error | null) => void;
+                callback = forceCreation;
                 forceCreation = undefined;
             }
             if (isObject(forceCreation)) {
@@ -3619,7 +3579,7 @@ export function sandBox(
                 common = undefined;
             }
             if (typeof initValue === 'function') {
-                callback = initValue as (err?: Error | null) => void;
+                callback = initValue;
                 initValue = undefined;
             }
             if (typeof forceCreation === 'function') {
@@ -3810,9 +3770,7 @@ export function sandBox(
                 let aObj: ioBroker.StateObject | null | undefined;
                 try {
                     aObj = (await adapter.getForeignObjectAsync(alias.id as string)) as
-                        | ioBroker.StateObject
-                        | null
-                        | undefined;
+                        ioBroker.StateObject | null | undefined;
                 } catch {
                     // ignore
                 }
@@ -3882,9 +3840,7 @@ export function sandBox(
                 if (writeId && _common.write !== false) {
                     try {
                         aObj = (await adapter.getForeignObjectAsync(writeId)) as
-                            | ioBroker.StateObject
-                            | null
-                            | undefined;
+                            ioBroker.StateObject | null | undefined;
                     } catch {
                         // ignore
                     }
@@ -4812,11 +4768,7 @@ export function sandBox(
             callback?: (err: Error | null | undefined, data?: Buffer | string, mimeType?: string) => void,
         ): void {
             if (typeof fileName === 'function') {
-                callback = fileName as (
-                    err: Error | null | undefined,
-                    data?: Buffer | string,
-                    mimeType?: string,
-                ) => void;
+                callback = fileName;
                 fileName = _adapter;
                 _adapter = '0_userdata.0';
             }
@@ -5130,7 +5082,7 @@ export function sandBox(
             callback?: (err: Error | null | undefined, started: boolean) => void,
         ): boolean {
             if (typeof ignoreIfStarted === 'function') {
-                callback = ignoreIfStarted as (err: Error | null | undefined, started: boolean) => void;
+                callback = ignoreIfStarted;
                 ignoreIfStarted = false;
             }
             scriptName ||= name;

@@ -1,6 +1,6 @@
 // @ts-expect-error no types available
 import SunCalc from 'suncalc2';
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/gui-components';
 import { GenericBlock } from '../GenericBlock';
 import type {
     RuleBlockConfigConditionAstronomical,

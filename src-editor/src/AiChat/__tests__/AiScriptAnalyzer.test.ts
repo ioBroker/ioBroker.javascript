@@ -27,7 +27,7 @@ describe('getAllScripts', () => {
             ...makeScriptObj('script.js.test1', '// test script 1'),
             ...makeScriptObj('script.js.test2', 'setState("dp.0.val", true);', 'TypeScript/ts', false),
         };
-        const result = getAllScripts(objects as any);
+        const result = getAllScripts(objects);
         expect(result).toHaveLength(2);
         expect(result[0].id).toBe('script.js.test1');
         expect(result[0].source).toBe('// test script 1');

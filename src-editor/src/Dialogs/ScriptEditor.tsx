@@ -4,7 +4,7 @@ import { Button, DialogTitle, DialogContent, DialogActions, Dialog, Box } from '
 
 import { Save as IconSave, Cancel as IconCancel } from '@mui/icons-material';
 
-import { type AdminConnection, I18n, type IobTheme, type ThemeType } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n, type IobTheme, type ThemeType } from '@iobroker/gui-components';
 
 import ScriptEditorComponent from '../Components/ScriptEditorVanillaMonaco';
 

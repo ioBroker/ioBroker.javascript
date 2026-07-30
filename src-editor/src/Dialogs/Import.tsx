@@ -6,7 +6,7 @@ import { Button, DialogTitle, DialogContent, DialogActions, Dialog } from '@mui/
 import { Check as IconOk, Cancel as IconCancel } from '@mui/icons-material';
 import { MdFileUpload as IconUpload, MdCancel as IconNo, MdAdd as IconPlus } from 'react-icons/md';
 
-import { I18n, type ThemeType } from '@iobroker/adapter-react-v5';
+import { I18n, type ThemeType } from '@iobroker/gui-components';
 
 const styles: Record<string, React.CSSProperties> = {
     textArea: {

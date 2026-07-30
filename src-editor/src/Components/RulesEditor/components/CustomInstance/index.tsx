@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { FormControl, FormHelperText, Input, MenuItem, Select } from '@mui/material';
 
-import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n } from '@iobroker/gui-components';
 
 const styles: Record<string, any> = {
     formControl: {

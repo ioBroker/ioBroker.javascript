@@ -2,7 +2,7 @@ import React from 'react';
 // @ts-expect-error no types in suncalc2
 import SunCalc from 'suncalc2';
 
-import { ComplexCron, Schedule, I18n, convertCronToText } from '@iobroker/adapter-react-v5';
+import { ComplexCron, Schedule, I18n, convertCronToText } from '@iobroker/gui-components';
 
 import { GenericBlock } from '../GenericBlock';
 import { STANDARD_FUNCTION_STATE, STANDARD_FUNCTION_STATE_ONCHANGE } from '../../helpers/Compile';
@@ -15,8 +15,6 @@ import type {
     RuleContext,
     RuleInputAny,
     RuleInputCron,
-    RuleInputNameText,
-    RuleInputText,
     RuleInputWizard,
     RuleTagCardTitle,
     GenericBlockState,
@@ -315,7 +313,7 @@ export default class TriggerScheduleBlock extends GenericBlock<
                                 nameRender: 'renderText',
                                 attr: 'cron',
                                 defaultValue: value,
-                            } as RuleInputText,
+                            },
                             this.state.settings.cron || value,
                             onChange,
                         )}
@@ -354,7 +352,7 @@ export default class TriggerScheduleBlock extends GenericBlock<
                         attr: 'addText',
                         signature: true,
                         doNotTranslate: true,
-                    } as RuleInputNameText,
+                    },
                     this.state.settings.addText || I18n.t('every hour at 0 minutes'),
                 )}
             </div>

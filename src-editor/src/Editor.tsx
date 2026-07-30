@@ -83,7 +83,7 @@ import {
     type ThemeType,
     type AdminConnection,
     type ThemeName,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import steps, { STEPS } from './Components/RulesEditor/helpers/Tour';
 import type { AstroTimes, ScriptType } from './types';
@@ -445,7 +445,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                 cb?: (selected: string) => void,
             ): void => {
                 if (typeof type === 'function') {
-                    cb = type as (selected: string) => void;
+                    cb = type;
                     type = null;
                 }
                 this.selectId.callback = cb as (selected: string | string[] | undefined) => void;

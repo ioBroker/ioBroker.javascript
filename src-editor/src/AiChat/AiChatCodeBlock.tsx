@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { Box, IconButton, Tooltip } from '@mui/material';
-import { ContentCopy, AddCircleOutline, CompareArrows } from '@mui/icons-material';
-import { I18n, type ThemeType } from '@iobroker/adapter-react-v5';
+import { ContentCopy, AddCircleOutlined, CompareArrows } from '@mui/icons-material';
+import { I18n, type ThemeType } from '@iobroker/gui-components';
 import type { ChatSourceRange } from './AiChatTypes';
 
 interface AiChatCodeBlockProps {
@@ -89,7 +89,7 @@ const AiChatCodeBlock: React.FC<AiChatCodeBlockProps> = ({
                                 size="small"
                                 onClick={() => onInsertCode(code)}
                             >
-                                <AddCircleOutline sx={{ fontSize: 16 }} />
+                                <AddCircleOutlined sx={{ fontSize: 16 }} />
                             </IconButton>
                         </Tooltip>
                     )}

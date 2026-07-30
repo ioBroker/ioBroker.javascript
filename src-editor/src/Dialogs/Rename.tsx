@@ -15,7 +15,7 @@ import {
 
 import { Cancel as IconCancel, Check as IconOk } from '@mui/icons-material';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/gui-components';
 
 interface DialogRenameProps {
     onClose: () => void;

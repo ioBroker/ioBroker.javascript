@@ -3,7 +3,7 @@
 
 import React from 'react';
 
-import { I18n, Message as DialogMessage, type ThemeType } from '@iobroker/adapter-react-v5';
+import { I18n, Message as DialogMessage, type ThemeType } from '@iobroker/gui-components';
 
 import * as BlocklyTS from 'blockly/core';
 import type { WorkspaceSvg } from 'blockly/core/workspace_svg';

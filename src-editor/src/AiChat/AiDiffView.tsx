@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import { Box, Button, Toolbar, Typography } from '@mui/material';
 import { Check, Close } from '@mui/icons-material';
-import { I18n, type ThemeType } from '@iobroker/adapter-react-v5';
+import { I18n, type ThemeType } from '@iobroker/gui-components';
 import type * as monacoEditor from 'monaco-editor';
 
 interface AiDiffViewProps {

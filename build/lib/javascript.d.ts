@@ -634,7 +634,7 @@ declare global {
         interface GetObjectListItem<T extends AnyObject> extends GetObjectViewItem<T> {
             /** A copy of the object */
             value: T;
-            /** The same as @link{value} */
+            /** The same as {@link value} */
             doc: T;
         }
         type GetObjectListCallback<T extends iobJS.AnyObject> = (
@@ -1278,13 +1278,13 @@ declare global {
             blockedVersions?: string[];
             /** Whether this adapter includes custom blocks for Blockly. If true, `admin/blockly.js` must exist. */
             blockly?: boolean;
-            /** Where the adapter will get its data from. Set this together with @see dataSource */
+            /** Where the adapter will get its data from. Set this together with {@link dataSource} */
             connectionType?: ConnectionType;
             /** If true, this adapter can be started in compact mode (in the same process as other adapters) */
             compact?: boolean;
             /** The directory relative to iobroker-data where the adapter stores the data. Supports the placeholder `%INSTANCE%`. This folder will be backed up and restored automatically. */
             dataFolder?: string;
-            /** How the adapter will mainly receive its data. Set this together with @see connectionType */
+            /** How the adapter will mainly receive its data. Set this together with {@link connectionType} */
             dataSource?: 'poll' | 'push' | 'assumption';
             /** A record of ioBroker adapters (including "js-controller") and version ranges which are required for this adapter on the same host. */
             dependencies?: Dependencies;
@@ -1314,7 +1314,7 @@ declare global {
             keywords?: string[];
             /** A dictionary of links to web services this adapter provides */
             localLinks?: Record<string, string | LocalLink>;
-            /** @deprecated Use @see localLinks */
+            /** @deprecated Use {@link localLinks} */
             localLink?: string;
             /** Default log level for this adapter. It can be changed for every instance separately */
             loglevel?: LogLevel;
@@ -1326,7 +1326,7 @@ declare global {
             materializeTab?: boolean;
             /** Whether the admin configuration dialog is written in materialized style. Required for Admin 3+ */
             materialize: boolean;
-            /** @deprecated Use @see supportedMessages up from controller v5 */
+            /** @deprecated Use {@link supportedMessages} up from controller v5 */
             messagebox?: true;
             /** Messages which are supported by the adapter, supportedMessages.custom: true is the equivalent to messagebox: true */
             supportedMessages?: SupportedMessages;
@@ -1383,11 +1383,11 @@ declare global {
             subscribable?: boolean;
             /** If `true`, this adapter provides custom per-state settings. Requires a `custom_m.html` file in the `admin` directory. */
             supportCustoms?: boolean;
-            /** @deprecated Use @see supportedMessages up from controller v5 */
+            /** @deprecated Use {@link supportedMessages} up from controller v5 */
             supportStopInstance?: boolean;
             /** The translated names of this adapter to be shown in the admin UI */
             titleLang?: StringOrTranslated;
-            /** @deprecated The name of this adapter to be shown in the admin UI. Use @see titleLang instead. */
+            /** @deprecated The name of this adapter to be shown in the admin UI. Use {@link titleLang} instead. */
             title?: string;
             /** The type of this adapter */
             type?:
@@ -1429,13 +1429,13 @@ declare global {
             webByVersion?: boolean;
             /** Whether the web server in this adapter can be extended with plugin/extensions */
             webExtendable?: boolean;
-            /** Relative path to a module that contains an extension for the web adapter. Use together with @see native.webInstance to configure which instances this affects */
+            /** Relative path to a module that contains an extension for the web adapter. Use together with {@link native.webInstance} to configure which instances this affects */
             webExtension?: string;
             /** List of parameters that must be included in info.js by webServer adapter. (Example material: `"webPreSettings": { "materialBackground": "native.loadingBackground" }`). Web adapter uses this setting to create a customized info.js file to provide some essential settings for index.html file before the socket connection is established to provide e.g., background color of the loading screen. */
             webPreSettings?: Record<string, any>;
             /** @deprecated (where is it necessary?) Array of web server's instances that should serve content from the adapter's www folder */
             webservers?: string[];
-            /** @deprecated (use localLinks) A list of pages that should be shown on the "web" index page */
+            /** @deprecated (use {@link localLinks}) A list of pages that should be shown on the "web" index page */
             welcomeScreen?: WelcomeScreenEntry[];
             /** @deprecated (use localLinks) A list of pages that should be shown on the ioBroker cloud index page */
             welcomeScreenPro?: WelcomeScreenEntry[];
@@ -1958,12 +1958,11 @@ declare global {
                                         : View extends 'schedule'
                                           ? ScheduleObject
                                           : View extends 'config'
-                                            ?
-                                                  | RepositoryObject
-                                                  | SystemConfigObject
-                                                  | (OtherObject & {
-                                                        type: 'config';
-                                                    })
+                                            ? | RepositoryObject
+                                              | SystemConfigObject
+                                              | (OtherObject & {
+                                                    type: 'config';
+                                                })
                                             : View extends 'custom'
                                               ? NonNullable<StateObject['common']['custom']>
                                               : iobJS.Object
@@ -2484,7 +2483,7 @@ declare global {
     /**
      * Queries all states with the given selector
      *
-     * @param selector See @link{https://github.com/ioBroker/ioBroker.javascript#---selector} for a description
+     * @param selector See {@link https://github.com/ioBroker/ioBroker.javascript#---selector} for a description
      */
     function $(selector: string): iobJS.QueryResult;
 
@@ -2523,7 +2522,7 @@ declare global {
      * Sends an email using the email adapter.
      * See the adapter documentation for a description of the msg parameter.
      *
-     * @deprecated Use @see sendTo
+     * @deprecated Use {@link sendTo}
      */
     function email(msg: any): void;
 
@@ -2531,7 +2530,7 @@ declare global {
      * Sends a pushover message using the pushover adapter.
      * See the adapter documentation for a description of the msg parameter.
      *
-     * @deprecated Use @see sendTo
+     * @deprecated Use {@link sendTo}
      */
     function pushover(msg: any): void;
 
@@ -2695,7 +2694,7 @@ declare global {
 
     /**
      * Calculates the astro time which corresponds to the given pattern.
-     * For valid patterns, see @link{https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#astro-function}
+     * For valid patterns, see {@link https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/javascript.md#astro-function}
      *
      * @param pattern One of predefined patterns, like: sunrise, sunriseEnd, ...
      * @param date (optional) The date for which the astro time should be calculated. Default = today

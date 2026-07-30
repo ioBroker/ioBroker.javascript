@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 import ChannelDetector, { type DetectOptions, Types, type PatternControl } from '@iobroker/type-detector';
-import { I18n, type AdminConnection } from '@iobroker/adapter-react-v5';
+import { I18n, type AdminConnection } from '@iobroker/gui-components';
 
 import type {
     ApiConfig,
@@ -8,10 +8,8 @@ import type {
     ChatCompletionRequest,
     ChatCompletionResponse,
     DeviceObject,
-    DeviceState,
 } from './AiChatTypes';
 
-// @ts-expect-error no types in Markdown
 const docsFull = import(`./docs-compact.md?raw`);
 
 /** Map provider names to icon files */
@@ -391,22 +389,19 @@ export async function detectDevices(socket: AdminConnection): Promise<DeviceObje
                 const deviceObject: DeviceObject = {
                     id: stateId,
                     name: getText(stateObj.common.name, lang),
-                    type: stateObj.type as ioBroker.ObjectType,
+                    type: stateObj.type,
                     deviceType: control.type,
                     states: control.states
                         .filter(state => state.id)
-                        .map(
-                            state =>
-                                ({
-                                    id: state.id,
-                                    name: state.name,
-                                    role: state.defaultRole,
-                                    type: (devicesObject[state.id].common as ioBroker.StateCommon).type,
-                                    unit: (devicesObject[state.id].common as ioBroker.StateCommon).unit,
-                                    read: (devicesObject[state.id].common as ioBroker.StateCommon).read ?? true,
-                                    write: (devicesObject[state.id].common as ioBroker.StateCommon).write ?? true,
-                                }) as DeviceState,
-                        ),
+                        .map(state => ({
+                            id: state.id,
+                            name: state.name,
+                            role: state.defaultRole,
+                            type: (devicesObject[state.id].common as ioBroker.StateCommon).type,
+                            unit: (devicesObject[state.id].common as ioBroker.StateCommon).unit,
+                            read: (devicesObject[state.id].common as ioBroker.StateCommon).read ?? true,
+                            write: (devicesObject[state.id].common as ioBroker.StateCommon).write ?? true,
+                        })),
                 };
 
                 const parts = stateId.split('.');
@@ -505,7 +500,7 @@ export async function getSystemPromptDocs(): Promise<string> {
         return docsTextCache;
     }
     docsTextCache = (await docsFull).default;
-    return docsTextCache!;
+    return docsTextCache;
 }
 
 export function getUserLanguageName(): string {

@@ -16,7 +16,7 @@ import {
 
 import { Check as IconOk, Cancel as IconCancel, Clear as ClearIcon } from '@mui/icons-material';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/gui-components';
 import type { ScriptType } from '@/types';
 
 interface DialogNewProps {
@@ -186,7 +186,7 @@ class DialogNew extends React.Component<DialogNewProps, DialogNewState> {
                                 <Select
                                     variant="standard"
                                     value={this.state.instance}
-                                    onChange={e => this.setState({ instance: parseInt(e.target.value as string, 10) })}
+                                    onChange={e => this.setState({ instance: e.target.value })}
                                     inputProps={{ name: 'instance', id: 'instance' }}
                                 >
                                     {this.props.instances?.map(instance => (
