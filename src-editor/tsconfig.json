@@ -3,16 +3,12 @@
 {
     "extends": "../tsconfig.json",
     "compilerOptions": {
-        // No "baseUrl" (deprecated in TS 6): "paths" below resolve relative to this file.
         "allowSyntheticDefaultImports": true,
         "checkJs": false,
-        // Vite emits the bundle, "tsc" is only a type-check gate. Emitting here would also
-        // write ../src/lib/consts.js, because src/types.d.ts pulls in a file outside "rootDir".
         "noEmit": true,
         "strictNullChecks": true,
         "strict": true,
         "rootDir": "./src",
-        // Vite bundles this app, so override the CommonJS/node16 settings from the base config
         "module": "ESNext",
         "moduleResolution": "Bundler",
         "sourceMap": true,

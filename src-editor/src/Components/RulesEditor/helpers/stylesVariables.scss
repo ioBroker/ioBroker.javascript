@@ -10,6 +10,10 @@ $themeStandard: (
     --backgroundBlock: #c9e7ffab,
     --backgroundGlobalColor: #ffffff00,
     --backgroundMobile: #041c35d4,
+    --backgroundCurrentItem: #ffffff6b,
+    --disabledColor: #210025cc,
+    --backgroundEmptyBlock: #ffffff1f,
+    --colorAddBlock: #ffffff,
     --debugColor: #c6511b,
 );
 $themeGreen: (
@@ -24,6 +28,10 @@ $themeGreen: (
     --backgroundBlock: #c9ffcfab,
     --backgroundGlobalColor: #51ff001b,
     --backgroundMobile: #3081333b,
+    --backgroundCurrentItem: #ffffff6b,
+    --disabledColor: #210025cc,
+    --backgroundEmptyBlock: #ffffff1f,
+    --colorAddBlock: #ffffff,
     --debugColor: #c6511b,
 );
 $themeSilver: (
@@ -38,6 +46,10 @@ $themeSilver: (
     --backgroundBlock: #c1c1c1ab,
     --backgroundGlobalColor: rgba(28, 28, 28, 0.93),
     --backgroundMobile: #040303eb,
+    --backgroundCurrentItem: #ffffff6b,
+    --disabledColor: #210025cc,
+    --backgroundEmptyBlock: #ffffff1f,
+    --colorAddBlock: #ffffff,
     --debugColor: #c6511b,
 );
 $themeLight: (
@@ -52,12 +64,58 @@ $themeLight: (
     --backgroundBlock: #000000,
     --backgroundGlobalColor: #ffffff40,
     --backgroundMobile: #b4b2c7bf,
+    --backgroundCurrentItem: #ffffff6b,
+    --disabledColor: #210025cc,
+    --backgroundEmptyBlock: #ffffff1f,
+    --colorAddBlock: #ffffff,
     --debugColor: #c6511b,
+);
+// Colors are taken from MODERN_DARK of @iobroker/gui-components
+$themeModernDark: (
+    --backgroundColor: #141c29cc,
+    --lineColor: #8b97a8,
+    --lineColorHover: #e8edf5,
+    --lineColorActive: #4b9bfa,
+    --backgroundColorHumburger: #1a2434f2,
+    --colorBlock: #e8edf5,
+    --colorBlockHover: #4b9bfa,
+    --colorInput: #e8edf5,
+    --backgroundBlock: #121a26f2,
+    --backgroundGlobalColor: #0a121df0,
+    --backgroundMobile: #141c29f7,
+    --backgroundCurrentItem: #1a24348c,
+    --disabledColor: #586576,
+    --backgroundEmptyBlock: #ffffff0f,
+    --colorAddBlock: #e8edf5,
+    --debugColor: #e8a33d,
+);
+// Colors are taken from MODERN_LIGHT of @iobroker/gui-components
+$themeModernLight: (
+    --backgroundColor: #ffffffcc,
+    --lineColor: #5b6878,
+    --lineColorHover: #101827,
+    --lineColorActive: #0b62d6,
+    --backgroundColorHumburger: #eef2f7f2,
+    --colorBlock: #101827,
+    --colorBlockHover: #0b62d6,
+    --colorInput: #101827,
+    --backgroundBlock: #fffffff2,
+    --backgroundGlobalColor: #f4f7fbf0,
+    --backgroundMobile: #fffffff7,
+    --backgroundCurrentItem: #ffffff8c,
+    --disabledColor: #98a4b3,
+    --backgroundEmptyBlock: #1018270a,
+    --colorAddBlock: #101827,
+    --debugColor: #c77700,
 );
 @mixin spread-map($map: ()) {
     @each $key, $value in $map {
         #{$key}: $value;
     }
+}
+// Fallback for the theme names without an own palette (PT, DX, NW, HA, ...)
+:root {
+    @include spread-map($themeStandard);
 }
 :root.blue {
     @include spread-map($themeStandard);
@@ -70,4 +128,10 @@ $themeLight: (
 }
 :root.light {
     @include spread-map($themeLight);
+}
+:root.modernDark {
+    @include spread-map($themeModernDark);
+}
+:root.modernLight {
+    @include spread-map($themeModernLight);
 }

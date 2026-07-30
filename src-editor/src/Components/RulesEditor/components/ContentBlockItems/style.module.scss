@@ -5,7 +5,7 @@
 .emptyBlockStyle {
     cursor: pointer;
     width: auto;
-    background: #ffffff1f;
+    background: var(--backgroundEmptyBlock);
     display: flex;
     // padding: 10px;
     margin: 10px 40px 10px 10px;
@@ -123,10 +123,11 @@
     display: flex;
     padding: 0 10px 6px 10px;
     align-items: center;
-    color: white;
+    color: var(--colorAddBlock);
     cursor: pointer;
     * {
-        color: #ffffffb3;
+        color: var(--colorAddBlock);
+        opacity: 0.7;
     }
 }
 .addClassOverflow {

@@ -13,8 +13,8 @@
     "devDependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
-        "@iobroker/gui-components": "^10.0.5",
-        "@iobroker/json-config": "^9.0.8",
+        "@iobroker/gui-components": "^10.0.6",
+        "@iobroker/json-config": "^9.0.9",
         "@module-federation/runtime": "^2.8.1",
         "@module-federation/vite": "^1.20.1",
         "@mui/icons-material": "^9.2.0",

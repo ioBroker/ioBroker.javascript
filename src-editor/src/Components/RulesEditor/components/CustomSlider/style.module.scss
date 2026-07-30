@@ -9,21 +9,20 @@
         height: 8px !important;
         border-radius: 4px;
     }
-    [class*='MuiSlider-valueLabel'] {
-        left: calc(-50% + 4px);
-    }
+    // Since MUI v5 the thumb is centered with `transform: translate(-50%, -50%)`,
+    // so it must not be shifted with negative margins anymore
     [class*='MuiSlider-thumb'] {
-        height: 24px;
-        width: 24px;
-        background-color: var(--colorBlock);
-        border: 2px solid currentColor;
-        margin-top: -8px;
-        margin-left: -12px;
+        height: 20px;
+        width: 20px;
+        background-color: currentColor;
         &:focus,
         &:hover,
-        &[class*='MuiSlider-active'] {
+        &[class*='Mui-active'] {
             box-shadow: inherit !important;
         }
+    }
+    [class*='MuiSlider-markLabel'] {
+        color: var(--colorBlock);
     }
     .mark {
         background-color: #00000000 !important;
