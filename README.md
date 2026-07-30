@@ -28,6 +28,8 @@ Executes Javascript, Typescript Scripts.
 
 ## Changelog
 ### **WORK IN PROGRESS**
+* (@GermanBluefox) Typescript 6 support
+* (@GermanBluefox) GUI was migrated to React 19 and MUI 9
 * (@GermanBluefox) Showed host name in the instance selection dialog
 
 ### 9.3.1 (2026-06-18)
