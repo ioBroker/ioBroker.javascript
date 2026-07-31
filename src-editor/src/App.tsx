@@ -11,6 +11,7 @@ import {
     GenericApp,
     Message as DialogMessage,
     Confirm as DialogConfirm,
+    ScrollbarStyles,
     type IobTheme,
     type GenericAppProps,
     type GenericAppState,
@@ -1346,6 +1347,7 @@ export default class App extends GenericApp<AppProps, AppState> {
         return (
             <StyledEngineProvider injectFirst>
                 <ThemeProvider theme={this.state.theme}>
+                    <ScrollbarStyles theme={this.state.theme} />
                     <div style={styles.root}>
                         <ContextWrapper socket={this.socket}>{context}</ContextWrapper>
                     </div>
