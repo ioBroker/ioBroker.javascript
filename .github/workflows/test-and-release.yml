@@ -38,7 +38,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v7
-            - uses: actions/setup-node@v6
+            - uses: actions/setup-node@v7
               with:
                   node-version: 24.15.0
             - run: npm i
@@ -98,7 +98,7 @@ jobs:
 
             - name: Use Node.js ${{ matrix.node-version }}
               if: steps.automerge.outputs.mergeResult == 'merged'
-              uses: actions/setup-node@v6
+              uses: actions/setup-node@v7
               with:
                   node-version: 20.x
 
