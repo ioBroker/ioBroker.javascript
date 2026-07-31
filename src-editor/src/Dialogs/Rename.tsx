@@ -66,7 +66,10 @@ class DialogRename extends React.Component<DialogRenameProps, DialogRenameState>
     }
 
     getId(name: string): string {
-        name = (name || '').replace(/[\\/\][*,;'"`<>?\s]/g, '_');
+        name = (name || '')
+            .replace(/[\\/\][.*,;'"`<>?\s]/g, '_')
+            .trim()
+            .replace(/\.$/, '_');
         return `${this.state.prefix}.${name}`;
     }
 
