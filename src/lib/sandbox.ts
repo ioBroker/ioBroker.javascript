@@ -510,7 +510,7 @@ export function sandBox(
                 if (stateNotNull && stateNotNull.val !== undefined && stateNotNull.val !== null) {
                     actualCommonType = getCommonTypeOf(stateNotNull.val);
                 }
-            } else if (stateNotNull !== null && stateNotNull !== undefined) {
+            } else if (stateNotNull !== undefined) {
                 actualCommonType = getCommonTypeOf(stateNotNull);
             }
             // If this is not the expected one, issue a warning

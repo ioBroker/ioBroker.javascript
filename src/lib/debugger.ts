@@ -385,8 +385,8 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
 
         if (exitDebugRepl) {
             exitDebugRepl();
+            exitDebugRepl = undefined;
         }
-        exitDebugRepl = undefined;
     }
 
     resetOnStart();
