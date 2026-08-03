@@ -9,7 +9,7 @@
         "@devbookhq/splitter": "^1.4.2",
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
-        "@iobroker/gui-components": "^10.0.8",
+        "@iobroker/gui-components": "^10.0.12",
         "@iobroker/javascript-rules-dev": "^1.0.2",
         "@iobroker/type-detector": "^5.0.15",
         "@iobroker/types": "^7.2.2",
@@ -19,24 +19,23 @@
         "@mui/material": "^9.2.0",
         "@mui/x-date-pickers": "^9.10.1",
         "@sentry/browser": "^10.69.0",
-        "@types/lodash": "^4.17.24",
-        "@types/react": "^19.2.17",
-        "@types/react-dom": "^19.2.3",
+        "@types/lodash": "^4.17.25",
+        "@types/react": "^19.2.18",
+        "@types/react-dom": "^19.2.4",
         "@types/reactour": "^1.18.5",
-        "@vitejs/plugin-react": "^6.0.4",
+        "@vitejs/plugin-react": "^6.0.5",
         "blockly": "^11.2.2",
-        "file-selector": "^4.0.2",
         "jszip": "^3.10.1",
         "moment": "^2.30.1",
         "monaco-editor": "~0.56.0",
-        "openai": "^7.1.0",
+        "openai": "^7.3.0",
         "react": "^19.2.8",
         "react-bem-helper": "^1.4.1",
         "react-dnd": "^16.0.1",
         "react-dnd-html5-backend": "^16.0.1",
         "react-dnd-touch-backend": "^16.0.1",
         "react-dom": "^19.2.8",
-        "react-dropzone": "^19.1.1",
+        "react-dropzone": "^20.0.0",
         "react-fullscreen": "^0.1.0",
         "react-i18next": "^17.0.11",
         "react-icons": "^5.7.0",
@@ -50,7 +49,7 @@
         "styled-components": "^6.4.4",
         "suncalc2": "^1.8.1",
         "typescript": "~6.0.3",
-        "vite": "^8.1.5",
+        "vite": "^8.2.0",
         "vite-plugin-commonjs": "^0.10.4"
     },
     "scripts": {
@@ -73,7 +72,7 @@
         "not op_mini all"
     ],
     "devDependencies": {
-        "jsdom": "^29.0.1",
-        "vitest": "^4.1.0"
+        "jsdom": "^30.0.1",
+        "vitest": "^4.1.10"
     }
 }
