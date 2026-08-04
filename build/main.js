@@ -3120,7 +3120,7 @@ class JavaScript extends adapter_core_1.Adapter {
     }
     async sunTimeSchedules() {
         if (this.config.createAstroStates) {
-            if (!isNaN(this.config.longitude) && !isNaN(this.config.longitude)) {
+            if (!isNaN(this.config.longitude) && !isNaN(this.config.latitude)) {
                 const calcDate = getAstroStartOfDay();
                 const times = this.mods.suncalc.getTimes(calcDate, this.config.latitude, this.config.longitude);
                 this.log.debug(`[sunTimeSchedules] Times: ${JSON.stringify(times)}`);
