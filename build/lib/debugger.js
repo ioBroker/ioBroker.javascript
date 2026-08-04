@@ -309,8 +309,8 @@ function createRepl(inspector) {
         selectedFrame = undefined;
         if (exitDebugRepl) {
             exitDebugRepl();
+            exitDebugRepl = undefined;
         }
-        exitDebugRepl = undefined;
     }
     resetOnStart();
     const INSPECT_OPTIONS = { colors: inspector.stdout.isTTY };

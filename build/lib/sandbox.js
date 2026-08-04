@@ -465,7 +465,7 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                     actualCommonType = getCommonTypeOf(stateNotNull.val);
                 }
             }
-            else if (stateNotNull !== null && stateNotNull !== undefined) {
+            else if (stateNotNull !== undefined) {
                 actualCommonType = getCommonTypeOf(stateNotNull);
             }
             // If this is not the expected one, issue a warning
