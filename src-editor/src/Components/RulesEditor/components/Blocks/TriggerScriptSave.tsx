@@ -1,4 +1,4 @@
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/gui-components';
 import { GenericBlock } from '../GenericBlock';
 import { NO_FUNCTION } from '../../helpers/Compile';
 import type {

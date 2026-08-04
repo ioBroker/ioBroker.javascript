@@ -5,7 +5,7 @@ import { Button, DialogTitle, DialogContent, DialogActions, Dialog, Popper, Fade
 import { FileCopy as IconCopy, Cancel as IconCancel } from '@mui/icons-material';
 import { FaFileExport as IconExport } from 'react-icons/fa';
 
-import { I18n, type ThemeType, Utils } from '@iobroker/adapter-react-v5';
+import { I18n, type ThemeType, Utils } from '@iobroker/gui-components';
 
 const styles: Record<string, React.CSSProperties> = {
     textArea: {

@@ -9,7 +9,7 @@ import {
     MdVisibilityOff as IconHide,
 } from 'react-icons/md';
 
-import { type AdminConnection, I18n, type IobTheme, Utils } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n, type IobTheme, Utils } from '@iobroker/gui-components';
 import type { LogMessage } from '@/types';
 
 // replace later with MdHorizontalSplit and MdVerticalSplit
@@ -157,7 +157,7 @@ interface LogState {
 }
 
 class Log extends React.Component<LogProps, LogState> {
-    private readonly messagesEnd: React.RefObject<HTMLDivElement>;
+    private readonly messagesEnd: React.RefObject<HTMLDivElement | null>;
 
     constructor(props: LogProps) {
         super(props);

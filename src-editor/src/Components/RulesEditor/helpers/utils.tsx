@@ -1,4 +1,4 @@
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/gui-components';
 
 let lang: ioBroker.Languages | undefined;
 export function getName(obj: undefined | ioBroker.StringOrTranslated | null): string {

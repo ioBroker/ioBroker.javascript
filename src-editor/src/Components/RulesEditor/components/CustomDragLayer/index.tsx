@@ -3,7 +3,7 @@ import { useDragLayer, type XYCoord } from 'react-dnd';
 
 import CardMenu from '../CardMenu';
 import CurrentItem from '../CurrentItem';
-import type { AdminConnection } from '@iobroker/adapter-react-v5';
+import type { AdminConnection } from '@iobroker/gui-components';
 
 const layerStyles: React.CSSProperties = {
     position: 'fixed',

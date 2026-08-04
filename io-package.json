@@ -191,7 +191,7 @@
     ],
     "globalDependencies": [
       {
-        "admin": ">=7.6.1"
+        "admin": ">=8.0.0"
       }
     ],
     "type": "logic",

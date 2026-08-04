@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { Button, Dialog, DialogActions, DialogContent } from '@mui/material';
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/gui-components';
 
 import cls from './style.module.scss';
 import CustomInput from '../CustomInput';
@@ -36,7 +36,6 @@ const CustomModal = ({
         <Dialog
             open={!0}
             maxWidth="md"
-            disableEscapeKeyDown={false}
             onClose={onClose}
             classes={{ paper: cls.modalDialog /*paper: classes.background*/ }}
             className={cls.modalWrapper}

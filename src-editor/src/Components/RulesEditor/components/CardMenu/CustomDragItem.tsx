@@ -3,7 +3,7 @@ import CardMenu from '.';
 import { deepCopy } from '../../helpers/deepCopy';
 import DragWrapper from '../DragWrapper';
 import { STEPS } from '../../helpers/Tour';
-import type { AdminConnection } from '@iobroker/adapter-react-v5';
+import type { AdminConnection } from '@iobroker/gui-components';
 import type { BlockValue, RuleBlockDescription, RuleUserRules } from '@iobroker/javascript-rules-dev';
 
 interface CustomDragItemProps {

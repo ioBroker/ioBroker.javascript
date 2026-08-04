@@ -15,7 +15,7 @@ import {
 
 import { Cancel as IconCancel } from '@mui/icons-material';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/gui-components';
 
 import type { ScriptType } from '@/types';
 import ImgJS from '../assets/tileJS.png';

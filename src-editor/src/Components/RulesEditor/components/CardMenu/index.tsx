@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { type AdminConnection, I18n, Utils } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n, Utils } from '@iobroker/gui-components';
 
 import cls from './style.module.scss';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';

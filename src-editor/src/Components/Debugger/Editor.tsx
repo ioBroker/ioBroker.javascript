@@ -1,6 +1,6 @@
 import React from 'react';
 import ScriptEditorComponent from '../ScriptEditorVanillaMonaco';
-import type { AdminConnection, ThemeName, ThemeType } from '@iobroker/adapter-react-v5';
+import type { AdminConnection, ThemeName, ThemeType } from '@iobroker/gui-components';
 
 import type { DebuggerLocation, SetBreakpointParameterType } from './types';
 

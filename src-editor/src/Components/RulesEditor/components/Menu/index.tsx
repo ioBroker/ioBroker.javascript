@@ -2,7 +2,7 @@ import React, { Fragment, useContext, useEffect } from 'react';
 
 import { AppBar, ClickAwayListener, Tab, Tabs } from '@mui/material';
 
-import { I18n, Utils } from '@iobroker/adapter-react-v5';
+import { I18n, Utils } from '@iobroker/gui-components';
 
 import cls from './style.module.scss';
 

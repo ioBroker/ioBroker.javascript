@@ -8,7 +8,8 @@ import {
     Dialog,
     ListItemIcon,
     List,
-    Grid2,
+    Grid,
+    Stack,
     ListItemText,
     Input,
     InputAdornment,
@@ -18,7 +19,7 @@ import {
 
 import { Check as IconOk, Cancel as IconCancel, Close as IconClose } from '@mui/icons-material';
 
-import { type AdminConnection, I18n } from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n } from '@iobroker/gui-components';
 
 const styles: Record<string, React.CSSProperties> = {
     buttonIcon: {
@@ -139,7 +140,7 @@ class DialogAdapterDebug extends React.Component<DialogAdapterDebugProps, Dialog
             return null;
         }
         return (
-            <Grid2>
+            <Grid>
                 <div style={styles.title}>{I18n.t('Host')}</div>
                 <List component="nav">
                     {js.map(item => (
@@ -160,13 +161,13 @@ class DialogAdapterDebug extends React.Component<DialogAdapterDebugProps, Dialog
                         </ListItemButton>
                     ))}
                 </List>
-            </Grid2>
+            </Grid>
         );
     }
 
     renderInstances(): React.JSX.Element {
         if (!this.state.jsInstance) {
-            return <Grid2 />;
+            return <Grid />;
         }
         const instances = this.state.instances.filter(
             item =>
@@ -176,7 +177,7 @@ class DialogAdapterDebug extends React.Component<DialogAdapterDebugProps, Dialog
         );
 
         return (
-            <Grid2>
+            <Grid>
                 <div style={styles.title}>{I18n.t('Instances')}</div>
                 <List component="nav">
                     {instances.map(item => (
@@ -197,7 +198,7 @@ class DialogAdapterDebug extends React.Component<DialogAdapterDebugProps, Dialog
                         </ListItemButton>
                     ))}
                 </List>
-            </Grid2>
+            </Grid>
         );
     }
 
@@ -212,11 +213,9 @@ class DialogAdapterDebug extends React.Component<DialogAdapterDebugProps, Dialog
             >
                 <DialogTitle id="confirmation-dialog-title">{this.props.title || I18n.t('Debug instance')}</DialogTitle>
                 <DialogContent>
-                    <Grid2
-                        container
-                        direction="column"
-                    >
-                        <Grid2>
+                    {/* Stack instead of Grid: the MUI 9 Grid only supports the "row" direction */}
+                    <Stack>
+                        <Grid>
                             <Input
                                 style={styles.filterWithButton}
                                 value={this.state.filter}
@@ -241,14 +240,14 @@ class DialogAdapterDebug extends React.Component<DialogAdapterDebugProps, Dialog
                                     </InputAdornment>
                                 }
                             />
-                        </Grid2>
-                        <Grid2>
-                            <Grid2 container>
+                        </Grid>
+                        <Grid>
+                            <Grid container>
                                 {this.renderJavascriptList()}
                                 {this.renderInstances()}
-                            </Grid2>
-                        </Grid2>
-                    </Grid2>
+                            </Grid>
+                        </Grid>
+                    </Stack>
                 </DialogContent>
                 <DialogActions>
                     <Button

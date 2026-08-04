@@ -15,7 +15,7 @@ import {
 
 import { Cancel as IconCancel, Check as IconOk } from '@mui/icons-material';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/gui-components';
 
 interface DialogRenameProps {
     onClose: () => void;
@@ -66,7 +66,10 @@ class DialogRename extends React.Component<DialogRenameProps, DialogRenameState>
     }
 
     getId(name: string): string {
-        name = (name || '').replace(/[\\/\][*,;'"`<>?\s]/g, '_');
+        name = (name || '')
+            .replace(/[\\/\][.*,;'"`<>?\s]/g, '_')
+            .trim()
+            .replace(/\.$/, '_');
         return `${this.state.prefix}.${name}`;
     }
 

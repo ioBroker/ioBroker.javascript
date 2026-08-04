@@ -11,10 +11,11 @@ import {
     GenericApp,
     Message as DialogMessage,
     Confirm as DialogConfirm,
+    ScrollbarStyles,
     type IobTheme,
     type GenericAppProps,
     type GenericAppState,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import { MdMenu as IconMenuClosed, MdArrowBack as IconMenuOpened, MdVisibility as IconShowLog } from 'react-icons/md';
 
@@ -1041,11 +1042,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                                     common: {
                                         name,
                                         expert: true,
-                                        engineType: engineType as
-                                            | 'TypeScript/ts'
-                                            | 'Blockly'
-                                            | 'Rules'
-                                            | 'Javascript/js',
+                                        engineType: engineType,
                                         engine,
                                         enabled,
                                         source,
@@ -1350,6 +1347,7 @@ export default class App extends GenericApp<AppProps, AppState> {
         return (
             <StyledEngineProvider injectFirst>
                 <ThemeProvider theme={this.state.theme}>
+                    <ScrollbarStyles theme={this.state.theme} />
                     <div style={styles.root}>
                         <ContextWrapper socket={this.socket}>{context}</ContextWrapper>
                     </div>

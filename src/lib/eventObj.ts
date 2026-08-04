@@ -48,7 +48,7 @@ export function getObjectEnumsSync(
             if (typeof name === 'object') {
                 str = (name as Record<string, string>)[lang];
             } else {
-                str = name as string | undefined;
+                str = name;
             }
             if (str && !enumNameSet.has(str)) {
                 enumNameSet.add(str);

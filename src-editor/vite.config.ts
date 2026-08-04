@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import commonjs from 'vite-plugin-commonjs';
-import vitetsConfigPaths from 'vite-tsconfig-paths';
 import { federation } from '@module-federation/vite';
 
 const makeShared = (pkgs: string[]): Record<string, { requiredVersion: '*', singleton: true }> => {
@@ -24,7 +23,7 @@ export default defineConfig({
                 'react-dom',
                 '@mui/material',
                 'prop-types',
-                '@iobroker/adapter-react-v5',
+                '@iobroker/gui-components',
             ]),
             exposes: {},
             remotes: {},
@@ -32,9 +31,11 @@ export default defineConfig({
             manifest: true,
         }),
         react(),
-        vitetsConfigPaths(),
         commonjs(),
     ],
+    resolve: {
+        tsconfigPaths: true,
+    },
     server: {
         port: 3000,
         proxy: {

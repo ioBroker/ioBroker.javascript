@@ -50,14 +50,7 @@ import {
 
 import { red, green, yellow } from '@mui/material/colors';
 
-import {
-    type AdminConnection,
-    I18n,
-    type IobTheme,
-    type ThemeName,
-    Utils,
-    IconExpert,
-} from '@iobroker/adapter-react-v5';
+import { type AdminConnection, I18n, type IobTheme, type ThemeName, Utils, IconExpert } from '@iobroker/gui-components';
 
 import ImgJS from './assets/js.svg';
 import ImgBlockly from './assets/blockly.svg';
@@ -460,7 +453,11 @@ export function Droppable(props: {
     return (
         <div
             key={props.folderName}
-            ref={drop}
+            // Wrapped in a block body: react-dnd connectors return the node, which React 19
+            // would treat as a ref cleanup function
+            ref={el => {
+                drop(el);
+            }}
             style={{
                 background: isOver ? '#40adff' : undefined,
                 opacity: isOverAny ? 0.7 : undefined,
@@ -487,7 +484,9 @@ export function Draggable(props: DraggableProps): React.JSX.Element {
     return (
         <div
             key={name}
-            ref={drag}
+            ref={el => {
+                drag(el);
+            }}
             style={{ opacity, transform: 'translate3d(0, 0, 0)' }}
         >
             {props.children}
@@ -562,7 +561,7 @@ interface SideDrawerState {
 }
 
 export default class SideDrawer extends React.Component<SideDrawerProps, SideDrawerState> {
-    private readonly inputRef: React.RefObject<HTMLInputElement>;
+    private readonly inputRef: React.RefObject<HTMLInputElement | null>;
     private filterTimer: ReturnType<typeof setTimeout> | null;
     private problems: string[] | null;
     private problemsTimer: ReturnType<typeof setTimeout> | null;
@@ -1365,9 +1364,10 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
             // so React doesn't warn about missing "key" props on the nested arrays.
             reactChildren = children
                 .map(it => this.renderOneItem(items, it))
-                .reduce<
-                    React.JSX.Element[]
-                >((acc, cur) => (cur ? acc.concat(cur.filter((e): e is React.JSX.Element => !!e)) : acc), []);
+                .reduce<React.JSX.Element[]>(
+                    (acc, cur) => (cur ? acc.concat(cur.filter((e): e is React.JSX.Element => !!e)) : acc),
+                    [],
+                );
         }
 
         if (reorder) {
@@ -2236,7 +2236,7 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
                     folder={false}
                     instance={parseInt(copingItem?.common?.engine?.split('.').pop() as string, 10) || 0}
                     instances={this.props.instances}
-                    type={(copingItem?.common?.engineType as ScriptType) || 'Javascript/js'}
+                    type={copingItem?.common?.engineType || 'Javascript/js'}
                     parent={this.parent as string}
                     onAdd={(id, name, instance, type) => {
                         const copingItem: ioBroker.ScriptObject | undefined =

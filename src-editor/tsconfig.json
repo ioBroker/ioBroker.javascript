@@ -3,20 +3,26 @@
 {
     "extends": "../tsconfig.json",
     "compilerOptions": {
-        "baseUrl": "./",
         "allowSyntheticDefaultImports": true,
         "checkJs": false,
-        "noEmit": false,
-        "outDir": "./build",
+        "noEmit": true,
+        "strictNullChecks": true,
+        "strict": true,
+        "rootDir": "./src",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
         "sourceMap": true,
         "sourceRoot": "./src",
         "noImplicitAny": true,
         "skipLibCheck": true,
         "lib": ["es2018", "DOM"],
         "jsx": "react",
-        "types": ["@iobroker/types"],
+        "types": ["vite/client", "@iobroker/types"],
         "paths": {
-            "@/*": ["./src/*"]
+            "@/*": ["./src/*"],
+            // "blockly" does not expose its internal modules via "exports", so "bundler"
+            // resolution cannot find them. These are type-only imports and are erased on emit.
+            "blockly/core/*": ["./node_modules/blockly/core/*"]
         }
     },
     "include": ["./src/**/*", "./src/types.d.ts"],

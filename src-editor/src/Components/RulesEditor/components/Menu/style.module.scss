@@ -122,7 +122,7 @@
         background-color: var(--lineColorActive);
     }
     [class*='Mui-disabled'] {
-        color: #210025cc !important;
+        color: var(--disabledColor) !important;
     }
 }
 .addClassMenu {

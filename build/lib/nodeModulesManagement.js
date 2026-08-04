@@ -11,7 +11,9 @@ async function requestModuleNameByUrl(url) {
     return new Promise((resolve, reject) => {
         (0, node_child_process_1.execFile)('npm', ['view', url, 'name'], { windowsHide: true, encoding: 'utf8', shell: false }, (error, stdout) => {
             if (error) {
-                reject(error);
+                // "ExecFileException" is assembled with Omit<>, which drops its relation to
+                // Error, so re-wrap it and keep the original as "cause"
+                reject(new Error(error.message, { cause: error }));
             }
             else {
                 if (typeof stdout !== 'string') {

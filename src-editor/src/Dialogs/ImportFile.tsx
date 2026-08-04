@@ -6,7 +6,7 @@ import { MdFileUpload as IconUpload, MdCancel as IconNo, MdAdd as IconPlus } fro
 
 import { Cancel as IconCancel } from '@mui/icons-material';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/gui-components';
 
 import DialogError from './Error';
 
@@ -159,7 +159,7 @@ class DialogImportFile extends React.Component<DialogImportFileProps, DialogImpo
                 fullWidth
                 open={!0}
                 aria-labelledby="import-dialog-title"
-                PaperProps={{ style: { minHeight: '90%', maxHeight: '90%' } }}
+                slotProps={{ paper: { style: { minHeight: '90%', maxHeight: '90%' } } }}
             >
                 <DialogTitle id="import-dialog-title">{I18n.t('Import scripts')}</DialogTitle>
                 <DialogContent>

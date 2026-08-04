@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { type ConnectDropTarget, type XYCoord, useDrop } from 'react-dnd';
 
 import { Select, MenuItem, IconButton } from '@mui/material';
-import { HelpOutline as IconHelp } from '@mui/icons-material';
+import { HelpOutlined as IconHelp } from '@mui/icons-material';
 
 import {
     type AdminConnection,
@@ -11,7 +11,7 @@ import {
     type ThemeName,
     type ThemeType,
     Utils,
-} from '@iobroker/adapter-react-v5';
+} from '@iobroker/gui-components';
 
 import cls from './style.module.scss';
 import { deepCopy } from '../../helpers/deepCopy';
@@ -129,7 +129,11 @@ const AdditionallyContentBlockItems = ({
 
     return (
         <div
-            ref={drop}
+            // Wrapped in a block body: react-dnd connectors return the node, which React 19
+            // would treat as a ref cleanup function
+            ref={el => {
+                drop(el);
+            }}
             style={{ backgroundColor }}
             className={`${Utils.clsx(cls.contentBlockItem, size && cls.addClassHeight)} ${boolean ? (animation ? cls.contentHeightOn : null) : cls.contentHeightOff}`}
         >

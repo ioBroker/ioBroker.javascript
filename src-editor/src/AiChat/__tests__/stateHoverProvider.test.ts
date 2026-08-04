@@ -109,7 +109,7 @@ describe('formatStateHoverMarkdown', () => {
         ts: Date.now() - 2 * 60 * 1000, // 2 min ago
         lc: Date.now() - 2 * 60 * 1000,
         from: 'system.adapter.zigbee2mqtt.0',
-    } as any;
+    };
 
     it('includes the ID header and type', () => {
         const md = formatStateHoverMarkdown('zigbee2mqtt.0.sensor.temperature', stateObj, stateVal);

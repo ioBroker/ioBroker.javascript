@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Box, Avatar, Button, useTheme } from '@mui/material';
-import { Person, SmartToy, AddCircleOutline, PlaylistAddCheck } from '@mui/icons-material';
-import { I18n, type ThemeType } from '@iobroker/adapter-react-v5';
+import { Person, SmartToy, AddCircleOutlined, PlaylistAddCheck } from '@mui/icons-material';
+import { I18n, type ThemeType } from '@iobroker/gui-components';
 import type { Theme } from '@mui/material/styles';
 
 import type { ChatMessage, AiScriptLanguage, ChatSourceRange } from './AiChatTypes';
@@ -427,7 +427,7 @@ const AiChatMessage: React.FC<AiChatMessageProps> = ({
                                             <Button
                                                 size="small"
                                                 variant="outlined"
-                                                startIcon={<AddCircleOutline sx={{ fontSize: 14 }} />}
+                                                startIcon={<AddCircleOutlined sx={{ fontSize: 14 }} />}
                                                 onClick={() => onInsertCode(part.content)}
                                                 sx={{ textTransform: 'none', fontSize: '0.75rem' }}
                                             >

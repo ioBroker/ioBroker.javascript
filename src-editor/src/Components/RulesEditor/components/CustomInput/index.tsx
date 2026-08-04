@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { TextField, InputAdornment } from '@mui/material';
 
-import { Utils, Icon as CustomIcon } from '@iobroker/adapter-react-v5';
+import { Utils, Icon as CustomIcon } from '@iobroker/gui-components';
 
 import cls from './style.module.scss';
 

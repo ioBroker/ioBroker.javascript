@@ -1,12 +1,16 @@
 {
     "extends": "./tsconfig.json",
     "compilerOptions": {
-        "allowJs": true,
+        "allowJs": false,
         "checkJs": false,
         "noEmit": false,
+        // TS 6 requires "rootDir" to be explicit as soon as the project emits
+        "rootDir": "./src",
         "declaration": false,
         "skipLibCheck": true,
-        "module": "commonjs"
+        // "node16" resolution + a CommonJS package (no "type": "module") emits CommonJS.
+        // Keep this in sync with "moduleResolution" in the base config.
+        "module": "node16"
     },
     "include": ["src/**/*.ts", "src/**/*.js"]
 }

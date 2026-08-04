@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { I18n, type AdminConnection } from '@iobroker/adapter-react-v5';
+import { I18n, type AdminConnection } from '@iobroker/gui-components';
 
 import type {
     ChatMessage,

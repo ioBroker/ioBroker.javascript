@@ -7,7 +7,7 @@
  * Works the same way as `stateHoverProvider` (sibling file): it scans the string
  * literal under the cursor and, if its content looks like a cron expression,
  * renders a tooltip. The decoding (and its localisation) is delegated to
- * `convertCronToText` from `@iobroker/adapter-react-v5`, so the wording matches
+ * `convertCronToText` from `@iobroker/gui-components`, so the wording matches
  * the cron wizard used elsewhere in the admin.
  *
  * Exports:
@@ -20,7 +20,7 @@
  */
 
 import type * as monacoEditor from 'monaco-editor';
-import { I18n, convertCronToText } from '@iobroker/adapter-react-v5';
+import { I18n, convertCronToText } from '@iobroker/gui-components';
 
 /** Quote characters that may surround a string literal. */
 const QUOTES = ["'", '"', '`'];

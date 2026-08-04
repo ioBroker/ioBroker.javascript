@@ -16,7 +16,7 @@ import type { TransitionProps } from '@mui/material/transitions';
 
 import { MdCancel as IconCancel, MdCheck as IconCheck } from 'react-icons/md';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/gui-components';
 
 import { GenericBlock } from '../GenericBlock';
 import { STANDARD_FUNCTION_STATE, STANDARD_FUNCTION_STATE_ONCHANGE } from '../../helpers/Compile';
@@ -62,7 +62,7 @@ interface TriggerStateState extends GenericBlockState<RuleBlockConfigTriggerStat
 }
 
 class TriggerState extends GenericBlock<RuleBlockConfigTriggerState, TriggerStateState> {
-    private readonly inputRef: React.RefObject<HTMLInputElement>;
+    private readonly inputRef: React.RefObject<HTMLInputElement | null>;
 
     constructor(props: GenericBlockProps<RuleBlockConfigTriggerState>) {
         super(props, TriggerState.getStaticData());
@@ -150,7 +150,7 @@ class TriggerState extends GenericBlock<RuleBlockConfigTriggerState, TriggerStat
             <Dialog
                 key="dialogWrite"
                 open={!!this.state.openSimulate}
-                TransitionComponent={Transition}
+                slots={{ transition: Transition }}
                 keepMounted
                 onClose={() => this.setState({ openSimulate: false })}
                 aria-labelledby="simulate-dialog-slide-title"
@@ -162,7 +162,7 @@ class TriggerState extends GenericBlock<RuleBlockConfigTriggerState, TriggerStat
                         <FormControlLabel
                             control={
                                 <Switch
-                                    inputRef={this.inputRef}
+                                    slotProps={{ input: { ref: this.inputRef } }}
                                     onKeyUp={e => e.key === 'Enter' && this.onWriteValue()}
                                     value={!!this.state.simulateValue}
                                     onChange={e => this.setState({ simulateValue: e.target.checked })}

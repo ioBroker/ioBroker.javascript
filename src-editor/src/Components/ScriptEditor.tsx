@@ -1,6 +1,6 @@
 import React from 'react';
 import MonacoEditor from 'react-monaco-editor';
-import type * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
+import type * as monacoEditor from 'monaco-editor';
 
 interface ScriptEditorProps {
     onChange?: (newValue: string) => void;

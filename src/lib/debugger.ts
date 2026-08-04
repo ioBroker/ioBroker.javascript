@@ -385,8 +385,8 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
 
         if (exitDebugRepl) {
             exitDebugRepl();
+            exitDebugRepl = undefined;
         }
-        exitDebugRepl = undefined;
     }
 
     resetOnStart();
@@ -587,7 +587,7 @@ export default function createRepl(inspector: NodeInspector): () => REPLServer {
                         return Runtime.getProperties({
                             objectId,
                             generatePreview: true,
-                        } as Runtime.GetPropertiesParameterType).then(({ result }: Runtime.GetPropertiesReturnType) => {
+                        }).then(({ result }: Runtime.GetPropertiesReturnType) => {
                             return new ScopeSnapshot(scope, result);
                         });
                     }),

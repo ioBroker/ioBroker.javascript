@@ -1,7 +1,7 @@
 import { Button } from '@mui/material';
 import React from 'react';
 
-import { Utils, Icon as CustomIcon } from '@iobroker/adapter-react-v5';
+import { Utils, Icon as CustomIcon } from '@iobroker/gui-components';
 
 import cls from './style.module.scss';
 

@@ -1,4 +1,4 @@
-import type { AdminConnection } from '@iobroker/adapter-react-v5';
+import type { AdminConnection } from '@iobroker/gui-components';
 import type { ToolCall, ScriptInfo, EditorApi } from './AiChatTypes';
 import { getAllObjects } from './AiChatService';
 import { extractBlocklyCompiledCode } from './AiScriptAnalyzer';
@@ -312,7 +312,7 @@ export function objectMatchesQuery(
     if (!common) {
         return false;
     }
-    const name = getText(common.name as ioBroker.StringOrTranslated).toLowerCase();
+    const name = getText(common.name).toLowerCase();
     if (name && name.includes(q)) {
         return true;
     }
@@ -653,12 +653,12 @@ async function runScript(
         return JSON.stringify({ error: 'No source code provided.' });
     }
     try {
-        const result = (await socket.sendTo(instanceId, 'execute', {
+        const result: ExecuteResult = await socket.sendTo(instanceId, 'execute', {
             source,
             engineType: args.engineType,
             timeout: args.timeout,
             logLevel: args.logLevel,
-        })) as ExecuteResult | null;
+        });
 
         if (!result || result.ok === false) {
             return JSON.stringify({

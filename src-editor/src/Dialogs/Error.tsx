@@ -4,7 +4,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 
 import { Check as IconOk } from '@mui/icons-material';
 
-import { I18n, type IobTheme } from '@iobroker/adapter-react-v5';
+import { I18n, type IobTheme } from '@iobroker/gui-components';
 
 const styles: Record<string, any> = {
     title: (theme: IobTheme) => ({

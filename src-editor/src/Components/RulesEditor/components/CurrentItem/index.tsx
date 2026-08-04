@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useContext, useMemo, useState } from 'react';
 
-import type { AdminConnection, IobTheme, ThemeName, ThemeType } from '@iobroker/adapter-react-v5';
+import type { AdminConnection, IobTheme, ThemeName, ThemeType } from '@iobroker/gui-components';
 import cls from './style.module.scss';
 import { deepCopy } from '../../helpers/deepCopy';
 import { filterElement } from '../../helpers/filterElement';

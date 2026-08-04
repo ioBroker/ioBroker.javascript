@@ -448,11 +448,7 @@ export type SandboxType = {
         name: string,
         initValue: undefined | ioBroker.StateValue | ioBroker.State,
         forceCreation:
-            | boolean
-            | undefined
-            | Record<string, any>
-            | Partial<ioBroker.StateCommon>
-            | ((err: Error | null) => void),
+            boolean | undefined | Record<string, any> | Partial<ioBroker.StateCommon> | ((err: Error | null) => void),
         common?: Partial<ioBroker.StateCommon> | ((err: Error | null) => void),
         native?: Record<string, any> | ((err: Error | null) => void),
         callback?: (error: Error | null | undefined, id?: string) => void,
@@ -461,11 +457,7 @@ export type SandboxType = {
         name: string,
         initValue: undefined | ioBroker.StateValue | ioBroker.State,
         forceCreation:
-            | boolean
-            | undefined
-            | Record<string, any>
-            | Partial<ioBroker.StateCommon>
-            | ((err: Error | null) => void),
+            boolean | undefined | Record<string, any> | Partial<ioBroker.StateCommon> | ((err: Error | null) => void),
         common?: Partial<ioBroker.StateCommon> | ((err: Error | null) => void),
         native?: Record<string, any> | ((err: Error | null) => void),
     ) => Promise<string>;

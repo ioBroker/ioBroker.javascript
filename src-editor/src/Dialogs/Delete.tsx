@@ -4,7 +4,7 @@ import { Button, DialogTitle, DialogContent, DialogActions, Dialog } from '@mui/
 
 import { Check as IconOk, Cancel as IconCancel, Delete as IconDelete } from '@mui/icons-material';
 
-import { I18n } from '@iobroker/adapter-react-v5';
+import { I18n } from '@iobroker/gui-components';
 
 interface DialogDeleteProps {
     onClose: () => void;

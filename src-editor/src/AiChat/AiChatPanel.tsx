@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useMemo } from 'react';
 import { Box, IconButton, Tooltip, CircularProgress, Typography, Alert } from '@mui/material';
 import { Close, AddComment, Refresh } from '@mui/icons-material';
-import { I18n, type AdminConnection, type ThemeType } from '@iobroker/adapter-react-v5';
+import { I18n, type AdminConnection, type ThemeType } from '@iobroker/gui-components';
 
 import type { ScriptInfo, AiScriptLanguage, EditorApi, EditorAiActionRequest, ChatSourceRange } from './AiChatTypes';
 import { useAiChat } from './useAiChat';

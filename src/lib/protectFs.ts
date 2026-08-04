@@ -29,7 +29,6 @@ import type {
 import type { Abortable } from 'node:events';
 import type { FileHandle, FlagAndOpenMode } from 'node:fs/promises';
 import type { URL } from 'node:url';
-import type { Stream } from 'node:stream';
 
 import * as nodeFS from 'node:fs';
 import { sep, normalize, join, resolve } from 'node:path';
@@ -57,8 +56,7 @@ export default class ProtectFs {
                 | string
                 | NodeJS.ArrayBufferView
                 | Iterable<string | NodeJS.ArrayBufferView>
-                | AsyncIterable<string | NodeJS.ArrayBufferView>
-                | Stream,
+                | AsyncIterable<string | NodeJS.ArrayBufferView>,
             options?:
                 | (ObjectEncodingOptions & {
                       mode?: Mode | undefined;
@@ -73,9 +71,7 @@ export default class ProtectFs {
             path: PathLike | FileHandle,
             data: string | Uint8Array,
             options?:
-                | (ObjectEncodingOptions & FlagAndOpenMode & { flush?: boolean | undefined })
-                | BufferEncoding
-                | null,
+                (ObjectEncodingOptions & FlagAndOpenMode & { flush?: boolean | undefined }) | BufferEncoding | null,
         ) => Promise<void>;
         chmod: (path: PathLike, mode: Mode) => Promise<void>;
         copyFile: (src: PathLike, dest: PathLike, mode?: number) => Promise<void>;
@@ -157,8 +153,7 @@ export default class ProtectFs {
                     | string
                     | NodeJS.ArrayBufferView
                     | Iterable<string | NodeJS.ArrayBufferView>
-                    | AsyncIterable<string | NodeJS.ArrayBufferView>
-                    | Stream,
+                    | AsyncIterable<string | NodeJS.ArrayBufferView>,
                 options?:
                     | (ObjectEncodingOptions & {
                           mode?: Mode | undefined;
@@ -185,9 +180,7 @@ export default class ProtectFs {
                 path: PathLike | FileHandle,
                 data: string | Uint8Array,
                 options?:
-                    | (ObjectEncodingOptions & FlagAndOpenMode & { flush?: boolean | undefined })
-                    | BufferEncoding
-                    | null,
+                    (ObjectEncodingOptions & FlagAndOpenMode & { flush?: boolean | undefined }) | BufferEncoding | null,
             ): Promise<void> => {
                 ProtectFs.checkProtected(path, false);
                 return nodeFS.promises.appendFile.call(this, path, data, options); // async function appendFile(path, data, options) {

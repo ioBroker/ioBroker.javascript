@@ -97,7 +97,7 @@ export function promisify(fn: Function, context?: any): (...args: any[]) => Prom
                     },
                 ]);
             } catch (error: unknown) {
-                reject(error as Error);
+                reject(error instanceof Error ? error : new Error(String(error)));
             }
         });
     };

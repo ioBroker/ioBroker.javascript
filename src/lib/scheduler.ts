@@ -720,7 +720,7 @@ export class Scheduler {
 
     private _getAstroName(evt: string): AstroEventName | null {
         if (typeof evt === 'string') {
-            const pos = (this.astroListLow as string[]).indexOf(evt.toLowerCase() as AstroEventNameLow);
+            const pos = (this.astroListLow as string[]).indexOf(evt.toLowerCase());
             if (pos > -1) {
                 return (this.astroList as string[])[pos] as AstroEventName;
             }

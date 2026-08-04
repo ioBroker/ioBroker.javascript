@@ -2,7 +2,7 @@ import React, { memo, useState } from 'react';
 
 import { Checkbox } from '@mui/material';
 
-import { Utils } from '@iobroker/adapter-react-v5';
+import { Utils } from '@iobroker/gui-components';
 
 import cls from './style.module.scss';
 
