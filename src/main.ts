@@ -67,7 +67,12 @@ import {
 } from './lib/anthropicAdapter';
 import { createEventObject, type EventObj } from './lib/eventObj';
 import { type AstroEventName, Scheduler } from './lib/scheduler';
-import { targetTsLib, tsCompilerOptions, jsDeclarationCompilerOptions } from './lib/typescriptSettings';
+import {
+    getTargetTsLib,
+    getTsCompilerOptions,
+    tsCompilerOptions,
+    jsDeclarationCompilerOptions,
+} from './lib/typescriptSettings';
 import { hashSource } from './lib/tools';
 import {
     resolveTypescriptLibs,
@@ -1155,7 +1160,7 @@ class JavaScript extends Adapter {
 
                 // try to load TypeScript lib files from disk
                 try {
-                    const typescriptLibs = resolveTypescriptLibs(targetTsLib);
+                    const typescriptLibs = resolveTypescriptLibs(getTargetTsLib(this.config));
                     Object.assign(typings, typescriptLibs);
                 } catch {
                     /* ok, no lib then */
@@ -1920,6 +1925,10 @@ class JavaScript extends Adapter {
 
         this.mods.fs = new ProtectFs(this.log, getAbsoluteDefaultDataDir());
         this.mods['fs/promises'] = this.mods.fs.promises; // to avoid require('fs/promises');
+
+        // The instance configuration is only available now, so the compiler has to be created again
+        // with the options the user has selected in the "TypeScript" tab
+        this.tsServer = new Server(getTsCompilerOptions(this.config), this.tsLog);
 
         // try to read TS declarations
         try {

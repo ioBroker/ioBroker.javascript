@@ -982,7 +982,7 @@ class JavaScript extends adapter_core_1.Adapter {
                 const typings = {};
                 // try to load TypeScript lib files from disk
                 try {
-                    const typescriptLibs = (0, typescriptTools_1.resolveTypescriptLibs)(typescriptSettings_1.targetTsLib);
+                    const typescriptLibs = (0, typescriptTools_1.resolveTypescriptLibs)((0, typescriptSettings_1.getTargetTsLib)(this.config));
                     Object.assign(typings, typescriptLibs);
                 }
                 catch {
@@ -1546,6 +1546,9 @@ class JavaScript extends adapter_core_1.Adapter {
         this.activeStr = `${this.namespace}.scriptEnabled.`;
         this.mods.fs = new protectFs_1.default(this.log, (0, adapter_core_1.getAbsoluteDefaultDataDir)());
         this.mods['fs/promises'] = this.mods.fs.promises; // to avoid require('fs/promises');
+        // The instance configuration is only available now, so the compiler has to be created again
+        // with the options the user has selected in the "TypeScript" tab
+        this.tsServer = new virtual_tsc_1.Server((0, typescriptSettings_1.getTsCompilerOptions)(this.config), this.tsLog);
         // try to read TS declarations
         try {
             tsAmbient = {

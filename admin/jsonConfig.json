@@ -130,6 +130,367 @@
                 }
             }
         },
+        "_typescript": {
+            "type": "panel",
+            "label": "TypeScript",
+            "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNOS40IDE2LjYgNC44IDEybDQuNi00LjZMOCA2bC02IDYgNiA2IDEuNC0xLjR6bTUuMiAwIDQuNi00LjYtNC42LTQuNkwxNiA2bDYgNi02IDYtMS40LTEuNHoiLz48L3N2Zz4=",
+            "items": {
+                "_tsDescription": {
+                    "type": "staticText",
+                    "text": "TypeScript settings description",
+                    "help": "www.typescriptlang.org/tsconfig",
+                    "helpLink": "https://www.typescriptlang.org/tsconfig/",
+                    "xs": 12,
+                    "sm": 12,
+                    "style": {
+                        "marginBottom": 16
+                    }
+                },
+                "_tsHeaderLanguage": {
+                    "newLine": true,
+                    "type": "header",
+                    "text": "Language and emit",
+                    "size": 5,
+                    "xs": 12,
+                    "sm": 12
+                },
+                "tsTarget": {
+                    "newLine": true,
+                    "type": "select",
+                    "label": "target",
+                    "help": "target help",
+                    "options": [
+                        { "label": "ES2018", "value": "es2018" },
+                        { "label": "ES2019", "value": "es2019" },
+                        { "label": "ES2020", "value": "es2020" },
+                        { "label": "ES2021", "value": "es2021" },
+                        { "label": "ES2022", "value": "es2022" },
+                        { "label": "ES2023", "value": "es2023" },
+                        { "label": "ES2024", "value": "es2024" },
+                        { "label": "ES2025", "value": "es2025" },
+                        { "label": "ESNext", "value": "esnext" }
+                    ],
+                    "default": "es2022",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsNoEmitOnError": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "label": "noEmitOnError",
+                    "help": "noEmitOnError help",
+                    "default": true,
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsEsModuleInterop": {
+                    "type": "checkbox",
+                    "label": "esModuleInterop",
+                    "help": "esModuleInterop help",
+                    "default": true,
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsAllowSyntheticDefaultImports": {
+                    "type": "checkbox",
+                    "label": "allowSyntheticDefaultImports",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsUseDefineForClassFields": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "label": "useDefineForClassFields",
+                    "help": "useDefineForClassFields help",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsDownlevelIteration": {
+                    "type": "checkbox",
+                    "label": "downlevelIteration",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsExperimentalDecorators": {
+                    "type": "checkbox",
+                    "label": "experimentalDecorators",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsEmitDecoratorMetadata": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "label": "emitDecoratorMetadata",
+                    "disabled": "!data.tsExperimentalDecorators",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsRemoveComments": {
+                    "type": "checkbox",
+                    "label": "removeComments",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsSkipLibCheck": {
+                    "type": "checkbox",
+                    "label": "skipLibCheck",
+                    "help": "skipLibCheck help",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "_tsHeaderStrict": {
+                    "newLine": true,
+                    "type": "header",
+                    "text": "Strict type checking",
+                    "size": 5,
+                    "xs": 12,
+                    "sm": 12
+                },
+                "tsStrict": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "label": "strict",
+                    "help": "strict help",
+                    "xs": 12,
+                    "sm": 12
+                },
+                "_tsStrictHint": {
+                    "newLine": true,
+                    "type": "staticText",
+                    "text": "Strict options description",
+                    "xs": 12,
+                    "sm": 12,
+                    "style": {
+                        "marginBottom": 8
+                    }
+                },
+                "tsNoImplicitAny": {
+                    "newLine": true,
+                    "type": "select",
+                    "label": "noImplicitAny",
+                    "options": [
+                        { "label": "Follow strict", "value": "" },
+                        { "label": "Enabled", "value": "true" },
+                        { "label": "Disabled", "value": "false" }
+                    ],
+                    "default": "",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsStrictNullChecks": {
+                    "type": "select",
+                    "label": "strictNullChecks",
+                    "options": [
+                        { "label": "Follow strict", "value": "" },
+                        { "label": "Enabled", "value": "true" },
+                        { "label": "Disabled", "value": "false" }
+                    ],
+                    "default": "",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsStrictFunctionTypes": {
+                    "type": "select",
+                    "label": "strictFunctionTypes",
+                    "options": [
+                        { "label": "Follow strict", "value": "" },
+                        { "label": "Enabled", "value": "true" },
+                        { "label": "Disabled", "value": "false" }
+                    ],
+                    "default": "",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsStrictBindCallApply": {
+                    "newLine": true,
+                    "type": "select",
+                    "label": "strictBindCallApply",
+                    "options": [
+                        { "label": "Follow strict", "value": "" },
+                        { "label": "Enabled", "value": "true" },
+                        { "label": "Disabled", "value": "false" }
+                    ],
+                    "default": "",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsStrictPropertyInitialization": {
+                    "type": "select",
+                    "label": "strictPropertyInitialization",
+                    "options": [
+                        { "label": "Follow strict", "value": "" },
+                        { "label": "Enabled", "value": "true" },
+                        { "label": "Disabled", "value": "false" }
+                    ],
+                    "default": "",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsStrictBuiltinIteratorReturn": {
+                    "type": "select",
+                    "label": "strictBuiltinIteratorReturn",
+                    "options": [
+                        { "label": "Follow strict", "value": "" },
+                        { "label": "Enabled", "value": "true" },
+                        { "label": "Disabled", "value": "false" }
+                    ],
+                    "default": "",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsNoImplicitThis": {
+                    "newLine": true,
+                    "type": "select",
+                    "label": "noImplicitThis",
+                    "options": [
+                        { "label": "Follow strict", "value": "" },
+                        { "label": "Enabled", "value": "true" },
+                        { "label": "Disabled", "value": "false" }
+                    ],
+                    "default": "",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsAlwaysStrict": {
+                    "type": "select",
+                    "label": "alwaysStrict",
+                    "options": [
+                        { "label": "Follow strict", "value": "" },
+                        { "label": "Enabled", "value": "true" },
+                        { "label": "Disabled", "value": "false" }
+                    ],
+                    "default": "",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsUseUnknownInCatchVariables": {
+                    "type": "select",
+                    "label": "useUnknownInCatchVariables",
+                    "help": "useUnknownInCatchVariables help",
+                    "options": [
+                        { "label": "Follow strict", "value": "" },
+                        { "label": "Enabled", "value": "true" },
+                        { "label": "Disabled", "value": "false" }
+                    ],
+                    "default": "false",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "_tsHeaderChecks": {
+                    "newLine": true,
+                    "type": "header",
+                    "text": "Additional checks",
+                    "size": 5,
+                    "xs": 12,
+                    "sm": 12
+                },
+                "tsNoUnusedLocals": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "label": "noUnusedLocals",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsNoUnusedParameters": {
+                    "type": "checkbox",
+                    "label": "noUnusedParameters",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsNoImplicitReturns": {
+                    "type": "checkbox",
+                    "label": "noImplicitReturns",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsNoFallthroughCasesInSwitch": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "label": "noFallthroughCasesInSwitch",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsNoImplicitOverride": {
+                    "type": "checkbox",
+                    "label": "noImplicitOverride",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsNoUncheckedIndexedAccess": {
+                    "type": "checkbox",
+                    "label": "noUncheckedIndexedAccess",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsNoPropertyAccessFromIndexSignature": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "label": "noPropertyAccessFromIndexSignature",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsExactOptionalPropertyTypes": {
+                    "type": "checkbox",
+                    "label": "exactOptionalPropertyTypes",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsAllowUnreachableCode": {
+                    "newLine": true,
+                    "type": "select",
+                    "label": "allowUnreachableCode",
+                    "options": [
+                        { "label": "Warning", "value": "" },
+                        { "label": "Allowed", "value": "true" },
+                        { "label": "Error", "value": "false" }
+                    ],
+                    "default": "",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tsAllowUnusedLabels": {
+                    "type": "select",
+                    "label": "allowUnusedLabels",
+                    "options": [
+                        { "label": "Warning", "value": "" },
+                        { "label": "Allowed", "value": "true" },
+                        { "label": "Error", "value": "false" }
+                    ],
+                    "default": "",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                }
+            }
+        },
         "_ai": {
             "type": "panel",
             "label": "AI settings",

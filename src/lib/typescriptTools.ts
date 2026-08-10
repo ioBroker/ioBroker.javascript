@@ -36,15 +36,14 @@ import {
     type Transformer,
 } from 'typescript';
 import { matchAll } from './tools';
+import type { TsTarget } from '../types';
 
 /**
  * Resolves all TypeScript lib files for the editor
  *
  * @param targetLib The lib to target (e.g., es2017)
  */
-export function resolveTypescriptLibs(
-    targetLib: 'es2017' | 'es2018' | 'es2019' | 'es2020' | 'es2021' | 'es2022' | 'esnext',
-): Record<string, string> {
+export function resolveTypescriptLibs(targetLib: TsTarget): Record<string, string> {
     const typescriptLibRoot = dirname(require.resolve(`typescript/lib/lib.d.ts`));
     const ret: Record<string, string> = {};
 

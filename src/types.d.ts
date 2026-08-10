@@ -8,6 +8,15 @@ import type { EventObj } from './lib/eventObj';
 import type { PatternEventCompareFunction } from './lib/patternCompareFunctions';
 import type { AstroEvent } from './lib/consts';
 
+/** ECMAScript version the user scripts are compiled for */
+export type TsTarget = 'es2018' | 'es2019' | 'es2020' | 'es2021' | 'es2022' | 'es2023' | 'es2024' | 'es2025' | 'esnext';
+
+/**
+ * Value of a compiler option that may explicitly be turned on or off.
+ * An empty string means "not set", so the option follows `strict` resp. the TypeScript default.
+ */
+export type TsTriState = '' | 'true' | 'false';
+
 export interface JavaScriptAdapterConfig {
     latitude: number;
     longitude: number;
@@ -46,6 +55,38 @@ export interface JavaScriptAdapterConfig {
     credentialIdGeminiKey?: string;
     credentialIdDeepseekKey?: string;
     credentialIdGptBaseUrlKey?: string;
+
+    // TypeScript compiler options for the user scripts
+    tsTarget?: TsTarget;
+    tsStrict?: boolean;
+    tsNoImplicitAny?: TsTriState;
+    tsStrictNullChecks?: TsTriState;
+    tsStrictFunctionTypes?: TsTriState;
+    tsStrictBindCallApply?: TsTriState;
+    tsStrictPropertyInitialization?: TsTriState;
+    tsStrictBuiltinIteratorReturn?: TsTriState;
+    tsNoImplicitThis?: TsTriState;
+    tsAlwaysStrict?: TsTriState;
+    tsUseUnknownInCatchVariables?: TsTriState;
+    tsNoUnusedLocals?: boolean;
+    tsNoUnusedParameters?: boolean;
+    tsNoImplicitReturns?: boolean;
+    tsNoFallthroughCasesInSwitch?: boolean;
+    tsNoImplicitOverride?: boolean;
+    tsNoUncheckedIndexedAccess?: boolean;
+    tsNoPropertyAccessFromIndexSignature?: boolean;
+    tsExactOptionalPropertyTypes?: boolean;
+    tsAllowUnreachableCode?: TsTriState;
+    tsAllowUnusedLabels?: TsTriState;
+    tsNoEmitOnError?: boolean;
+    tsEsModuleInterop?: boolean;
+    tsAllowSyntheticDefaultImports?: boolean;
+    tsUseDefineForClassFields?: boolean;
+    tsDownlevelIteration?: boolean;
+    tsExperimentalDecorators?: boolean;
+    tsEmitDecoratorMetadata?: boolean;
+    tsRemoveComments?: boolean;
+    tsSkipLibCheck?: boolean;
 }
 
 export type CommonAlias = {

@@ -1,0 +1,1 @@
+import{t as e}from"./virtual_mf-exposes___mfe_internal__ConfigCustomJavascriptSet__customComponents_js-BmDn61bn.js";export{e as default};
