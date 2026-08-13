@@ -6,8 +6,7 @@ type BlocklyTheme = ReturnType<BlocklyType['Theme']['defineTheme']>;
 let darkTheme: BlocklyTheme | null = null;
 
 /**
- * Dark theme for Blockly, built from the globally loaded Blockly
- * (`google-blockly/blockly_compressed.js`, injected by index.html).
+ * Dark theme for Blockly, built from the global that `blockly-plugins/bridge.ts` installs.
  *
  * Do not replace this with the npm package `@blockly/theme-dark`: it bundles its own copy of Blockly,
  * and `Theme.defineTheme` checks `base instanceof Theme`, so a theme created by a second copy silently

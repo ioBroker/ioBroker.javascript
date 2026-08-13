@@ -90,7 +90,7 @@ function checkValueOfState(id, value, cb, counter) {
     });
 }
 
-describe.only('Test JS', function () {
+describe('Test JS', function () {
     before('Test JS: Start js-controller', function (_done) {
         this.timeout(600000); // because of first installation from npm
 

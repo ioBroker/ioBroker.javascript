@@ -67,11 +67,13 @@
     "@iobroker/eslint-config": "^2.3.4",
     "@iobroker/plugin-sentry": "^3.2.0",
     "@iobroker/testing": "^5.3.0",
+    "@tsconfig/node22": "^22.0.5",
     "@types/node-schedule": "^2.1.8",
     "@types/nodemailer": "^8.0.1",
     "@types/request": "^2.48.13",
     "@types/suncalc": "^1.9.2",
     "alcalzone-shared": "^5.0.0",
+    "jsdom": "^30.0.1",
     "timekeeper": "^2.3.1"
   },
   "bugs": {
@@ -92,6 +94,9 @@
     "test:integration": "mocha --exit",
     "test:package": "mocha test/testPackageFiles.js --exit",
     "test:scheduler": "mocha test/testScheduler.js --exit",
+    "test:blockly": "mocha test/testBlocklyGenerator.js --exit",
+    "test:performance": "mocha --no-config --require ./test/mocha.setup.js \"test/*.test.js\" test/testMainPerformance.js --exit",
+    "test:blockly:update": "node test/blockly/update.js",
     "test": "npm run test:declarations && npm run test:integration",
     "translate": "translate-adapter",
     "//postinstall": "node ./install/installTypings.js",

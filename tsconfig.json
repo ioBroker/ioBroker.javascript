@@ -1,5 +1,6 @@
 {
     "compileOnSave": true,
+    "extends": "@tsconfig/node22/tsconfig.json",
     "compilerOptions": {
         "noEmit": true,
         "allowJs": false,
@@ -14,7 +15,7 @@
         "noImplicitAny": true,
         "target": "es2022",
         "esModuleInterop": true,
-        "types": ["@types/node", "@iobroker/types"],
+        "types": ["@types/node", "@iobroker/types"]
     },
     "include": ["src/**/*.ts"],
     "exclude": ["node_modules/**", "admin/**"]

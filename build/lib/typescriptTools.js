@@ -10,6 +10,12 @@ const node_path_1 = require("node:path");
 const typescript_1 = require("typescript");
 const tools_1 = require("./tools");
 /**
+ * The transformed sources are stored in the ioBroker database and mirrored to disk, so they must
+ * not depend on the platform or on a TypeScript default. TypeScript 5 printed CRLF here and
+ * TypeScript 6 prints LF - pinning it keeps a compiler update from silently rewriting every script.
+ */
+const PRINTER_OPTIONS = { newLine: typescript_1.NewLineKind.LineFeed };
+/**
  * Resolves all TypeScript lib files for the editor
  *
  * @param targetLib The lib to target (e.g., es2017)
@@ -386,7 +392,7 @@ function transformScriptBeforeCompilation(source, isGlobal) {
     };
     const sourceFile = (0, typescript_1.createSourceFile)('index.ts', source, typescript_1.ScriptTarget.ESNext, /* setParentNodes */ true);
     const result = (0, typescript_1.transform)(sourceFile, [transformer]);
-    return (0, typescript_1.createPrinter)().printNode(typescript_1.EmitHint.Unspecified, result.transformed[0], sourceFile);
+    return (0, typescript_1.createPrinter)(PRINTER_OPTIONS).printNode(typescript_1.EmitHint.Unspecified, result.transformed[0], sourceFile);
 }
 /**
  * Takes the global declarations for a TypeScript and wraps export statements in `declare global`
@@ -422,7 +428,7 @@ function transformGlobalDeclarations(decl) {
     };
     const sourceFile = (0, typescript_1.createSourceFile)('index.d.ts', decl, typescript_1.ScriptTarget.ESNext, /* setParentNodes */ true);
     const result = (0, typescript_1.transform)(sourceFile, [transformer]);
-    return (0, typescript_1.createPrinter)().printNode(typescript_1.EmitHint.Unspecified, result.transformed[0], sourceFile);
+    return (0, typescript_1.createPrinter)(PRINTER_OPTIONS).printNode(typescript_1.EmitHint.Unspecified, result.transformed[0], sourceFile);
 }
 /**
  * Translates a script ID to a filename for the compiler

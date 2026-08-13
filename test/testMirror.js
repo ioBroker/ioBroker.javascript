@@ -4,6 +4,24 @@ const fs = require('node:fs');
 const assert = require('node:assert').strict;
 const Mirror = require('../build/lib/mirror');
 
+/**
+ * Creating a symlink on Windows needs elevated rights or developer mode. Where that is missing the
+ * symlink tests are skipped instead of failing - on CI, where the rights exist, they still run.
+ */
+const canCreateSymlinks = (() => {
+    const probe = fs.mkdtempSync(path.join(os.tmpdir(), 'mirror-test-symlink-probe-'));
+    try {
+        fs.symlinkSync(path.join(probe, 'target'), path.join(probe, 'link'));
+        return true;
+    } catch {
+        return false;
+    } finally {
+        fs.rmSync(probe, { recursive: true, force: true });
+    }
+})();
+
+const itWithSymlinks = canCreateSymlinks ? it : it.skip;
+
 describe('Mirror', () => {
     describe('File system watcher', () => {
         let mirror = null;
@@ -39,7 +57,7 @@ describe('Mirror', () => {
                 fs.appendFileSync(script, 'some code');
             });
 
-            it('notifies about changes to symlinked files', done => {
+            itWithSymlinks('notifies about changes to symlinked files', done => {
                 // Script is located in an unwatched directory...
                 const unwatched = fs.mkdtempSync(path.join(os.tmpdir(), 'mirror-test-unwatched-'));
 
@@ -61,7 +79,7 @@ describe('Mirror', () => {
                 fs.appendFileSync(script, 'some code');
             });
 
-            it('notifies about changes to symlinked directories', done => {
+            itWithSymlinks('notifies about changes to symlinked directories', done => {
                 // Script is located in an unwatched directory...
                 const unwatched = fs.mkdtempSync(path.join(os.tmpdir(), 'mirror-test-unwatched-'));
 
@@ -91,7 +109,7 @@ describe('Mirror', () => {
                 fs.appendFileSync(script, 'some code');
             });
 
-            it('notifies about changes to relatively symlinked files', done => {
+            itWithSymlinks('notifies about changes to relatively symlinked files', done => {
                 // Script is located in an unwatched directory...
                 const unwatched = fs.mkdtempSync(path.join(os.tmpdir(), 'mirror-test-unwatched-'));
 
@@ -115,7 +133,7 @@ describe('Mirror', () => {
                 fs.appendFileSync(script, 'some code');
             });
 
-            it('notifies about changes to relatively symlinked directories', done => {
+            itWithSymlinks('notifies about changes to relatively symlinked directories', done => {
                 // Script is located in an unwatched directory...
                 const unwatched = fs.mkdtempSync(path.join(os.tmpdir(), 'mirror-test-unwatched-'));
 

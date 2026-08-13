@@ -101,7 +101,7 @@ describe('Test Scheduler', function () {
         setTimeout(done, 5000);
     }).timeout(65000);
 
-    it.only('Must encrypt and decrypt correctly', function (done) {
+    it('Must encrypt and decrypt correctly', function (done) {
         let plainText = 'This is a test!';
         let encrypted = encryptText('password', plainText);
         console.log(`Encrypted text: ${encrypted}`);

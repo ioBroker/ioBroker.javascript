@@ -1,7 +1,6 @@
 const tsc = require('virtual-tsc');
 const fs = require('node:fs');
 const path = require('node:path');
-const { EOL } = require('node:os');
 const { tsCompilerOptions } = require('../build/lib/typescriptSettings');
 
 const assert = require('node:assert').strict;
@@ -22,7 +21,7 @@ describe('TypeScript tools', () => {
 
         it('...but only if it is really necessary', () => {
             const source = `log("test")`;
-            const expected = `log("test");\nexport {};\n`.replace(/\n/g, require('os').EOL);
+            const expected = `log("test");\nexport {};\n`;
             const transformed = transformScriptBeforeCompilation(source, false);
             assert.equal(transformed, expected);
         });
@@ -55,8 +54,7 @@ import * as fs from "fs";
 export class Foo {
     do() { }
 }`
-                .trim()
-                .replace(/\r?\n/g, EOL);
+                .trim();
             const transformed = transformScriptBeforeCompilation(source, true);
             assert.equal(transformed.trim(), expected);
         });
@@ -74,8 +72,7 @@ declare global {
     }
 }
 export {};`
-                .trim()
-                .replace(/\r?\n/g, EOL);
+                .trim();
             const transformed = transformScriptBeforeCompilation(source, true);
             assert.equal(transformed.trim(), expected);
         });
@@ -96,8 +93,7 @@ declare global {
         do(): void;
     }
 }`
-                .trim()
-                .replace(/\r?\n/g, EOL);
+                .trim();
             const transformed = transformGlobalDeclarations(source);
             assert.equal(transformed.trim(), expected);
         });
@@ -115,8 +111,7 @@ declare global {
 }
 export {};
 `
-                .trim()
-                .replace(/\r?\n/g, EOL);
+                .trim();
             const transformed = transformGlobalDeclarations(source);
             assert.equal(transformed.trim(), expected);
         });
@@ -135,8 +130,7 @@ declare global {
     }
 }
 export {};`
-                .trim()
-                .replace(/\r?\n/g, EOL);
+                .trim();
             const transformed = transformGlobalDeclarations(source);
             assert.equal(transformed.trim(), expected);
         });

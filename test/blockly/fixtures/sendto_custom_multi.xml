@@ -1,0 +1,37 @@
+<!-- The custom sendTo block with several parameters, logging and a callback statement.
+     Its toolbox entry has a single empty parameter and no statement, so neither the loop over the
+     parameters, nor the JSON unquoting, nor the callback branch was covered. -->
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="sendto_custom">
+    <mutation items="host,port,payload"></mutation>
+    <field name="INSTANCE">telegram.0</field>
+    <field name="COMMAND">send</field>
+    <field name="LOG">info</field>
+    <field name="WITH_STATEMENT">TRUE</field>
+    <value name="ARG0">
+      <shadow type="text">
+        <field name="TEXT">localhost</field>
+      </shadow>
+    </value>
+    <value name="ARG1">
+      <shadow type="math_number">
+        <field name="NUM">8080</field>
+      </shadow>
+    </value>
+    <value name="ARG2">
+      <shadow type="text">
+        <field name="TEXT">{ "text": "hello" }</field>
+      </shadow>
+    </value>
+    <statement name="STATEMENT">
+      <block type="debug">
+        <field name="Severity">info</field>
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">sent</field>
+          </shadow>
+        </value>
+      </block>
+    </statement>
+  </block>
+</xml>

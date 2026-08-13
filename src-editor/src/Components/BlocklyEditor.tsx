@@ -9,6 +9,7 @@ import DialogError from '../Dialogs/Error';
 import DialogExport from '../Dialogs/Export';
 import DialogImport from '../Dialogs/Import';
 import { type BlocklyType, type BlockSvg, type WorkspaceSvg, type CustomBlock, initBlockly } from './blockly-plugins';
+import { loadOwnBlocks } from './blockly-plugins/bridge';
 import { getBlocklyDarkTheme } from './blocklyDarkTheme';
 
 let languageBlocklyLoaded = false;
@@ -168,7 +169,9 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
             }
         }
 
-        BlocklyEditor.loadScripts(toLoad, callback);
+        // The ioBroker blocks first: an adapter block may place one of our own fields, and the
+        // procedure category has to be patched before anything extends it.
+        void loadOwnBlocks().then(() => BlocklyEditor.loadScripts(toLoad, callback));
     }
 
     static loadXMLDoc(text: string): Document | null {
@@ -853,7 +856,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
                 if (origConfigureContextMenu) {
                     origConfigureContextMenu.call(workspace, menuOptions, _e);
                 }
-                const FieldOID = window.Blockly.FieldOID!;
+                const FieldOID = window.Blockly.FieldOID;
                 const keys = FieldOID.DISPLAY_MODE_KEYS;
                 for (let index = 0; index < keys.length; index++) {
                     const label =

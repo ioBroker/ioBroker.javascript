@@ -1,3 +1,7 @@
+// Must stay the first import: it installs `window.Blockly`, which the plugin modules below and
+// every block definition read at evaluation time.
+import './bridge';
+
 // Used only types of blockly, no code
 import type { WorkspaceSvg as WorkspaceSvgType } from 'blockly/core/workspace_svg';
 import type { BlockSvg as BlockSvgType } from 'blockly/core/block_svg';
@@ -29,12 +33,32 @@ export interface CustomBlock {
 
 export interface BlocklyType {
     CustomBlocks: string[];
-    Words: Record<string, Record<ioBroker.Languages, string>>;
+    Words: Record<string, Record<ioBroker.Languages, string> & { format?: string }>;
+    /** Looks a word up in `Words`; installed by `blocks_words.js` */
+    Translate: (word: string, lang?: ioBroker.Languages) => string;
     Action: CustomBlock;
+    Object: CustomBlock;
+    Convert: CustomBlock;
+    Time: CustomBlock;
+    Sendto: CustomBlock;
+    Trigger: CustomBlock & {
+        WARNING_PARENTS: string[];
+        getAllSchedules: (workspace: any) => [string, string][];
+    };
+    System: CustomBlock & { WARNING_PARENTS: string[] };
+    Timeouts: CustomBlock & {
+        getAllTimeouts: (workspace: any) => [string, string][];
+        getAllIntervals: (workspace: any) => [string, string][];
+    };
+    FieldCRON: typeof import('./blocks/field_cron').FieldCRON;
+    FieldScript: typeof import('./blocks/field_script').FieldScript;
+    b64EncodeUnicode: (text: string) => string;
+    b64DecodeUnicode: (text: string) => string;
     Blocks: Record<string, BlockSvgType>;
     JavaScript: JavascriptGeneratorType;
     Procedures: {
-        flyoutCategoryNew: (workspace: WorkspaceSvg) => FlyoutDefinition;
+        flyoutCategoryNew: (workspace: any) => FlyoutDefinition;
+        allProceduresNew: (workspace: any) => [string, string[], boolean][][];
     };
     Xml: {
         workspaceToDom: (workspace: WorkspaceSvg) => Element;
@@ -81,13 +105,7 @@ export interface BlocklyType {
         createBlockDefinitionsFromJsonArray: (jsonArray: any[]) => Record<string, any>;
         defineBlocks: (blocks: { [key: string]: any }) => void;
     };
-    FieldOID?: {
-        DISPLAY_MODE_KEYS: string[];
-        displayMode: number;
-        showIcon: boolean;
-        setDisplayMode: (mode: number, workspace: WorkspaceSvgType) => void;
-        setShowIcon: (show: boolean, workspace: WorkspaceSvgType) => void;
-    };
+    FieldOID: typeof import('./blocks/field_oid').FieldOID;
 }
 
 declare global {
@@ -100,6 +118,10 @@ declare global {
             scripts?: string[];
         };
         Blockly: BlocklyType;
+        /** No-op stand-in for the Closure loader that old adapter block files still call */
+        goog?: { provide: (name: string) => void; require: (name: string) => void };
+        /** Documentation link helper; the legacy block files call it as a bare global */
+        getHelp: (word: string) => string;
     }
 }
 

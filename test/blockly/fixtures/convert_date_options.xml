@@ -1,0 +1,62 @@
+<!-- The date conversion blocks in the modes their toolbox entries never reach.
+     `convert_from_date` picks one of 18 generator branches by dropdown, and two of them add an
+     extra input through the mutator (FORMAT for "custom", LANGUAGE for the weekday modes). The
+     toolbox entry only ever covers the default "object", so everything else was uncovered. -->
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="convert_from_date">
+    <mutation format="true" language="false"></mutation>
+    <field name="OPTION">custom</field>
+    <field name="FORMAT">YYYY-MM-DD</field>
+    <value name="VALUE">
+      <shadow type="text">
+        <field name="TEXT">2026-08-11</field>
+      </shadow>
+    </value>
+  </block>
+  <block type="convert_from_date">
+    <mutation format="false" language="true"></mutation>
+    <field name="OPTION">wdt</field>
+    <field name="LANGUAGE">de</field>
+    <value name="VALUE">
+      <shadow type="text">
+        <field name="TEXT">2026-08-11</field>
+      </shadow>
+    </value>
+  </block>
+  <block type="convert_from_date">
+    <mutation format="false" language="false"></mutation>
+    <field name="OPTION">cw</field>
+    <value name="VALUE">
+      <shadow type="text">
+        <field name="TEXT">2026-08-11</field>
+      </shadow>
+    </value>
+  </block>
+  <block type="convert_from_date">
+    <mutation format="false" language="false"></mutation>
+    <field name="OPTION">sid</field>
+    <value name="VALUE">
+      <shadow type="text">
+        <field name="TEXT">2026-08-11</field>
+      </shadow>
+    </value>
+  </block>
+  <block type="convert_time_difference">
+    <mutation format="true"></mutation>
+    <field name="OPTION">custom</field>
+    <field name="FORMAT">hh:mm</field>
+    <value name="VALUE">
+      <shadow type="math_number">
+        <field name="NUM">3600000</field>
+      </shadow>
+    </value>
+  </block>
+  <block type="convert_object2json">
+    <field name="PRETTIFY">TRUE</field>
+    <value name="VALUE">
+      <shadow type="text">
+        <field name="TEXT">x</field>
+      </shadow>
+    </value>
+  </block>
+</xml>

@@ -24,6 +24,7 @@ import {
     SyntaxKind,
     type Modifier,
     NodeFlags,
+    NewLineKind,
     type ModuleDeclaration,
     visitNode,
     visitNodes,
@@ -37,6 +38,13 @@ import {
 } from 'typescript';
 import { matchAll } from './tools';
 import type { TsTarget } from '../types';
+
+/**
+ * The transformed sources are stored in the ioBroker database and mirrored to disk, so they must
+ * not depend on the platform or on a TypeScript default. TypeScript 5 printed CRLF here and
+ * TypeScript 6 prints LF - pinning it keeps a compiler update from silently rewriting every script.
+ */
+const PRINTER_OPTIONS = { newLine: NewLineKind.LineFeed };
 
 /**
  * Resolves all TypeScript lib files for the editor
@@ -503,7 +511,7 @@ export function transformScriptBeforeCompilation(source: string, isGlobal?: bool
     const sourceFile = createSourceFile('index.ts', source, ScriptTarget.ESNext, /* setParentNodes */ true);
 
     const result = transform(sourceFile, [transformer]);
-    return createPrinter().printNode(EmitHint.Unspecified, result.transformed[0], sourceFile);
+    return createPrinter(PRINTER_OPTIONS).printNode(EmitHint.Unspecified, result.transformed[0], sourceFile);
 }
 
 /**
@@ -553,7 +561,7 @@ export function transformGlobalDeclarations(decl: string): string {
     const sourceFile = createSourceFile('index.d.ts', decl, ScriptTarget.ESNext, /* setParentNodes */ true);
 
     const result = transform(sourceFile, [transformer]);
-    return createPrinter().printNode(EmitHint.Unspecified, result.transformed[0], sourceFile);
+    return createPrinter(PRINTER_OPTIONS).printNode(EmitHint.Unspecified, result.transformed[0], sourceFile);
 }
 
 /**

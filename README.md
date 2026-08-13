@@ -30,6 +30,21 @@ Executes Javascript, Typescript Scripts.
 ### **WORK IN PROGRESS**
 * (@GermanBluefox) Turned `strict` off again for the scripts, as TypeScript 6 enables it by default
 * (@GermanBluefox) Added the tab "TypeScript" to the settings, where the compiler options for the scripts can be configured
+* (@GermanBluefox) Added snapshot tests for the Blockly code generation (`npm run test:blockly`)
+* (@GermanBluefox) Removed two leftover `.only` markers that had disabled almost the whole test suite
+* (@GermanBluefox) Pinned the line endings of transformed TypeScript sources to LF, so a compiler update cannot rewrite every script
+* (@GermanBluefox) Moved the micro benchmarks into `npm run test:performance`, as they measure relative speed against timeouts and cannot block a build
+* (@GermanBluefox) Updated Blockly from 11.1.1 to 13.2.1. The generated code is unchanged
+* (@GermanBluefox) `updateBlockly.js` now copies from the installed npm package instead of cloning the git master branch, so the shipped Blockly version is reproducible
+* (@GermanBluefox) Blockly is now bundled from the npm package instead of being loaded as vendored script tags. Custom blocks of other adapters keep working unchanged
+* (@GermanBluefox) Removed 828 kB of vendored Blockly code from the repository
+* (@GermanBluefox) Converted all block definitions from JavaScript to TypeScript. The generated code is unchanged
+* (@GermanBluefox) Fixed the object blocks under Blockly 13: the attribute rows were no longer right-aligned, and editing the attributes of an "object" block threw
+* (@GermanBluefox) Dropped the dead field editor code of the CRON and script fields, which had been written against Blockly 1.x
+* (@GermanBluefox) Fixed the multi-and/multi-or blocks under Blockly 13, which threw when their conditions were edited
+* (@GermanBluefox) Removed a phantom block type "Convert" that a stray assignment in the conversion blocks had registered
+* (@GermanBluefox) Added `BLOCKLY_TS.md` for adapter developers: what Blockly 13 changed for custom blocks and how to write them in TypeScript
+* (@GermanBluefox) Moved the Blockly translations into `words.json` and typed the lookup helpers
 
 ### 10.0.0 (2026-08-04)
 * (@GermanBluefox) Typescript 6 support

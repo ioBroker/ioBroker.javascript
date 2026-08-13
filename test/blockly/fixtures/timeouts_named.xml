@@ -1,0 +1,46 @@
+<!-- A named timer together with the blocks that clear and read it.
+     The toolbox entries of `timeouts_cleartimeout` and `timeouts_getinterval` carry an empty NAME,
+     so their dropdown falls back to "unnamed" and the lookup over the timers actually present in
+     the workspace was never exercised. Different units are covered here too. -->
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="timeouts_settimeout">
+    <field name="NAME">coffeeTimer</field>
+    <field name="DELAY">5</field>
+    <field name="UNIT">min</field>
+    <statement name="STATEMENT">
+      <block type="debug">
+        <field name="Severity">info</field>
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">coffee is ready</field>
+          </shadow>
+        </value>
+      </block>
+    </statement>
+    <next>
+      <block type="timeouts_cleartimeout">
+        <field name="NAME">coffeeTimer</field>
+      </block>
+    </next>
+  </block>
+  <block type="timeouts_setinterval">
+    <field name="NAME">pollInterval</field>
+    <field name="INTERVAL">30</field>
+    <field name="UNIT">sec</field>
+    <statement name="STATEMENT">
+      <block type="debug">
+        <field name="Severity">debug</field>
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">poll</field>
+          </shadow>
+        </value>
+      </block>
+    </statement>
+    <next>
+      <block type="timeouts_clearinterval">
+        <field name="NAME">pollInterval</field>
+      </block>
+    </next>
+  </block>
+</xml>

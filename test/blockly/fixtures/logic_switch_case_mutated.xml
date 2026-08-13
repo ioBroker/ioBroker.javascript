@@ -1,0 +1,53 @@
+<!-- The switch block with its case/default mutation and a condition connected.
+     Its toolbox entry has no mutation and no condition at all, so the generator returns an empty
+     string there - which means `domToMutation` and the whole case loop were uncovered. -->
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="logic_switch_case">
+    <mutation case="1" default="1"></mutation>
+    <value name="CONDITION">
+      <block type="variables_get">
+        <field name="VAR">state</field>
+      </block>
+    </value>
+    <value name="CASECONDITION0">
+      <block type="text">
+        <field name="TEXT">on</field>
+      </block>
+    </value>
+    <statement name="CASE0">
+      <block type="debug">
+        <field name="Severity">info</field>
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">switched on</field>
+          </shadow>
+        </value>
+      </block>
+    </statement>
+    <value name="CASECONDITION1">
+      <block type="text">
+        <field name="TEXT">off</field>
+      </block>
+    </value>
+    <statement name="CASE1">
+      <block type="debug">
+        <field name="Severity">info</field>
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">switched off</field>
+          </shadow>
+        </value>
+      </block>
+    </statement>
+    <statement name="ONDEFAULT">
+      <block type="debug">
+        <field name="Severity">warn</field>
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">unknown</field>
+          </shadow>
+        </value>
+      </block>
+    </statement>
+  </block>
+</xml>

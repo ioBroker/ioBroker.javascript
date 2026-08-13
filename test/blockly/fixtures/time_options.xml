@@ -1,0 +1,35 @@
+<!-- The time blocks in the dropdown modes their toolbox entries never reach.
+     `time_get` picks one of 18 generator branches, `time_get_special` one of 6, and two of the
+     `time_get` branches add an extra input through the mutator (FORMAT for "custom", LANGUAGE for
+     the weekday and month-name modes). The toolbox entries only cover the first branch of each. -->
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="time_get">
+    <mutation format="true" language="false"></mutation>
+    <field name="OPTION">custom</field>
+    <field name="FORMAT">YYYY-MM-DD hh:mm</field>
+  </block>
+  <block type="time_get">
+    <mutation format="false" language="true"></mutation>
+    <field name="OPTION">wdts</field>
+    <field name="LANGUAGE">ru</field>
+  </block>
+  <block type="time_get">
+    <mutation format="false" language="true"></mutation>
+    <field name="OPTION">Mt</field>
+    <field name="LANGUAGE">de</field>
+  </block>
+  <block type="time_get">
+    <mutation format="false" language="false"></mutation>
+    <field name="OPTION">cw</field>
+  </block>
+  <block type="time_get">
+    <mutation format="false" language="false"></mutation>
+    <field name="OPTION">mid</field>
+  </block>
+  <block type="time_get_special">
+    <field name="TYPE">weekStart</field>
+  </block>
+  <block type="time_get_special">
+    <field name="TYPE">monthEnd</field>
+  </block>
+</xml>

@@ -1,5 +1,10 @@
 {
     "require": [
         "./test/mocha.setup.js"
+    ],
+    "comment": "test/*.test.js and test/testMainPerformance.js are micro benchmarks - they assert relative speed against mocha timeouts and are too machine dependent to block a build. Run them with `npm run test:performance`.",
+    "ignore": [
+        "test/*.test.js",
+        "test/testMainPerformance.js"
     ]
 }

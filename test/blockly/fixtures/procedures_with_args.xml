@@ -1,0 +1,58 @@
+<!-- A procedure with arguments, defined and called.
+     The toolbox entries have no arguments at all, so the loop over `getVarModels()` in both the
+     definition and the call generator was never exercised - which is exactly the call that broke
+     when Blockly 13 removed `getVars()`. -->
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="procedures_defreturn">
+    <mutation>
+      <arg name="temperature"></arg>
+      <arg name="threshold"></arg>
+    </mutation>
+    <field name="NAME">isTooWarm</field>
+    <value name="RETURN">
+      <block type="logic_compare">
+        <field name="OP">GT</field>
+        <value name="A">
+          <block type="variables_get">
+            <field name="VAR">temperature</field>
+          </block>
+        </value>
+        <value name="B">
+          <block type="variables_get">
+            <field name="VAR">threshold</field>
+          </block>
+        </value>
+      </block>
+    </value>
+  </block>
+  <block type="controls_if">
+    <value name="IF0">
+      <block type="procedures_callreturn">
+        <mutation name="isTooWarm">
+          <arg name="temperature"></arg>
+          <arg name="threshold"></arg>
+        </mutation>
+        <value name="ARG0">
+          <shadow type="math_number">
+            <field name="NUM">24</field>
+          </shadow>
+        </value>
+        <value name="ARG1">
+          <shadow type="math_number">
+            <field name="NUM">22</field>
+          </shadow>
+        </value>
+      </block>
+    </value>
+    <statement name="DO0">
+      <block type="debug">
+        <field name="Severity">warn</field>
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">too warm</field>
+          </shadow>
+        </value>
+      </block>
+    </statement>
+  </block>
+</xml>

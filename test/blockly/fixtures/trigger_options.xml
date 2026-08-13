@@ -1,0 +1,101 @@
+<!-- The trigger blocks in the states their toolbox entries never reach:
+     `on_ext` with several object IDs (its mutator), a condition other than "ne" and an ack filter,
+     a named schedule together with the block that clears it (whose dropdown otherwise falls back
+     to "unnamed"), an astro trigger with a shift, and `onFile` with the file content requested. -->
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="on_ext">
+    <mutation items="3"></mutation>
+    <field name="CONDITION">gt</field>
+    <field name="ACK_CONDITION">true</field>
+    <value name="OID0">
+      <shadow type="field_oid">
+        <field name="oid">javascript.0.first</field>
+      </shadow>
+    </value>
+    <value name="OID1">
+      <shadow type="field_oid">
+        <field name="oid">javascript.0.second</field>
+      </shadow>
+    </value>
+    <value name="OID2">
+      <shadow type="field_oid">
+        <field name="oid">javascript.0.third</field>
+      </shadow>
+    </value>
+    <statement name="STATEMENT">
+      <block type="debug">
+        <field name="Severity">info</field>
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">changed</field>
+          </shadow>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="on">
+    <field name="OID">javascript.0.lamp</field>
+    <field name="CONDITION">false</field>
+    <field name="ACK_CONDITION">false</field>
+    <statement name="STATEMENT">
+      <block type="debug">
+        <field name="Severity">warn</field>
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">switched off</field>
+          </shadow>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="schedule_create">
+    <field name="NAME">nightly</field>
+    <value name="SCHEDULE">
+      <shadow type="field_cron">
+        <field name="CRON">0 3 * * *</field>
+      </shadow>
+    </value>
+    <statement name="STATEMENT">
+      <block type="debug">
+        <field name="Severity">debug</field>
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">nightly job</field>
+          </shadow>
+        </value>
+      </block>
+    </statement>
+    <next>
+      <block type="schedule_clear">
+        <field name="NAME">nightly</field>
+      </block>
+    </next>
+  </block>
+  <block type="astro">
+    <field name="TYPE">sunsetStart</field>
+    <field name="OFFSET">-15</field>
+    <statement name="STATEMENT">
+      <block type="debug">
+        <field name="Severity">info</field>
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">dusk soon</field>
+          </shadow>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="onFile">
+    <field name="WITH_FILE">TRUE</field>
+    <value name="OID">
+      <shadow type="field_oid_meta">
+        <field name="oid">0_userdata.0</field>
+      </shadow>
+    </value>
+    <value name="FILE">
+      <shadow type="text">
+        <field name="TEXT">photo.jpg</field>
+      </shadow>
+    </value>
+  </block>
+</xml>

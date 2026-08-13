@@ -1,0 +1,46 @@
+<!-- The state blocks with their delay mutation enabled, and a few dropdown options.
+     `control`, `toggle` and `update` all add a delay field, a unit dropdown and a "clear running"
+     checkbox when the mutation is on. Their toolbox entries have it off, so the whole
+     `setStateDelayed` branch was uncovered - as were the non-default options of `create_ex`. -->
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="control">
+    <mutation delay_input="true"></mutation>
+    <field name="OID">javascript.0.lamp</field>
+    <field name="WITH_DELAY">TRUE</field>
+    <field name="DELAY_MS">5</field>
+    <field name="UNIT">min</field>
+    <field name="CLEAR_RUNNING">TRUE</field>
+    <value name="VALUE">
+      <block type="logic_boolean">
+        <field name="BOOL">TRUE</field>
+      </block>
+    </value>
+  </block>
+  <block type="toggle">
+    <mutation delay_input="true"></mutation>
+    <field name="OID">javascript.0.lamp</field>
+    <field name="WITH_DELAY">TRUE</field>
+    <field name="DELAY_MS">30</field>
+    <field name="UNIT">sec</field>
+    <field name="CLEAR_RUNNING">FALSE</field>
+  </block>
+  <block type="update">
+    <mutation delay_input="true"></mutation>
+    <field name="OID">javascript.0.lamp</field>
+    <field name="WITH_DELAY">TRUE</field>
+    <field name="DELAY_MS">250</field>
+    <field name="UNIT">ms</field>
+    <field name="CLEAR_RUNNING">TRUE</field>
+    <value name="VALUE">
+      <shadow type="math_number">
+        <field name="NUM">42</field>
+      </shadow>
+    </value>
+  </block>
+  <block type="create_ex">
+    <field name="NAME">0_userdata.0.counter</field>
+    <field name="TYPE">number</field>
+    <field name="READABLE">TRUE</field>
+    <field name="WRITEABLE">TRUE</field>
+  </block>
+</xml>

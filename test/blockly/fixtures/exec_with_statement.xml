@@ -1,0 +1,25 @@
+<!-- exec with the "with_statement" mutation enabled and logging on.
+     The toolbox entry only ever covers the default (mutation off), so this branch of the
+     generator would otherwise never be reached. -->
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="exec">
+    <mutation with_statement="true"></mutation>
+    <field name="WITH_STATEMENT">TRUE</field>
+    <field name="LOG">info</field>
+    <value name="COMMAND">
+      <shadow type="text">
+        <field name="TEXT">ls -la</field>
+      </shadow>
+    </value>
+    <statement name="STATEMENT">
+      <block type="debug">
+        <field name="Severity">warn</field>
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">done</field>
+          </shadow>
+        </value>
+      </block>
+    </statement>
+  </block>
+</xml>

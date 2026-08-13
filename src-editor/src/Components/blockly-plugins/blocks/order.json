@@ -1,0 +1,19 @@
+[
+    { "id": "blocks_words", "source": "module" },
+    { "id": "blocks_procedures", "source": "module" },
+    { "id": "blocks_logic", "source": "module" },
+    { "id": "blocks_switch", "source": "module" },
+    { "id": "blocks_text", "source": "module" },
+    { "id": "blocks_number", "source": "module" },
+    { "id": "field_oid", "source": "module" },
+    { "id": "field_cron", "source": "module" },
+    { "id": "field_script", "source": "module" },
+    { "id": "blocks_system", "source": "module" },
+    { "id": "blocks_action", "source": "module" },
+    { "id": "blocks_sendto", "source": "module" },
+    { "id": "blocks_time", "source": "module" },
+    { "id": "blocks_convert", "source": "module" },
+    { "id": "blocks_trigger", "source": "module" },
+    { "id": "blocks_timeout", "source": "module" },
+    { "id": "blocks_object", "source": "module" }
+]
