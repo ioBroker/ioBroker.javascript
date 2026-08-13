@@ -287,7 +287,21 @@ export function initBlockly(): void {
         );
     }
 
-    // migrate old registry Blockly.JavaScript.my_block to new registry Blockly.JavaScript.forBlock.my_block
+    migrateGenerators();
+}
+
+/**
+ * Moves generators registered the old way (`Blockly.JavaScript.my_block`) to the registry Blockly
+ * has been reading since v10 (`Blockly.JavaScript.forBlock.my_block`). Without this step such a
+ * block fails with "generator does not know how to generate code for block type".
+ *
+ * Must run again after every adapter's `blockly.js` has been loaded, because those files are
+ * fetched long after `initBlockly()` and most of them still use the old registry.
+ *
+ * Repeated calls are harmless: a generator's own methods live on the prototype, so `Object.keys`
+ * only ever returns the block generators that scripts assigned.
+ */
+export function migrateGenerators(): void {
     const blocklyObject: Record<string, any> = window.Blockly.JavaScript;
     if (blocklyObject.forBlock) {
         Object.keys(blocklyObject).forEach(key => {

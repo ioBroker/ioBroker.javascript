@@ -8,7 +8,14 @@ import { I18n, Message as DialogMessage, type ThemeType } from '@iobroker/gui-co
 import DialogError from '../Dialogs/Error';
 import DialogExport from '../Dialogs/Export';
 import DialogImport from '../Dialogs/Import';
-import { type BlocklyType, type BlockSvg, type WorkspaceSvg, type CustomBlock, initBlockly } from './blockly-plugins';
+import {
+    type BlocklyType,
+    type BlockSvg,
+    type WorkspaceSvg,
+    type CustomBlock,
+    initBlockly,
+    migrateGenerators,
+} from './blockly-plugins';
 import { loadOwnBlocks } from './blockly-plugins/bridge';
 import { getBlocklyDarkTheme } from './blocklyDarkTheme';
 
@@ -135,6 +142,9 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
 
     static loadScripts(scripts: string[], callback: () => void): void {
         if (!scripts?.length) {
+            // The adapter block files are loaded after initBlockly() has run, so anything they
+            // registered as `Blockly.JavaScript.<type>` is still waiting to be moved to `forBlock`
+            migrateGenerators();
             if (callback) {
                 callback();
             }

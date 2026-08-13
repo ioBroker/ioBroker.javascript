@@ -87,8 +87,12 @@ const value = block.getInput('END')
 
 - `Blockly.Blocks['my_block'] = { init: function () { … } }`
 - `Blockly.JavaScript.forBlock['my_block'] = function (block) { … }`
-- **and the old form** `Blockly.JavaScript['my_block'] = function (block) { … }` — the editor still
-  moves those over to `forBlock` after your file has been loaded
+- **and the old form** `Blockly.JavaScript['my_block'] = function (block) { … }` — the editor moves
+  those over to `forBlock` once all adapter block files have been loaded
+
+  > Editors older than this release migrated *before* loading adapter files, so a block registered
+  > the old way was never moved and failed with _"JavaScript generator does not know how to generate
+  > code for block type"_. Prefer `forBlock` directly — it works on every version.
 - `goog.provide(…)` / `goog.require(…)` — a no-op stand-in is installed before your file runs, so
   the usual `if (typeof goog !== 'undefined')` guard is no longer needed, but stays harmless
 - `Blockly.Words['my_word'] = { en: '…', de: '…', … }` together with `Blockly.Translate('my_word')`

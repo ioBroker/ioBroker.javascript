@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
-import { Box } from '@mui/material';
+import { Box, CssBaseline } from '@mui/material';
 
 import {
     I18n,
@@ -1281,6 +1281,7 @@ export default class App extends GenericApp<AppProps, AppState> {
             return (
                 <StyledEngineProvider injectFirst>
                     <ThemeProvider theme={this.state.theme}>
+                        <CssBaseline />
                         <Loader themeType={this.state.themeType} />
                     </ThemeProvider>
                 </StyledEngineProvider>
@@ -1347,6 +1348,7 @@ export default class App extends GenericApp<AppProps, AppState> {
         return (
             <StyledEngineProvider injectFirst>
                 <ThemeProvider theme={this.state.theme}>
+                    <CssBaseline />
                     <ScrollbarStyles theme={this.state.theme} />
                     <div style={styles.root}>
                         <ContextWrapper socket={this.socket}>{context}</ContextWrapper>
