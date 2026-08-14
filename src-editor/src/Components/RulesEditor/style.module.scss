@@ -28,6 +28,22 @@
        band's colour wash reaches the left edge - see .mainBlockItemRules in
        ./components/ContentBlockItems/style.module.scss */
 }
+/* Offered while the rule is still empty - dragging a block out of the palette is not obvious */
+.emptyRule {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 12px 12px 0 56px;
+    padding: 14px 16px;
+    border: 1px dashed var(--lineColor);
+    border-radius: 8px;
+}
+.emptyRuleText {
+    color: var(--colorBlock);
+    font-size: 14px;
+}
 @media screen and (max-width: 835px) {
     /* no room for a sidebar - the palette moves above the rule */
     .rootWrapper {

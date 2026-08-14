@@ -1,0 +1,161 @@
+/*
+ * The wizard reuses the real block components, so a step looks like the band it will end up in -
+ * same three colours as the rule bands (see ../ContentBlockItems/style.module.scss).
+ */
+.bandTriggers {
+    --bandColor: var(--railTrigger);
+}
+.bandConditions {
+    --bandColor: var(--railCondition);
+}
+.bandActions {
+    --bandColor: var(--railAction);
+}
+
+.paper {
+    /* the dialog keeps its height while the steps change, so the buttons do not jump */
+    min-height: 70vh;
+}
+.title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-right: 48px;
+}
+.close {
+    position: absolute !important;
+    top: 12px;
+    right: 12px;
+}
+.content {
+    display: flex;
+    flex-direction: column;
+}
+.stepper {
+    padding: 8px 0 20px !important;
+    background: none !important;
+}
+.step {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    /* the steps stay mounted and are switched with `hidden`, which the display above would beat -
+       the browser's own `[hidden] { display: none }` is only a user-agent rule */
+    &[hidden] {
+        display: none;
+    }
+}
+.hint {
+    color: var(--colorBlockHover);
+    font-size: 13px;
+}
+.warning {
+    color: var(--debugColor);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Same shape as a card in the editor, so what the wizard shows is what the rule will look like */
+.blockCard {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    padding: 8px 40px 8px 10px;
+    border-radius: 6px;
+    border-left: 3px solid var(--bandColor);
+    background: var(--backgroundCurrentItem);
+    box-shadow:
+        0 2px 1px -1px rgba(0, 0, 0, 0.2),
+        0 1px 1px 0 rgba(0, 0, 0, 0.14),
+        0 1px 3px 0 rgba(0, 0, 0, 0.12);
+}
+.blockBody {
+    display: flex;
+    align-items: flex-start;
+    min-width: 0;
+    flex: 1;
+}
+.remove {
+    position: absolute !important;
+    top: 4px;
+    right: 4px;
+    color: var(--colorBlockHover) !important;
+}
+.notFound {
+    color: var(--debugColor);
+    font-size: 13px;
+}
+
+/* The block chooser: one button per block of this step */
+.chooser {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+    gap: 8px;
+}
+.choice {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 8px;
+    min-height: 84px;
+    justify-content: center;
+    border: 1px solid var(--lineColor);
+    border-radius: 6px;
+    background: none;
+    color: var(--colorBlock);
+    font: inherit;
+    font-size: 13px;
+    text-align: center;
+    cursor: pointer;
+    transition:
+        border-color 0.2s,
+        background 0.2s;
+    &:hover {
+        border-color: var(--lineColorActive);
+        background: var(--backgroundCurrentItem);
+    }
+}
+.choiceIcon {
+    width: 28px !important;
+    height: 28px !important;
+    * {
+        color: var(--colorBlock) !important;
+    }
+}
+.choiceName {
+    /* two lines at most, so the buttons in a row stay the same height */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.addMore {
+    align-self: flex-start;
+    color: var(--lineColorActive) !important;
+}
+
+/* Last step: the rule read top to bottom */
+.summaryBand {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.summaryLabel {
+    color: var(--bandColor);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.preview {
+    /* a preview, not a form - every block in it is mounted a second time and must stay inert */
+    pointer-events: none;
+}
+
+.actions {
+    padding: 12px 24px !important;
+}
+.spacer {
+    flex: 1;
+}

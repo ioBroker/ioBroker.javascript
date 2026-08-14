@@ -46,6 +46,7 @@ Executes Javascript, Typescript Scripts.
 * (@GermanBluefox) Added `BLOCKLY_TS.md` for adapter developers: what Blockly 13 changed for custom blocks and how to write them in TypeScript
 * (@GermanBluefox) Moved the Blockly translations into `words.json` and typed the lookup helpers
 * (@GermanBluefox) Redesign of Rules
+* (@GermanBluefox) Added a wizard to the rule editor that builds a rule step by step - trigger, condition and action are configured in place, and the last step shows the finished rule
 
 ### 10.0.0 (2026-08-04)
 * (@GermanBluefox) TypeScript 6 support

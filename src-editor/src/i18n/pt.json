@@ -460,5 +460,20 @@
     "Suggest tests for %s %s": "Sugerir testes para %s %s",
     "Apply changes": "Aplicar alterações",
     "Discard changes": "Descartar alterações",
-    "Ask anything, or request a change (e.g. \"what does this do?\")": "Pergunte algo ou peça uma alteração (ex. \"o que isso faz?\")"
+    "Ask anything, or request a change (e.g. \"what does this do?\")": "Pergunte algo ou peça uma alteração (ex. \"o que isso faz?\")",
+    "Wizard": "Assistente",
+    "Create a rule step by step": "Criar uma regra passo a passo",
+    "Summary": "Resumo",
+    "Back": "Voltar",
+    "Next": "Próximo",
+    "Skip": "Ignorar",
+    "Create rule": "Criar regra",
+    "Replace rule": "Substituir regra",
+    "The current rule will be replaced": "A regra atual será substituída",
+    "Add another": "Adicionar outro",
+    "Without a condition the rule always runs": "Sem condição, a regra é sempre executada",
+    "What should start the rule?": "O que deve iniciar a regra?",
+    "When should the rule run? This step is optional.": "Quando a regra deve ser executada? Este passo é opcional.",
+    "What should happen?": "O que deve acontecer?",
+    "Block not found": "Bloco não encontrado"
 }

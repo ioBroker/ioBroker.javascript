@@ -460,5 +460,20 @@
     "Suggest tests for %s %s": "Предложить тесты для %s %s",
     "Apply changes": "Применить изменения",
     "Discard changes": "Отменить изменения",
-    "Ask anything, or request a change (e.g. \"what does this do?\")": "Задайте любой вопрос или попросите изменение (напр. \"что делает эта команда?\")"
+    "Ask anything, or request a change (e.g. \"what does this do?\")": "Задайте любой вопрос или попросите изменение (напр. \"что делает эта команда?\")",
+    "Wizard": "Мастер",
+    "Create a rule step by step": "Создать правило шаг за шагом",
+    "Summary": "Сводка",
+    "Back": "Назад",
+    "Next": "Далее",
+    "Skip": "Пропустить",
+    "Create rule": "Создать правило",
+    "Replace rule": "Заменить правило",
+    "The current rule will be replaced": "Текущее правило будет заменено",
+    "Add another": "Добавить ещё",
+    "Without a condition the rule always runs": "Без условия правило выполняется всегда",
+    "What should start the rule?": "Что должно запускать правило?",
+    "When should the rule run? This step is optional.": "Когда правило должно выполняться? Этот шаг необязателен.",
+    "What should happen?": "Что должно произойти?",
+    "Block not found": "Блок не найден"
 }
