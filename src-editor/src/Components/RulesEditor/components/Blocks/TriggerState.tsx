@@ -18,7 +18,7 @@ import { MdCancel as IconCancel, MdCheck as IconCheck } from 'react-icons/md';
 
 import { I18n } from '@iobroker/gui-components';
 
-import { GenericBlock } from '../GenericBlock';
+import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
 import { STANDARD_FUNCTION_STATE, STANDARD_FUNCTION_STATE_ONCHANGE } from '../../helpers/Compile';
 import { renderValue } from '../../helpers/utils';
 import type {
@@ -217,6 +217,20 @@ class TriggerState extends GenericBlock<RuleBlockConfigTriggerState, TriggerStat
                 </DialogActions>
             </Dialog>,
         ];
+    }
+
+    getSummary(): RuleBlockSummary | null {
+        const { oid, tagCard } = this.state.settings;
+        if (!oid) {
+            return null;
+        }
+        const name = this.objectName(oid);
+        return {
+            kicker: tagCard ? I18n.t(tagCard) : undefined,
+            title: name || oid,
+            // only worth a second line when the title is the name and not the ID itself
+            subtitle: name ? oid : undefined,
+        };
     }
 
     onTagChange(_tagCard: RuleTagCardTitle): void {

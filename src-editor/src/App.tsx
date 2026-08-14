@@ -98,19 +98,26 @@ const styles: Record<string, any> = {
     progress: {
         margin: 100,
     },
+    /*
+     * The icon used to be placed with `pt`/`pl`, which does not centre it: the inline SVG also sits
+     * on the text baseline, so it ended up low and off to one side. A flex box with a definite font
+     * size centres it in both directions - `react-icons` renders at `1em`.
+     */
     menuOpenCloseButton: (theme: IobTheme): any => ({
         position: 'absolute',
         left: 0,
         borderRadius: '0 5px 5px 0',
         top: 6,
-        pt: 1,
         cursor: 'pointer',
         zIndex: 1,
         height: 25,
         width: 20,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '16px',
         background: theme.palette.secondary.main,
         color: theme.palette.primary.main,
-        pl: '3px',
         '&:hover': {
             color: 'white',
         },
@@ -120,14 +127,16 @@ const styles: Record<string, any> = {
         right: 3,
         borderRadius: '5px 5px 0 0',
         bottom: 0,
-        pt: '3px',
         cursor: 'pointer',
         zIndex: 10,
         height: 20,
         width: 25,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '16px',
         background: theme.palette.secondary.main,
         color: theme.palette.primary.main,
-        pl: 1,
         '&:hover': {
             color: 'white',
         },

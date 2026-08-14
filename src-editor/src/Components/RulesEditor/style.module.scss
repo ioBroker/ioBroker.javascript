@@ -10,12 +10,26 @@
     display: flex;
     width: 100%;
 }
-.addClass {
+/*
+ * The rule is read top to bottom, in the order it runs: when -> and -> then.
+ *
+ * It used to be three equal columns, which gave the trigger as much room as the actions (a trigger
+ * is almost always a single block, actions are many) and let each part scroll on its own - so once
+ * a rule had a few actions, trigger and action could no longer be seen at the same time.
+ */
+.bands {
+    display: flex;
     flex-direction: column;
-    height: auto;
+    /* takes the space left of the palette, and is the one thing that scrolls */
+    flex: 1;
+    min-width: 0;
     overflow: auto;
+    /* The lane the palette toggle needs is indented on each band instead of here, so that the
+       band's colour wash reaches the left edge - see .mainBlockItemRules in
+       ./components/ContentBlockItems/style.module.scss */
 }
 @media screen and (max-width: 835px) {
+    /* no room for a sidebar - the palette moves above the rule */
     .rootWrapper {
         flex-direction: column;
         height: auto;

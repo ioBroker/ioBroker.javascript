@@ -4,7 +4,7 @@ import SunCalc from 'suncalc2';
 
 import { ComplexCron, Schedule, I18n, convertCronToText } from '@iobroker/gui-components';
 
-import { GenericBlock } from '../GenericBlock';
+import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
 import { STANDARD_FUNCTION_STATE, STANDARD_FUNCTION_STATE_ONCHANGE } from '../../helpers/Compile';
 import CustomInput from '../CustomInput';
 import CustomButton from '../CustomButton';
@@ -515,6 +515,35 @@ export default class TriggerScheduleBlock extends GenericBlock<
 
             default:
                 break;
+        }
+    }
+
+    getSummary(): RuleBlockSummary | null {
+        const { tagCard, interval, unit, cron, at, astro, offset, offsetValue } = this.state.settings;
+        const kicker = tagCard ? I18n.t(tagCard) : undefined;
+
+        switch (tagCard) {
+            case 'interval':
+                return interval ? { kicker, title: `${I18n.t('every')} ${interval} ${I18n.t(unit || 's')}` } : null;
+
+            case 'at':
+                return at ? { kicker, title: at } : null;
+
+            case 'astro': {
+                if (!astro) {
+                    return null;
+                }
+                const shift =
+                    offset && offsetValue ? ` ${offsetValue > 0 ? '+' : ''}${offsetValue} ${I18n.t('min')}` : '';
+                return { kicker, title: `${I18n.t(astro)}${shift}` };
+            }
+
+            case 'cron':
+            case 'wizard':
+                return cron ? { kicker, title: String(cron) } : null;
+
+            default:
+                return null;
         }
     }
 

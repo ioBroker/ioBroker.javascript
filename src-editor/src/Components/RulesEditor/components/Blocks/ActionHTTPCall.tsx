@@ -1,4 +1,4 @@
-import { GenericBlock } from '../GenericBlock';
+import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
 import type {
     RuleBlockConfigActionHTTPCall,
     RuleBlockDescription,
@@ -22,6 +22,11 @@ class ActionHTTPCall extends GenericBlock<RuleBlockConfigActionHTTPCall> {
     // eslint-disable-next-line class-methods-use-this
     renderDebug(debugMessage: { data: RuleBlockConfigActionHTTPCall }): string {
         return `URL: ${debugMessage.data.url}`;
+    }
+
+    getSummary(): RuleBlockSummary | null {
+        const { url } = this.state.settings;
+        return url ? { title: String(url) } : null;
     }
 
     onTagChange(tagCard: RuleTagCardTitle): void {

@@ -1,4 +1,6 @@
-import { GenericBlock } from '../GenericBlock';
+import { I18n } from '@iobroker/gui-components';
+
+import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
 import type {
     RuleBlockConfigConditionTime,
     RuleBlockDescription,
@@ -113,6 +115,15 @@ export default class ConditionTime extends GenericBlock<RuleBlockConfigCondition
 
     onTagChange(tagCard: RuleTagCardTitle): void {
         this._setInputs(tagCard);
+    }
+
+    getSummary(): RuleBlockSummary | null {
+        const { tagCard, time, withDate, date } = this.state.settings;
+        if (!time) {
+            return null;
+        }
+        const when = withDate && date ? `${time} · ${date}` : time;
+        return { title: `${I18n.t('Actual time of day')} ${tagCard || '='} ${when}` };
     }
 
     static getStaticData(): RuleBlockDescription {

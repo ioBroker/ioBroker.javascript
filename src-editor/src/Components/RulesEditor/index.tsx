@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 
-import { I18n, type IobTheme, type ThemeName, type ThemeType, Utils } from '@iobroker/gui-components';
+import { I18n, type IobTheme, type ThemeName, type ThemeType } from '@iobroker/gui-components';
 import type { DebugMessage, RuleUserRules } from '@iobroker/javascript-rules-dev';
 
 import cls from './style.module.scss';
@@ -230,7 +230,7 @@ const RulesEditor = ({
                 )
             ) : null}
             {
-                <div className={Utils.clsx(cls.rootWrapper, addClass[835] && cls.addClass)}>
+                <div className={cls.rootWrapper}>
                     <Menu
                         setAllBlocks={setAllBlocks}
                         allBlocks={allBlocks}
@@ -241,56 +241,54 @@ const RulesEditor = ({
                         addClass={addClass}
                         isTourOpen={isTourOpen}
                     />
-                    <ContentBlockItems
-                        socket={socket}
-                        setUserRules={onChangeBlocks}
-                        userRules={userRules}
-                        isTourOpen={isTourOpen}
-                        setTourStep={setTourStep}
-                        tourStep={tourStep}
-                        name={`${I18n.t('when')}...`}
-                        typeBlock="triggers"
-                        iconName="FlashOn"
-                        size={addClass[835]}
-                        themeType={themeType}
-                        themeName={themeName}
-                        theme={theme}
-                    />
-                    <ContentBlockItems
-                        socket={socket}
-                        setUserRules={onChangeBlocks}
-                        isTourOpen={isTourOpen}
-                        setTourStep={setTourStep}
-                        tourStep={tourStep}
-                        userRules={userRules}
-                        name={`...${I18n.t('and')}...`}
-                        typeBlock="conditions"
-                        iconName="Help"
-                        nameAdditionally={I18n.t('or')}
-                        additionally
-                        border
-                        size={addClass[835]}
-                        themeType={themeType}
-                        themeName={themeName}
-                        theme={theme}
-                    />
-                    <ContentBlockItems
-                        socket={socket}
-                        setUserRules={onChangeBlocks}
-                        isTourOpen={isTourOpen}
-                        setTourStep={setTourStep}
-                        tourStep={tourStep}
-                        userRules={userRules}
-                        name={`...${I18n.t('then')}`}
-                        typeBlock="actions"
-                        iconName="PlayForWork"
-                        nameAdditionally={I18n.t('else')}
-                        additionally
-                        size={addClass[835]}
-                        themeType={themeType}
-                        themeName={themeName}
-                        theme={theme}
-                    />
+                    <div className={cls.bands}>
+                        <ContentBlockItems
+                            socket={socket}
+                            setUserRules={onChangeBlocks}
+                            userRules={userRules}
+                            isTourOpen={isTourOpen}
+                            setTourStep={setTourStep}
+                            tourStep={tourStep}
+                            name={`${I18n.t('when')}...`}
+                            typeBlock="triggers"
+                            iconName="FlashOn"
+                            themeType={themeType}
+                            themeName={themeName}
+                            theme={theme}
+                        />
+                        <ContentBlockItems
+                            socket={socket}
+                            setUserRules={onChangeBlocks}
+                            isTourOpen={isTourOpen}
+                            setTourStep={setTourStep}
+                            tourStep={tourStep}
+                            userRules={userRules}
+                            name={`...${I18n.t('and')}...`}
+                            typeBlock="conditions"
+                            iconName="Help"
+                            nameAdditionally={I18n.t('or')}
+                            additionally
+                            themeType={themeType}
+                            themeName={themeName}
+                            theme={theme}
+                        />
+                        <ContentBlockItems
+                            socket={socket}
+                            setUserRules={onChangeBlocks}
+                            isTourOpen={isTourOpen}
+                            setTourStep={setTourStep}
+                            tourStep={tourStep}
+                            userRules={userRules}
+                            name={`...${I18n.t('then')}`}
+                            typeBlock="actions"
+                            iconName="PlayForWork"
+                            nameAdditionally={I18n.t('else')}
+                            additionally
+                            themeType={themeType}
+                            themeName={themeName}
+                            theme={theme}
+                        />
+                    </div>
                 </div>
             }
         </div>

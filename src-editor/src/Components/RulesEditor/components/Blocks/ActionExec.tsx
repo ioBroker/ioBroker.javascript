@@ -1,4 +1,4 @@
-import { GenericBlock } from '../GenericBlock';
+import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
 import type {
     RuleBlockConfigActionExec,
     RuleBlockDescription,
@@ -38,6 +38,11 @@ class ActionExec extends GenericBlock<RuleBlockConfigActionExec> {
             },
             () => super.onTagChange(tagCard),
         );
+    }
+
+    getSummary(): RuleBlockSummary | null {
+        const { exec } = this.state.settings;
+        return exec ? { title: String(exec) } : null;
     }
 
     static getStaticData(): RuleBlockDescription {

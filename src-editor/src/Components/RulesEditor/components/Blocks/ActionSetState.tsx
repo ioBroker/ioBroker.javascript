@@ -8,7 +8,7 @@ import type {
     RuleTagCardTitle,
     GenericBlockProps,
 } from '@iobroker/javascript-rules-dev';
-import { GenericBlock } from '../GenericBlock';
+import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
 
 import { renderValue } from '../../helpers/utils';
 
@@ -313,6 +313,28 @@ class ActionSetState extends GenericBlock<RuleBlockConfigActionSetState> {
 
     onUpdate(): void {
         this.onTagChange();
+    }
+
+    getSummary(): RuleBlockSummary | null {
+        const { oid, value, toggle, useTrigger, tagCard } = this.state.settings;
+        if (!oid) {
+            return null;
+        }
+        const name = this.objectName(oid);
+        let target: string;
+        if (useTrigger) {
+            target = I18n.t('Trigger value');
+        } else if (toggle) {
+            target = I18n.t('toggle');
+        } else {
+            target = value === undefined || value === '' ? '…' : String(value);
+        }
+
+        return {
+            kicker: tagCard ? I18n.t(tagCard) : undefined,
+            title: `${name || oid} ← ${target}`,
+            subtitle: name ? oid : undefined,
+        };
     }
 
     static getStaticData(): RuleBlockDescription {

@@ -52,18 +52,29 @@
 .menuWrapper {
     display: flex;
     height: 100%;
+    /* the toggle below is positioned against the palette, not against whatever happens to be
+       positioned further up the tree */
+    position: relative;
 }
 .hamburgerWrapper {
     position: absolute;
-    width: 32px;
-    height: 26px;
+    width: 24px;
+    height: 40px;
     background: var(--backgroundColorHumburger);
-    border-radius: 0 5px 5px 0;
+    border-radius: 0 6px 6px 0;
     display: flex;
+    align-items: center;
     justify-content: center;
-    padding-top: 10px;
-    left: 221px;
-    top: 30px;
+    color: var(--lineColorActive);
+    /* Flush against the right edge of the palette, in both states - .menuWrapper is only as wide as
+       the palette. The old `221px` assumed the palette was 200px wide plus its 10px padding, but it
+       is `box-sizing: border-box`, so the padding is inside those 200px and the button floated 21px
+       clear of it, over the rule bands. The -1px makes the button's left border sit on the
+       palette's right border instead of next to it. */
+    left: calc(100% - 1px);
+    /* level with the palette's own tab bar. It used to be at 30px, which put it exactly beside the
+       first rule card - close enough to be taken for that card's delete button. */
+    top: 4px;
     border: 1px solid var(--lineColor);
     cursor: pointer;
     transition:
@@ -72,15 +83,19 @@
         width 0.7s,
         height 0.7s,
         background 0.2s,
-        border 0.2s;
+        border 0.2s,
+        color 0.2s;
     z-index: 10;
+    svg {
+        font-size: 20px;
+    }
 }
 .hamburgerOff {
-    left: 20px;
-    padding-top: 12px;
-    border-radius: 20px;
-    width: 40px;
-    height: 28px;
+    /* the palette is collapsed to zero width, so `left: 100%` puts the button in the gutter the
+       rule bands keep free for it (see .bands in ../../style.module.scss) */
+    border-radius: 0 20px 20px 0;
+    width: 30px;
+    height: 34px;
 }
 .nothingFound {
     color: var(--lineColor);

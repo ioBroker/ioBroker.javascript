@@ -1,5 +1,5 @@
 import { I18n } from '@iobroker/gui-components';
-import { GenericBlock } from '../GenericBlock';
+import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
 import type {
     RuleBlockConfigActionSayText,
     RuleBlockDescription,
@@ -986,6 +986,17 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
     // eslint-disable-next-line class-methods-use-this
     renderDebug(debugMessage: { data: { text: string } }): string {
         return `${I18n.t('Say:')} ${debugMessage.data.text}`;
+    }
+
+    getSummary(): RuleBlockSummary | null {
+        const { text, instance, volume } = this.state.settings;
+        if (!text) {
+            return null;
+        }
+        // the instance matters here - a rule can speak on several sayit instances. The volume only
+        // says something when it is not the default.
+        const details = [instance, volume && Number(volume) !== 100 ? `${volume}%` : undefined].filter(Boolean);
+        return { title: String(text), subtitle: details.length ? details.join(' · ') : undefined };
     }
 
     onTagChange(): void {

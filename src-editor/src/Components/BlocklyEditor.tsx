@@ -22,7 +22,6 @@ import { getBlocklyDarkTheme } from './blocklyDarkTheme';
 let languageBlocklyLoaded = false;
 let languageOwnLoaded = false;
 let toolboxText: string | null = null;
-let toolboxXml: Element | null = null;
 const scriptsLoaded: string[] = [];
 
 // BF (2020-10-31) I have no Idea, why it does not work as static in BlocklyEditor, but outside BlocklyEditor it works
@@ -264,19 +263,37 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         }
     }
 
+    /**
+     * Applies a vendored Blockly message file.
+     *
+     * Those files are UMD, and the ioBroker admin has Monaco's AMD loader on the page. Loaded with a
+     * plain `<script>` tag they take their AMD branch: the messages are never applied - Blockly's UI
+     * stays English - and Monaco's loader rejects the anonymous `define()` outright. Evaluating them
+     * with `define` shadowed sends them down the browser branch, which is the one that fills
+     * `Blockly.Msg`.
+     *
+     * @param url the message file to apply
+     */
+    static async applyBlocklyMessages(url: string): Promise<void> {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                return;
+            }
+            const source = await response.text();
+            new Function('define', 'exports', 'module', source).call(window, undefined, undefined, undefined);
+        } catch (e) {
+            console.error(`Cannot apply ${url}: ${e as Error}`);
+        }
+    }
+
     loadLanguages(): void {
         // load blockly language
         if (!languageBlocklyLoaded) {
-            const fileLang = window.document.createElement('script');
-            fileLang.setAttribute('type', 'text/javascript');
-            fileLang.setAttribute('src', `google-blockly/msg/js/${I18n.getLanguage()}.js`);
-
-            // most browsers
-            fileLang.onload = () => {
+            void BlocklyEditor.applyBlocklyMessages(`google-blockly/msg/js/${I18n.getLanguage()}.js`).then(() => {
                 languageBlocklyLoaded = true;
                 this.setState({ languageBlocklyLoaded });
-            };
-            window.document.getElementsByTagName('head')[0].appendChild(fileLang);
+            });
         }
         if (!languageOwnLoaded) {
             const fileCustom = window.document.createElement('script');
@@ -780,7 +797,9 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
             this.resizeObserver.observe(this.blockly);
         }
         toolboxText = toolboxText || (await this.getToolbox());
-        toolboxXml = toolboxXml || BlocklyEditor.Blockly.utils.xml.textToDom(toolboxText);
+        // Blockly takes the toolbox node over, so a second editor must not be handed the node the
+        // first one is already using - only the text is worth caching.
+        const toolboxXml = BlocklyEditor.Blockly.utils.xml.textToDom(toolboxText);
 
         // https://developers.google.com/blockly/reference/js/blockly.blocklyoptions_interface.md
         this.blocklyWorkspace = BlocklyEditor.Blockly.inject(this.blockly, {
@@ -850,9 +869,11 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         });
         this.loadCode();
         this.onResize();
-        // Move the toolbar to the valid position
-        const toolbar = document.getElementsByClassName('blocklyToolboxDiv')[0];
-        this.blockly.appendChild(toolbar);
+        // There used to be a "move the toolbar to the valid position" step here, moving
+        // `.blocklyToolboxDiv` into this container. Blockly 13 renamed that element to
+        // `.blocklyToolbox`, so the lookup returned undefined and `appendChild` threw on every
+        // Blockly editor that was opened. The toolbox sits correctly inside Blockly's own injection
+        // div without being moved, so the step is gone rather than repaired.
 
         // Add OID display mode items to workspace context menu
         if (window.Blockly?.FieldOID?.DISPLAY_MODE_KEYS) {

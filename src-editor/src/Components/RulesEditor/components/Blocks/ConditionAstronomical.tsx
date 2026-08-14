@@ -1,7 +1,7 @@
 // @ts-expect-error no types available
 import SunCalc from 'suncalc2';
 import { I18n } from '@iobroker/gui-components';
-import { GenericBlock } from '../GenericBlock';
+import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
 import type {
     RuleBlockConfigConditionAstronomical,
     RuleBlockDescription,
@@ -34,6 +34,21 @@ class ConditionAstronomical extends GenericBlock<RuleBlockConfigConditionAstrono
             return '--:--';
         }
         return `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
+    }
+
+    getSummary(): RuleBlockSummary | null {
+        const { astro, tagCard, offset, offsetValue } = this.state.settings;
+        if (!astro) {
+            return null;
+        }
+        const minutes = parseInt(offsetValue as unknown as string, 10) || 0;
+        // the select carries today's clock time of the event as its second title, e.g. "[21:14]"
+        const clock = this.optionTitle('astro', astro, 'title2');
+        const shift = offset && minutes ? ` ${minutes > 0 ? '+' : ''}${minutes} ${I18n.t('minutes')}` : '';
+        return {
+            title: `${I18n.t('Actual time of day')} ${tagCard || '='} ${astro}${shift}`,
+            subtitle: clock,
+        };
     }
 
     onValueChanged(value: any, attr: string): void {

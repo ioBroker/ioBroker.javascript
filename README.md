@@ -45,11 +45,12 @@ Executes Javascript, Typescript Scripts.
 * (@GermanBluefox) Removed a phantom block type "Convert" that a stray assignment in the conversion blocks had registered
 * (@GermanBluefox) Added `BLOCKLY_TS.md` for adapter developers: what Blockly 13 changed for custom blocks and how to write them in TypeScript
 * (@GermanBluefox) Moved the Blockly translations into `words.json` and typed the lookup helpers
+* (@GermanBluefox) Redesign of Rules
 
 ### 10.0.0 (2026-08-04)
-* (@GermanBluefox) Typescript 6 support
+* (@GermanBluefox) TypeScript 6 support
 * (@GermanBluefox) GUI was migrated to React 19 and MUI 9
-* (@GermanBluefox) Showed host name in the instance selection dialog
+* (@GermanBluefox) Showed the host name in the instance selection dialog
 
 ### 9.3.1 (2026-06-18)
 * (@GermanBluefox) Added the possibility to execute one-way scripts without saving it

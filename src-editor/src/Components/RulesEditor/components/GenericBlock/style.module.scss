@@ -10,120 +10,107 @@
     }
 }
 
-.cardStyle {
-    cursor: pointer;
-    position: relative;
-    min-width: 200px;
-    width: calc(100% - 72px);
-    height: fit-content;
-    min-height: 70px;
-    display: flex;
-    padding: 10px;
-    margin: 23px 12px 4px 12px;
-    align-items: center;
-    background: var(--backgroundBlock);
-    border-radius: 4px;
-    box-shadow:
-        0 2px 1px -1px rgba(0, 0, 0, 0.2),
-        0 1px 1px 0 rgba(0, 0, 0, 0.14),
-        0 1px 3px 0 rgba(0, 0, 0, 0.12);
-}
+/* The card itself is styled in ../CurrentItem/style.module.scss - this file only styles what the
+   block renders inside it. */
 .nameCard {
     margin-top: 0;
-    font-size: 19px;
+    font-size: 15px;
+    line-height: 1.35;
     color: var(--colorBlock);
-    font-weight: 500;
+    font-weight: 600;
 }
-.cardStyleActive {
-    width: 300px;
-    z-index: 100;
+/* When a block describes itself the title is the description, which can get long */
+.nameCardSummary {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* --- header row: collapse arrow, title, variant chip, help ------------------ */
+.headerRow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+.headerRowClickable {
+    cursor: pointer;
+}
+.headerText {
+    min-width: 0;
+    flex: 1;
+}
+/* the block variant above the title - "bei Änderung", "Steuerung" */
+.kicker {
+    font-size: 10px;
+    line-height: 1.4;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--colorBlockHover);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* the detail behind the title, usually the object ID behind its name */
+.summarySub {
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--colorBlockHover);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.chevron {
+    flex: none;
+    /* a bit wider than the glyph, so it stays put while it rotates */
+    width: 12px;
+    text-align: center;
+    color: var(--colorBlockHover);
+    font-size: 13px;
+    line-height: 1;
+    transition: transform 0.2s;
+}
+/* points down when the block is open, right when it is folded away */
+.chevronCollapsed {
+    transform: rotate(-90deg);
+}
+/* keeps the column for blocks that have no summary to fold away */
+.chevronPlaceholder {
+    visibility: hidden;
 }
 .iconThemCard {
-    width: 40px !important;
-    height: 40px !important;
-    margin-left: 5px;
+    width: 32px !important;
+    height: 32px !important;
+    margin-left: 2px;
+    flex: none;
+    transition:
+        width 0.15s,
+        height 0.15s;
     * {
         color: var(--colorBlock) !important;
     }
+}
+.iconThemCardCollapsed {
+    width: 22px !important;
+    height: 22px !important;
 }
 .iconThemCardSelectable {
     cursor: pointer;
 }
 .iconHelp {
     color: var(--colorBlock) !important;
-    position: absolute !important;
-    top: 0;
-    right: 5px;
-}
-.inputCard {
-    margin-top: 10px !important;
+    flex: none;
+    padding: 2px !important;
 }
 .blockName {
     margin-left: 10px;
     width: 100%;
+    min-width: 0;
     display: flex;
     flex-direction: column;
+    /* containing block for the absolutely positioned .debugInfo */
     position: relative;
-}
-.controlMenu {
-    display: flex;
-    position: absolute;
-    right: -31px;
-    width: 30px;
-    height: 100%;
-    transition: opacity 0.5s;
-}
-.closeBtn {
-    width: 20px;
-    height: 20px;
-    border-radius: 20px;
-    position: relative;
-    z-index: 1;
-    margin: 5px auto;
-    cursor: pointer;
-    &:before {
-        content: '+';
-        color: #f7060684;
-        position: absolute;
-        z-index: 2;
-        transform: rotate(45deg);
-        font-size: 30px;
-        line-height: 1;
-        top: -6px;
-        left: 2px;
-        transition: all 0.3s cubic-bezier(0.77, 0, 0.2, 0.85);
-    }
-    &:after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: 100%;
-        background: #994e9e7d;
-        z-index: 1;
-        transition: all 0.3s cubic-bezier(0.77, 0, 0.2, 0.85);
-        transform: scale(0.01);
-    }
-    &:hover:after {
-        transform: scale(1);
-    }
-    &:hover:before {
-        transform: scale(0.8) rotate(45deg);
-        color: #fff;
-    }
-}
-.controlMenuTop {
-    display: flex;
-    position: absolute;
-    left: 0;
-    width: 100%;
-    overflow: hidden;
-    transition:
-        opacity 0.5s,
-        height 0.5s,
-        top 0.5s;
 }
 .debugInfo {
     font-size: 12px;
@@ -134,23 +121,23 @@
     opacity: 0;
     animation: fadeIn 0.3s ease-out;
 }
+/* The block variant. Used to sit as a tab above the card, where it read like a browser tab and
+   forced 23px of margin above every card; now a chip on the right of the title. */
 .tagCard {
+    flex: none;
+    max-width: 45%;
     text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     color: var(--lineColorActive);
-    min-width: 100px;
-    padding: 0 2px;
-    height: 22px;
     background: var(--backgroundColorHumburger);
-    border-radius: 5px 5px 0 0;
-    position: relative;
-    margin-left: auto;
-    margin-right: 8px;
+    border: 1px solid var(--lineColor);
+    border-radius: 999px;
+    padding: 1px 9px;
     cursor: pointer;
-    border-top: 1px solid var(--lineColor);
-    border-left: 1px solid var(--lineColor);
-    border-right: 1px solid var(--lineColor);
-    font-size: 12px;
-    padding-top: 2px;
+    font-size: 11px;
+    line-height: 16px;
 }
 .displayFlex {
     display: flex;
@@ -169,13 +156,13 @@
     margin-left: 7px;
 }
 .iconTag {
-    font-size: 40px;
+    font-size: 30px;
     color: var(--colorBlock);
     display: flex;
     align-items: center;
-    min-width: 40px;
-    margin-bottom: 10px;
-    margin-left: 12px;
+    min-width: 30px;
+    flex: none;
+    margin-left: 4px;
 }
 .displayItalic {
     font-style: italic;

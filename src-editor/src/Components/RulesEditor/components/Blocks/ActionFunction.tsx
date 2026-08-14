@@ -1,5 +1,5 @@
 import { I18n } from '@iobroker/gui-components';
-import { GenericBlock } from '../GenericBlock';
+import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
 import type {
     RuleBlockConfigActionFunction,
     RuleBlockDescription,
@@ -24,6 +24,19 @@ class ActionFunction extends GenericBlock<RuleBlockConfigActionFunction> {
     // eslint-disable-next-line class-methods-use-this
     renderDebug(): string {
         return I18n.t('Function: executed');
+    }
+
+    getSummary(): RuleBlockSummary | null {
+        const { func } = this.state.settings;
+        const lines = String(func || '')
+            .split('\n')
+            .map(line => line.trim())
+            .filter(Boolean);
+        if (!lines.length) {
+            return null;
+        }
+        // one line of code is the whole story; more than one only gets its first line plus a hint
+        return { title: lines.length > 1 ? `${lines[0]} …` : lines[0] };
     }
 
     onTagChange(tagCard: RuleTagCardTitle): void {

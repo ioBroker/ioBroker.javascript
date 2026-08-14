@@ -29,8 +29,17 @@ import type {
     RuleBlockConfig,
 } from '@iobroker/javascript-rules-dev';
 
+/**
+ * Which part of the rule a band is. It carries the band's colour, which tints the band and its
+ * heading - the same three colours the rail on every card uses, see ../CurrentItem.
+ */
+const BAND_CLASS: Record<RuleBlockType, string> = {
+    triggers: cls.bandTriggers,
+    conditions: cls.bandConditions,
+    actions: cls.bandActions,
+};
+
 interface AdditionallyContentBlockItemsProps {
-    size: boolean;
     blockValue: BlockValue;
     boolean?: boolean;
     typeBlock: RuleBlockType;
@@ -46,7 +55,6 @@ interface AdditionallyContentBlockItemsProps {
 }
 
 const AdditionallyContentBlockItems = ({
-    size,
     blockValue,
     boolean,
     typeBlock,
@@ -135,7 +143,10 @@ const AdditionallyContentBlockItems = ({
                 drop(el);
             }}
             style={{ backgroundColor }}
-            className={`${Utils.clsx(cls.contentBlockItem, size && cls.addClassHeight)} ${boolean ? (animation ? cls.contentHeightOn : null) : cls.contentHeightOff}`}
+            className={Utils.clsx(
+                cls.contentBlockItem,
+                boolean ? animation && cls.contentHeightOn : cls.contentHeightOff,
+            )}
         >
             <div className={cls.wrapperMargin}>
                 {blocks.map((el: RuleBlockConfig) => (
@@ -179,12 +190,10 @@ const AdditionallyContentBlockItems = ({
 };
 
 interface ContentBlockItemsProps {
-    size: boolean;
     typeBlock: RuleBlockType;
     name: string | React.JSX.Element;
     nameAdditionally?: string;
     additionally?: boolean;
-    border?: boolean;
     userRules: RuleUserRules;
     setUserRules: (newRules: RuleUserRules) => void;
     iconName: string;
@@ -199,12 +208,10 @@ interface ContentBlockItemsProps {
 }
 
 const ContentBlockItems = ({
-    size,
     typeBlock,
     name,
     nameAdditionally,
     additionally,
-    border,
     userRules,
     setUserRules,
     iconName,
@@ -249,9 +256,7 @@ const ContentBlockItems = ({
     const [animation, setAnimation] = useState<boolean | number>(false);
 
     return (
-        <div
-            className={`${Utils.clsx(cls.mainBlockItemRules, size && cls.addClassOverflow)} ${border && !size ? cls.border : null}`}
-        >
+        <div className={`${cls.mainBlockItemRules} ${BAND_CLASS[typeBlock]}`}>
             <span
                 id="width"
                 className={cls.nameBlockItems}
@@ -300,7 +305,6 @@ const ContentBlockItems = ({
                 theme={theme}
                 themeName={themeName}
                 themeType={themeType}
-                size={size}
             />
             {additionally &&
                 [...Array(typeBlock === 'actions' ? 1 : userRules.conditions.length - 1)].map((e, index) => {
@@ -363,7 +367,6 @@ const ContentBlockItems = ({
                                 userRules={userRules}
                                 boolean={booleanAdditionally()}
                                 animation={Boolean(animation === index)}
-                                size={size}
                                 theme={theme}
                                 themeName={themeName}
                                 themeType={themeType}

@@ -2,19 +2,36 @@
     cursor: pointer;
     position: relative;
     min-width: 200px;
-    width: calc(100% - 72px);
+    /* was `calc(100% - 72px)`: the delete button used to hang outside the card, so every column
+       gave away 72px of its width. It now sits inside, top right. */
+    width: auto;
     height: fit-content;
-    min-height: 70px;
     display: flex;
-    padding: 10px;
-    margin: 23px 12px 4px 12px;
-    align-items: center;
+    /* right side is kept clear for the delete button, which now sits inside the card - wide enough
+       to leave a gap between it and whatever the header row ends with */
+    padding: 8px 34px 8px 10px;
+    /* was `23px 12px 4px`: the top space carried the tag tab that floated above the card */
+    margin: 6px 12px;
+    align-items: flex-start;
     background: var(--backgroundCurrentItem);
-    border-radius: 4px;
+    border-radius: 6px;
+    border-left: 3px solid transparent;
+    transition: border-color 0.2s;
     box-shadow:
         0 2px 1px -1px rgba(0, 0, 0, 0.2),
         0 1px 1px 0 rgba(0, 0, 0, 0.14),
         0 1px 3px 0 rgba(0, 0, 0, 0.12);
+}
+/* Which part of the rule a card belongs to, so trigger, condition and action stay
+   distinguishable once the cards are collapsed to a single line */
+.railTriggers {
+    border-left-color: var(--railTrigger);
+}
+.railConditions {
+    border-left-color: var(--railCondition);
+}
+.railActions {
+    border-left-color: var(--railAction);
 }
 .cardStyleActive {
     width: 300px;
@@ -23,10 +40,18 @@
 .controlMenu {
     display: flex;
     position: absolute;
-    right: -31px;
-    width: 30px;
-    height: 100%;
-    transition: opacity 0.5s;
+    top: 4px;
+    right: 4px;
+    width: 22px;
+    transition: opacity 0.3s;
+    z-index: 2;
+    opacity: 0;
+    /* It sits on top of the card now, so it must not swallow clicks while it is invisible */
+    pointer-events: none;
+}
+.cardStyle:hover .controlMenu {
+    opacity: 1;
+    pointer-events: auto;
 }
 .closeBtn {
     width: 20px;
@@ -81,8 +106,10 @@
     box-shadow: 0 0 10px rgb(106 204 255);
 }
 @media screen and (max-width: 835px) {
+    /* no hover on touch devices */
     .controlMenu {
-        opacity: 1 !important;
+        opacity: 1;
+        pointer-events: auto;
     }
 }
 .drag_mobile {

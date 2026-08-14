@@ -1,6 +1,6 @@
 import React from 'react';
 import { I18n } from '@iobroker/gui-components';
-import { GenericBlock } from '../GenericBlock';
+import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
 import type {
     RuleBlockConfigActionSetState,
     RuleBlockConfigActionSetStateDelayed,
@@ -319,6 +319,36 @@ class ActionSetStateDelayed extends GenericBlock<RuleBlockConfigActionSetStateDe
 
     onUpdate(): void {
         this.onTagChange();
+    }
+
+    getSummary(): RuleBlockSummary | null {
+        const { oid, value, toggle, useTrigger, tagCard, delay } = this.state.settings;
+        if (!oid) {
+            return null;
+        }
+        const name = this.objectName(oid);
+        let target: string;
+        if (useTrigger) {
+            target = I18n.t('Trigger value');
+        } else if (toggle) {
+            target = I18n.t('toggle');
+        } else {
+            target = value === undefined || value === '' ? '…' : String(value);
+        }
+
+        const parts: string[] = [];
+        if (tagCard) {
+            parts.push(I18n.t(tagCard));
+        }
+        if (delay) {
+            parts.push(`${delay} ms`);
+        }
+
+        return {
+            kicker: parts.length ? parts.join(' · ') : undefined,
+            title: `${name || oid} ← ${target}`,
+            subtitle: name ? oid : undefined,
+        };
     }
 
     static getStaticData(): RuleBlockDescription {

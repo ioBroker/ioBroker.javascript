@@ -1,6 +1,7 @@
 import React, { Fragment, useContext, useEffect } from 'react';
 
 import { AppBar, ClickAwayListener, Tab, Tabs } from '@mui/material';
+import { ChevronLeft as IconHidePalette, ChevronRight as IconShowPalette } from '@mui/icons-material';
 
 import { I18n, Utils } from '@iobroker/gui-components';
 
@@ -8,7 +9,6 @@ import cls from './style.module.scss';
 
 import CustomInput from '../CustomInput';
 import CustomDragItem from '../CardMenu/CustomDragItem';
-import HamburgerMenu from '../HamburgerMenu';
 import { useStateLocal } from '../../hooks/useStateLocal';
 import { ContextWrapperCreate } from '../ContextWrapper';
 import MaterialDynamicIcon from '../../helpers/MaterialDynamicIcon';
@@ -103,11 +103,14 @@ const Menu = ({
             onClickAway={() => setHamburgerOnOff(true)}
         >
             <div className={Utils.clsx(cls.menuWrapper, addClass[1035] && cls.addClassMenu)}>
+                {/* Shows and hides the block palette. It used to be an animated hamburger that
+                    turned into a cross - right next to the first rule card, where it read as that
+                    card's delete button. A chevron says what it does. */}
                 <div
                     className={`${cls.hamburgerWrapper} ${hamburgerOnOff ? cls.hamburgerOff : null}`}
                     onClick={() => setHamburgerOnOff(!hamburgerOnOff)}
                 >
-                    <HamburgerMenu bool={!hamburgerOnOff} />
+                    {hamburgerOnOff ? <IconShowPalette /> : <IconHidePalette />}
                 </div>
                 <div
                     className={`${Utils.clsx(cls.menuRules, addClass[1035] && cls.addClassBackground, addClass[835] && cls.addClassPosition)} ${hamburgerOnOff ? cls.menuOff : null}`}

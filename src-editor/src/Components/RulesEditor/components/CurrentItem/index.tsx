@@ -15,6 +15,13 @@ import type {
     GenericBlockProps,
 } from '@iobroker/javascript-rules-dev';
 
+/** Colour rail per part of the rule, so a collapsed card still says what it is */
+const RAIL_CLASS: Record<RuleBlockType, string> = {
+    triggers: cls.railTriggers,
+    conditions: cls.railConditions,
+    actions: cls.railActions,
+};
+
 interface CurrentItemProps {
     setUserRules: (newRules: RuleUserRules) => void;
     userRules: RuleUserRules;
@@ -38,7 +45,6 @@ const CurrentItem = memo((props: CurrentItemProps) => {
     const { setUserRules, userRules, _id, id, blockValue, active, acceptedBy, isTourOpen, setTourStep, tourStep } =
         props;
 
-    const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
     const { blocks, socket, onUpdate, setOnUpdate, onDebugMessage, enableSimulation } =
         useContext(ContextWrapperCreate);
 
@@ -59,14 +65,6 @@ const CurrentItem = memo((props: CurrentItemProps) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [userRules],
     );
-
-    const handlePopoverOpen = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
-        if (event.currentTarget !== anchorEl) {
-            setAnchorEl(event.currentTarget);
-        }
-    };
-
-    const handlePopoverClose = (): void => setAnchorEl(null);
 
     const blockInput = useMemo(() => {
         const CustomBlock: React.FC<GenericBlockProps<any>> = (findElementBlocks(id) ||
@@ -95,9 +93,6 @@ const CurrentItem = memo((props: CurrentItemProps) => {
 
     return (
         <div
-            onMouseMove={handlePopoverOpen}
-            onMouseEnter={handlePopoverOpen}
-            onMouseLeave={handlePopoverClose}
             onMouseDown={el => {
                 if (el.ctrlKey) {
                     let newItem: RuleBlockConfig | undefined;
@@ -135,15 +130,14 @@ const CurrentItem = memo((props: CurrentItemProps) => {
             }}
             id="height"
             style={active ? { width: (document.getElementById('width')?.clientWidth || 0) - 70 } : undefined}
-            className={`${cls.cardStyle} ${active ? cls.cardStyleActive : null} ${isDelete ? cls.isDelete : null}`}
+            className={[cls.cardStyle, RAIL_CLASS[acceptedBy], active && cls.cardStyleActive, isDelete && cls.isDelete]
+                .filter(Boolean)
+                .join(' ')}
         >
             <div className={cls.drag_mobile} />
             {blockInput}
             {setUserRules && (
-                <div
-                    className={cls.controlMenu}
-                    style={anchorEl ? { opacity: 1 } : { opacity: 0 }}
-                >
+                <div className={cls.controlMenu}>
                     <div
                         onClick={() => {
                             let newItemsSwitches = deepCopy(acceptedBy, userRules, blockValue);

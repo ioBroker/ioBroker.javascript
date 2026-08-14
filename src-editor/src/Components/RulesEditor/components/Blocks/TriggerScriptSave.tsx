@@ -1,5 +1,5 @@
 import { I18n } from '@iobroker/gui-components';
-import { GenericBlock } from '../GenericBlock';
+import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
 import { NO_FUNCTION } from '../../helpers/Compile';
 import type {
     RuleBlockConfigTriggerScriptSave,
@@ -21,6 +21,12 @@ class TriggerScriptSave extends GenericBlock<RuleBlockConfigTriggerScriptSave> {
     // eslint-disable-next-line class-methods-use-this
     renderDebug(/* debugMessage */): string {
         return I18n.t('Triggered');
+    }
+
+    /** Nothing to configure, so the summary is what the open card would say - on one line instead of two */
+    // eslint-disable-next-line class-methods-use-this
+    getSummary(): RuleBlockSummary {
+        return { title: I18n.t('On script save or adapter start') };
     }
 
     onTagChange(_tagCard: RuleTagCardTitle): void {

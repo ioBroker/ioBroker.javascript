@@ -1,5 +1,5 @@
 import { I18n } from '@iobroker/gui-components';
-import { GenericBlock } from '../GenericBlock';
+import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
 import type {
     RuleBlockConfigActionPause,
     RuleBlockDescription,
@@ -73,6 +73,14 @@ class ActionPause extends GenericBlock<RuleBlockConfigActionPause> {
 
     onTagChange(): void {
         this._setInputs();
+    }
+
+    getSummary(): RuleBlockSummary | null {
+        const { pause, unit } = this.state.settings;
+        if (pause === undefined || pause === null) {
+            return null;
+        }
+        return { title: `${pause} ${I18n.t(unit || 'ms')}` };
     }
 
     static getStaticData(): RuleBlockDescription {

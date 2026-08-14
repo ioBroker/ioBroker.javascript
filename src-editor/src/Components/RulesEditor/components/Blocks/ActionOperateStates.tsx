@@ -1,6 +1,6 @@
 import React from 'react';
 import { I18n } from '@iobroker/gui-components';
-import { GenericBlock } from '../GenericBlock';
+import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
 import { renderValue } from '../../helpers/utils';
 import type {
     RuleBlockConfigActionOperationState,
@@ -43,6 +43,22 @@ class ActionOperateStates extends GenericBlock<RuleBlockConfigActionOperationSta
                 </span>
             </span>
         );
+    }
+
+    getSummary(): RuleBlockSummary | null {
+        const { oid1, oid2, operation, oidResult, tagCard } = this.state.settings;
+        // all three states are needed - the compiled code reads two and writes the third
+        if (!oid1 || !oid2 || !oidResult) {
+            return null;
+        }
+        const left = this.objectName(oid1) || oid1;
+        const right = this.objectName(oid2) || oid2;
+        const result = this.objectName(oidResult) || oidResult;
+        return {
+            kicker: tagCard ? I18n.t(tagCard) : undefined,
+            title: `${result} ← ${left} ${operation || '+'} ${right}`,
+            subtitle: oidResult,
+        };
     }
 
     onTagChange(): void {

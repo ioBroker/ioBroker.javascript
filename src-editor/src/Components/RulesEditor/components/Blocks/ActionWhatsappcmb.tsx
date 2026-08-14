@@ -1,5 +1,5 @@
 import { I18n } from '@iobroker/gui-components';
-import { GenericBlock } from '../GenericBlock';
+import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
 import type {
     RuleBlockConfigActionWhatsappcmb,
     RuleBlockDescription,
@@ -27,6 +27,16 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
     // eslint-disable-next-line class-methods-use-this
     renderDebug(debugMessage: { data: { text: string } }): string {
         return `${I18n.t('Sent:')} ${debugMessage.data.text}`;
+    }
+
+    getSummary(): RuleBlockSummary | null {
+        const { text, instance, phone } = this.state.settings;
+        if (!text) {
+            return null;
+        }
+        // the phone number is optional - without it the adapter uses its configured default
+        const details = [instance, phone].filter(Boolean);
+        return { title: String(text), subtitle: details.length ? details.join(' · ') : undefined };
     }
 
     onTagChange(): void {

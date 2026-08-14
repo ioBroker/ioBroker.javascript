@@ -4,7 +4,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText } from 
 
 import { I18n } from '@iobroker/gui-components';
 
-import { GenericBlock } from '../GenericBlock';
+import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
 
 import HysteresisImage from '../../../assets/hysteresis.png';
 import type {
@@ -466,6 +466,30 @@ class ConditionState extends GenericBlock<RuleBlockConfigActionActionState, Cond
 
     onTagChange(tagCard: RuleTagCardTitle): void {
         this._setInputs(this.state.settings.useTrigger, tagCard);
+    }
+
+    getSummary(): RuleBlockSummary | null {
+        const settings = this.state.settings as RuleBlockConfigActionActionState & {
+            oid?: string;
+            useTrigger?: boolean;
+            value?: string | number | boolean;
+        };
+        const { useTrigger, tagCard, value, oid } = settings;
+
+        // Without a subject there is nothing to compare - keep the form open
+        if (!useTrigger && !oid) {
+            return null;
+        }
+
+        const name = useTrigger ? undefined : this.objectName(oid);
+        const subject = useTrigger ? I18n.t('Trigger value') : name || oid || '';
+        const comparison = tagCard || '=';
+        const shown = value === undefined || value === '' ? '…' : String(value);
+
+        return {
+            title: `${subject} ${comparison} ${shown}`,
+            subtitle: name ? oid : undefined,
+        };
     }
 
     static getStaticData(): RuleBlockDescription {

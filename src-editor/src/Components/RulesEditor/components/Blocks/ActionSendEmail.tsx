@@ -1,5 +1,5 @@
 import { I18n } from '@iobroker/gui-components';
-import { GenericBlock } from '../GenericBlock';
+import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
 import type {
     RuleBlockConfigActionSendEmail,
     RuleBlockDescription,
@@ -30,6 +30,16 @@ _sendToFrontEnd(${config._id}, {text: 'No recipients defined'});`;
     // eslint-disable-next-line class-methods-use-this
     renderDebug(debugMessage: { data: { text: string } }): string {
         return `${I18n.t('Sent:')} ${debugMessage.data.text}`;
+    }
+
+    getSummary(): RuleBlockSummary | null {
+        const { recipients, subject, text, instance } = this.state.settings;
+        // without a recipient the block does not send anything - see compile()
+        if (!recipients) {
+            return null;
+        }
+        const details = [recipients, instance].filter(Boolean);
+        return { title: String(subject || text || recipients), subtitle: details.join(' · ') };
     }
 
     onTagChange(): void {

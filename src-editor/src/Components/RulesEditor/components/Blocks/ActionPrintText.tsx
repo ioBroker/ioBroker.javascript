@@ -1,5 +1,5 @@
 import { I18n } from '@iobroker/gui-components';
-import { GenericBlock } from '../GenericBlock';
+import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
 import type {
     RuleBlockConfigActionPrintText,
     RuleBlockDescription,
@@ -38,6 +38,11 @@ class ActionPrintText extends GenericBlock<RuleBlockConfigActionPrintText> {
             },
             () => super.onTagChange(),
         );
+    }
+
+    getSummary(): RuleBlockSummary | null {
+        const { text } = this.state.settings;
+        return text ? { title: String(text) } : null;
     }
 
     static getStaticData(): RuleBlockDescription {

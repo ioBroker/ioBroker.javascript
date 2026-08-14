@@ -1,5 +1,5 @@
 import { I18n } from '@iobroker/gui-components';
-import { GenericBlock } from '../GenericBlock';
+import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
 import type {
     RuleBlockConfigActionTelegram,
     RuleBlockDescription,
@@ -30,6 +30,17 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
     // eslint-disable-next-line class-methods-use-this
     renderDebug(debugMessage: { data: { text: string } }): string {
         return `${I18n.t('Sent:')} ${debugMessage.data.text}`;
+    }
+
+    getSummary(): RuleBlockSummary | null {
+        const { text, instance, user } = this.state.settings;
+        if (!text) {
+            return null;
+        }
+        // the stored user is a chat ID - the select knows the name behind it
+        const recipient = user && user !== '_' ? this.optionTitle('user', user) || user : undefined;
+        const details = [instance, recipient].filter(Boolean);
+        return { title: String(text), subtitle: details.length ? details.join(' · ') : undefined };
     }
 
     onValueChanged(value: any, attr: string): void {

@@ -1,4 +1,4 @@
-import { GenericBlock } from '../GenericBlock';
+import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
 import type {
     RuleBlockConfigActionPushover,
     RuleBlockDescription,
@@ -31,6 +31,20 @@ _sendToFrontEnd(${config._id}, {text: 'No text defined'});`;
     // eslint-disable-next-line class-methods-use-this
     renderDebug(debugMessage: { data: { text: string } }): string {
         return `Sent: ${debugMessage.data.text}`;
+    }
+
+    getSummary(): RuleBlockSummary | null {
+        const { text, title, instance, priority } = this.state.settings;
+        if (!text) {
+            return null;
+        }
+        // the priority is stored as a number - the select knows what it means
+        const details = [instance, this.optionTitle('priority', priority)].filter(Boolean);
+        return {
+            kicker: title ? String(title) : undefined,
+            title: String(text),
+            subtitle: details.join(' · '),
+        };
     }
 
     onTagChange(): void {

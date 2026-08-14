@@ -1,4 +1,5 @@
-import { GenericBlock } from '../GenericBlock';
+import { I18n } from '@iobroker/gui-components';
+import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
 import type {
     RuleBlockConfigActionEmpty,
     RuleBlockDescription,
@@ -13,6 +14,12 @@ class ActionEmpty extends GenericBlock<RuleBlockConfigActionEmpty> {
 
     static compile(/* config, context */): string {
         return ``;
+    }
+
+    /** Stands in for a block whose adapter is missing - there is nothing to open, so it folds to its message */
+    // eslint-disable-next-line class-methods-use-this
+    getSummary(): RuleBlockSummary {
+        return { title: I18n.t('Block not found') };
     }
 
     onTagChange(tagCard: RuleTagCardTitle): void {

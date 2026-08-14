@@ -51,11 +51,30 @@ import type {
     GenericBlockProps,
 } from '@iobroker/javascript-rules-dev';
 
+/**
+ * A short description of what *one particular* block does - "Flur · Bewegung" instead of "Zustand".
+ *
+ * A block returns this from `getSummary()`. It is what the card shows instead of its generic name,
+ * and it is what makes a collapsed block readable.
+ */
+export interface RuleBlockSummary {
+    /** Small line above the title, usually the selected variant: "bei Änderung", "Steuerung" */
+    kicker?: string;
+    /** The one line that tells this block apart from every other block of the same type */
+    title: string;
+    /** Muted second line for the detail behind the title, e.g. the object ID behind its name */
+    subtitle?: string;
+}
+
 export abstract class GenericBlock<
     Settings extends RuleBlockConfig = RuleBlockConfig,
     TState extends GenericBlockState<Settings> = GenericBlockState<Settings>,
 > extends Component<GenericBlockProps<Settings>, TState> {
     private debugHideTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    /** Whether the block was already configured when it first rendered - see `isCollapsed` */
+    private initiallyCollapsed = false;
+    private collapseDecided = false;
 
     private lastObjectIdChange: number = 0;
     private enableSimulationProcessing = false;
@@ -185,6 +204,107 @@ export abstract class GenericBlock<
     // eslint-disable-next-line class-methods-use-this
     onValueChanged(_value: any, _attr: string): void {
         // do nothing, but blocks can overwrite it
+    }
+
+    /**
+     * Describes *this* block instance in one line, so a finished rule can be read without opening
+     * every card. Blocks overwrite it; the ones that do not simply keep showing their generic name.
+     *
+     * Return `null` while the block is not configured enough to be described - such a block is
+     * never collapsed, so an unfinished block always shows its form.
+     */
+    // eslint-disable-next-line class-methods-use-this
+    getSummary(): RuleBlockSummary | null {
+        return null;
+    }
+
+    /**
+     * Name of an object as the user knows it, for use in `getSummary`.
+     *
+     * `renderObjectID` caches objects in the state under their own ID. A collapsed block never
+     * renders that field, so the object is fetched here as well - the summary shows the raw ID
+     * until it arrives.
+     *
+     * @param oid the object ID to look up
+     */
+    // eslint-disable-next-line react/no-unused-class-component-methods -- called by the blocks that implement getSummary()
+    protected objectName(oid: string | undefined): string | undefined {
+        if (!oid) {
+            return undefined;
+        }
+        const cached: ioBroker.Object | null | false | undefined = (
+            this.state as Record<string, ioBroker.Object | null | false | undefined>
+        )[oid];
+
+        if (cached === undefined) {
+            // `false` marks "asked for, does not exist", so this runs at most once per ID
+            setTimeout(async (): Promise<void> => {
+                const obj = await this.props.socket.getObject(oid);
+                if (this.mounted) {
+                    this.setState({ [oid]: obj || false } as unknown as TState);
+                }
+            }, 0);
+            return undefined;
+        }
+
+        return cached ? Utils.getObjectNameFromObj(cached, I18n.getLanguage()) || undefined : undefined;
+    }
+
+    /**
+     * The label a select shows for a stored value, for use in `getSummary`.
+     *
+     * The settings keep the raw value - a Telegram chat ID, a Pushover priority number - while the
+     * option list that turns it into something readable lives on the input.
+     *
+     * @param attr the attribute whose select is looked up
+     * @param value the stored value
+     * @param field `title2` for the untranslated extra a select shows in brackets, e.g. the clock
+     * time of an astronomical event
+     */
+    // eslint-disable-next-line react/no-unused-class-component-methods -- called by the blocks that implement getSummary()
+    protected optionTitle(
+        attr: string,
+        value: string | number | boolean | null | undefined,
+        field: 'title' | 'title2' = 'title',
+    ): string | undefined {
+        if (value === undefined || value === null || value === '') {
+            return undefined;
+        }
+        const input = this.state.inputs?.find(item => (item as { attr?: string }).attr === attr) as
+            | {
+                  options?: { value: string | number | boolean; title: string; title2?: string }[];
+                  doNotTranslate?: boolean;
+              }
+            | undefined;
+        // a select may store what a number input wrote, so compare as text
+        const option = input?.options?.find(item => String(item.value) === String(value));
+        if (!option) {
+            return undefined;
+        }
+        if (field === 'title2') {
+            return option.title2;
+        }
+        return input?.doNotTranslate ? option.title : I18n.t(option.title);
+    }
+
+    /**
+     * Whether the card currently shows only its summary.
+     *
+     * A block that was already configured when the rule was opened starts collapsed. Finishing a
+     * block while working on it must *not* fold it away under the cursor, so the decision is taken
+     * once, on the first render, and after that only the user changes it.
+     */
+    private isCollapsed(hasSummary: boolean): boolean {
+        if (!this.collapseDecided) {
+            this.collapseDecided = true;
+            this.initiallyCollapsed = hasSummary;
+        }
+        const userCollapsed = (this.state as TState & { userCollapsed?: boolean }).userCollapsed;
+        return hasSummary && (userCollapsed === undefined ? this.initiallyCollapsed : userCollapsed);
+    }
+
+    private toggleCollapsed(collapsed: boolean): void {
+        this.setState({ userCollapsed: collapsed } as unknown as TState);
     }
 
     renderText(input: RuleInputText, value: string, onChange: (value: string) => void): React.JSX.Element {
@@ -1194,6 +1314,9 @@ export abstract class GenericBlock<
             );
         }
 
+        const summary: RuleBlockSummary | null = this.getSummary();
+        const collapsed: boolean = this.isCollapsed(!!summary);
+
         return (
             <Fragment>
                 {iconTag ? (
@@ -1203,12 +1326,14 @@ export abstract class GenericBlock<
                         iconName={icon}
                         className={Utils.clsx(
                             cls.iconThemCard,
+                            collapsed && cls.iconThemCardCollapsed,
                             tagCard && this.state.tagCardArray.length && cls.iconThemCardSelectable,
                         )}
                         adapter={adapter}
                         socket={socket}
                         onClick={e => {
                             if (tagCard) {
+                                e.stopPropagation();
                                 if (this.state.tagCardArray.length < 3) {
                                     this.onChangeTag();
                                 } else {
@@ -1219,34 +1344,66 @@ export abstract class GenericBlock<
                     />
                 )}
                 <div className={cls.blockName}>
-                    <span className={cls.nameCard}>
-                        {I18n.t(name)}
-                        {notFound ? I18n.t(`%s not found`, settings.id) : ''}
+                    <div
+                        className={Utils.clsx(cls.headerRow, summary && cls.headerRowClickable)}
+                        onClick={summary ? () => this.toggleCollapsed(!collapsed) : undefined}
+                    >
+                        {/* Leading disclosure arrow. It deliberately sits on the left: on the right
+                            it was a few pixels away from the delete button of the card, so aiming
+                            for "collapse" risked deleting the block. Blocks that cannot collapse
+                            still reserve the space, so all titles in a band line up. */}
+                        <span
+                            className={Utils.clsx(
+                                cls.chevron,
+                                collapsed && cls.chevronCollapsed,
+                                !summary && cls.chevronPlaceholder,
+                            )}
+                        >
+                            ▾
+                        </span>
+                        <div className={cls.headerText}>
+                            {summary?.kicker ? <div className={cls.kicker}>{summary.kicker}</div> : null}
+                            <span className={Utils.clsx(cls.nameCard, summary && cls.nameCardSummary)}>
+                                {summary ? summary.title : I18n.t(name)}
+                                {notFound ? I18n.t(`%s not found`, settings.id) : ''}
+                            </span>
+                            {collapsed && summary?.subtitle ? (
+                                <div
+                                    className={cls.summarySub}
+                                    title={summary.subtitle}
+                                >
+                                    {summary.subtitle}
+                                </div>
+                            ) : null}
+                        </div>
+                        {/* The variant of the block ("bei Änderung", "Steuerung"). Used to sit as a tab
+                            above the card, which read like a browser tab rather than a setting. */}
+                        {tagCard ? (
+                            <div
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    this.onChangeTag();
+                                }}
+                                className={Utils.clsx(cls.tagCard, 'tag-card')}
+                            >
+                                {this.renderTags()}
+                            </div>
+                        ) : null}
                         {helpDialog ? (
                             <IconButton
                                 className={cls.iconHelp}
                                 size="small"
-                                onClick={() => this.setState({ helpText: I18n.t(helpDialog) })}
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    this.setState({ helpText: I18n.t(helpDialog) });
+                                }}
                             >
                                 <IconHelp />
                             </IconButton>
                         ) : null}
-                    </span>
-                    {inputs.map((input, index) => this.renderInputElement(input, index))}
-                </div>
-                {tagCard && (
-                    <div
-                        className={cls.controlMenuTop}
-                        style={{ opacity: 1, height: 22, top: -22 }}
-                    >
-                        <div
-                            onClick={() => this.onChangeTag()}
-                            className={Utils.clsx(cls.tagCard, 'tag-card')}
-                        >
-                            {this.renderTags()}
-                        </div>
                     </div>
-                )}
+                    {collapsed ? null : inputs.map((input, index) => this.renderInputElement(input, index))}
+                </div>
                 {this.renderDebugInfo()}
                 {this.state.error ? (
                     <DialogError
