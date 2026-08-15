@@ -102,5 +102,7 @@
   "tooltip_useSystemGPS": "使用系统设置中的坐标",
   "useDefineForClassFields help": "使用原生 define 语义输出类字段。可能会改变现有脚本的行为。",
   "useUnknownInCatchVariables help": "将 \"catch\" 块中的错误变量类型设为 \"unknown\" 而不是 \"any\"。",
-  "www.typescriptlang.org/tsconfig": "www.typescriptlang.org/tsconfig"
+  "www.typescriptlang.org/tsconfig": "www.typescriptlang.org/tsconfig",
+  "mirrorPath forbidden": "此路径不允许用于镜像。请更改。",
+  "mirrorPath help": "一个位于 ioBroker 安装目录之外的专用空目录，iobroker 用户需有写入权限。如果其中的文件夹消失，其中的脚本将从数据库中删除。"
 }

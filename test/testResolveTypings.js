@@ -23,6 +23,8 @@ const ALIAS = '@iobroker-test/alias_fixturelib';
 const PKG = 'fixturelib';
 /** A package whose declarations are not a module - those still need to be wrapped */
 const GLOBAL_PKG = 'globalfixturelib';
+/** A modern package: declarations in a subdirectory, reachable only through the `exports` map */
+const MODERN_PKG = 'modernfixturelib';
 
 const FIXTURE_FILES = {
     [`${ALIAS}/package.json`]: JSON.stringify({ name: ALIAS, version: '1.0.0', types: 'index.d.ts' }),
@@ -48,6 +50,20 @@ export {};
 `,
     [`${GLOBAL_PKG}/package.json`]: JSON.stringify({ name: GLOBAL_PKG, version: '1.0.0', types: 'index.d.ts' }),
     [`${GLOBAL_PKG}/index.d.ts`]: `declare function globalFixtureFunction(): string;\n`,
+
+    // The shape rxjs 7 has: a legacy `types` field kept as a stub that points at a file which does
+    // not exist, while the real declarations live in a subdirectory named by the `exports` map.
+    [`${MODERN_PKG}/package.json`]: JSON.stringify({
+        name: MODERN_PKG,
+        version: '2.0.0',
+        types: 'index.d.ts',
+        exports: { '.': { types: './dist/types/index.d.ts', require: './dist/cjs/index.js' } },
+    }),
+    [`${MODERN_PKG}/dist/types/index.d.ts`]: `export { Emitter } from './internal/Emitter';\n`,
+    [`${MODERN_PKG}/dist/types/internal/Emitter.d.ts`]: `export declare class Emitter<T> {
+    constructor(subscribe?: (handler: { next(value: T): void }) => void);
+}
+`,
 };
 
 describe('resolveTypings', () => {
@@ -126,6 +142,27 @@ describe('resolveTypings', () => {
         assert.match(typings[`node_modules/${GLOBAL_PKG}/index.d.ts`], /^declare module "globalfixturelib"/);
     });
 
+    it('finds the entry point of a modern package through its `exports` map', () => {
+        const typings = resolveTypings(MODERN_PKG, MODERN_PKG);
+
+        // The legacy `types` field of such a package is a stub pointing at a file that is not there.
+        // Following it and giving up is what left every modern package untyped (#928).
+        assert.ok(typings, 'no typings were resolved');
+        assert.ok(typings[`node_modules/${MODERN_PKG}/index.d.ts`], 'the entry point is not where node10 looks');
+        assert.match(typings[`node_modules/${MODERN_PKG}/index.d.ts`], /export \{ Emitter \}/);
+    });
+
+    it('gives a modern package a manifest that describes the layout it got', () => {
+        const typings = resolveTypings(MODERN_PKG, MODERN_PKG);
+        const manifest = JSON.parse(typings[`node_modules/${MODERN_PKG}/package.json`]);
+
+        // The declarations were laid out around the entry point, so the original `types` no longer
+        // applies - and the original `exports` map refers to paths that do not exist here at all.
+        // TypeScript refuses to resolve a package whose `exports` it cannot follow under node10.
+        assert.equal(manifest.types, './index.d.ts');
+        assert.equal(manifest.exports, undefined);
+    });
+
     it('leaves a file alone that only references other files', () => {
         const typings = resolveTypings('node', 'node');
 
@@ -160,6 +197,7 @@ describe('type inference through resolveTypings', () => {
         tsServer = new tsc.Server({ ...tsCompilerOptions, strict: true }, false);
         tsServer.provideAmbientDeclarations(resolveTypescriptLibs('es2022'));
         tsServer.provideAmbientDeclarations(resolveTypings(PKG, ALIAS));
+        tsServer.provideAmbientDeclarations(resolveTypings(MODERN_PKG, MODERN_PKG));
     });
 
     after(() => {
@@ -224,5 +262,22 @@ declare function log(text: string): void;
 export {};
 `);
         assert.equal(result.success, true, result.errors);
+    }).timeout(20000);
+
+    it('types a modern package whose declarations are named by the `exports` map', () => {
+        const result = compile(`import { Emitter } from '${MODERN_PKG}';
+new Emitter<string>(handler => { handler.next('a'); });
+export {};
+`);
+        assert.equal(result.success, true, result.errors);
+    }).timeout(20000);
+
+    it('really types that package instead of falling back to any', () => {
+        const result = compile(`import { Emitter } from '${MODERN_PKG}';
+const wrong: number = new Emitter<string>();
+export {};
+`);
+        assert.equal(result.success, false, 'an Emitter was accepted as a number, so it is typed as any');
+        assert.doesNotMatch(result.errors, /Cannot find module/, result.errors);
     }).timeout(20000);
 });

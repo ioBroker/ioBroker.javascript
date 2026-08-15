@@ -54,6 +54,14 @@ Executes Javascript, Typescript Scripts.
 * (@GermanBluefox) A definition file that cannot be read no longer discards all type declarations of its package
 * (@GermanBluefox) Added regression tests for the type declarations of 3rd party libraries, which compile against them and insist that wrong code is rejected
 * (@GermanBluefox) `createState` now stringifies `common.def` of an object, json or array state, as js-controller expects it and as `setState` already does with the value. Creating such a state with an initial value no longer warns "Default value has to be stringified" (#2307)
+* (@GermanBluefox) Documented that an object in the second position of `createState` is always the `common`, and how to give a state a non-primitive initial value
+* (@GermanBluefox) Restored the check of the mirror path in the instance configuration. It was lost when the admin configuration moved to `jsonConfig.json`, so a forbidden path was accepted without a word and only refused later in the log (#2296)
+* (@GermanBluefox) The mirror path field now explains what the directory has to be, and suggests one
+* (@GermanBluefox) Scripts are no longer deleted from the database when the mirror directory as a whole becomes unreachable, e.g. because a share is not mounted
+* (@GermanBluefox) Libraries that name their declarations through an `exports` map are typed now. Their legacy `types` field is often a stub pointing at a file that does not exist - rxjs 7 is one - which left everything imported from them as `any` (#928)
+* (@GermanBluefox) The declarations of a library are laid out around its entry point, so `moduleResolution: node10` finds it even when they live in a subdirectory
+* (@GermanBluefox) The manifest handed to TypeScript describes that layout instead of the one on disk. An `exports` map pointing at paths that do not exist there made TypeScript refuse the library altogether
+* (@GermanBluefox) The package.json of a library is read from disk instead of through Node, which refuses it when the library does not export it
 
 ### 10.0.0 (2026-08-04)
 * (@GermanBluefox) TypeScript 6 support

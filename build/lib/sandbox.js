@@ -66,10 +66,7 @@ const STRINGIFIED_STATE_TYPES = ['object', 'json', 'array'];
  * @throws {TypeError} if the default cannot be stringified, e.g. because it is circular
  */
 function normalizeStateDefault(common) {
-    if (common.def === undefined ||
-        common.def === null ||
-        typeof common.def === 'string' ||
-        !STRINGIFIED_STATE_TYPES.includes(common.type)) {
+    if (common.def == null || typeof common.def === 'string' || !STRINGIFIED_STATE_TYPES.includes(common.type)) {
         return;
     }
     common.def = JSON.stringify(common.def);

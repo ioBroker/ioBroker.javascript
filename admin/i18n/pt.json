@@ -102,5 +102,7 @@
   "tooltip_useSystemGPS": "Use as coordenadas da configuração do sistema",
   "useDefineForClassFields help": "Emitir os campos de classe com a semântica nativa define. Pode alterar o comportamento de scripts existentes.",
   "useUnknownInCatchVariables help": "Tipar a variável de erro nos blocos \"catch\" como \"unknown\" em vez de \"any\".",
-  "www.typescriptlang.org/tsconfig": "www.typescriptlang.org/tsconfig"
+  "www.typescriptlang.org/tsconfig": "www.typescriptlang.org/tsconfig",
+  "mirrorPath forbidden": "Este caminho não é permitido para espelhamento. Altere-o.",
+  "mirrorPath help": "Um diretório dedicado e vazio fora da instalação do ioBroker, gravável pelo usuário iobroker. Se uma pasta desaparecer ali, os scripts nela serão excluídos do banco de dados."
 }

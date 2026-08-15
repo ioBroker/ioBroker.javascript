@@ -329,6 +329,15 @@ class Mirror {
         return `script.js.${parts.join('.')}`;
     }
     removeScriptsInFolder(folder) {
+        // Deleting a folder on disk is meant to delete its scripts in the database - that is what
+        // the mirroring is for. A folder that only *looks* gone because the mirror directory as a
+        // whole became unreachable is a different story: an unmounted share or a changed permission
+        // would otherwise take the scripts with it. In that case nothing is deleted and the next
+        // start syncs the directory again from the database.
+        if (!(0, node_fs_1.existsSync)(this.diskRoot)) {
+            this.log.warn(`Mirror directory ${this.diskRoot} is not accessible - the scripts of ${folder} are kept in the database`);
+            return;
+        }
         // get all files in this folder
         const folderId = this._fileName2scriptId(folder);
         for (const id in this.dbList) {

@@ -122,7 +122,11 @@ type MODULES = {
 /**
  * List of forbidden Locations for a mirror directory
  * relative to the default data directory
- * ATTENTION: the same list is also located in index_m.html!!
+ *
+ * ATTENTION: the same list is also in the `validator` of `mirrorPath` in `admin/jsonConfig.json`,
+ * which rejects such a path before it is saved. That one has to assume the default installation
+ * directory, because the browser cannot know where the data directory of the host is - so this check
+ * here is the authoritative one and stays.
  */
 const forbiddenMirrorLocations: string[] = [
     'backup-objects',

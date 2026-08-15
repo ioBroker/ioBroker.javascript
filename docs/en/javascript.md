@@ -1048,6 +1048,22 @@ It is possible short type of createState:
 - `createState('myDatapoint', { name: 'My own datapoint', unit: '°C' }, () => { log('created'); });`
 - `createState('myDatapoint', 1, { name: 'My own datapoint', unit: '°C' })` - create datapoint if it does not exist with specific name and units
 
+#### An object in the second position is always the `common`
+
+These short forms are the reason why an object in the second position is **never** read as an initial
+value. `createState('myDatapoint', {}, { type: 'object' })` therefore does not do what it looks like:
+the `{}` becomes the `common`, and `{ type: 'object' }` moves on to the `native`.
+
+To give a state an initial value that is not a primitive, put it into `common.def`:
+
+```js
+createState('0_userdata.0.myObject', { name: 'My object', type: 'object', read: true, write: true, def: {} });
+```
+
+A state of type `object`, `json` or `array` keeps its value as JSON, so the state above starts out
+with the string `'{}'` - just as `setState('0_userdata.0.myObject', {})` would store it. The default
+is stringified for you; writing `def: '{}'` yourself works as well.
+
 ### createStateAsync
 ```js
 await createStateAsync(name, initialValue, forceCreation, common, native);
