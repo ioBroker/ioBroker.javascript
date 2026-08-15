@@ -1,7 +1,6 @@
 const os = require('node:os');
 const path = require('node:path');
 const fs = require('node:fs');
-const assert = require('node:assert').strict;
 const Mirror = require('../build/lib/mirror');
 
 /**
@@ -21,6 +20,56 @@ const canCreateSymlinks = (() => {
 })();
 
 const itWithSymlinks = canCreateSymlinks ? it : it.skip;
+
+/** How long a test waits for the change it is about before it gives up */
+const WAIT_FOR_CHANGE = 6000;
+
+/**
+ * Builds an `onFileChange` handler that waits for a change to one specific path.
+ *
+ * A watcher reports more than the change a test is about. `fs.watch` on macOS works at directory
+ * granularity, so a write that reaches the watched directory through a symlink arrives as an event
+ * for the *directory* - Node then reports the directory's own name as the file name. Those events
+ * are not wrong, they are simply not the subject of the test, so everything but the expected path is
+ * ignored and `done` is called once.
+ *
+ * Waiting instead of asserting on the first event loses the "got this instead" message, so the paths
+ * that did arrive are collected and reported if the expected one never does.
+ *
+ * @param done mocha's callback
+ * @param expected the path the change is expected for
+ */
+function expectChangeTo(done, expected) {
+    const seen = [];
+    let finished = false;
+
+    const finish = err => {
+        if (finished) {
+            return;
+        }
+        finished = true;
+        clearTimeout(timer);
+        done(err);
+    };
+
+    const timer = setTimeout(
+        () =>
+            finish(
+                new Error(
+                    `No change was reported for ${expected}. Reported instead: ${seen.length ? seen.join(', ') : '(nothing at all)'}`,
+                ),
+            ),
+        WAIT_FOR_CHANGE,
+    );
+
+    return (_event, file) => {
+        const reported = path.normalize(file);
+        seen.push(reported);
+        if (reported === path.normalize(expected)) {
+            finish();
+        }
+    };
+}
 
 describe('Mirror', () => {
     describe('File system watcher', () => {
@@ -46,16 +95,12 @@ describe('Mirror', () => {
                 const script = path.join(watched, 'script.js');
                 fs.closeSync(fs.openSync(script, 'w'));
 
-                mirror.onFileChange = (_event, file) => {
-                    assert.equal(path.normalize(file), script);
-
-                    done();
-                };
+                mirror.onFileChange = expectChangeTo(done, script);
 
                 mirror.watchFolders(watched);
 
                 fs.appendFileSync(script, 'some code');
-            });
+            }).timeout(WAIT_FOR_CHANGE + 4000);
 
             itWithSymlinks('notifies about changes to symlinked files', done => {
                 // Script is located in an unwatched directory...
@@ -68,16 +113,12 @@ describe('Mirror', () => {
                 const symlink = path.join(watched, 'symlinked-script.js');
                 fs.symlinkSync(script, symlink);
 
-                mirror.onFileChange = (_event, file) => {
-                    assert.equal(path.normalize(file), symlink);
-
-                    done();
-                };
+                mirror.onFileChange = expectChangeTo(done, symlink);
 
                 mirror.watchFolders(watched);
 
                 fs.appendFileSync(script, 'some code');
-            });
+            }).timeout(WAIT_FOR_CHANGE + 4000);
 
             itWithSymlinks('notifies about changes to symlinked directories', done => {
                 // Script is located in an unwatched directory...
@@ -90,24 +131,12 @@ describe('Mirror', () => {
                 const symlink = path.join(watched, 'symlinked-directory');
                 fs.symlinkSync(unwatched, symlink, 'dir');
 
-                mirror.onFileChange = (event, file) => {
-                    if (process.platform === 'linux' || process.platform === 'win32') {
-                        assert.equal(path.normalize(file), path.join(symlink, path.basename(script)));
-
-                        done();
-                    }
-
-                    if (process.platform === 'darwin') {
-                        if (event === 'rename' && file === path.join(symlink, path.basename(script))) {
-                            done();
-                        }
-                    }
-                };
+                mirror.onFileChange = expectChangeTo(done, path.join(symlink, path.basename(script)));
 
                 mirror.watchFolders(watched);
 
                 fs.appendFileSync(script, 'some code');
-            });
+            }).timeout(WAIT_FOR_CHANGE + 4000);
 
             itWithSymlinks('notifies about changes to relatively symlinked files', done => {
                 // Script is located in an unwatched directory...
@@ -122,16 +151,12 @@ describe('Mirror', () => {
 
                 fs.symlinkSync(path.join(relativeDirectory, path.basename(script)), symlink);
 
-                mirror.onFileChange = (_event, file) => {
-                    assert.equal(path.normalize(file), symlink);
-
-                    done();
-                };
+                mirror.onFileChange = expectChangeTo(done, symlink);
 
                 mirror.watchFolders(watched);
 
                 fs.appendFileSync(script, 'some code');
-            });
+            }).timeout(WAIT_FOR_CHANGE + 4000);
 
             itWithSymlinks('notifies about changes to relatively symlinked directories', done => {
                 // Script is located in an unwatched directory...
@@ -146,24 +171,12 @@ describe('Mirror', () => {
 
                 fs.symlinkSync(relativeSymlink, symlink, 'dir');
 
-                mirror.onFileChange = (event, file) => {
-                    if (process.platform === 'linux' || process.platform === 'win32') {
-                        assert.equal(path.normalize(file), path.join(symlink, path.basename(script)));
-
-                        done();
-                    }
-
-                    if (process.platform === 'darwin') {
-                        if (event === 'rename' && file === path.join(symlink, path.basename(script))) {
-                            done();
-                        }
-                    }
-                };
+                mirror.onFileChange = expectChangeTo(done, path.join(symlink, path.basename(script)));
 
                 mirror.watchFolders(watched);
 
                 fs.appendFileSync(script, 'some code');
-            });
+            }).timeout(WAIT_FOR_CHANGE + 4000);
         });
     });
 });
