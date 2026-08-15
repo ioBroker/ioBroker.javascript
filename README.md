@@ -53,6 +53,7 @@ Executes Javascript, Typescript Scripts.
 * (@GermanBluefox) Side effect imports (`import "./x";`) inside a declaration file are now followed as well. `@iobroker/types` consists of nothing else, so the `ioBroker.*` types were missing in scripts and in the editor
 * (@GermanBluefox) A definition file that cannot be read no longer discards all type declarations of its package
 * (@GermanBluefox) Added regression tests for the type declarations of 3rd party libraries, which compile against them and insist that wrong code is rejected
+* (@GermanBluefox) `createState` now stringifies `common.def` of an object, json or array state, as js-controller expects it and as `setState` already does with the value. Creating such a state with an initial value no longer warns "Default value has to be stringified" (#2307)
 
 ### 10.0.0 (2026-08-04)
 * (@GermanBluefox) TypeScript 6 support
