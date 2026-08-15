@@ -2220,8 +2220,6 @@ class JavaScript extends Adapter {
             let pkgTypings = resolveTypings(
                 pkg,
                 this.getAdapterScopedPackageIdentifier ? this.getAdapterScopedPackageIdentifier(pkg) : pkg,
-                // node needs ambient typings, so we don't wrap it in declare module
-                pkg !== 'node',
             );
             if (!pkgTypings) {
                 // Create the empty dummy declarations so users don't get the "not found" error

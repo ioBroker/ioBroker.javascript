@@ -1797,9 +1797,7 @@ class JavaScript extends adapter_core_1.Adapter {
             }
         }
         for (const pkg of packages) {
-            let pkgTypings = (0, typescriptTools_1.resolveTypings)(pkg, this.getAdapterScopedPackageIdentifier ? this.getAdapterScopedPackageIdentifier(pkg) : pkg, 
-            // node needs ambient typings, so we don't wrap it in declare module
-            pkg !== 'node');
+            let pkgTypings = (0, typescriptTools_1.resolveTypings)(pkg, this.getAdapterScopedPackageIdentifier ? this.getAdapterScopedPackageIdentifier(pkg) : pkg);
             if (!pkgTypings) {
                 // Create the empty dummy declarations so users don't get the "not found" error
                 // for installed packages

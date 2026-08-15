@@ -47,6 +47,12 @@ Executes Javascript, Typescript Scripts.
 * (@GermanBluefox) Moved the Blockly translations into `words.json` and typed the lookup helpers
 * (@GermanBluefox) Redesign of Rules
 * (@GermanBluefox) Added a wizard to the rule editor that builds a rule step by step - trigger, condition and action are configured in place, and the last step shows the finished rule
+* (@GermanBluefox) Fixed the type declarations of 3rd party libraries: they were placed under the name the library has on disk while their `package.json` went to the name the scripts import, so TypeScript never connected the two and everything imported from such a library was `any` (#2341)
+* (@GermanBluefox) Stopped wrapping a library's declarations in `declare module`, which cut a barrel file off from what it re-exports. Declarations that are not a module themselves are still wrapped
+* (@GermanBluefox) Fixed following the imports inside a declaration file: only the first import of a file was followed, and only if it was on the first line. For rxjs 6 that loaded 6 of its ~800 declaration files
+* (@GermanBluefox) Side effect imports (`import "./x";`) inside a declaration file are now followed as well. `@iobroker/types` consists of nothing else, so the `ioBroker.*` types were missing in scripts and in the editor
+* (@GermanBluefox) A definition file that cannot be read no longer discards all type declarations of its package
+* (@GermanBluefox) Added regression tests for the type declarations of 3rd party libraries, which compile against them and insist that wrong code is rejected
 
 ### 10.0.0 (2026-08-04)
 * (@GermanBluefox) TypeScript 6 support
