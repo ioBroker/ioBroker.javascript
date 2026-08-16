@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 9.2.3 (2026-05-27)
+* (arteck) Performance optimizations done
+* (@GermanBluefox) Added on mouse over the value of the state
+
 ## 9.2.2 (2026-05-07)
 * (Eistee82) Fix: AI chat mode tooltip no longer covers the dropdown options (issue #2201) — moved tooltip to the left of the selector
 * (Eistee82) Clarified the AI chat mode descriptions in the tooltip: Agent is for larger models with tool support and handles both analysis and script creation, Code is for smaller models without tool support (uses two-step plan-then-code) — translations updated in all 11 languages
