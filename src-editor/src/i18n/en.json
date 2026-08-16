@@ -483,5 +483,12 @@
     "What should start the rule?": "What should start the rule?",
     "When should the rule run? This step is optional.": "When should the rule run? This step is optional.",
     "What should happen?": "What should happen?",
-    "Block not found": "Block not found"
+    "Block not found": "Block not found",
+    "Weekday": "Weekday",
+    "Let the rule run only on the selected days of the week": "Let the rule run only on the selected days of the week",
+    "Send to adapter": "Send to adapter",
+    "Sends a message to any adapter instance": "Sends a message to any adapter instance",
+    "Command:": "Command:",
+    "JSON:": "JSON:",
+    "Sent:": "Sent:"
 }

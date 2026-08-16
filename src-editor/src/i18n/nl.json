@@ -475,5 +475,12 @@
     "What should start the rule?": "Wat moet de regel starten?",
     "When should the rule run? This step is optional.": "Wanneer moet de regel worden uitgevoerd? Deze stap is optioneel.",
     "What should happen?": "Wat moet er gebeuren?",
-    "Block not found": "Blok niet gevonden"
+    "Block not found": "Blok niet gevonden",
+    "Weekday": "Weekdag",
+    "Let the rule run only on the selected days of the week": "De regel alleen op de geselecteerde weekdagen uitvoeren",
+    "Send to adapter": "Naar adapter sturen",
+    "Sends a message to any adapter instance": "Stuurt een bericht naar een willekeurige adapterinstantie",
+    "Command:": "Opdracht:",
+    "JSON:": "JSON:",
+    "Sent:": "Verzonden:"
 }

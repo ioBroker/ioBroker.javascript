@@ -79,7 +79,8 @@ export abstract class GenericBlock<
     private lastObjectIdChange: number = 0;
     private enableSimulationProcessing = false;
 
-    private mounted = false;
+    /** Protected, because a block that fills its inputs asynchronously has to check it too */
+    protected mounted = false;
 
     private tagCardTimeout: ReturnType<typeof setTimeout> | null = null;
 

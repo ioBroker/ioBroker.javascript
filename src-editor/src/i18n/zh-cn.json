@@ -475,5 +475,12 @@
     "What should start the rule?": "什么触发这条规则？",
     "When should the rule run? This step is optional.": "规则何时执行？此步骤为可选。",
     "What should happen?": "应该发生什么？",
-    "Block not found": "未找到模块"
+    "Block not found": "未找到模块",
+    "Weekday": "星期",
+    "Let the rule run only on the selected days of the week": "仅在所选的星期几执行规则",
+    "Send to adapter": "发送到适配器",
+    "Sends a message to any adapter instance": "向任意适配器实例发送消息",
+    "Command:": "命令：",
+    "JSON:": "JSON：",
+    "Sent:": "已发送："
 }

@@ -15,6 +15,8 @@ import {
     PlayArrow,
     FlashOn,
     Help,
+    CalendarMonth,
+    Send,
     type SvgIconComponent,
 } from '@mui/icons-material';
 import type { AdminConnection } from '@iobroker/gui-components';
@@ -37,6 +39,8 @@ const objIcon: Record<string, SvgIconComponent> = {
     AccessTime,
     PlayArrow,
     FlashOn,
+    CalendarMonth,
+    Send,
 };
 
 interface MaterialDynamicIconProps {
