@@ -63,6 +63,7 @@ Executes Javascript, Typescript Scripts.
 * (@GermanBluefox) The manifest handed to TypeScript describes that layout instead of the one on disk. An `exports` map pointing at paths that do not exist there made TypeScript refuse the library altogether
 * (@GermanBluefox) The package.json of a library is read from disk instead of through Node, which refuses it when the library does not export it
 * (@GermanBluefox) Fixed the mirror tests on macOS. They asserted on the first event a watcher reported, while `fs.watch` there works at directory granularity and sends an event for the watched directory before the one for the file. They now wait for the change they are about, and say what arrived instead if it never comes
+* (@GermanBluefox) Made the mirror tests independent of how long a watch takes to arm. The change under test is repeated while waiting, so it cannot be made before the watcher is listening - the same commit produced a green and a red macOS job over that
 
 ### 10.0.0 (2026-08-04)
 * (@GermanBluefox) TypeScript 6 support

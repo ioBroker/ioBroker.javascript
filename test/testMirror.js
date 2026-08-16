@@ -23,24 +23,35 @@ const itWithSymlinks = canCreateSymlinks ? it : it.skip;
 
 /** How long a test waits for the change it is about before it gives up */
 const WAIT_FOR_CHANGE = 6000;
+/** How often the change is repeated while waiting - see `expectChangeTo` */
+const REPEAT_CHANGE_EVERY = 250;
 
 /**
  * Builds an `onFileChange` handler that waits for a change to one specific path.
  *
- * A watcher reports more than the change a test is about. `fs.watch` on macOS works at directory
- * granularity, so a write that reaches the watched directory through a symlink arrives as an event
- * for the *directory* - Node then reports the directory's own name as the file name. Those events
- * are not wrong, they are simply not the subject of the test, so everything but the expected path is
- * ignored and `done` is called once.
+ * Two properties of `fs.watch` make the obvious version of these tests unreliable, both observed on
+ * macOS in CI:
  *
- * Waiting instead of asserting on the first event loses the "got this instead" message, so the paths
+ * It reports more than the change a test is about. There it works at directory granularity, so a
+ * write that reaches the watched directory through a symlink arrives as an event for the *directory*
+ * - Node then reports the directory's own name as the file name. Such an event is not wrong, it is
+ * simply not the subject of the test, so everything but the expected path is ignored and `done` is
+ * called once.
+ *
+ * And a watch takes a moment to arm, with no way to be told when it is ready. A change made straight
+ * after `watchFolders` can therefore be missed entirely - the same commit produced a green and a red
+ * macOS job over exactly that. The change is repeated while waiting instead of being made once.
+ *
+ * Waiting rather than asserting on the first event loses the "got this instead" message, so the paths
  * that did arrive are collected and reported if the expected one never does.
  *
  * @param done mocha's callback
  * @param expected the path the change is expected for
+ * @param change makes the change; called repeatedly until it is noticed
  */
-function expectChangeTo(done, expected) {
-    const seen = [];
+function expectChangeTo(done, expected, change) {
+    // a set, because the change is repeated and would otherwise be listed once per attempt
+    const seen = new Set();
     let finished = false;
 
     const finish = err => {
@@ -48,15 +59,19 @@ function expectChangeTo(done, expected) {
             return;
         }
         finished = true;
+        clearInterval(repeat);
         clearTimeout(timer);
         done(err);
     };
+
+    // the first call happens after one interval, which is safely after `watchFolders` returned
+    const repeat = setInterval(change, REPEAT_CHANGE_EVERY);
 
     const timer = setTimeout(
         () =>
             finish(
                 new Error(
-                    `No change was reported for ${expected}. Reported instead: ${seen.length ? seen.join(', ') : '(nothing at all)'}`,
+                    `No change was reported for ${expected}. Reported instead: ${seen.size ? [...seen].join(', ') : '(nothing at all)'}`,
                 ),
             ),
         WAIT_FOR_CHANGE,
@@ -64,7 +79,7 @@ function expectChangeTo(done, expected) {
 
     return (_event, file) => {
         const reported = path.normalize(file);
-        seen.push(reported);
+        seen.add(reported);
         if (reported === path.normalize(expected)) {
             finish();
         }
@@ -95,11 +110,9 @@ describe('Mirror', () => {
                 const script = path.join(watched, 'script.js');
                 fs.closeSync(fs.openSync(script, 'w'));
 
-                mirror.onFileChange = expectChangeTo(done, script);
+                mirror.onFileChange = expectChangeTo(done, script, () => fs.appendFileSync(script, 'some code'));
 
                 mirror.watchFolders(watched);
-
-                fs.appendFileSync(script, 'some code');
             }).timeout(WAIT_FOR_CHANGE + 4000);
 
             itWithSymlinks('notifies about changes to symlinked files', done => {
@@ -113,11 +126,9 @@ describe('Mirror', () => {
                 const symlink = path.join(watched, 'symlinked-script.js');
                 fs.symlinkSync(script, symlink);
 
-                mirror.onFileChange = expectChangeTo(done, symlink);
+                mirror.onFileChange = expectChangeTo(done, symlink, () => fs.appendFileSync(script, 'some code'));
 
                 mirror.watchFolders(watched);
-
-                fs.appendFileSync(script, 'some code');
             }).timeout(WAIT_FOR_CHANGE + 4000);
 
             itWithSymlinks('notifies about changes to symlinked directories', done => {
@@ -131,11 +142,11 @@ describe('Mirror', () => {
                 const symlink = path.join(watched, 'symlinked-directory');
                 fs.symlinkSync(unwatched, symlink, 'dir');
 
-                mirror.onFileChange = expectChangeTo(done, path.join(symlink, path.basename(script)));
+                mirror.onFileChange = expectChangeTo(done, path.join(symlink, path.basename(script)), () =>
+                    fs.appendFileSync(script, 'some code'),
+                );
 
                 mirror.watchFolders(watched);
-
-                fs.appendFileSync(script, 'some code');
             }).timeout(WAIT_FOR_CHANGE + 4000);
 
             itWithSymlinks('notifies about changes to relatively symlinked files', done => {
@@ -151,11 +162,9 @@ describe('Mirror', () => {
 
                 fs.symlinkSync(path.join(relativeDirectory, path.basename(script)), symlink);
 
-                mirror.onFileChange = expectChangeTo(done, symlink);
+                mirror.onFileChange = expectChangeTo(done, symlink, () => fs.appendFileSync(script, 'some code'));
 
                 mirror.watchFolders(watched);
-
-                fs.appendFileSync(script, 'some code');
             }).timeout(WAIT_FOR_CHANGE + 4000);
 
             itWithSymlinks('notifies about changes to relatively symlinked directories', done => {
@@ -171,11 +180,11 @@ describe('Mirror', () => {
 
                 fs.symlinkSync(relativeSymlink, symlink, 'dir');
 
-                mirror.onFileChange = expectChangeTo(done, path.join(symlink, path.basename(script)));
+                mirror.onFileChange = expectChangeTo(done, path.join(symlink, path.basename(script)), () =>
+                    fs.appendFileSync(script, 'some code'),
+                );
 
                 mirror.watchFolders(watched);
-
-                fs.appendFileSync(script, 'some code');
             }).timeout(WAIT_FOR_CHANGE + 4000);
         });
     });
