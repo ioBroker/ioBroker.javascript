@@ -905,6 +905,9 @@ export abstract class GenericBlock<
         } else if (context.trigger?.id === 'TriggerMessage') {
             // the payload of a message may be an object, and "[object Object]" is not what %s is for
             value = '.replace(/%s/g, typeof data === "object" ? JSON.stringify(data) : data)';
+        } else if (context.trigger?.id === 'TriggerFile') {
+            // %s is the name of the changed file, %id the object it belongs to - as with a state
+            value = '.replace(/%s/g, fileName).replace(/%id/g, fileId)';
         } else if (context.conditionsStates.length) {
             value = `.replace(/%s/g, ${context.conditionsStates[0].name}).replace(/%id/g, "${context.conditionsStates[0].id}")`;
         }

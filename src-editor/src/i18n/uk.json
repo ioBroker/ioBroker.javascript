@@ -501,5 +501,13 @@
     "Switches a state back and forth between two values": "Перемикає стан між двома значеннями",
     "If the state does not hold the first value, the first one is written - so the rule always ends up on a defined value. To invert a boolean, use the \"toggle value\" checkbox of the \"Set state action\" instead.": "Якщо стан не містить перше значення, записується перше - так правило завжди приходить до визначеного значення. Щоб інвертувати логічне значення, використовуйте прапорець \"toggle value\" дії \"Set state action\".",
     "between": "між",
-    "Toggled:": "Перемкнено:"
+    "Toggled:": "Перемкнено:",
+    "On file change": "При зміні файлу",
+    "Triggers the rule when a file of an object is written or deleted": "Запускає правило, коли файл об'єкта записано або видалено",
+    "Both fields may contain *, e.g. the object \"vis.0\" and the file name \"main/*\". In the texts of the actions %s is the name of the changed file and %id the object it belongs to. Requires js-controller 4.1 or newer.": "Обидва поля можуть містити *, наприклад об'єкт \"vis.0\" та ім'я файлу \"main/*\". У текстах дій %s — ім'я зміненого файлу, а %id — об'єкт, якому він належить. Потрібен js-controller 4.1 або новіший.",
+    "Files of:": "Файли об'єкта:",
+    "File name:": "Ім'я файлу:",
+    "File changed:": "Файл змінено:",
+    "Deleted:": "Видалено:",
+    "File": "Файл"
 }

@@ -501,5 +501,13 @@
     "Switches a state back and forth between two values": "在两个值之间来回切换某个状态",
     "If the state does not hold the first value, the first one is written - so the rule always ends up on a defined value. To invert a boolean, use the \"toggle value\" checkbox of the \"Set state action\" instead.": "如果状态不等于第一个值，则写入第一个值——这样规则总能落在一个确定的值上。要反转布尔值，请改用 \"Set state action\" 动作的 \"toggle value\" 复选框。",
     "between": "介于",
-    "Toggled:": "已切换："
+    "Toggled:": "已切换：",
+    "On file change": "文件变化时",
+    "Triggers the rule when a file of an object is written or deleted": "当某个对象的文件被写入或删除时触发该规则",
+    "Both fields may contain *, e.g. the object \"vis.0\" and the file name \"main/*\". In the texts of the actions %s is the name of the changed file and %id the object it belongs to. Requires js-controller 4.1 or newer.": "两个字段都可以包含 *，例如对象 \"vis.0\" 和文件名 \"main/*\"。在动作文本中，%s 是发生变化的文件名，%id 是它所属的对象。需要 js-controller 4.1 或更高版本。",
+    "Files of:": "文件所属对象：",
+    "File name:": "文件名：",
+    "File changed:": "文件已更改：",
+    "Deleted:": "已删除：",
+    "File": "文件"
 }

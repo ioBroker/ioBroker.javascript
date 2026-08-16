@@ -20,6 +20,7 @@ import {
     Message,
     NotificationsActive,
     SwapHoriz,
+    InsertDriveFile,
     type SvgIconComponent,
 } from '@mui/icons-material';
 import type { AdminConnection } from '@iobroker/gui-components';
@@ -47,6 +48,7 @@ const objIcon: Record<string, SvgIconComponent> = {
     Message,
     NotificationsActive,
     SwapHoriz,
+    InsertDriveFile,
 };
 
 interface MaterialDynamicIconProps {

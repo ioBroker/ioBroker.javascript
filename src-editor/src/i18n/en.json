@@ -509,5 +509,13 @@
     "Switches a state back and forth between two values": "Switches a state back and forth between two values",
     "If the state does not hold the first value, the first one is written - so the rule always ends up on a defined value. To invert a boolean, use the \"toggle value\" checkbox of the \"Set state action\" instead.": "If the state does not hold the first value, the first one is written - so the rule always ends up on a defined value. To invert a boolean, use the \"toggle value\" checkbox of the \"Set state action\" instead.",
     "between": "between",
-    "Toggled:": "Toggled:"
+    "Toggled:": "Toggled:",
+    "On file change": "On file change",
+    "Triggers the rule when a file of an object is written or deleted": "Triggers the rule when a file of an object is written or deleted",
+    "Both fields may contain *, e.g. the object \"vis.0\" and the file name \"main/*\". In the texts of the actions %s is the name of the changed file and %id the object it belongs to. Requires js-controller 4.1 or newer.": "Both fields may contain *, e.g. the object \"vis.0\" and the file name \"main/*\". In the texts of the actions %s is the name of the changed file and %id the object it belongs to. Requires js-controller 4.1 or newer.",
+    "Files of:": "Files of:",
+    "File name:": "File name:",
+    "File changed:": "File changed:",
+    "Deleted:": "Deleted:",
+    "File": "File"
 }

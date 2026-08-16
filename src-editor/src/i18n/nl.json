@@ -501,5 +501,13 @@
     "Switches a state back and forth between two values": "Schakelt een status heen en weer tussen twee waarden",
     "If the state does not hold the first value, the first one is written - so the rule always ends up on a defined value. To invert a boolean, use the \"toggle value\" checkbox of the \"Set state action\" instead.": "Als de status niet de eerste waarde bevat, wordt de eerste geschreven - zo eindigt de regel altijd op een gedefinieerde waarde. Gebruik voor het omkeren van een boolean het selectievakje \"toggle value\" van de actie \"Set state action\".",
     "between": "tussen",
-    "Toggled:": "Omgeschakeld:"
+    "Toggled:": "Omgeschakeld:",
+    "On file change": "Bij bestandswijziging",
+    "Triggers the rule when a file of an object is written or deleted": "Activeert de regel wanneer een bestand van een object wordt geschreven of verwijderd",
+    "Both fields may contain *, e.g. the object \"vis.0\" and the file name \"main/*\". In the texts of the actions %s is the name of the changed file and %id the object it belongs to. Requires js-controller 4.1 or newer.": "Beide velden mogen * bevatten, bijv. het object \"vis.0\" en de bestandsnaam \"main/*\". In de teksten van de acties is %s de naam van het gewijzigde bestand en %id het object waartoe het behoort. Vereist js-controller 4.1 of nieuwer.",
+    "Files of:": "Bestanden van:",
+    "File name:": "Bestandsnaam:",
+    "File changed:": "Bestand gewijzigd:",
+    "Deleted:": "Verwijderd:",
+    "File": "Bestand"
 }

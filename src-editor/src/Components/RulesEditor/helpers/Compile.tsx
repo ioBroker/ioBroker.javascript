@@ -99,6 +99,43 @@ __%%ELSE%%__
     }
 }`;
 
+/**
+ * `onFile` reports which file of which object changed. `size` is `null` when the file is gone, which
+ * is the only way a rule can tell a deletion from a write.
+ *
+ * The first parameter is named `fileId` and not `id`: a rule block stores its own type under `id`,
+ * and the generated script is read by people who know that name from the saved rule.
+ */
+export const STANDARD_FUNCTION_FILE = `async function (fileId, fileName, size) {
+    "__%%DEBUG_TRIGGER%%__";
+    __%%CONDITIONS_VARS%%__
+    const _cond = __%%CONDITION%%__;
+
+    "__%%DEBUG_CONDITIONS%%__";
+
+    if (_cond) {
+__%%THEN%%__
+    } else {
+__%%ELSE%%__
+    }
+}`;
+
+export const STANDARD_FUNCTION_FILE_ONCHANGE = `async function (fileId, fileName, size) {
+    "__%%DEBUG_TRIGGER%%__";
+    __%%CONDITIONS_VARS%%__
+    const _cond = __%%CONDITION%%__;
+
+    "__%%DEBUG_CONDITIONS%%__";
+
+    if (__%%STATE%%__ === false && _cond) {
+        __%%STATE%%__ = true;
+__%%THEN%%__
+    } else if (__%%STATE%%__ === true && !_cond) {
+        __%%STATE%%__ = false;
+__%%ELSE%%__
+    }
+}`;
+
 export const NO_FUNCTION = `"__%%DEBUG_TRIGGER%%__";
 __%%CONDITIONS_VARS%%__
 const _cond = __%%CONDITION%%__;

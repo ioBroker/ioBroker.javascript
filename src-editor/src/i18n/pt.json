@@ -501,5 +501,13 @@
     "Switches a state back and forth between two values": "Alterna um estado entre dois valores",
     "If the state does not hold the first value, the first one is written - so the rule always ends up on a defined value. To invert a boolean, use the \"toggle value\" checkbox of the \"Set state action\" instead.": "Se o estado não contiver o primeiro valor, o primeiro é escrito - assim a regra sempre termina em um valor definido. Para inverter um booleano, use a caixa \"toggle value\" da ação \"Set state action\".",
     "between": "entre",
-    "Toggled:": "Alternado:"
+    "Toggled:": "Alternado:",
+    "On file change": "Ao alterar um arquivo",
+    "Triggers the rule when a file of an object is written or deleted": "Aciona a regra quando um arquivo de um objeto é gravado ou excluído",
+    "Both fields may contain *, e.g. the object \"vis.0\" and the file name \"main/*\". In the texts of the actions %s is the name of the changed file and %id the object it belongs to. Requires js-controller 4.1 or newer.": "Ambos os campos podem conter *, por ex. o objeto \"vis.0\" e o nome do arquivo \"main/*\". Nos textos das ações, %s é o nome do arquivo alterado e %id o objeto ao qual pertence. Requer js-controller 4.1 ou mais recente.",
+    "Files of:": "Arquivos de:",
+    "File name:": "Nome do arquivo:",
+    "File changed:": "Arquivo alterado:",
+    "Deleted:": "Excluído:",
+    "File": "Arquivo"
 }
