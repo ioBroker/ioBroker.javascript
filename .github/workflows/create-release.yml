@@ -32,8 +32,10 @@ jobs:
               with:
                   node-version: ${{ matrix.node }}
 
+            # Not just `npm ci`: the Blockly tests load Blockly from `src-editor/node_modules`,
+            # which `npm run build` would only create *after* the tests have already run.
             - name: Install dependencies
-              run: npm ci
+              run: npm run npm
 
             - name: Test
               run: npm test
