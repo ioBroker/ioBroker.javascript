@@ -27,7 +27,7 @@ Executes Javascript, Typescript Scripts.
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 10.1.0 (2026-08-16)
 * (@GermanBluefox) Turned `strict` off again for the scripts, as TypeScript 6 enables it by default
 * (@GermanBluefox) Added the tab "TypeScript" to the settings, where the compiler options for the scripts can be configured
 * (@GermanBluefox) Added snapshot tests for the Blockly code generation (`npm run test:blockly`)
@@ -82,10 +82,6 @@ Executes Javascript, Typescript Scripts.
 * (arteck) fix filter in tab scripts
 * (@GermanBluefox) Fixed a subscription leak on script stop for RegExp-notation string ids (dispatch index)
 * (@GermanBluefox) `extendObject` no longer throws into the script when the object contains non-clonable values (e.g. functions)
-
-### 9.2.3 (2026-05-27)
-* (arteck) Performance optimizations done
-* (@GermanBluefox) Added on mouse over the value of the state
 
 ## License
 The MIT License (MIT)
