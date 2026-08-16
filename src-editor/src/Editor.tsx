@@ -260,6 +260,9 @@ interface EditorProps {
     adapterName: string;
     expertMode: boolean;
     isAnyRulesExists: number;
+    /** A rule that was just created - its editor opens the wizard once */
+    newRuleId: string;
+    onNewRuleHandled: () => void;
     resizing: boolean;
     onChangedChanged: (changed: { [id: string]: boolean }) => void;
     password: string;
@@ -2213,6 +2216,8 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             searchText={this.state.searchText}
                             resizing={this.props.resizing}
                             code={this.scripts[this.state.selected].source || ''}
+                            newRuleId={this.props.newRuleId}
+                            onNewRuleHandled={this.props.onNewRuleHandled}
                             onChange={newValue => this.onChange({ script: newValue })}
                         />
                     </Suspense>

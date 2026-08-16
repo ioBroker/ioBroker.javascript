@@ -35,6 +35,9 @@ interface RulesEditorProps {
     isTourOpen: boolean;
     changed: boolean;
     running: boolean;
+    /** Set to this rule's id right after it was created, so the wizard is offered once */
+    newRuleId: string;
+    onNewRuleHandled: () => void;
 }
 
 let gDebugMessages: DebugMessage[] = [];
@@ -52,6 +55,8 @@ const RulesEditor = ({
     scriptId,
     changed,
     running,
+    newRuleId,
+    onNewRuleHandled,
 }: RulesEditorProps): React.JSX.Element | null => {
     const { blocks, socket, setOnUpdate, setOnDebugMessage, setEnableSimulation } = useContext(ContextWrapperCreate);
     const [allBlocks, setAllBlocks] = useState<(typeof GenericBlock<any>)[]>([]);
@@ -172,6 +177,16 @@ const RulesEditor = ({
     useEffect(() => {
         document.getElementsByTagName('HTML')[0].className = themeName || 'blue';
     }, [themeName]);
+
+    useEffect(() => {
+        // A rule that was just created opens the wizard by itself - that is the moment where the
+        // help is worth interrupting for. The flag is handed back immediately, so this happens once
+        // and never again for that rule, whether the wizard was used or dismissed.
+        if (newRuleId && newRuleId === scriptId) {
+            onNewRuleHandled();
+            setWizard(true);
+        }
+    }, [newRuleId, scriptId, onNewRuleHandled]);
 
     const onChangeBlocks = useCallback(
         (json: RuleUserRules): void => {

@@ -159,6 +159,8 @@ interface AppState extends GenericAppState {
     editing: string[];
     menuOpened: boolean;
     menuSelectId: string;
+    /** A rule that was just created, so its editor can offer the wizard once. Cleared when it did */
+    newRuleId: string;
     expertMode: boolean;
     logHorzLayout: boolean;
     runningInstances: Record<string, boolean>;
@@ -343,6 +345,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                 editing: [],
                 menuOpened: window.localStorage.getItem('App.menuOpened') !== 'false',
                 menuSelectId: '',
+                newRuleId: '',
                 expertMode: window.localStorage.getItem('App.expertMode') === 'true',
                 logHorzLayout: window.localStorage.getItem('App.logHorzLayout') === 'true',
                 runningInstances: {},
@@ -760,7 +763,17 @@ export default class App extends GenericApp<AppProps, AppState> {
                     },
                     native: {},
                 })
-                .then(() => setTimeout(() => this.onSelect(id), 1000))
+                .then(() =>
+                    setTimeout(() => {
+                        // A rule starts out empty, and dragging blocks out of the palette is not
+                        // obvious. The editor opens the wizard once for the rule named here.
+                        // Not when a rule is duplicated - `source` is the copy, which is not empty.
+                        if (type === 'Rules' && !source) {
+                            this.setState({ newRuleId: id });
+                        }
+                        this.onSelect(id);
+                    }, 1000),
+                )
                 .catch(err => this.showJsError(err));
         }
     }
@@ -1138,6 +1151,8 @@ export default class App extends GenericApp<AppProps, AppState> {
                 theme={this.state.theme}
                 expertMode={this.state.expertMode}
                 onChange={(id, common) => this.onUpdateScript(id, common)}
+                newRuleId={this.state.newRuleId}
+                onNewRuleHandled={() => this.setState({ newRuleId: '' })}
                 isAnyRulesExists={isAnyRulesExists}
                 debugInstance={this.state.debugInstance}
                 onSelectedChange={(id, editing) => {
