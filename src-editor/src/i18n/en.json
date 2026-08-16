@@ -468,5 +468,20 @@
     "Suggest tests for %s %s": "Suggest tests for %s %s",
     "Apply changes": "Apply changes",
     "Discard changes": "Discard changes",
-    "Ask anything, or request a change (e.g. \"what does this do?\")": "Ask anything, or request a change (e.g. \"what does this do?\")"
+    "Ask anything, or request a change (e.g. \"what does this do?\")": "Ask anything, or request a change (e.g. \"what does this do?\")",
+    "Wizard": "Wizard",
+    "Create a rule step by step": "Create a rule step by step",
+    "Summary": "Summary",
+    "Back": "Back",
+    "Next": "Next",
+    "Skip": "Skip",
+    "Create rule": "Create rule",
+    "Replace rule": "Replace rule",
+    "The current rule will be replaced": "The current rule will be replaced",
+    "Add another": "Add another",
+    "Without a condition the rule always runs": "Without a condition the rule always runs",
+    "What should start the rule?": "What should start the rule?",
+    "When should the rule run? This step is optional.": "When should the rule run? This step is optional.",
+    "What should happen?": "What should happen?",
+    "Block not found": "Block not found"
 }

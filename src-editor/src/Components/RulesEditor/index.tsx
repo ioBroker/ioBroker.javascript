@@ -1,5 +1,8 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 
+import { Button } from '@mui/material';
+import { AutoFixHigh as IconWizard } from '@mui/icons-material';
+
 import { I18n, type IobTheme, type ThemeName, type ThemeType } from '@iobroker/gui-components';
 import type { DebugMessage, RuleUserRules } from '@iobroker/javascript-rules-dev';
 
@@ -10,6 +13,7 @@ import ContentBlockItems from './components/ContentBlockItems';
 import { ContextWrapperCreate } from './components/ContextWrapper';
 import { code2json, json2code } from './helpers/Compile';
 import Menu from './components/Menu';
+import Wizard from './components/Wizard';
 import './helpers/stylesVariables.scss';
 
 import DialogExport from '../../Dialogs/Export';
@@ -54,6 +58,7 @@ const RulesEditor = ({
     const [userRules, setUserRules] = useState(code2json(code));
     const [importExport, setImportExport] = useState('');
     const [modal, setModal] = useState(false);
+    const [wizard, setWizard] = useState(false);
 
     useEffect(() => {
         let _jsInstance: string | undefined;
@@ -199,6 +204,13 @@ const RulesEditor = ({
         return null;
     }
 
+    // a rule the user has not started yet - the wizard is the friendlier way in than an empty band
+    const isEmpty =
+        !userRules.triggers.length &&
+        !userRules.actions.then.length &&
+        !userRules.actions.else.length &&
+        !userRules.conditions.some(group => group.length);
+
     return (
         <div
             key="rulesEditor"
@@ -229,6 +241,17 @@ const RulesEditor = ({
                     />
                 )
             ) : null}
+            {wizard ? (
+                <Wizard
+                    hasRule={!isEmpty}
+                    socket={socket}
+                    theme={theme}
+                    themeType={themeType}
+                    themeName={themeName}
+                    onCreate={onChangeBlocks}
+                    onClose={() => setWizard(false)}
+                />
+            ) : null}
             {
                 <div className={cls.rootWrapper}>
                     <Menu
@@ -240,8 +263,22 @@ const RulesEditor = ({
                         tourStep={tourStep}
                         addClass={addClass}
                         isTourOpen={isTourOpen}
+                        onStartWizard={() => setWizard(true)}
                     />
                     <div className={cls.bands}>
+                        {isEmpty ? (
+                            <div className={cls.emptyRule}>
+                                <div className={cls.emptyRuleText}>{I18n.t('Create a rule step by step')}</div>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    startIcon={<IconWizard />}
+                                    onClick={() => setWizard(true)}
+                                >
+                                    {I18n.t('Wizard')}
+                                </Button>
+                            </div>
+                        ) : null}
                         <ContentBlockItems
                             socket={socket}
                             setUserRules={onChangeBlocks}

@@ -89,7 +89,11 @@ const crypto_1 = require("./lib/crypto");
 /**
  * List of forbidden Locations for a mirror directory
  * relative to the default data directory
- * ATTENTION: the same list is also located in index_m.html!!
+ *
+ * ATTENTION: the same list is also in the `validator` of `mirrorPath` in `admin/jsonConfig.json`,
+ * which rejects such a path before it is saved. That one has to assume the default installation
+ * directory, because the browser cannot know where the data directory of the host is - so this check
+ * here is the authoritative one and stays.
  */
 const forbiddenMirrorLocations = [
     'backup-objects',
@@ -1797,9 +1801,7 @@ class JavaScript extends adapter_core_1.Adapter {
             }
         }
         for (const pkg of packages) {
-            let pkgTypings = (0, typescriptTools_1.resolveTypings)(pkg, this.getAdapterScopedPackageIdentifier ? this.getAdapterScopedPackageIdentifier(pkg) : pkg, 
-            // node needs ambient typings, so we don't wrap it in declare module
-            pkg !== 'node');
+            let pkgTypings = (0, typescriptTools_1.resolveTypings)(pkg, this.getAdapterScopedPackageIdentifier ? this.getAdapterScopedPackageIdentifier(pkg) : pkg);
             if (!pkgTypings) {
                 // Create the empty dummy declarations so users don't get the "not found" error
                 // for installed packages

@@ -1,7 +1,11 @@
 import React, { Fragment, useContext, useEffect } from 'react';
 
-import { AppBar, ClickAwayListener, Tab, Tabs } from '@mui/material';
-import { ChevronLeft as IconHidePalette, ChevronRight as IconShowPalette } from '@mui/icons-material';
+import { AppBar, Button, ClickAwayListener, Tab, Tabs } from '@mui/material';
+import {
+    AutoFixHigh as IconWizard,
+    ChevronLeft as IconHidePalette,
+    ChevronRight as IconShowPalette,
+} from '@mui/icons-material';
 
 import { I18n, Utils } from '@iobroker/gui-components';
 
@@ -25,6 +29,7 @@ interface MenuProps {
     setTourStep: (step: number) => void;
     tourStep: number;
     isTourOpen: boolean;
+    onStartWizard: () => void;
 }
 
 const Menu = ({
@@ -36,6 +41,7 @@ const Menu = ({
     setTourStep,
     tourStep,
     isTourOpen,
+    onStartWizard,
 }: MenuProps): React.JSX.Element => {
     const { blocks, socket } = useContext(ContextWrapperCreate);
     const [hamburgerOnOff, setHamburgerOnOff] = useStateLocal<boolean>(false, 'hamburgerOnOff');
@@ -115,6 +121,18 @@ const Menu = ({
                 <div
                     className={`${Utils.clsx(cls.menuRules, addClass[1035] && cls.addClassBackground, addClass[835] && cls.addClassPosition)} ${hamburgerOnOff ? cls.menuOff : null}`}
                 >
+                    {/* The palette asks the user to know which block they need; the wizard asks the
+                        other way round, in the order a rule is read. */}
+                    <Button
+                        className={cls.wizardButton}
+                        fullWidth
+                        size="small"
+                        variant="outlined"
+                        startIcon={<IconWizard />}
+                        onClick={onStartWizard}
+                    >
+                        {I18n.t('Wizard')}
+                    </Button>
                     <div className={cls.controlPanel}>
                         <AppBar
                             className={cls.controlPanelAppBar}

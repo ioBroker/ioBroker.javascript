@@ -91,47 +91,127 @@ function normalizeDTSImport(filename: string): string {
 }
 
 /**
- * Resolves the type declarations of a 3rd party package for the editor
+ * Wraps a package's root declarations in `declare module "<pkg>"` if - and only if - they are not a
+ * module themselves.
+ *
+ * This used to be applied to every package. That broke all of them that ship real typings: inside an
+ * ambient module declaration TypeScript does not resolve the relative paths a barrel file re-exports
+ * from, so every name the package exported became `any` - which is why type inference never worked
+ * for e.g. rxjs (https://github.com/ioBroker/ioBroker.javascript/issues/2341). Such a file is now
+ * left alone and found through ordinary module resolution.
+ *
+ * A declaration file without any top-level `import`/`export` is a script, not a module, and
+ * `import ... from "<pkg>"` would not accept it. Those still need the wrapper - and having no
+ * imports, they cannot suffer from the problem above.
+ *
+ * A file that only points at other files (`@types/node` is nothing but `/// <reference path>` lines)
+ * is left alone as well: the wrapper would cut those references off from the global scope they are
+ * meant to populate.
+ *
+ * @param pkg The package the declarations belong to
+ * @param content The content of the root declaration file
+ */
+function wrapRootTypingsIfNeeded(pkg: string, content: string): string {
+    const isModule = /^\s*(?:import|export)\b/m.test(content);
+    const isAmbientDeclaration = /^\s*declare module/m.test(content);
+    const referencesOtherFiles = /\/\/\/\s*<reference path=/.test(content);
+
+    return isModule || isAmbientDeclaration || referencesOtherFiles
+        ? content
+        : `declare module "${pkg}" { ${content} }`;
+}
+
+/**
+ * Finds the package.json of a package on disk.
+ *
+ * `require.resolve("<pkg>/package.json")` goes through Node's module resolution, and a package with
+ * an `exports` map that does not list `./package.json` makes that throw - which is common enough
+ * among modern packages to matter. The directories Node would have searched are then looked at
+ * directly, which no `exports` map can hide.
+ *
+ * @param pkg The package to look for
+ */
+function findPackageJson(pkg: string): string | undefined {
+    try {
+        return require.resolve(`${pkg}/package.json`);
+    } catch {
+        // the package may be there but refuse to hand out its manifest
+    }
+
+    return (require.resolve.paths(pkg) || [])
+        .map(dir => join(dir, pkg, 'package.json'))
+        .find(candidate => existsSync(candidate));
+}
+
+/**
+ * Finds the declaration entry point of a package.
+ *
+ * A package that ships an `exports` map often keeps the legacy `types` field only as a stub - rxjs 7
+ * declares `"types": "index.d.ts"` although no such file exists and the real declarations sit in
+ * `./dist/types/`. A candidate therefore only counts if the file is really there
+ * (https://github.com/ioBroker/ioBroker.javascript/issues/928).
+ *
+ * @param packageJson The parsed package.json
+ * @param packageRoot The directory that package.json lives in
+ */
+function findRootTypings(packageJson: Record<string, any>, packageRoot: string): string | undefined {
+    const mainExport: unknown = packageJson.exports?.['.'];
+    const fromExports =
+        mainExport && typeof mainExport === 'object'
+            ? ((mainExport as Record<string, any>).types ??
+              (mainExport as Record<string, any>).require?.types ??
+              (mainExport as Record<string, any>).import?.types ??
+              (mainExport as Record<string, any>).default?.types)
+            : undefined;
+
+    // the legacy fields come first: they are what a package without an `exports` map has, and where
+    // both exist they agree
+    return [packageJson.types, packageJson.typings, fromExports].find(
+        candidate => typeof candidate === 'string' && existsSync(normalizeDTSImport(join(packageRoot, candidate))),
+    );
+}
+
+/**
+ * Resolves the type declarations of a 3rd party package for the editor and the compiler
+ *
+ * The declarations are handed to TypeScript as a virtual file system. They are placed under the name
+ * the *scripts* import - `node_modules/rxjs/...` - not under the name the package has on disk: the
+ * js-controller installs script libraries under an adapter-scoped alias, and TypeScript has to
+ * resolve `import ... from "rxjs"` against these files.
  *
  * @param pkg The package whose typings we're interested in
  * @param adapterScopedPackageName the package name on the system
- * @param wrapInDeclareModule Whether the root file should be wrapped in `declare module "<pkg>" { ... }`
  * @returns The found declarations or undefined if none were found
  */
-export function resolveTypings(
-    pkg: string,
-    adapterScopedPackageName: string,
-    wrapInDeclareModule?: boolean,
-): Record<string, string> | undefined {
+export function resolveTypings(pkg: string, adapterScopedPackageName: string): Record<string, string> | undefined {
     let packageJsonPath: string | undefined;
     let packageJson: Record<string, any> | undefined;
     let rootTypings: string | undefined;
     let pkgIncludesTypings = true;
 
-    function tryToLoadPackage(path: string): void {
+    function tryToLoadPackage(name: string): void {
+        const found = findPackageJson(name);
+        if (!found) {
+            return;
+        }
         try {
-            packageJsonPath = require.resolve(path);
-            packageJson = require(packageJsonPath);
-            rootTypings =
-                typeof (packageJson as Record<string, any>).types === 'string'
-                    ? (packageJson as Record<string, any>).types
-                    : typeof (packageJson as Record<string, any>).typings === 'string'
-                      ? (packageJson as Record<string, any>).typings
-                      : undefined;
+            packageJsonPath = found;
+            packageJson = require(found);
+            rootTypings = findRootTypings(packageJson as Record<string, any>, dirname(found));
         } catch {
             /* ignore */
         }
     }
 
     // First, try to resolve the package itself in case it brings its own typings
-    tryToLoadPackage(`${adapterScopedPackageName}/package.json`);
+    tryToLoadPackage(adapterScopedPackageName);
 
     if (!rootTypings) {
-        tryToLoadPackage(`${pkg}/package.json`);
+        tryToLoadPackage(pkg);
     }
     // If that didn't work, try again with the @types version of the package
     if (!rootTypings) {
-        tryToLoadPackage(`@types/${pkg}/package.json`);
+        tryToLoadPackage(`@types/${pkg}`);
         pkgIncludesTypings = false;
     }
 
@@ -147,15 +227,25 @@ export function resolveTypings(
     }
 
     const packageRoot: string = dirname(packageJsonPath);
-    const normalizeImportPath = (filename: string): string =>
-        normalize(
-            `node_modules/${pkgIncludesTypings ? adapterScopedPackageName : `@types/${pkg}`}/${relative(packageRoot, filename)}`,
-        ).replace(/\\/g, '/');
+    /**
+     * The directory the declarations get in the virtual file system. It has to be the one the
+     * `package.json` below is written to, otherwise TypeScript reads that file, follows its `types`
+     * entry and finds nothing - which used to leave every import from the package typed as `any`.
+     */
+    const virtualPackageDir = `node_modules/${pkgIncludesTypings ? '' : '@types/'}${pkg}`;
 
-    const ret: Record<string, string> = {};
-
-    // We need to look at `import/export ... from 'modulename'` and `/// <reference path='...' />`
-    const importDtsRegex = /^\s*(?:import|export) .+ from ["'](\.+\/[^"']+)["']/g;
+    // We need to look at everything that names another file of the package: `import ... from "./x"`,
+    // `export ... from "./x"`, the side effect import `import "./x"`, `import x = require("./x")`,
+    // and `/// <reference path='...' />`.
+    //
+    // The `m` flag is what makes `^` match every line instead of only the start of the file. Without
+    // it, exactly one import per file was followed - and only if it happened to be the first thing in
+    // it. For rxjs 6 that collected 6 of its ~800 declaration files.
+    //
+    // Everything between the keyword and the path is skipped, so the shape of the import does not
+    // matter and it may span several lines. `[^;]` stops that at the statement's semicolon, so a
+    // match can never run into the next statement.
+    const importDtsRegex = /^\s*(?:import|export)\s[^;]*?["'](\.+\/[^"']+)["']/gm;
     const pathReferenceRegex = /\/\/\/ <reference path=["']([^"']+)["'] \/>/g;
     const matchAllImports = (str: string): string[] =>
         [...matchAll(importDtsRegex, str), ...matchAll(pathReferenceRegex, str)].map(groups => groups[0]);
@@ -165,47 +255,80 @@ export function resolveTypings(
     // some @types packages specify `index` as their typings file instead of `index.d.ts`
     rootTypings = normalizeDTSImport(rootTypings);
 
-    // include package.json in typings, so TypeScript can look up the correct entry point
-    const relativePath = `node_modules/${pkgIncludesTypings ? '' : '@types/'}${pkg}/package.json`.replace(/\\/g, '/');
-    ret[relativePath] = JSON.stringify(packageJson);
-
-    // Used to test whether a .d.ts file already uses "declare module" or not
-    const declareModuleRegex = /^\s*declare module/gm;
-
-    // recursively load all typings
+    // recursively load all typings, keyed by their location on disk
+    const collected = new Map<string, string>();
     const definitionQueue = [rootTypings];
     while (definitionQueue.length > 0) {
         const filename: string = definitionQueue.shift() as string;
-        const dirName = dirname(filename);
-        // Read the file and remember it in the return dictionary
+        if (collected.has(filename)) {
+            continue;
+        }
         let fileContent: string;
         try {
             fileContent = readFileSync(filename, 'utf8');
         } catch (e: any) {
-            // The typings are malformed
-            console.error(`Failed to load definitions for ${pkg}: ${e.toString()}`);
-            // Since we cannot use them, return undefined
-            return undefined;
+            // Without the entry point there is nothing to hand to TypeScript
+            if (filename === rootTypings) {
+                console.error(`Failed to load definitions for ${pkg}: ${e.toString()}`);
+                return undefined;
+            }
+            // A referenced file was there a moment ago but cannot be read now. Dropping every
+            // declaration of the package over one unreadable file would be out of proportion.
+            console.warn(`Skipped a definition file of ${pkg}: ${e.toString()}`);
+            continue;
         }
-        // We need to store the filename relative to the base dir
-        const relativePath = normalizeImportPath(filename);
-        // If necessary, wrap the root typings (only those!)
-        ret[relativePath] =
-            wrapInDeclareModule && filename === rootTypings && !declareModuleRegex.test(fileContent)
-                ? `declare module "${pkg}" { ${fileContent} }`
-                : fileContent;
+        collected.set(filename, fileContent);
         // If this file references another .d.ts file, we need to load that too
         matchAllImports(fileContent)
             // resolve the file relative to the current directory
-            .map(file => join(dirName, file))
+            .map(file => join(dirname(filename), file))
             // find out the correct path of the file we want to import
             .map(normalizeDTSImport)
+            // A package may import something it does not ship declarations for, and the matcher
+            // above may pick up a string that only looks like a path
+            .filter(file => existsSync(file))
             // Find all libs we have not loaded yet
-            .filter(file => !(normalizeImportPath(file) in ret))
+            .filter(file => !collected.has(file))
             .forEach(file => definitionQueue.push(file));
     }
+
+    /**
+     * The directory that becomes `node_modules/<pkg>` in the virtual file system.
+     *
+     * `virtual-tsc` resolves with `moduleResolution: node10`, which looks the entry point up next to
+     * the package - so laying the files out around the entry point rather than around the
+     * package.json is what makes a package work whose declarations sit in a subdirectory. For a
+     * package whose entry point is at its root - the usual case - this is the package root and
+     * nothing changes.
+     */
+    let virtualRoot = dirname(rootTypings);
+    if ([...collected.keys()].some(file => relative(virtualRoot, file).startsWith('..'))) {
+        // Declarations reach above the entry point. Moving them would break the relative imports
+        // between them, so the layout of the package is kept as it is.
+        virtualRoot = packageRoot;
+    }
+
+    const toVirtualPath = (filename: string): string =>
+        normalize(`${virtualPackageDir}/${relative(virtualRoot, filename)}`).replace(/\\/g, '/');
+
+    const ret: Record<string, string> = {};
+    for (const [filename, fileContent] of collected) {
+        ret[toVirtualPath(filename)] =
+            filename === rootTypings ? wrapRootTypingsIfNeeded(pkg, fileContent) : fileContent;
+    }
+
+    // Include a package.json, so TypeScript can look up the entry point. It describes the layout
+    // above, not the one the package has on disk - and it is deliberately minimal: the original
+    // `exports` map refers to paths that do not exist here, and TypeScript refuses to resolve the
+    // package at all when it finds one it cannot follow under `moduleResolution: node10`.
+    ret[`${virtualPackageDir}/package.json`] = JSON.stringify({
+        name: pkg,
+        version: packageJson?.version,
+        types: `./${relative(virtualRoot, rootTypings).replace(/\\/g, '/')}`,
+    });
+
     // Avoid returning empty declarations
-    if (Object.keys(ret).length === 0) {
+    if (!collected.size) {
         return undefined;
     }
     return ret;

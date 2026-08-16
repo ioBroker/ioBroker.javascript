@@ -102,5 +102,7 @@
   "tooltip_useSystemGPS": "Використовуйте координати з налаштувань системи",
   "useDefineForClassFields help": "Виводити поля класу з нативною семантикою define. Може змінити поведінку наявних скриптів.",
   "useUnknownInCatchVariables help": "Типізувати змінну помилки в блоках \"catch\" як \"unknown\" замість \"any\".",
-  "www.typescriptlang.org/tsconfig": "www.typescriptlang.org/tsconfig"
+  "www.typescriptlang.org/tsconfig": "www.typescriptlang.org/tsconfig",
+  "mirrorPath forbidden": "Цей шлях не можна використовувати для дзеркалювання. Змініть його.",
+  "mirrorPath help": "Окремий порожній каталог поза встановленням ioBroker, доступний для запису користувачу iobroker. Якщо там зникне тека, скрипти в ній буде видалено з бази даних."
 }

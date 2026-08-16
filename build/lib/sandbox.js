@@ -34,6 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FORBIDDEN_CHARS = void 0;
+exports.normalizeStateDefault = normalizeStateDefault;
 exports.isValidPattern = isValidPattern;
 exports.pattern2RegEx = pattern2RegEx;
 exports.isExactId = isExactId;
@@ -46,6 +47,30 @@ const wordsMod = __importStar(require("./words"));
 const eventObjMod = __importStar(require("./eventObj"));
 const patternCompareFunctions_1 = require("./patternCompareFunctions");
 const SCRIPT_CODE_MARKER = 'script.js.';
+/**
+ * State types whose value - and therefore whose default - is stored as JSON, not as itself.
+ *
+ * `json` is missing from `ioBroker.CommonType` but js-controller accepts it and applies the same
+ * rule, so these are compared as plain strings - `setStateHelper` treats it the same way.
+ */
+const STRINGIFIED_STATE_TYPES = ['object', 'json', 'array'];
+/**
+ * Brings `common.def` of a state into the shape js-controller expects, in place.
+ *
+ * A state of a structured type keeps its value as JSON - `setState` stringifies it on the way in.
+ * js-controller expects the same of the default and rejects anything else with "Default value has
+ * to be stringified but received type ...", which a script author cannot act on
+ * (https://github.com/ioBroker/ioBroker.javascript/issues/2307).
+ *
+ * @param common The `common` part of a state object
+ * @throws {TypeError} if the default cannot be stringified, e.g. because it is circular
+ */
+function normalizeStateDefault(common) {
+    if (common.def == null || typeof common.def === 'string' || !STRINGIFIED_STATE_TYPES.includes(common.type)) {
+        return;
+    }
+    common.def = JSON.stringify(common.def);
+}
 // Pre-compiled RegExp constants for formatTimeDiff – avoids recompiling on every call
 const FTD_TEST_D = /(?<!\\)[DTД]/;
 const FTD_REPL_DD = /(?<!\\)(?:DD|TT|ДД)/g;
@@ -2920,6 +2945,16 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
             _common.type = _common.type || 'mixed';
             if (!isAlias && initValue === undefined) {
                 initValue = _common.def;
+            }
+            // Deliberately after the default was taken as the initial value above: that value stays
+            // the object it was and takes the usual road through `setState`, which stringifies it.
+            // Only the object definition is brought into the shape js-controller expects.
+            try {
+                normalizeStateDefault(_common);
+            }
+            catch (err) {
+                sandbox.log(`Cannot stringify ${name}.common.def: ${err}`, 'warn');
+                delete _common.def;
             }
             native = native || {};
             // Check min, max and def values for number

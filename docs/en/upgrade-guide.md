@@ -18,6 +18,9 @@ When enabling the script files system mirroring, please make sure to create a **
 Please also make sure that no other script or process changes files in the provided directory to prevent access issues.
 Any location needs to be writable by the "iobroker" user!
 
+The sync goes both ways, and that includes deletions: **when a folder disappears from the mirror directory, the scripts in it are deleted from the ioBroker database.**
+So anything else that writes there - a backup job, a cleanup task, a deployment - can remove your scripts. Only if the mirror directory as a whole becomes unreachable, e.g. because a share is not mounted, the scripts are kept and the directory is written again on the next start.
+
 ## request to httpGet
 
 **Since v8.0.0 of the JavaScript adapter** the `request` package is deprecated and the usage in your scripts will raise a warning.

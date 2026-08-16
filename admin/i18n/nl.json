@@ -102,5 +102,7 @@
   "tooltip_useSystemGPS": "Gebruik coördinaten van systeeminstellingen",
   "useDefineForClassFields help": "Klassevelden met de native define-semantiek genereren. Kan het gedrag van bestaande scripts wijzigen.",
   "useUnknownInCatchVariables help": "De foutvariabele in \"catch\"-blokken typeren als \"unknown\" in plaats van \"any\".",
-  "www.typescriptlang.org/tsconfig": "www.typescriptlang.org/tsconfig"
+  "www.typescriptlang.org/tsconfig": "www.typescriptlang.org/tsconfig",
+  "mirrorPath forbidden": "Dit pad is niet toegestaan voor spiegeling. Wijzig het.",
+  "mirrorPath help": "Een eigen, lege map buiten de ioBroker-installatie, beschrijfbaar voor de gebruiker iobroker. Verdwijnt daar een map, dan worden de scripts erin uit de database verwijderd."
 }

@@ -460,5 +460,20 @@
     "Suggest tests for %s %s": "Tests voorstellen voor %s %s",
     "Apply changes": "Wijzigingen toepassen",
     "Discard changes": "Wijzigingen negeren",
-    "Ask anything, or request a change (e.g. \"what does this do?\")": "Stel een vraag of vraag een wijziging (bv. \"wat doet dit?\")"
+    "Ask anything, or request a change (e.g. \"what does this do?\")": "Stel een vraag of vraag een wijziging (bv. \"wat doet dit?\")",
+    "Wizard": "Wizard",
+    "Create a rule step by step": "Een regel stap voor stap maken",
+    "Summary": "Overzicht",
+    "Back": "Terug",
+    "Next": "Volgende",
+    "Skip": "Overslaan",
+    "Create rule": "Regel maken",
+    "Replace rule": "Regel vervangen",
+    "The current rule will be replaced": "De huidige regel wordt vervangen",
+    "Add another": "Nog een toevoegen",
+    "Without a condition the rule always runs": "Zonder voorwaarde wordt de regel altijd uitgevoerd",
+    "What should start the rule?": "Wat moet de regel starten?",
+    "When should the rule run? This step is optional.": "Wanneer moet de regel worden uitgevoerd? Deze stap is optioneel.",
+    "What should happen?": "Wat moet er gebeuren?",
+    "Block not found": "Blok niet gevonden"
 }

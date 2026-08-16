@@ -460,5 +460,20 @@
     "Suggest tests for %s %s": "Запропонувати тести для %s %s",
     "Apply changes": "Застосувати зміни",
     "Discard changes": "Скасувати зміни",
-    "Ask anything, or request a change (e.g. \"what does this do?\")": "Запитайте будь-що або попросіть зміни (напр. \"що це робить?\")"
+    "Ask anything, or request a change (e.g. \"what does this do?\")": "Запитайте будь-що або попросіть зміни (напр. \"що це робить?\")",
+    "Wizard": "Майстер",
+    "Create a rule step by step": "Створити правило крок за кроком",
+    "Summary": "Підсумок",
+    "Back": "Назад",
+    "Next": "Далі",
+    "Skip": "Пропустити",
+    "Create rule": "Створити правило",
+    "Replace rule": "Замінити правило",
+    "The current rule will be replaced": "Поточне правило буде замінено",
+    "Add another": "Додати ще",
+    "Without a condition the rule always runs": "Без умови правило виконується завжди",
+    "What should start the rule?": "Що має запускати правило?",
+    "When should the rule run? This step is optional.": "Коли правило має виконуватися? Цей крок необов'язковий.",
+    "What should happen?": "Що має статися?",
+    "Block not found": "Блок не знайдено"
 }

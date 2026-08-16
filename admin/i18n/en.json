@@ -102,5 +102,7 @@
   "tooltip_useSystemGPS": "Use coordinates from system settings",
   "useDefineForClassFields help": "Emit class fields with the native define semantics. May change the behavior of existing scripts.",
   "useUnknownInCatchVariables help": "Type the error variable in \"catch\" blocks as \"unknown\" instead of \"any\".",
-  "www.typescriptlang.org/tsconfig": "www.typescriptlang.org/tsconfig"
+  "www.typescriptlang.org/tsconfig": "www.typescriptlang.org/tsconfig",
+  "mirrorPath forbidden": "This path is not allowed for mirroring. Please change it.",
+  "mirrorPath help": "A dedicated, empty directory outside the ioBroker installation, writable by the iobroker user. If a folder disappears there, the scripts in it are deleted from the database."
 }

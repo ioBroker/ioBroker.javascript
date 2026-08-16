@@ -460,5 +460,20 @@
     "Suggest tests for %s %s": "为 %s %s 建议测试",
     "Apply changes": "应用更改",
     "Discard changes": "放弃更改",
-    "Ask anything, or request a change (e.g. \"what does this do?\")": "提问或请求修改（例如\"这段代码做什么？\"）"
+    "Ask anything, or request a change (e.g. \"what does this do?\")": "提问或请求修改（例如\"这段代码做什么？\"）",
+    "Wizard": "向导",
+    "Create a rule step by step": "逐步创建规则",
+    "Summary": "摘要",
+    "Back": "上一步",
+    "Next": "下一步",
+    "Skip": "跳过",
+    "Create rule": "创建规则",
+    "Replace rule": "替换规则",
+    "The current rule will be replaced": "当前规则将被替换",
+    "Add another": "再添加一个",
+    "Without a condition the rule always runs": "没有条件时，规则始终执行",
+    "What should start the rule?": "什么触发这条规则？",
+    "When should the rule run? This step is optional.": "规则何时执行？此步骤为可选。",
+    "What should happen?": "应该发生什么？",
+    "Block not found": "未找到模块"
 }

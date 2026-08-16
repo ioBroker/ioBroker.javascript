@@ -102,5 +102,7 @@
     "tooltip_useSystemGPS": "Użyj współrzędnych z ustawień systemowych",
     "useDefineForClassFields help": "Emituje pola klas z natywną semantyką define. Może zmienić zachowanie istniejących skryptów.",
     "useUnknownInCatchVariables help": "Typuj zmienną błędu w blokach \"catch\" jako \"unknown\" zamiast \"any\".",
-    "www.typescriptlang.org/tsconfig": "www.typescriptlang.org/tsconfig"
+    "www.typescriptlang.org/tsconfig": "www.typescriptlang.org/tsconfig",
+    "mirrorPath forbidden": "Ta ścieżka nie jest dozwolona do tworzenia kopii lustrzanej. Zmień ją.",
+    "mirrorPath help": "Dedykowany, pusty katalog poza instalacją ioBroker, zapisywalny dla użytkownika iobroker. Jeśli zniknie tam folder, skrypty w nim zostaną usunięte z bazy danych."
 }

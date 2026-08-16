@@ -27,6 +27,12 @@
                     "newLine": true,
                     "type": "text",
                     "label": "Mirror scripts to file path",
+                    "help": "mirrorPath help",
+                    "helpLink": "https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/en/upgrade-guide.md",
+                    "placeholder": "/home/iobroker/script_mirror",
+                    "validator": "!data.mirrorPath || ['/opt/iobroker/iobroker-data/backup-objects/', '/opt/iobroker/iobroker-data/files/', '/opt/iobroker/iobroker-data/backitup/', '/opt/iobroker/backups/', '/opt/iobroker/node_modules/', '/opt/iobroker/log/'].every(dir => !dir.includes(data.mirrorPath.replace(/\\\\/g, '/')) && !data.mirrorPath.replace(/\\\\/g, '/').startsWith(dir))",
+                    "validatorErrorText": "mirrorPath forbidden",
+                    "validatorNoSaveOnError": true,
                     "xs": 12,
                     "sm": 8
                 },
