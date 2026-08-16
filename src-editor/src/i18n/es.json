@@ -475,5 +475,12 @@
     "What should start the rule?": "¿Qué debe iniciar la regla?",
     "When should the rule run? This step is optional.": "¿Cuándo debe ejecutarse la regla? Este paso es opcional.",
     "What should happen?": "¿Qué debe ocurrir?",
-    "Block not found": "Bloque no encontrado"
+    "Block not found": "Bloque no encontrado",
+    "Weekday": "Día de la semana",
+    "Let the rule run only on the selected days of the week": "Ejecutar la regla solo en los días de la semana seleccionados",
+    "Send to adapter": "Enviar al adaptador",
+    "Sends a message to any adapter instance": "Envía un mensaje a cualquier instancia de adaptador",
+    "Command:": "Comando:",
+    "JSON:": "JSON:",
+    "Sent:": "Enviado:"
 }

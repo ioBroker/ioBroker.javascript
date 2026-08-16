@@ -4,6 +4,8 @@ import TriggerState from '../Blocks/TriggerState';
 import ConditionState from '../Blocks/ConditionState';
 import ConditionTime from '../Blocks/ConditionTime';
 import ConditionAstronomical from '../Blocks/ConditionAstronomical';
+import ConditionWeekday from '../Blocks/ConditionWeekday';
+import ActionSendTo from '../Blocks/ActionSendTo';
 import ActionSetState from '../Blocks/ActionSetState';
 import ActionExec from '../Blocks/ActionExec';
 import ActionHTTPCall from '../Blocks/ActionHTTPCall';
@@ -21,7 +23,9 @@ const StandardBlocks: (typeof GenericBlock<any>)[] = [
     ConditionState,
     ConditionTime,
     ConditionAstronomical,
+    ConditionWeekday,
     ActionSetState,
+    ActionSendTo,
     ActionExec,
     ActionHTTPCall,
     ActionPrintText,

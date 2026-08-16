@@ -475,5 +475,12 @@
     "What should start the rule?": "Що має запускати правило?",
     "When should the rule run? This step is optional.": "Коли правило має виконуватися? Цей крок необов'язковий.",
     "What should happen?": "Що має статися?",
-    "Block not found": "Блок не знайдено"
+    "Block not found": "Блок не знайдено",
+    "Weekday": "День тижня",
+    "Let the rule run only on the selected days of the week": "Виконувати правило лише у вибрані дні тижня",
+    "Send to adapter": "Надіслати адаптеру",
+    "Sends a message to any adapter instance": "Надсилає повідомлення будь-якому екземпляру адаптера",
+    "Command:": "Команда:",
+    "JSON:": "JSON:",
+    "Sent:": "Надіслано:"
 }

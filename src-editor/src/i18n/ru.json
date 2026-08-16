@@ -475,5 +475,12 @@
     "What should start the rule?": "Что должно запускать правило?",
     "When should the rule run? This step is optional.": "Когда правило должно выполняться? Этот шаг необязателен.",
     "What should happen?": "Что должно произойти?",
-    "Block not found": "Блок не найден"
+    "Block not found": "Блок не найден",
+    "Weekday": "День недели",
+    "Let the rule run only on the selected days of the week": "Выполнять правило только в выбранные дни недели",
+    "Send to adapter": "Отправить адаптеру",
+    "Sends a message to any adapter instance": "Отправляет сообщение любому экземпляру адаптера",
+    "Command:": "Команда:",
+    "JSON:": "JSON:",
+    "Sent:": "Отправлено:"
 }
