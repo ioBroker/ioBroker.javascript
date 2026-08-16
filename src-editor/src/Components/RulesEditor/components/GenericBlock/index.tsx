@@ -908,6 +908,11 @@ export abstract class GenericBlock<
         } else if (context.trigger?.id === 'TriggerFile') {
             // %s is the name of the changed file, %id the object it belongs to - as with a state
             value = '.replace(/%s/g, fileName).replace(/%id/g, fileId)';
+        } else if (context.trigger?.id === 'TriggerObject') {
+            // there is no value behind an object change, so %s is what changed
+            value = '.replace(/%s/g, id).replace(/%id/g, id)';
+        } else if (context.trigger?.id === 'TriggerLog') {
+            value = '.replace(/%s/g, info.message).replace(/%id/g, info.from)';
         } else if (context.conditionsStates.length) {
             value = `.replace(/%s/g, ${context.conditionsStates[0].name}).replace(/%id/g, "${context.conditionsStates[0].id}")`;
         }

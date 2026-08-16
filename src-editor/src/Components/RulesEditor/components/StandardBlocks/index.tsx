@@ -3,6 +3,9 @@ import TriggerSchedule from '../Blocks/TriggerSchedule';
 import TriggerState from '../Blocks/TriggerState';
 import TriggerMessage from '../Blocks/TriggerMessage';
 import TriggerFile from '../Blocks/TriggerFile';
+import TriggerObject from '../Blocks/TriggerObject';
+import TriggerLog from '../Blocks/TriggerLog';
+import TriggerOnStop from '../Blocks/TriggerOnStop';
 import ConditionState from '../Blocks/ConditionState';
 import ConditionTime from '../Blocks/ConditionTime';
 import ConditionAstronomical from '../Blocks/ConditionAstronomical';
@@ -27,6 +30,9 @@ const StandardBlocks: (typeof GenericBlock<any>)[] = [
     TriggerState,
     TriggerMessage,
     TriggerFile,
+    TriggerObject,
+    TriggerLog,
+    TriggerOnStop,
     ConditionState,
     ConditionTime,
     ConditionAstronomical,

@@ -136,6 +136,95 @@ __%%ELSE%%__
     }
 }`;
 
+/** `onObject` reports the id and the object; `obj` is missing when the object was deleted. */
+export const STANDARD_FUNCTION_OBJECT = `async function (id, obj) {
+    "__%%DEBUG_TRIGGER%%__";
+    __%%CONDITIONS_VARS%%__
+    const _cond = __%%CONDITION%%__;
+
+    "__%%DEBUG_CONDITIONS%%__";
+
+    if (_cond) {
+__%%THEN%%__
+    } else {
+__%%ELSE%%__
+    }
+}`;
+
+export const STANDARD_FUNCTION_OBJECT_ONCHANGE = `async function (id, obj) {
+    "__%%DEBUG_TRIGGER%%__";
+    __%%CONDITIONS_VARS%%__
+    const _cond = __%%CONDITION%%__;
+
+    "__%%DEBUG_CONDITIONS%%__";
+
+    if (__%%STATE%%__ === false && _cond) {
+        __%%STATE%%__ = true;
+__%%THEN%%__
+    } else if (__%%STATE%%__ === true && !_cond) {
+        __%%STATE%%__ = false;
+__%%ELSE%%__
+    }
+}`;
+
+/** `onLog` reports one log entry: `{_id, from, severity, ts, message}`. */
+export const STANDARD_FUNCTION_LOG = `async function (info) {
+    "__%%DEBUG_TRIGGER%%__";
+    __%%CONDITIONS_VARS%%__
+    const _cond = __%%CONDITION%%__;
+
+    "__%%DEBUG_CONDITIONS%%__";
+
+    if (_cond) {
+__%%THEN%%__
+    } else {
+__%%ELSE%%__
+    }
+}`;
+
+export const STANDARD_FUNCTION_LOG_ONCHANGE = `async function (info) {
+    "__%%DEBUG_TRIGGER%%__";
+    __%%CONDITIONS_VARS%%__
+    const _cond = __%%CONDITION%%__;
+
+    "__%%DEBUG_CONDITIONS%%__";
+
+    if (__%%STATE%%__ === false && _cond) {
+        __%%STATE%%__ = true;
+__%%THEN%%__
+    } else if (__%%STATE%%__ === true && !_cond) {
+        __%%STATE%%__ = false;
+__%%ELSE%%__
+    }
+}`;
+
+/**
+ * `onStop` is the one hook that is waited for: the adapter holds the script open until the callback
+ * signals that it is done, or until its timeout runs out (see `stopScript` in `main.ts`). So this
+ * template is not an async function like the others but a plain one that reports back - otherwise
+ * every stop would sit out the full timeout, and the actions would be cut off half way.
+ *
+ * `catch` before `finally`, so a failing action is logged instead of ending as an unhandled
+ * rejection - and `_done` is reached either way, which is the part the adapter is waiting for.
+ *
+ * There is no "on change" variant: a script stops once, so there is nothing for the latch to hold.
+ */
+export const STANDARD_FUNCTION_STOP = `function (_done) {
+    void (async () => {
+        "__%%DEBUG_TRIGGER%%__";
+        __%%CONDITIONS_VARS%%__
+        const _cond = __%%CONDITION%%__;
+
+        "__%%DEBUG_CONDITIONS%%__";
+
+        if (_cond) {
+__%%THEN%%__
+        } else {
+__%%ELSE%%__
+        }
+    })().catch(e => console.error(e)).finally(_done);
+}`;
+
 export const NO_FUNCTION = `"__%%DEBUG_TRIGGER%%__";
 __%%CONDITIONS_VARS%%__
 const _cond = __%%CONDITION%%__;
