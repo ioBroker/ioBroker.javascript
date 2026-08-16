@@ -1,11 +1,15 @@
 import TriggerScriptSave from '../Blocks/TriggerScriptSave';
 import TriggerSchedule from '../Blocks/TriggerSchedule';
 import TriggerState from '../Blocks/TriggerState';
+import TriggerMessage from '../Blocks/TriggerMessage';
 import ConditionState from '../Blocks/ConditionState';
 import ConditionTime from '../Blocks/ConditionTime';
 import ConditionAstronomical from '../Blocks/ConditionAstronomical';
 import ConditionWeekday from '../Blocks/ConditionWeekday';
+import ConditionFunction from '../Blocks/ConditionFunction';
 import ActionSendTo from '../Blocks/ActionSendTo';
+import ActionNotification from '../Blocks/ActionNotification';
+import ActionToggleState from '../Blocks/ActionToggleState';
 import ActionSetState from '../Blocks/ActionSetState';
 import ActionExec from '../Blocks/ActionExec';
 import ActionHTTPCall from '../Blocks/ActionHTTPCall';
@@ -20,15 +24,19 @@ const StandardBlocks: (typeof GenericBlock<any>)[] = [
     TriggerSchedule,
     TriggerScriptSave,
     TriggerState,
+    TriggerMessage,
     ConditionState,
     ConditionTime,
     ConditionAstronomical,
     ConditionWeekday,
+    ConditionFunction,
     ActionSetState,
+    ActionToggleState,
     ActionSendTo,
     ActionExec,
     ActionHTTPCall,
     ActionPrintText,
+    ActionNotification,
     ActionPause,
     ActionFunction,
     ActionSetStateDelayed,

@@ -64,6 +64,41 @@ __%%ELSE%%__
     }
 }`;
 
+/**
+ * `onMessage` calls its listener with the payload and a callback to answer the sender with. A rule
+ * has no way to express an answer, so the callback stays unused - but it has to be in the signature,
+ * or the payload could not be told apart from it while reading the generated script.
+ */
+export const STANDARD_FUNCTION_MESSAGE = `async function (data, _callback) {
+    "__%%DEBUG_TRIGGER%%__";
+    __%%CONDITIONS_VARS%%__
+    const _cond = __%%CONDITION%%__;
+
+    "__%%DEBUG_CONDITIONS%%__";
+
+    if (_cond) {
+__%%THEN%%__
+    } else {
+__%%ELSE%%__
+    }
+}`;
+
+export const STANDARD_FUNCTION_MESSAGE_ONCHANGE = `async function (data, _callback) {
+    "__%%DEBUG_TRIGGER%%__";
+    __%%CONDITIONS_VARS%%__
+    const _cond = __%%CONDITION%%__;
+
+    "__%%DEBUG_CONDITIONS%%__";
+
+    if (__%%STATE%%__ === false && _cond) {
+        __%%STATE%%__ = true;
+__%%THEN%%__
+    } else if (__%%STATE%%__ === true && !_cond) {
+        __%%STATE%%__ = false;
+__%%ELSE%%__
+    }
+}`;
+
 export const NO_FUNCTION = `"__%%DEBUG_TRIGGER%%__";
 __%%CONDITIONS_VARS%%__
 const _cond = __%%CONDITION%%__;

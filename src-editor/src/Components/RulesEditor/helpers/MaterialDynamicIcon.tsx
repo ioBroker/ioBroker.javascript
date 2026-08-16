@@ -17,6 +17,9 @@ import {
     Help,
     CalendarMonth,
     Send,
+    Message,
+    NotificationsActive,
+    SwapHoriz,
     type SvgIconComponent,
 } from '@mui/icons-material';
 import type { AdminConnection } from '@iobroker/gui-components';
@@ -41,6 +44,9 @@ const objIcon: Record<string, SvgIconComponent> = {
     FlashOn,
     CalendarMonth,
     Send,
+    Message,
+    NotificationsActive,
+    SwapHoriz,
 };
 
 interface MaterialDynamicIconProps {

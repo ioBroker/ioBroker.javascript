@@ -902,6 +902,9 @@ export abstract class GenericBlock<
         if ((context.trigger as RuleBlockConfigTriggerState)?.oidType) {
             value =
                 '.replace(/%s/g, obj.state.val).replace(/%id/g, obj.id).replace(/%name/g, obj.common && obj.common.name).replace(/%old/g, obj.oldState.val)';
+        } else if (context.trigger?.id === 'TriggerMessage') {
+            // the payload of a message may be an object, and "[object Object]" is not what %s is for
+            value = '.replace(/%s/g, typeof data === "object" ? JSON.stringify(data) : data)';
         } else if (context.conditionsStates.length) {
             value = `.replace(/%s/g, ${context.conditionsStates[0].name}).replace(/%id/g, "${context.conditionsStates[0].id}")`;
         }
