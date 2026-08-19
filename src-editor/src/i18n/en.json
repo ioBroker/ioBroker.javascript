@@ -546,5 +546,17 @@
     "Runs the rule once more when it is stopped, saved or the adapter shuts down": "Runs the rule once more when it is stopped, saved or the adapter shuts down",
     "The adapter waits for the actions, but only for the time set here - what does not fit is cut off. A rule can have only one block of this kind; a second one replaces the first.": "The adapter waits for the actions, but only for the time set here - what does not fit is cut off. A rule can have only one block of this kind; a second one replaces the first.",
     "Wait at most:": "Wait at most:",
-    "HTTP error:": "HTTP error:"
+    "HTTP error:": "HTTP error:",
+    "On enum member change": "On enum member change",
+    "Triggers the rule when any state of a room or function changes": "Triggers the rule when any state of a room or function changes",
+    "Subscribes to every state of the selected enum and follows it: a device added to that room later is included without changing the rule. In the texts of the actions %s is the new value and %id the state that changed.": "Subscribes to every state of the selected enum and follows it: a device added to that room later is included without changing the rule. In the texts of the actions %s is the new value and %id the state that changed.",
+    "Members of:": "Members of:",
+    "Any member of": "Any member of",
+    "Send message": "Send message",
+    "Sends a message to other scripts and rules": "Sends a message to other scripts and rules",
+    "Every rule with an \"On message\" trigger of the same name receives it, as does a script with onMessage(). You can use %s in the text to send the current trigger value or %id the triggered object ID.": "Every rule with an \"On message\" trigger of the same name receives it, as does a script with onMessage(). You can use %s in the text to send the current trigger value or %id the triggered object ID.",
+    "Set state if changed": "Set state if changed",
+    "Writes a state only if its value differs from the current one": "Writes a state only if its value differs from the current one",
+    "Use this instead of \"Set state action\" for rules that run often: an unchanged value is not written at all, so nothing subscribed to that state is woken up for nothing.": "Use this instead of \"Set state action\" for rules that run often: an unchanged value is not written at all, so nothing subscribed to that state is woken up for nothing.",
+    "only if changed": "only if changed"
 }

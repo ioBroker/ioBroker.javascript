@@ -23,7 +23,9 @@ const styles = {
 
 class ActionSetState extends GenericBlock<RuleBlockConfigActionSetState> {
     constructor(props: GenericBlockProps<RuleBlockConfigActionSetState>) {
-        super(props, ActionSetState.getStaticData());
+        // `new.target` and not `ActionSetState`, so a block deriving from this one describes itself
+        // with its own name and icon instead of inheriting this one's - see ActionSetStateChanged.
+        super(props, new.target.getStaticData());
     }
 
     isAllTriggersOnState(): boolean {

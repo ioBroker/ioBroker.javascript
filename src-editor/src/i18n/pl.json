@@ -538,5 +538,17 @@
     "Runs the rule once more when it is stopped, saved or the adapter shuts down": "Wykonuje regułę jeszcze raz, gdy zostanie zatrzymana, zapisana lub adapter się wyłącza",
     "The adapter waits for the actions, but only for the time set here - what does not fit is cut off. A rule can have only one block of this kind; a second one replaces the first.": "Adapter czeka na akcje, ale tylko przez ustawiony tutaj czas - to, co się nie zmieści, zostanie przerwane. Reguła może mieć tylko jeden blok tego typu; drugi zastępuje pierwszy.",
     "Wait at most:": "Czekaj najwyżej:",
-    "HTTP error:": "Błąd HTTP:"
+    "HTTP error:": "Błąd HTTP:",
+    "On enum member change": "Przy zmianie członka wyliczenia",
+    "Triggers the rule when any state of a room or function changes": "Wyzwala regułę, gdy zmieni się dowolny stan pomieszczenia lub funkcji",
+    "Subscribes to every state of the selected enum and follows it: a device added to that room later is included without changing the rule. In the texts of the actions %s is the new value and %id the state that changed.": "Subskrybuje każdy stan wybranego wyliczenia i podąża za nim: urządzenie dodane później jest uwzględniane bez zmiany reguły. W tekstach akcji %s to nowa wartość, a %id stan, który się zmienił.",
+    "Members of:": "Członkowie:",
+    "Any member of": "Dowolny członek",
+    "Send message": "Wyślij wiadomość",
+    "Sends a message to other scripts and rules": "Wysyła wiadomość do innych skryptów i reguł",
+    "Every rule with an \"On message\" trigger of the same name receives it, as does a script with onMessage(). You can use %s in the text to send the current trigger value or %id the triggered object ID.": "Otrzyma ją każda reguła z wyzwalaczem \"Po otrzymaniu wiadomości\" o tej samej nazwie, a także skrypt z onMessage(). Za pomocą %s w tekście wysyłasz bieżącą wartość wyzwalacza, a %id ID wyzwolonego obiektu.",
+    "Set state if changed": "Ustaw stan tylko przy zmianie",
+    "Writes a state only if its value differs from the current one": "Zapisuje stan tylko wtedy, gdy jego wartość różni się od bieżącej",
+    "Use this instead of \"Set state action\" for rules that run often: an unchanged value is not written at all, so nothing subscribed to that state is woken up for nothing.": "Używaj zamiast \"Set state action\" w regułach uruchamianych często: niezmieniona wartość w ogóle nie jest zapisywana, więc nic zasubskrybowanego do tego stanu nie jest budzone na darmo.",
+    "only if changed": "tylko przy zmianie"
 }

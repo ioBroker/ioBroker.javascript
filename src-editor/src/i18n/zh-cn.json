@@ -538,5 +538,17 @@
     "Runs the rule once more when it is stopped, saved or the adapter shuts down": "在规则被停止、保存或适配器关闭时再执行一次该规则",
     "The adapter waits for the actions, but only for the time set here - what does not fit is cut off. A rule can have only one block of this kind; a second one replaces the first.": "适配器会等待这些动作，但只等待此处设置的时长——超出部分会被中断。一条规则只能有一个此类块；第二个会替换第一个。",
     "Wait at most:": "最多等待：",
-    "HTTP error:": "HTTP 错误："
+    "HTTP error:": "HTTP 错误：",
+    "On enum member change": "枚举成员变化时",
+    "Triggers the rule when any state of a room or function changes": "当某个房间或功能的任意状态发生变化时触发该规则",
+    "Subscribes to every state of the selected enum and follows it: a device added to that room later is included without changing the rule. In the texts of the actions %s is the new value and %id the state that changed.": "订阅所选枚举中的每一个状态并随之更新：之后加入该房间的设备无需修改规则即可生效。在动作文本中，%s 是新值，%id 是发生变化的状态。",
+    "Members of:": "成员属于：",
+    "Any member of": "任意成员属于",
+    "Send message": "发送消息",
+    "Sends a message to other scripts and rules": "向其他脚本和规则发送消息",
+    "Every rule with an \"On message\" trigger of the same name receives it, as does a script with onMessage(). You can use %s in the text to send the current trigger value or %id the triggered object ID.": "任何带有同名 \"收到消息时\" 触发器的规则都会收到它，使用 onMessage() 的脚本也一样。在文本中用 %s 发送当前触发值，用 %id 发送触发对象的 ID。",
+    "Set state if changed": "仅在变化时设置状态",
+    "Writes a state only if its value differs from the current one": "仅当值与当前值不同时才写入状态",
+    "Use this instead of \"Set state action\" for rules that run often: an unchanged value is not written at all, so nothing subscribed to that state is woken up for nothing.": "对于频繁运行的规则，请用它代替 \"Set state action\"：值未变化时根本不会写入，订阅该状态的一切也就不会被白白唤醒。",
+    "only if changed": "仅在变化时"
 }

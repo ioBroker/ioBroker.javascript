@@ -538,5 +538,17 @@
     "Runs the rule once more when it is stopped, saved or the adapter shuts down": "Выполняет правило ещё раз при остановке, сохранении или завершении работы адаптера",
     "The adapter waits for the actions, but only for the time set here - what does not fit is cut off. A rule can have only one block of this kind; a second one replaces the first.": "Адаптер ждёт выполнения действий, но только заданное здесь время - то, что не поместилось, обрывается. Правило может содержать только один такой блок; второй заменяет первый.",
     "Wait at most:": "Ждать не более:",
-    "HTTP error:": "Ошибка HTTP:"
+    "HTTP error:": "Ошибка HTTP:",
+    "On enum member change": "При изменении в перечислении",
+    "Triggers the rule when any state of a room or function changes": "Запускает правило при изменении любого состояния комнаты или функции",
+    "Subscribes to every state of the selected enum and follows it: a device added to that room later is included without changing the rule. In the texts of the actions %s is the new value and %id the state that changed.": "Подписывается на каждое состояние выбранного перечисления и следует за ним: устройство, добавленное позже, учитывается без изменения правила. В текстах действий %s — новое значение, а %id — изменившееся состояние.",
+    "Members of:": "Члены:",
+    "Any member of": "Любой член",
+    "Send message": "Отправить сообщение",
+    "Sends a message to other scripts and rules": "Отправляет сообщение другим скриптам и правилам",
+    "Every rule with an \"On message\" trigger of the same name receives it, as does a script with onMessage(). You can use %s in the text to send the current trigger value or %id the triggered object ID.": "Её получит любое правило с триггером \"По сообщению\" с тем же именем, а также скрипт с onMessage(). С помощью %s в тексте вы отправите текущее значение триггера, а %id — ID сработавшего объекта.",
+    "Set state if changed": "Задать состояние только при изменении",
+    "Writes a state only if its value differs from the current one": "Записывает состояние, только если его значение отличается от текущего",
+    "Use this instead of \"Set state action\" for rules that run often: an unchanged value is not written at all, so nothing subscribed to that state is woken up for nothing.": "Используйте вместо \"Set state action\" в правилах, которые выполняются часто: неизменённое значение вообще не записывается, поэтому ничто, подписанное на это состояние, не будится зря.",
+    "only if changed": "только при изменении"
 }

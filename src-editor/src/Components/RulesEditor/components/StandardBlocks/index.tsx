@@ -6,6 +6,7 @@ import TriggerFile from '../Blocks/TriggerFile';
 import TriggerObject from '../Blocks/TriggerObject';
 import TriggerLog from '../Blocks/TriggerLog';
 import TriggerOnStop from '../Blocks/TriggerOnStop';
+import TriggerEnumMembers from '../Blocks/TriggerEnumMembers';
 import ConditionState from '../Blocks/ConditionState';
 import ConditionTime from '../Blocks/ConditionTime';
 import ConditionAstronomical from '../Blocks/ConditionAstronomical';
@@ -13,6 +14,8 @@ import ConditionWeekday from '../Blocks/ConditionWeekday';
 import ConditionFunction from '../Blocks/ConditionFunction';
 import ActionSendTo from '../Blocks/ActionSendTo';
 import ActionNotification from '../Blocks/ActionNotification';
+import ActionMessageTo from '../Blocks/ActionMessageTo';
+import ActionSetStateChanged from '../Blocks/ActionSetStateChanged';
 import ActionToggleState from '../Blocks/ActionToggleState';
 import ActionSetState from '../Blocks/ActionSetState';
 import ActionExec from '../Blocks/ActionExec';
@@ -33,14 +36,17 @@ const StandardBlocks: (typeof GenericBlock<any>)[] = [
     TriggerObject,
     TriggerLog,
     TriggerOnStop,
+    TriggerEnumMembers,
     ConditionState,
     ConditionTime,
     ConditionAstronomical,
     ConditionWeekday,
     ConditionFunction,
     ActionSetState,
+    ActionSetStateChanged,
     ActionToggleState,
     ActionSendTo,
+    ActionMessageTo,
     ActionExec,
     ActionHTTPCall,
     ActionPrintText,

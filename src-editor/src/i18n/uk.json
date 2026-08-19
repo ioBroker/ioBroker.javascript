@@ -538,5 +538,17 @@
     "Runs the rule once more when it is stopped, saved or the adapter shuts down": "Виконує правило ще раз при зупинці, збереженні або завершенні роботи адаптера",
     "The adapter waits for the actions, but only for the time set here - what does not fit is cut off. A rule can have only one block of this kind; a second one replaces the first.": "Адаптер чекає на виконання дій, але лише заданий тут час - те, що не вмістилося, обривається. Правило може містити лише один такий блок; другий замінює перший.",
     "Wait at most:": "Чекати не більше:",
-    "HTTP error:": "Помилка HTTP:"
+    "HTTP error:": "Помилка HTTP:",
+    "On enum member change": "При зміні в переліку",
+    "Triggers the rule when any state of a room or function changes": "Запускає правило при зміні будь-якого стану кімнати або функції",
+    "Subscribes to every state of the selected enum and follows it: a device added to that room later is included without changing the rule. In the texts of the actions %s is the new value and %id the state that changed.": "Підписується на кожен стан вибраного переліку та слідує за ним: пристрій, доданий пізніше, враховується без зміни правила. У текстах дій %s — нове значення, а %id — стан, що змінився.",
+    "Members of:": "Члени:",
+    "Any member of": "Будь-який член",
+    "Send message": "Надіслати повідомлення",
+    "Sends a message to other scripts and rules": "Надсилає повідомлення іншим скриптам і правилам",
+    "Every rule with an \"On message\" trigger of the same name receives it, as does a script with onMessage(). You can use %s in the text to send the current trigger value or %id the triggered object ID.": "Її отримає будь-яке правило з тригером \"За повідомленням\" з тією ж назвою, а також скрипт з onMessage(). За допомогою %s у тексті ви надішлете поточне значення тригера, а %id — ID об'єкта, що спрацював.",
+    "Set state if changed": "Задати стан лише при зміні",
+    "Writes a state only if its value differs from the current one": "Записує стан, лише якщо його значення відрізняється від поточного",
+    "Use this instead of \"Set state action\" for rules that run often: an unchanged value is not written at all, so nothing subscribed to that state is woken up for nothing.": "Використовуйте замість \"Set state action\" у правилах, що виконуються часто: незмінене значення взагалі не записується, тож ніщо, підписане на цей стан, не будиться даремно.",
+    "only if changed": "лише при зміні"
 }

@@ -4,6 +4,7 @@ import type { RuleBlockConfig, RuleUserRules } from '@iobroker/javascript-rules-
 
 import { compile } from '../helpers/Compile';
 import StandardBlocks from '../components/StandardBlocks';
+import ActionSetStateChanged from '../components/Blocks/ActionSetStateChanged';
 import type { GenericBlock } from '../components/GenericBlock';
 
 /**
@@ -401,6 +402,137 @@ describe('rule compilation', () => {
 
         it('escapes a quote in the URL', () => {
             expect(compileParsed(rule('http://d/?a="b"'))).toContain(String.raw`"http://d/?a=\"b\""`);
+        });
+    });
+    describe('TriggerEnumMembers', () => {
+        const trigger: BlockConfig = {
+            id: 'TriggerEnumMembers',
+            acceptedBy: 'triggers',
+            _id: 1,
+            enumId: 'enum.rooms.living_room',
+        };
+
+        it('subscribes to the enum with the ordinary state callback', () => {
+            expect(compileParsed(withNotification(trigger))).toContain(
+                'onEnumMembers("enum.rooms.living_room", async function (obj)',
+            );
+        });
+
+        // The callback is a plain state subscription, so %s means what it means everywhere else
+        it('substitutes %s with the new value and %id with the state that changed', () => {
+            const code = compileParsed(withNotification(trigger));
+            expect(code).toContain('.replace(/%s/g, obj.state.val)');
+            expect(code).toContain('.replace(/%id/g, obj.id)');
+        });
+
+        it('subscribes to nothing without an enum', () => {
+            const code = compileParsed(withNotification({ ...trigger, enumId: '' }));
+            expect(code).not.toContain('onEnumMembers(');
+            expect(code).toContain('No enum defined');
+        });
+    });
+
+    describe('ActionMessageTo', () => {
+        const rule = (action: Partial<BlockConfig>): Partial<RuleUserRules> => ({
+            justCheck: true,
+            triggers: [{ id: 'TriggerScriptSave', acceptedBy: 'triggers', _id: 1 }],
+            actions: {
+                then: [
+                    {
+                        id: 'ActionMessageTo',
+                        acceptedBy: 'actions',
+                        _id: 8,
+                        message: 'myMessage',
+                        data: 'Hello',
+                        ...action,
+                    } as BlockConfig,
+                ],
+                else: [],
+            },
+        });
+
+        // The other half of the "On message" trigger - a rule calling another rule
+        it('sends the payload under the message name', () => {
+            const code = compileParsed(rule({}));
+            expect(code).toContain('messageTo("myMessage", subActionVar8)');
+        });
+
+        it('hands a JSON payload over as an object', () => {
+            const code = compileParsed(rule({ asJson: true, data: '{"a": 1}' }));
+            expect(code).toContain('messageTo("myMessage", {"a": 1})');
+        });
+
+        it('sends nothing when the JSON does not parse', () => {
+            const code = compileParsed(rule({ asJson: true, data: '{oops' }));
+            expect(code).not.toContain('messageTo(');
+            expect(code).toContain('Invalid JSON');
+        });
+
+        it('sends nothing without a message name', () => {
+            const code = compileParsed(rule({ message: '' }));
+            expect(code).not.toContain('messageTo(');
+            expect(code).toContain('No message name defined');
+        });
+
+        it('escapes a quote in the message name', () => {
+            expect(compileParsed(rule({ message: 'with "quotes"' }))).toContain(JSON.stringify('with "quotes"'));
+        });
+    });
+
+    describe('ActionSetStateChanged', () => {
+        const rule = (action: Partial<BlockConfig>): Partial<RuleUserRules> => ({
+            justCheck: true,
+            triggers: [{ id: 'TriggerScriptSave', acceptedBy: 'triggers', _id: 1 }],
+            actions: {
+                then: [
+                    {
+                        id: 'ActionSetStateChanged',
+                        acceptedBy: 'actions',
+                        _id: 6,
+                        oid: 'javascript.0.x',
+                        ...action,
+                    } as BlockConfig,
+                ],
+                else: [],
+            },
+        });
+
+        // The whole reason the block exists: an unchanged value must not be written at all
+        it('writes through setStateChangedAsync', () => {
+            const code = compileParsed(rule({ value: '5', tagCard: 'control' }));
+            expect(code).toContain('await setStateChangedAsync("javascript.0.x", subActionVar6, false)');
+            expect(code).not.toContain('await setStateAsync(');
+        });
+
+        it('acknowledges on "update"', () => {
+            expect(compileParsed(rule({ value: '5', tagCard: 'update' }))).toContain(
+                'await setStateChangedAsync("javascript.0.x", subActionVar6, true)',
+            );
+        });
+
+        it('inverts the current value when toggling', () => {
+            expect(compileParsed(rule({ toggle: true }))).toContain('!(await getStateAsync("javascript.0.x")).val');
+        });
+
+        it('takes the trigger value when asked to', () => {
+            expect(compileParsed(rule({ useTrigger: true }))).toContain('= obj.state.val');
+        });
+
+        /**
+         * It derives from ActionSetState, whose constructor passes `new.target` down - without that
+         * the card would carry the base block's name and icon while saving itself under its own id.
+         */
+        it('describes itself and not the block it derives from', () => {
+            const instance = new (ActionSetStateChanged as any)({});
+            expect(instance.state.name).toBe('Set state if changed');
+            expect(instance.state.icon).toBe('PublishedWithChanges');
+            expect(instance.getData().id).toBe('ActionSetStateChanged');
+        });
+
+        it('is a block of its own, not the plain set state action', () => {
+            const ids = blocks.map(block => block.getStaticData().id);
+            expect(ids).toContain('ActionSetStateChanged');
+            expect(ids).toContain('ActionSetState');
         });
     });
 });

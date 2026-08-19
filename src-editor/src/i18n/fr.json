@@ -538,5 +538,17 @@
     "Runs the rule once more when it is stopped, saved or the adapter shuts down": "Exécute la règle une dernière fois lorsqu'elle est arrêtée, enregistrée ou que l'adaptateur s'arrête",
     "The adapter waits for the actions, but only for the time set here - what does not fit is cut off. A rule can have only one block of this kind; a second one replaces the first.": "L'adaptateur attend les actions, mais seulement pendant le temps défini ici - ce qui ne rentre pas est interrompu. Une règle ne peut avoir qu'un seul bloc de ce type ; un second remplace le premier.",
     "Wait at most:": "Attendre au plus :",
-    "HTTP error:": "Erreur HTTP :"
+    "HTTP error:": "Erreur HTTP :",
+    "On enum member change": "Lors d'un changement dans l'énumération",
+    "Triggers the rule when any state of a room or function changes": "Déclenche la règle lorsqu'un état quelconque d'une pièce ou d'une fonction change",
+    "Subscribes to every state of the selected enum and follows it: a device added to that room later is included without changing the rule. In the texts of the actions %s is the new value and %id the state that changed.": "S'abonne à chaque état de l'énumération choisie et la suit : un appareil ajouté plus tard est inclus sans modifier la règle. Dans les textes des actions, %s est la nouvelle valeur et %id l'état qui a changé.",
+    "Members of:": "Membres de :",
+    "Any member of": "N'importe quel membre de",
+    "Send message": "Envoyer un message",
+    "Sends a message to other scripts and rules": "Envoie un message à d'autres scripts et règles",
+    "Every rule with an \"On message\" trigger of the same name receives it, as does a script with onMessage(). You can use %s in the text to send the current trigger value or %id the triggered object ID.": "Toute règle avec un déclencheur \"À la réception d'un message\" du même nom la reçoit, tout comme un script avec onMessage(). Avec %s dans le texte vous envoyez la valeur actuelle du déclencheur et avec %id l'ID de l'objet déclenché.",
+    "Set state if changed": "Définir l'état seulement s'il change",
+    "Writes a state only if its value differs from the current one": "N'écrit un état que si sa valeur diffère de l'actuelle",
+    "Use this instead of \"Set state action\" for rules that run often: an unchanged value is not written at all, so nothing subscribed to that state is woken up for nothing.": "À utiliser à la place de \"Set state action\" pour les règles qui s'exécutent souvent : une valeur inchangée n'est pas écrite du tout, donc rien de ce qui est abonné à cet état n'est réveillé pour rien.",
+    "only if changed": "seulement si changé"
 }

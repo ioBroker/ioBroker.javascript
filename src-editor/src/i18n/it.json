@@ -538,5 +538,17 @@
     "Runs the rule once more when it is stopped, saved or the adapter shuts down": "Esegue la regola un'ultima volta quando viene fermata, salvata o l'adattatore si arresta",
     "The adapter waits for the actions, but only for the time set here - what does not fit is cut off. A rule can have only one block of this kind; a second one replaces the first.": "L'adattatore attende le azioni, ma solo per il tempo impostato qui: ciò che non ci sta viene interrotto. Una regola può avere un solo blocco di questo tipo; un secondo sostituisce il primo.",
     "Wait at most:": "Attendi al massimo:",
-    "HTTP error:": "Errore HTTP:"
+    "HTTP error:": "Errore HTTP:",
+    "On enum member change": "Alla modifica di un membro di enum",
+    "Triggers the rule when any state of a room or function changes": "Attiva la regola quando cambia un qualsiasi stato di una stanza o funzione",
+    "Subscribes to every state of the selected enum and follows it: a device added to that room later is included without changing the rule. In the texts of the actions %s is the new value and %id the state that changed.": "Si iscrive a ogni stato dell'enum selezionato e lo segue: un dispositivo aggiunto in seguito viene incluso senza modificare la regola. Nei testi delle azioni %s è il nuovo valore e %id lo stato che è cambiato.",
+    "Members of:": "Membri di:",
+    "Any member of": "Qualsiasi membro di",
+    "Send message": "Invia messaggio",
+    "Sends a message to other scripts and rules": "Invia un messaggio ad altri script e regole",
+    "Every rule with an \"On message\" trigger of the same name receives it, as does a script with onMessage(). You can use %s in the text to send the current trigger value or %id the triggered object ID.": "La riceve ogni regola con un trigger \"Al messaggio\" dello stesso nome, così come uno script con onMessage(). Con %s nel testo invii il valore corrente del trigger e con %id l'ID dell'oggetto attivato.",
+    "Set state if changed": "Imposta lo stato solo se cambia",
+    "Writes a state only if its value differs from the current one": "Scrive uno stato solo se il suo valore differisce da quello attuale",
+    "Use this instead of \"Set state action\" for rules that run often: an unchanged value is not written at all, so nothing subscribed to that state is woken up for nothing.": "Usalo al posto di \"Set state action\" per regole che girano spesso: un valore invariato non viene scritto affatto, quindi nulla di iscritto a quello stato viene svegliato inutilmente.",
+    "only if changed": "solo se cambiato"
 }
