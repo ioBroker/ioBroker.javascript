@@ -1,8 +1,12 @@
+/*
+ * The surface the rule sits on. It used to be a photograph with a flat colour laid over it, which
+ * every theme had to tune its own opacity against - and in the blue themes that overlay was fully
+ * transparent, so the photo was the background. A picture behind translucent cards costs contrast
+ * everywhere and gives nothing back, so each theme now names its own background instead: a shallow
+ * diagonal gradient, quiet enough that the coloured band washes and the cards stay the loud part.
+ */
 .wrapperRules {
-    background: linear-gradient(0deg, var(--backgroundGlobalColor), var(--backgroundGlobalColor)),
-        url('../assets/back.jpg');
-    background-repeat: no-repeat;
-    background-size: cover;
+    background: var(--backgroundGlobal);
     height: 100%;
     display: flex;
 }
