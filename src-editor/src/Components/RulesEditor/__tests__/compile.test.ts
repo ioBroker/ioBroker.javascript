@@ -368,4 +368,39 @@ describe('rule compilation', () => {
             expect(code).not.toMatch(/^\s*registerNotification\("injected"\)/m);
         });
     });
+    describe('ActionHTTPCall', () => {
+        const rule = (url: string): Partial<RuleUserRules> => ({
+            justCheck: true,
+            triggers: [{ id: 'TriggerScriptSave', acceptedBy: 'triggers', _id: 1 }],
+            actions: {
+                then: [{ id: 'ActionHTTPCall', acceptedBy: 'actions', _id: 7, url } as BlockConfig],
+                else: [],
+            },
+        });
+
+        /**
+         * "request" was a global while the adapter still bundled the package of that name. It is
+         * gone from the sandbox, so a rule with this block ended in a ReferenceError - which nothing
+         * caught, because no one parses the generated script.
+         */
+        it('calls httpGet and not the long gone request()', () => {
+            const code = compileParsed(rule('http://device/on'));
+            expect(code).toContain('httpGet(subActionVar7,');
+            expect(code).not.toContain('request(');
+        });
+
+        it('does not wait for the response', () => {
+            expect(compileParsed(rule('http://device/on'))).not.toContain('await httpGet');
+        });
+
+        it('reports the status code and the error back to the editor', () => {
+            const code = compileParsed(rule('http://device/on'));
+            expect(code).toContain('statusCode: response.statusCode');
+            expect(code).toContain('error: error ? error.message : undefined');
+        });
+
+        it('escapes a quote in the URL', () => {
+            expect(compileParsed(rule('http://d/?a="b"'))).toContain(String.raw`"http://d/?a=\"b\""`);
+        });
+    });
 });

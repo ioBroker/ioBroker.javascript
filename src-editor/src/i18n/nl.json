@@ -537,5 +537,6 @@
     "On rule stop": "Bij het stoppen van de regel",
     "Runs the rule once more when it is stopped, saved or the adapter shuts down": "Voert de regel nog één keer uit wanneer deze wordt gestopt, opgeslagen of de adapter afsluit",
     "The adapter waits for the actions, but only for the time set here - what does not fit is cut off. A rule can have only one block of this kind; a second one replaces the first.": "De adapter wacht op de acties, maar alleen zolang als hier is ingesteld - wat er niet in past wordt afgebroken. Een regel kan maar één blok van dit type hebben; een tweede vervangt het eerste.",
-    "Wait at most:": "Maximaal wachten:"
+    "Wait at most:": "Maximaal wachten:",
+    "HTTP error:": "HTTP-fout:"
 }

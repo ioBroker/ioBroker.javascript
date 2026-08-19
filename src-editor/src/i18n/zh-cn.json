@@ -537,5 +537,6 @@
     "On rule stop": "规则停止时",
     "Runs the rule once more when it is stopped, saved or the adapter shuts down": "在规则被停止、保存或适配器关闭时再执行一次该规则",
     "The adapter waits for the actions, but only for the time set here - what does not fit is cut off. A rule can have only one block of this kind; a second one replaces the first.": "适配器会等待这些动作，但只等待此处设置的时长——超出部分会被中断。一条规则只能有一个此类块；第二个会替换第一个。",
-    "Wait at most:": "最多等待："
+    "Wait at most:": "最多等待：",
+    "HTTP error:": "HTTP 错误："
 }

@@ -537,5 +537,6 @@
     "On rule stop": "При остановке правила",
     "Runs the rule once more when it is stopped, saved or the adapter shuts down": "Выполняет правило ещё раз при остановке, сохранении или завершении работы адаптера",
     "The adapter waits for the actions, but only for the time set here - what does not fit is cut off. A rule can have only one block of this kind; a second one replaces the first.": "Адаптер ждёт выполнения действий, но только заданное здесь время - то, что не поместилось, обрывается. Правило может содержать только один такой блок; второй заменяет первый.",
-    "Wait at most:": "Ждать не более:"
+    "Wait at most:": "Ждать не более:",
+    "HTTP error:": "Ошибка HTTP:"
 }

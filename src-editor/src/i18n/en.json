@@ -545,5 +545,6 @@
     "On rule stop": "On rule stop",
     "Runs the rule once more when it is stopped, saved or the adapter shuts down": "Runs the rule once more when it is stopped, saved or the adapter shuts down",
     "The adapter waits for the actions, but only for the time set here - what does not fit is cut off. A rule can have only one block of this kind; a second one replaces the first.": "The adapter waits for the actions, but only for the time set here - what does not fit is cut off. A rule can have only one block of this kind; a second one replaces the first.",
-    "Wait at most:": "Wait at most:"
+    "Wait at most:": "Wait at most:",
+    "HTTP error:": "HTTP error:"
 }

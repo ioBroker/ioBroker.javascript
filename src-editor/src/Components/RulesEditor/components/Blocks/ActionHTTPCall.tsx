@@ -1,3 +1,5 @@
+import { I18n } from '@iobroker/gui-components';
+
 import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
 import type {
     RuleBlockConfigActionHTTPCall,
@@ -13,15 +15,31 @@ class ActionHTTPCall extends GenericBlock<RuleBlockConfigActionHTTPCall> {
     }
 
     static compile(config: RuleBlockConfigActionHTTPCall, context: RuleContext): string {
-        return `// HTTP request ${config.url}
-\t\tconst subActionVar${config._id} = "${(config.url || '').replace(/"/g, '\\"')}"${GenericBlock.getReplacesInText(context)};
+        // a line break in the URL would end the comment and turn the next line into code
+        const label = (config.url || '').replace(/[\r\n]+/g, ' ');
+
+        // `httpGet` and not `request`: the latter was a global back when the adapter bundled the
+        // package of that name. It is gone, so every rule using this block ran into a
+        // ReferenceError. Called back instead of awaited, so the rule carries on while the request
+        // is still running - which is what this block did while it still worked.
+        return `// HTTP request ${label}
+\t\tconst subActionVar${config._id} = ${JSON.stringify(config.url || '')}${GenericBlock.getReplacesInText(context)};
 \t\t_sendToFrontEnd(${config._id}, {url: subActionVar${config._id}});
-\t\trequest(subActionVar${config._id});`;
+\t\thttpGet(subActionVar${config._id}, (error, response) =>
+\t\t\t_sendToFrontEnd(${config._id}, {url: subActionVar${config._id}, statusCode: response.statusCode, error: error ? error.message : undefined}));`;
     }
 
+    /**
+     * Two messages arrive per call: the URL when the request goes out, the outcome when it comes
+     * back. A failed request is logged by the sandbox itself, so this only has to show it.
+     */
     // eslint-disable-next-line class-methods-use-this
-    renderDebug(debugMessage: { data: RuleBlockConfigActionHTTPCall }): string {
-        return `URL: ${debugMessage.data.url}`;
+    renderDebug(debugMessage: { data: { url: string; statusCode?: number | null; error?: string } }): string {
+        const { url, statusCode, error } = debugMessage.data;
+        if (error) {
+            return `${I18n.t('HTTP error:')} ${error}`;
+        }
+        return statusCode === undefined ? `URL: ${url}` : `URL: ${url} → ${statusCode}`;
     }
 
     getSummary(): RuleBlockSummary | null {

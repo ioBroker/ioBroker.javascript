@@ -537,5 +537,6 @@
     "On rule stop": "Przy zatrzymaniu reguły",
     "Runs the rule once more when it is stopped, saved or the adapter shuts down": "Wykonuje regułę jeszcze raz, gdy zostanie zatrzymana, zapisana lub adapter się wyłącza",
     "The adapter waits for the actions, but only for the time set here - what does not fit is cut off. A rule can have only one block of this kind; a second one replaces the first.": "Adapter czeka na akcje, ale tylko przez ustawiony tutaj czas - to, co się nie zmieści, zostanie przerwane. Reguła może mieć tylko jeden blok tego typu; drugi zastępuje pierwszy.",
-    "Wait at most:": "Czekaj najwyżej:"
+    "Wait at most:": "Czekaj najwyżej:",
+    "HTTP error:": "Błąd HTTP:"
 }
