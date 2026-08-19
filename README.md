@@ -27,6 +27,9 @@ Executes Javascript, Typescript Scripts.
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Added new rule blocks
+
 ### 10.1.0 (2026-08-16)
 * (@GermanBluefox) Turned `strict` off again for the scripts, as TypeScript 6 enables it by default
 * (@GermanBluefox) Added the tab "TypeScript" to the settings, where the compiler options for the scripts can be configured
