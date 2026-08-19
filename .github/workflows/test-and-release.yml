@@ -44,6 +44,24 @@ jobs:
             - run: npm i
             - run: npm run build
 
+    # The editor is its own package with its own vitest suite (rule compilation, AI chat helpers).
+    # The root "npm test" is declarations + mocha and never reaches it, so it needs a job of its own.
+    editor-tests:
+        if: contains(github.event.head_commit.message, '[skip ci]') == false
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v7
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: 24.x
+            # "-f" like the "npm" script does - the editor's peer dependencies do not resolve without it
+            - run: npm i -f
+              working-directory: src-editor
+            - run: npm test
+              working-directory: src-editor
+
     # Runs adapter tests on all supported node versions and OSes
     adapter-tests:
         if: contains(github.event.head_commit.message, '[skip ci]') == false
@@ -63,7 +81,7 @@ jobs:
 
     # Merges and deploys the final package to NPM
     auto-merge:
-        needs: [adapter-tests]
+        needs: [adapter-tests, editor-tests]
 
         if: |
             always() &&
