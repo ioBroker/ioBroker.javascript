@@ -242,3 +242,28 @@ export function warnIfInsideTrigger(block: Block): void {
 
     block.setWarningText(null, block.id);
 }
+
+/**
+ * The variable model of a block that owns a named resource (timer, interval, schedule) without a
+ * real workspace variable behind it. Blockly 13 reads variable models through methods -
+ * `Xml.variablesToDom` calls `getName`/`getType`/`getId` when the workspace is serialized for
+ * saving, so a model without them kills the save (issue #2349). The bare `name`/`type`
+ * properties stay for adapter block files written against the Blockly 11 shape.
+ */
+export type NamedResourceVariableModel = {
+    getId: () => string;
+    getName: () => string;
+    getType: () => string;
+    name: string;
+    type: string;
+};
+
+/**
+ * Builds the variable model for one named resource.
+ *
+ * @param name The name the user gave the timer/interval/schedule
+ * @param type The variable type the legacy scripts stored these under
+ */
+export function namedResourceVariableModel(name: string, type: string): NamedResourceVariableModel {
+    return { getId: () => name, getName: () => name, getType: () => type, name, type };
+}

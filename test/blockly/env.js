@@ -89,6 +89,7 @@ function bundleModule(id) {
  *   origins: Record<string, string>,
  *   coreKeys: string[],
  *   generate: (xml: string) => { code: string, warnings: string[] },
+ *   save: (xml: string) => { code: string, xml: string },
  * }}
  */
 function createBlocklyEnvironment() {
@@ -199,7 +200,30 @@ function createBlocklyEnvironment() {
         }
     };
 
-    return { Blockly: window.Blockly, window, origins, coreKeys, generate };
+    /**
+     * Saves workspace XML the way the editor does. Saving is `workspaceToCode` PLUS
+     * `Xml.workspaceToDom` - the XML travels as a base64 comment behind the generated code
+     * (`blocklyCode2JSCode` in `BlocklyEditor.tsx`), and a block whose serialization throws kills
+     * the editor's change handler and with it the save button. Returns the code and the saved
+     * XML, so a test can reload the XML and compare.
+     *
+     * @param {string} xml A complete `<xml>...</xml>` document
+     */
+    const save = xml => {
+        Object.assign(window.Blockly.Msg, pristineMsg);
+        const workspace = new window.Blockly.Workspace();
+        window.scripts = { blocklyWorkspace: workspace };
+        try {
+            window.Blockly.Xml.domToWorkspace(window.Blockly.utils.xml.textToDom(xml), workspace);
+            const code = window.Blockly.JavaScript.workspaceToCode(workspace);
+            const savedXml = window.Blockly.Xml.domToText(window.Blockly.Xml.workspaceToDom(workspace));
+            return { code, xml: savedXml };
+        } finally {
+            workspace.dispose();
+        }
+    };
+
+    return { Blockly: window.Blockly, window, origins, coreKeys, generate, save };
 }
 
 module.exports = { createBlocklyEnvironment, BLOCKLY_DIR, MODULES_DIR, CORE_FILES, BLOCK_ORDER };

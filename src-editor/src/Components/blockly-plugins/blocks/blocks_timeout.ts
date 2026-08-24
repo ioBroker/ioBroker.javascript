@@ -13,6 +13,7 @@
  */
 import { Blocks, FieldDropdown, FieldTextInput, Names, type Block, type Field, type Workspace } from 'blockly/core';
 import { javascriptGenerator, Order } from 'blockly/javascript';
+import { namedResourceVariableModel, type NamedResourceVariableModel } from './helpers';
 
 /** A block that owns a named timer */
 type TimerBlock = Block & {
@@ -234,9 +235,8 @@ export function install(): void {
             getVars: function (this: Block): string[] {
                 return [this.getFieldValue('NAME')];
             },
-            getVarModels: function (this: Block): { getId: () => string; name: string; type: string }[] {
-                const name = this.getFieldValue('NAME');
-                return [{ getId: () => name, name, type: kind.variableType }];
+            getVarModels: function (this: Block): NamedResourceVariableModel[] {
+                return [namedResourceVariableModel(this.getFieldValue('NAME'), kind.variableType)];
             },
         };
 

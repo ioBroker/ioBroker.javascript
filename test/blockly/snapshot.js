@@ -107,4 +107,4 @@ function readSnapshots() {
     return stored;
 }
 
-module.exports = { buildSnapshots, writeSnapshots, readSnapshots, GOLDEN_DIR };
+module.exports = { buildSnapshots, writeSnapshots, readSnapshots, GOLDEN_DIR, PLUGIN_BLOCKS };

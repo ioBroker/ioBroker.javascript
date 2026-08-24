@@ -188,7 +188,9 @@ export function install(): void {
         }
         let returnValue = '';
         let xfix2 = '';
-        const branch = generator.statementToCode(block, 'STACK');
+        // With `statements="false"` in the mutation the STACK input does not exist, and
+        // `statementToCode` throws for a missing one - the same trap as RETURN below
+        const branch = block.getInput('STACK') ? generator.statementToCode(block, 'STACK') : '';
         // `procedures_defnoreturn` has no RETURN input, and `valueToCode` throws for a missing one
         if (block.getInput('RETURN')) {
             returnValue = generator.valueToCode(block, 'RETURN', Order.NONE) || '';

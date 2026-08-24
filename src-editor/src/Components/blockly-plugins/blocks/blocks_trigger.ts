@@ -33,7 +33,17 @@ import { javascriptGenerator, Order } from 'blockly/javascript';
 
 import { FieldCRON } from './field_cron';
 import { FieldOID } from './field_oid';
-import { isTrue, objectNameById, objectNameOf, quote, reconnectChild, warnIfInsideTrigger, warnIfNotNestedIn } from './helpers';
+import {
+    isTrue,
+    namedResourceVariableModel,
+    objectNameById,
+    objectNameOf,
+    quote,
+    reconnectChild,
+    warnIfInsideTrigger,
+    warnIfNotNestedIn,
+    type NamedResourceVariableModel,
+} from './helpers';
 
 /** The `on_ext` block remembers how many object IDs it shows */
 type OnExtBlock = Block & {
@@ -797,9 +807,8 @@ export function install(): void {
         getVars: function (this: Block): string[] {
             return [this.getFieldValue('NAME')];
         },
-        getVarModels: function (this: Block): { getId: () => string; name: string; type: string }[] {
-            const name = this.getFieldValue('NAME');
-            return [{ getId: () => name, name, type: 'cron' }];
+        getVarModels: function (this: Block): NamedResourceVariableModel[] {
+            return [namedResourceVariableModel(this.getFieldValue('NAME'), 'cron')];
         },
     };
 
