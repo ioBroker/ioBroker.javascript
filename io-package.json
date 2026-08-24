@@ -525,6 +525,7 @@
     "enableSetObject": false,
     "enableSendToHost": false,
     "enableExec": false,
+    "enableSecrets": true,
     "libraries": "",
     "libraryTypings": "",
     "subscribe": false,

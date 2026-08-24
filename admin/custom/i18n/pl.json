@@ -26,5 +26,15 @@
     "sch_astro_sunsetStart": "Początek zachodu słońca",
     "Next sunrise": "Następny wschód słońca",
     "Next sunset": "Następny zachód słońca",
-    "Local time": "Czas lokalny"
+    "Local time": "Czas lokalny",
+    "Available credentials": "Dostępne dane uwierzytelniające",
+    "The credentials are managed in the admin under \"Basic settings\" -> \"Credentials\". A script reads them like this:": "Dane uwierzytelniające są zarządzane w adminie w \"Ustawienia podstawowe\" -> \"Dane uwierzytelniające\". Skrypt odczytuje je tak:",
+    "The access to the credentials is switched off, so SECRETS is empty.": "Dostęp do danych uwierzytelniających jest wyłączony, dlatego SECRETS jest pusty.",
+    "The instance is not running, so the credentials cannot be read.": "Instancja nie jest uruchomiona, więc nie można odczytać danych uwierzytelniających.",
+    "Reading credentials...": "Odczytywanie danych uwierzytelniających...",
+    "No credentials defined yet.": "Nie zdefiniowano jeszcze żadnych danych uwierzytelniających.",
+    "Credential": "Dane uwierzytelniające",
+    "Field": "Pole",
+    "Usage in a script": "Użycie w skrypcie",
+    "Copy to clipboard": "Kopiuj do schowka"
 }

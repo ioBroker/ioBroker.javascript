@@ -26,5 +26,15 @@
     "sch_astro_sunsetStart": "Начало заката",
     "Next sunrise": "Следующий восход солнца",
     "Next sunset": "Следующий закат",
-    "Local time": "Местное время"
+    "Local time": "Местное время",
+    "Available credentials": "Доступные учётные данные",
+    "The credentials are managed in the admin under \"Basic settings\" -> \"Credentials\". A script reads them like this:": "Учётные данные управляются в админке в разделе \"Основные настройки\" -> \"Учётные данные\". Скрипт читает их так:",
+    "The access to the credentials is switched off, so SECRETS is empty.": "Доступ к учётным данным отключён, поэтому SECRETS пуст.",
+    "The instance is not running, so the credentials cannot be read.": "Экземпляр не запущен, поэтому учётные данные не могут быть прочитаны.",
+    "Reading credentials...": "Чтение учётных данных...",
+    "No credentials defined yet.": "Учётные данные ещё не заданы.",
+    "Credential": "Учётные данные",
+    "Field": "Поле",
+    "Usage in a script": "Использование в скрипте",
+    "Copy to clipboard": "Скопировать в буфер обмена"
 }

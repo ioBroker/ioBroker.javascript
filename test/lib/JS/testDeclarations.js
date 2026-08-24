@@ -43,3 +43,6 @@ $('*').setState(1);
 
 // Repro from #636
 $('*').each(async () => {});
+
+// Central credential store
+const cameraPassword = SECRETS.CameraPassword.key;

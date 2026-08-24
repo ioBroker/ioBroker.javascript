@@ -26,5 +26,15 @@
   "sch_astro_night": "Night",
   "Next sunrise": "Next sunrise",
   "Next sunset": "Next sunset",
-  "Local time": "Local time"
+  "Local time": "Local time",
+  "Available credentials": "Available credentials",
+  "The credentials are managed in the admin under \"Basic settings\" -> \"Credentials\". A script reads them like this:": "The credentials are managed in the admin under \"Basic settings\" -> \"Credentials\". A script reads them like this:",
+  "The access to the credentials is switched off, so SECRETS is empty.": "The access to the credentials is switched off, so SECRETS is empty.",
+  "The instance is not running, so the credentials cannot be read.": "The instance is not running, so the credentials cannot be read.",
+  "Reading credentials...": "Reading credentials...",
+  "No credentials defined yet.": "No credentials defined yet.",
+  "Credential": "Credential",
+  "Field": "Field",
+  "Usage in a script": "Usage in a script",
+  "Copy to clipboard": "Copy to clipboard"
 }

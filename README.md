@@ -27,6 +27,12 @@ Executes Javascript, Typescript Scripts.
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) The credentials of the central storage (Basic settings -> Credentials) are available in the scripts as `SECRETS`, e.g. `SECRETS.CameraPassword.key`. The values are decrypted, read-only and are updated live when a credential is edited in the admin UI
+* (@GermanBluefox) The editor knows the credentials that exist: after `SECRETS.` it offers their names, and after the next dot exactly the fields the selected credential has
+* (@GermanBluefox) Added the Blockly block "credential", which reads one field of the central credential storage
+* (@GermanBluefox) The instance settings list the available credentials with their fields and the expression a script uses for them
+
 ### 10.1.0 (2026-08-16)
 * (@GermanBluefox) Turned `strict` off again for the scripts, as TypeScript 6 enables it by default
 * (@GermanBluefox) Added the tab "TypeScript" to the settings, where the compiler options for the scripts can be configured
@@ -65,6 +71,7 @@ Executes Javascript, Typescript Scripts.
 * (@GermanBluefox) The package.json of a library is read from disk instead of through Node, which refuses it when the library does not export it
 * (@GermanBluefox) Fixed the mirror tests on macOS. They asserted on the first event a watcher reported, while `fs.watch` there works at directory granularity and sends an event for the watched directory before the one for the file. They now wait for the change they are about, and say what arrived instead if it never comes
 * (@GermanBluefox) Made the mirror tests independent of how long a watch takes to arm. The change under test is repeated while waiting, so it cannot be made before the watcher is listening - the same commit produced a green and a red macOS job over that
+* (@GermanBluefox) Added a wizard to the rule editor that builds a rule step by step - trigger, condition and action are configured in place, and the last step shows the finished rule
 
 ### 10.0.0 (2026-08-04)
 * (@GermanBluefox) TypeScript 6 support

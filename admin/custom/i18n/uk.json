@@ -26,5 +26,15 @@
     "sch_astro_sunsetStart": "Початок заходу сонця",
     "Next sunrise": "Наступний схід сонця",
     "Next sunset": "Наступний захід сонця",
-    "Local time": "Місцевий час"
+    "Local time": "Місцевий час",
+    "Available credentials": "Доступні облікові дані",
+    "The credentials are managed in the admin under \"Basic settings\" -> \"Credentials\". A script reads them like this:": "Облікові дані керуються в адмінці в розділі \"Основні налаштування\" -> \"Облікові дані\". Скрипт читає їх так:",
+    "The access to the credentials is switched off, so SECRETS is empty.": "Доступ до облікових даних вимкнено, тому SECRETS порожній.",
+    "The instance is not running, so the credentials cannot be read.": "Екземпляр не запущено, тому облікові дані не можна прочитати.",
+    "Reading credentials...": "Читання облікових даних...",
+    "No credentials defined yet.": "Облікові дані ще не задані.",
+    "Credential": "Облікові дані",
+    "Field": "Поле",
+    "Usage in a script": "Використання у скрипті",
+    "Copy to clipboard": "Скопіювати в буфер обміну"
 }

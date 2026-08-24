@@ -67,6 +67,37 @@
                     "sm": 12,
                     "md": 6
                 },
+                "enableSecrets": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "default": true,
+                    "label": "Allow scripts to read the credentials",
+                    "help": "The credentials of the central storage are available in the scripts, e.g. SECRETS.CameraPassword.key",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6
+                },
+                "_secretsHeader": {
+                    "newLine": true,
+                    "type": "header",
+                    "text": "Available credentials",
+                    "size": 5,
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 12
+                },
+                "_secrets": {
+                    "newLine": true,
+                    "type": "custom",
+                    "i18n": true,
+                    "url": "custom/customComponents.js",
+                    "name": "ConfigCustomJavascriptSet/Components/Secrets",
+                    "guiApi": 2,
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12
+                },
                 "subscribe": {
                     "type": "checkbox",
                     "label": "Do not subscribe all states on start",

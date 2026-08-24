@@ -717,6 +717,8 @@ export function sandBox(
         scriptName: name,
         instance: adapter.instance || 0,
         defaultDataDir: context.getAbsoluteDefaultDataDir(),
+        // Read-only view on the central ioBroker credential store, e.g. `SECRETS.CameraPassword.key`
+        SECRETS: context.secrets,
         verbose,
         exports: {}, // Polyfill for the export object in TypeScript modules
         require: function (md: string): any {
