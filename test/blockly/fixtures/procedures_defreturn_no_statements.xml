@@ -1,0 +1,18 @@
+<!-- A function with a return value whose mutator has "statements" unchecked - the mutation
+     removes the STACK input. The generator read STACK unconditionally and threw, which
+     suppressed the save button for every script containing such a function (issue #1958).
+     The toolbox always shows the block with statements on, so only a fixture reaches this. -->
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="procedures_defreturn" x="10" y="10">
+    <mutation statements="false"></mutation>
+    <field name="NAME">answer</field>
+    <value name="RETURN">
+      <block type="math_number">
+        <field name="NUM">42</field>
+      </block>
+    </value>
+  </block>
+  <block type="procedures_callreturn" x="10" y="150">
+    <mutation name="answer"></mutation>
+  </block>
+</xml>

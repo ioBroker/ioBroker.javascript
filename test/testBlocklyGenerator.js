@@ -13,7 +13,8 @@ const { join } = require('node:path');
 const { existsSync, readdirSync } = require('node:fs');
 const { pathToFileURL } = require('node:url');
 const { createBlocklyEnvironment, BLOCKLY_DIR, MODULES_DIR, BLOCK_ORDER } = require('./blockly/env');
-const { buildSnapshots, readSnapshots } = require('./blockly/snapshot');
+const { buildSnapshots, readSnapshots, PLUGIN_BLOCKS } = require('./blockly/snapshot');
+const { buildCorpus } = require('./blockly/corpus');
 
 /**
  * One snapshot per block source file, plus the hand-written fixtures. Listed explicitly so that a
@@ -165,6 +166,34 @@ describe('Blockly code generation', function () {
 
     it('generates code for every block without errors', () => {
         assert.deepEqual(generated.failures, [], 'blocks failed to generate');
+    });
+
+    it('saves and reloads every block without errors', () => {
+        // The code generation snapshots cannot see a broken save: the editor saves with
+        // `workspaceToCode` PLUS `Xml.workspaceToDom` (the workspace XML travels as a base64
+        // comment behind the code), and a block whose serialization throws suppresses the save
+        // button without any visible error. The timer blocks' pseudo variable models broke
+        // exactly there under Blockly 13 (#2349). So: save every block the way the editor does,
+        // load the saved XML again, and insist on the same code.
+        const failures = [];
+        for (const entry of buildCorpus(env)) {
+            if (
+                entry.group !== 'fixtures' &&
+                (PLUGIN_BLOCKS.has(entry.type) || !env.Blockly.JavaScript.forBlock[entry.type])
+            ) {
+                continue; // not loaded by this harness, or mutator/UI-only - see snapshot.js
+            }
+            try {
+                const saved = env.save(entry.xml);
+                const reloaded = env.save(saved.xml);
+                if (reloaded.code !== saved.code) {
+                    failures.push(`${entry.type}: reloading its saved XML changed the code`);
+                }
+            } catch (e) {
+                failures.push(`${entry.type}: ${e.message}`);
+            }
+        }
+        assert.deepEqual(failures, [], 'blocks failed to save the way the editor does');
     });
 
     it('has golden files committed', () => {
