@@ -899,9 +899,22 @@ export abstract class GenericBlock<
 
     static getReplacesInText(context: RuleContext): string {
         let value = '';
-        if ((context.trigger as RuleBlockConfigTriggerState)?.oidType) {
+        // the enum trigger hands over the same event object as a state subscription, so the same
+        // substitutions apply - it just has no single oid to recognise it by
+        if ((context.trigger as RuleBlockConfigTriggerState)?.oidType || context.trigger?.id === 'TriggerEnumMembers') {
             value =
                 '.replace(/%s/g, obj.state.val).replace(/%id/g, obj.id).replace(/%name/g, obj.common && obj.common.name).replace(/%old/g, obj.oldState.val)';
+        } else if (context.trigger?.id === 'TriggerMessage') {
+            // the payload of a message may be an object, and "[object Object]" is not what %s is for
+            value = '.replace(/%s/g, typeof data === "object" ? JSON.stringify(data) : data)';
+        } else if (context.trigger?.id === 'TriggerFile') {
+            // %s is the name of the changed file, %id the object it belongs to - as with a state
+            value = '.replace(/%s/g, fileName).replace(/%id/g, fileId)';
+        } else if (context.trigger?.id === 'TriggerObject') {
+            // there is no value behind an object change, so %s is what changed
+            value = '.replace(/%s/g, id).replace(/%id/g, id)';
+        } else if (context.trigger?.id === 'TriggerLog') {
+            value = '.replace(/%s/g, info.message).replace(/%id/g, info.from)';
         } else if (context.conditionsStates.length) {
             value = `.replace(/%s/g, ${context.conditionsStates[0].name}).replace(/%id/g, "${context.conditionsStates[0].id}")`;
         }

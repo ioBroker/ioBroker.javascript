@@ -1,11 +1,22 @@
 import TriggerScriptSave from '../Blocks/TriggerScriptSave';
 import TriggerSchedule from '../Blocks/TriggerSchedule';
 import TriggerState from '../Blocks/TriggerState';
+import TriggerMessage from '../Blocks/TriggerMessage';
+import TriggerFile from '../Blocks/TriggerFile';
+import TriggerObject from '../Blocks/TriggerObject';
+import TriggerLog from '../Blocks/TriggerLog';
+import TriggerOnStop from '../Blocks/TriggerOnStop';
+import TriggerEnumMembers from '../Blocks/TriggerEnumMembers';
 import ConditionState from '../Blocks/ConditionState';
 import ConditionTime from '../Blocks/ConditionTime';
 import ConditionAstronomical from '../Blocks/ConditionAstronomical';
 import ConditionWeekday from '../Blocks/ConditionWeekday';
+import ConditionFunction from '../Blocks/ConditionFunction';
 import ActionSendTo from '../Blocks/ActionSendTo';
+import ActionNotification from '../Blocks/ActionNotification';
+import ActionMessageTo from '../Blocks/ActionMessageTo';
+import ActionSetStateChanged from '../Blocks/ActionSetStateChanged';
+import ActionToggleState from '../Blocks/ActionToggleState';
 import ActionSetState from '../Blocks/ActionSetState';
 import ActionExec from '../Blocks/ActionExec';
 import ActionHTTPCall from '../Blocks/ActionHTTPCall';
@@ -20,15 +31,26 @@ const StandardBlocks: (typeof GenericBlock<any>)[] = [
     TriggerSchedule,
     TriggerScriptSave,
     TriggerState,
+    TriggerMessage,
+    TriggerFile,
+    TriggerObject,
+    TriggerLog,
+    TriggerOnStop,
+    TriggerEnumMembers,
     ConditionState,
     ConditionTime,
     ConditionAstronomical,
     ConditionWeekday,
+    ConditionFunction,
     ActionSetState,
+    ActionSetStateChanged,
+    ActionToggleState,
     ActionSendTo,
+    ActionMessageTo,
     ActionExec,
     ActionHTTPCall,
     ActionPrintText,
+    ActionNotification,
     ActionPause,
     ActionFunction,
     ActionSetStateDelayed,
