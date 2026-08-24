@@ -550,5 +550,8 @@
     "Set state if changed": "仅在变化时设置状态",
     "Writes a state only if its value differs from the current one": "仅当值与当前值不同时才写入状态",
     "Use this instead of \"Set state action\" for rules that run often: an unchanged value is not written at all, so nothing subscribed to that state is woken up for nothing.": "对于频繁运行的规则，请用它代替 \"Set state action\"：值未变化时根本不会写入，订阅该状态的一切也就不会被白白唤醒。",
-    "only if changed": "仅在变化时"
+    "only if changed": "仅在变化时",
+    "A block failed while generating the script, so the changes cannot be saved": "生成脚本时某个积木块出错，更改无法保存",
+    "Blockly error": "Blockly 错误",
+    "Export error": "导出错误"
 }

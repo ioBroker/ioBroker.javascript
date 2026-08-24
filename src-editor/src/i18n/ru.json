@@ -550,5 +550,8 @@
     "Set state if changed": "Задать состояние только при изменении",
     "Writes a state only if its value differs from the current one": "Записывает состояние, только если его значение отличается от текущего",
     "Use this instead of \"Set state action\" for rules that run often: an unchanged value is not written at all, so nothing subscribed to that state is woken up for nothing.": "Используйте вместо \"Set state action\" в правилах, которые выполняются часто: неизменённое значение вообще не записывается, поэтому ничто, подписанное на это состояние, не будится зря.",
-    "only if changed": "только при изменении"
+    "only if changed": "только при изменении",
+    "A block failed while generating the script, so the changes cannot be saved": "Один из блоков вызвал ошибку при генерации скрипта, изменения не могут быть сохранены",
+    "Blockly error": "Ошибка Blockly",
+    "Export error": "Ошибка экспорта"
 }

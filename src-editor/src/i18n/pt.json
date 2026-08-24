@@ -550,5 +550,8 @@
     "Set state if changed": "Definir estado apenas se mudar",
     "Writes a state only if its value differs from the current one": "Grava um estado apenas se o valor for diferente do atual",
     "Use this instead of \"Set state action\" for rules that run often: an unchanged value is not written at all, so nothing subscribed to that state is woken up for nothing.": "Use isto em vez de \"Set state action\" para regras que rodam com frequência: um valor inalterado não é gravado, então nada inscrito nesse estado é acordado à toa.",
-    "only if changed": "apenas se mudar"
+    "only if changed": "apenas se mudar",
+    "A block failed while generating the script, so the changes cannot be saved": "Um bloco falhou ao gerar o script, as alterações não podem ser salvas",
+    "Blockly error": "Erro do Blockly",
+    "Export error": "Erro de exportação"
 }
