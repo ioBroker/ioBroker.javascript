@@ -46,6 +46,23 @@ function createObjects() {
 }
 
 describe('Test Secrets (global SECRETS object)', function () {
+    describe('module graph', function () {
+        it('does not pull js-controller into the test process', function () {
+            // The package index of `@iobroker/adapter-core` looks for js-controller while it is
+            // being loaded and terminates the process with exit code 10 when it is missing (see
+            // its `utils.js`). Mocha loads every test file before the integration tests install a
+            // controller, so a unit test that reaches the index kills the whole run on a clean
+            // machine - which is invisible on a developer box that has ioBroker installed.
+            // `@iobroker/adapter-core/credentials` is the entry point without that side effect.
+            const loaded = Object.keys(require.cache).map(file => file.split('\\').join('/'));
+            const forbidden = loaded
+                .filter(file => /@iobroker\/adapter-core\/build\/[a-z]+\/(index|utils)\.js$/.test(file))
+                .map(file => file.substring(file.indexOf('@iobroker')));
+
+            assert.deepEqual(forbidden, []);
+        });
+    });
+
     describe('helpers', function () {
         it('detects credential IDs', function () {
             assert.equal(isSecretId('system.credentials.CameraPassword'), true);

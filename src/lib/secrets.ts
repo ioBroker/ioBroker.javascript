@@ -15,7 +15,12 @@
  * The cache is kept up to date while the adapter is running, so editing a credential in the admin
  * UI takes effect immediately - without restarting the adapter or the scripts.
  */
-import { Credentials } from '@iobroker/adapter-core';
+// Imported from its own entry point on purpose: the package index of `@iobroker/adapter-core`
+// looks for js-controller while it is being loaded and terminates the process with exit code 10
+// when it is missing. This module is required by the unit tests, which run without a controller,
+// so it must stay clear of that side effect. `@iobroker/adapter-core/credentials` is free of it -
+// it is written to be usable in browser builds as well.
+import * as Credentials from '@iobroker/adapter-core/credentials';
 
 /** Prefix of all credential object IDs */
 export const SECRETS_PREFIX = 'system.credentials.';

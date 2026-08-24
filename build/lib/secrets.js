@@ -1,4 +1,37 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SecretsManager = exports.SECRETS_PREFIX = void 0;
 exports.isSecretId = isSecretId;
@@ -20,7 +53,12 @@ exports.getSecretName = getSecretName;
  * The cache is kept up to date while the adapter is running, so editing a credential in the admin
  * UI takes effect immediately - without restarting the adapter or the scripts.
  */
-const adapter_core_1 = require("@iobroker/adapter-core");
+// Imported from its own entry point on purpose: the package index of `@iobroker/adapter-core`
+// looks for js-controller while it is being loaded and terminates the process with exit code 10
+// when it is missing. This module is required by the unit tests, which run without a controller,
+// so it must stay clear of that side effect. `@iobroker/adapter-core/credentials` is free of it -
+// it is written to be usable in browser builds as well.
+const Credentials = __importStar(require("@iobroker/adapter-core/credentials"));
 /** Prefix of all credential object IDs */
 exports.SECRETS_PREFIX = 'system.credentials.';
 /**
@@ -95,13 +133,13 @@ class SecretsManager {
         if (!enabled) {
             return;
         }
-        if (!adapter_core_1.Credentials?.listCredentials) {
+        if (!Credentials?.listCredentials) {
             this.adapter.log.warn('Cannot read the credentials for "SECRETS": the credentials API is only available with js-controller 7.2 or newer');
             this.enabled = false;
             return;
         }
         try {
-            const list = await adapter_core_1.Credentials.listCredentials(this.adapter);
+            const list = await Credentials.listCredentials(this.adapter);
             for (const entry of list) {
                 await this.update(entry.id);
             }
@@ -123,7 +161,7 @@ class SecretsManager {
         }
         const name = getSecretName(id);
         try {
-            const credentials = await adapter_core_1.Credentials.getCredentials(this.adapter, id);
+            const credentials = await Credentials.getCredentials(this.adapter, id);
             this.cache.set(name, Object.freeze({ ...credentials.values }));
         }
         catch (e) {
