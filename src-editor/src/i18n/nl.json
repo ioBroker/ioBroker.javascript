@@ -550,5 +550,8 @@
     "Set state if changed": "Status alleen bij wijziging zetten",
     "Writes a state only if its value differs from the current one": "Schrijft een status alleen als de waarde afwijkt van de huidige",
     "Use this instead of \"Set state action\" for rules that run often: an unchanged value is not written at all, so nothing subscribed to that state is woken up for nothing.": "Gebruik dit in plaats van \"Set state action\" voor regels die vaak lopen: een ongewijzigde waarde wordt helemaal niet geschreven, dus niets dat op die status geabonneerd is wordt voor niets gewekt.",
-    "only if changed": "alleen bij wijziging"
+    "only if changed": "alleen bij wijziging",
+    "A block failed while generating the script, so the changes cannot be saved": "Een blok veroorzaakte een fout bij het genereren van het script, de wijzigingen kunnen niet worden opgeslagen",
+    "Blockly error": "Blockly-fout",
+    "Export error": "Exportfout"
 }

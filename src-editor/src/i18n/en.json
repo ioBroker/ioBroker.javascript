@@ -558,5 +558,8 @@
     "Set state if changed": "Set state if changed",
     "Writes a state only if its value differs from the current one": "Writes a state only if its value differs from the current one",
     "Use this instead of \"Set state action\" for rules that run often: an unchanged value is not written at all, so nothing subscribed to that state is woken up for nothing.": "Use this instead of \"Set state action\" for rules that run often: an unchanged value is not written at all, so nothing subscribed to that state is woken up for nothing.",
-    "only if changed": "only if changed"
+    "only if changed": "only if changed",
+    "A block failed while generating the script, so the changes cannot be saved": "A block failed while generating the script, so the changes cannot be saved",
+    "Blockly error": "Blockly error",
+    "Export error": "Export error"
 }

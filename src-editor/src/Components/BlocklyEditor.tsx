@@ -78,6 +78,9 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
     private originalCode: string;
     private someSelected: string[] | null = null;
     private changeTimer: ReturnType<typeof setTimeout> | null = null;
+
+    /** Message of the last change-handler error, so a broken script warns once and not on every further change */
+    private lastChangeError = '';
     private someSelectedTime: number = 0;
     private ignoreChanges: boolean = false;
     private blinkBlock: any;
@@ -647,22 +650,32 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
             return;
         }
         let exportText: string;
-        const selectedBlocks: BlockSvg | null = BlocklyEditor.Blockly.getSelected() as BlockSvg | null;
-        if (selectedBlocks) {
-            const xmlBlock: Element = BlocklyEditor.Blockly.Xml.blockToDom(selectedBlocks) as Element;
-            // @1ts-expect-error fix later. TODO!!!!
-            // if (BlocklyEditor.Blockly.dragMode_ !== BlocklyEditor.Blockly.DRAG_FREE) {
-            //    BlocklyEditor.Blockly.Xml.deleteNext(xmlBlock);
-            // }
-            // Encode start position in XML.
-            const xy = selectedBlocks.getRelativeToSurfaceXY();
-            xmlBlock.setAttribute('x', (selectedBlocks.RTL ? -xy.x : xy.x).toString());
-            xmlBlock.setAttribute('y', xy.y.toString());
+        try {
+            const selectedBlocks: BlockSvg | null = BlocklyEditor.Blockly.getSelected() as BlockSvg | null;
+            if (selectedBlocks) {
+                const xmlBlock: Element = BlocklyEditor.Blockly.Xml.blockToDom(selectedBlocks) as Element;
+                // @1ts-expect-error fix later. TODO!!!!
+                // if (BlocklyEditor.Blockly.dragMode_ !== BlocklyEditor.Blockly.DRAG_FREE) {
+                //    BlocklyEditor.Blockly.Xml.deleteNext(xmlBlock);
+                // }
+                // Encode start position in XML.
+                const xy = selectedBlocks.getRelativeToSurfaceXY();
+                xmlBlock.setAttribute('x', (selectedBlocks.RTL ? -xy.x : xy.x).toString());
+                xmlBlock.setAttribute('y', xy.y.toString());
 
-            exportText = BlocklyEditor.Blockly.Xml.domToPrettyText(xmlBlock);
-        } else {
-            const dom = BlocklyEditor.Blockly.Xml.workspaceToDom(this.blocklyWorkspace);
-            exportText = BlocklyEditor.Blockly.Xml.domToPrettyText(dom);
+                exportText = BlocklyEditor.Blockly.Xml.domToPrettyText(xmlBlock);
+            } else {
+                const dom = BlocklyEditor.Blockly.Xml.workspaceToDom(this.blocklyWorkspace);
+                exportText = BlocklyEditor.Blockly.Xml.domToPrettyText(dom);
+            }
+        } catch (e) {
+            // Same silent-death class as the change handler: a block that cannot be serialized
+            // made the export menu item do nothing at all.
+            console.error(`Cannot export the blocks: ${(e as Error).stack || (e as Error).toString()}`);
+            this.setState({
+                error: { text: (e as Error).toString(), title: I18n.t('Export error') },
+            });
+            return;
         }
         this.setState({ exportText });
     }
@@ -772,9 +785,28 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
     }
 
     onBlocklyChanged(): void {
-        this.blocklyRemoveOrphanedShadows();
-        this.setState({ changed: true });
-        this.onChange();
+        try {
+            this.blocklyRemoveOrphanedShadows();
+            this.setState({ changed: true });
+            this.onChange();
+            this.lastChangeError = '';
+        } catch (e) {
+            // A throwing block used to kill this handler silently: the editor never learned about
+            // the change, the save button never appeared, and only the browser console said why
+            // (#2349, #1958). Surface the reason instead - once per distinct error, not again on
+            // every further change while the script stays broken.
+            console.error(`Cannot generate the script: ${(e as Error).stack || (e as Error).toString()}`);
+            const text = (e as Error).message || String(e);
+            if (this.lastChangeError !== text) {
+                this.lastChangeError = text;
+                this.setState({
+                    error: {
+                        text: `${I18n.t('A block failed while generating the script, so the changes cannot be saved')}: ${text}`,
+                        title: I18n.t('Blockly error'),
+                    },
+                });
+            }
+        }
     }
 
     async componentDidUpdate(): Promise<void> {
