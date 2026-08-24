@@ -1,1 +1,0 @@
-import{n as e,t}from"./assets/virtual_mf-REMOTE_ENTRY_ID___mfe_internal__ConfigCustomJavascriptSet__customComponents_js-DVNwFcUr.js";export{t as get,e as init};

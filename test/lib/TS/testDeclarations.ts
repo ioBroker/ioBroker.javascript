@@ -72,3 +72,14 @@ onFile('vis.0', 'main/*', Math.random() > 0, (id, fileName, size, data, mimeType
     assertTrue<Equals<typeof data, string | Buffer | undefined>>();
     assertTrue<Equals<typeof mimeType, string | undefined>>();
 });
+
+// Central credential store.
+// The adapter generates an exact type for every credential that exists, so only the fallback for
+// unknown names can be checked here - there the fields are optional, because a credential has
+// either a "key" or a "login"/"password".
+const cameraPassword = SECRETS.CameraPassword.key;
+assertTrue<Equals<typeof cameraPassword, string | undefined>>();
+const mailLogin = SECRETS['My Mail Account'].login;
+assertTrue<Equals<typeof mailLogin, string | undefined>>();
+const anyField = SECRETS.CameraPassword.somethingElse;
+assertTrue<Equals<typeof anyField, string | number | boolean | undefined>>();

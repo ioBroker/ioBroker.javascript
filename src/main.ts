@@ -54,6 +54,7 @@ import ProtectFs from './lib/protectFs';
 import { setLanguage, getLanguage } from './lib/words';
 import { sandBox, removeFromDispatchIndex } from './lib/sandbox';
 import { requestModuleNameByUrl } from './lib/nodeModulesManagement';
+import { SecretsManager, isSecretId } from './lib/secrets';
 import {
     resolveProviderCredentials,
     resolveTestCredentials,
@@ -421,6 +422,12 @@ class JavaScript extends Adapter {
     /** Unsubscribe callbacks for the AI credential subscriptions (manager mode). */
     private aiCredentialUnsubscribers: (() => Promise<void>)[] = [];
 
+    /**
+     * Decrypted credentials of the central ioBroker credential store (`system.credentials.*`),
+     * exposed to the scripts as the global `SECRETS` object. Kept up to date by `onObjectChange`.
+     */
+    private readonly secretsManager: SecretsManager = new SecretsManager(this);
+
     private globalScript = '';
     /** Generated declarations for global TypeScripts */
     private globalDeclarations = '';
@@ -588,6 +595,7 @@ class JavaScript extends Adapter {
             adapter: this,
             logError: this.logError.bind(this),
             allowSelfSignedCerts: false,
+            secrets: this.secretsManager.secrets,
         };
 
         this.tsServer = new Server(tsCompilerOptions, this.tsLog);
@@ -621,6 +629,16 @@ class JavaScript extends Adapter {
             } else {
                 this._enums.delete(id);
             }
+        }
+
+        // Keep the decrypted credentials (global `SECRETS`) in sync with the central credential store
+        if (isSecretId(id)) {
+            if (obj) {
+                await this.secretsManager.update(id);
+            } else {
+                this.secretsManager.remove(id);
+            }
+            this.updateSecretsDeclarations();
         }
 
         // IO-9: Invalidate sendTo instance-cache when adapter instances change
@@ -912,6 +930,7 @@ class JavaScript extends Adapter {
                 this.setStateCountCheckInterval = null;
             }
             await this.unsubscribeAiCredentials();
+            this.secretsManager.destroy();
             await this.stopAllScripts();
         } catch (err: unknown) {
             this.log.error(`Error during unload: ${(err as Error).message}`);
@@ -1760,6 +1779,24 @@ class JavaScript extends Adapter {
                 break;
             }
 
+            case 'getSecrets': {
+                // Reports which credentials exist and which fields they have, so the instance
+                // settings and the Blockly editor can show the available `SECRETS.<name>.<field>`
+                // expressions. The decrypted values never leave the backend.
+                if (obj.callback) {
+                    this.sendTo(
+                        obj.from,
+                        obj.command,
+                        {
+                            enabled: this.config.enableSecrets !== false,
+                            secrets: this.secretsManager.getStructure(),
+                        },
+                        obj.callback,
+                    );
+                }
+                break;
+            }
+
             case 'prettier': {
                 // Format the code with Prettier
                 if (obj.message && typeof obj.message.code === 'string') {
@@ -1979,6 +2016,11 @@ class JavaScript extends Adapter {
         // central credential store are picked up live (the keys are cached for the AI sendTo handlers).
         await this.subscribeAiCredentials();
 
+        // Read the central credential store, so the scripts can use `SECRETS.<name>.<field>`.
+        // Later changes are picked up in `onObjectChange`.
+        await this.secretsManager.load(this.config.enableSecrets !== false);
+        this.updateSecretsDeclarations();
+
         const doc = await this.getObjectViewAsync('script', 'javascript', {});
         if (doc?.rows?.length) {
             // sort global scripts if configured
@@ -2173,6 +2215,24 @@ class JavaScript extends Adapter {
                 }
             }
         }, 60_000).unref();
+    }
+
+    /**
+     * Publishes the names of the existing credentials as ambient declarations, so the editor can
+     * suggest them after typing `SECRETS.` and the TypeScript compiler knows them.
+     */
+    private updateSecretsDeclarations(): void {
+        if (!tsAmbient) {
+            return;
+        }
+        const declarationPath = 'secrets.d.ts';
+        const declarations = this.secretsManager.getDeclarations();
+        if (tsAmbient[declarationPath] === declarations) {
+            return;
+        }
+        tsAmbient[declarationPath] = declarations;
+        this.tsServer.provideAmbientDeclarations({ [declarationPath]: declarations });
+        jsDeclarationServer.provideAmbientDeclarations({ [declarationPath]: declarations });
     }
 
     private loadTypeScriptDeclarations(): void {

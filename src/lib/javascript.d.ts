@@ -2455,6 +2455,36 @@ declare global {
             headers: Record<string, string>;
             responseTime?: number;
         }
+
+        /**
+         * All entries of the central ioBroker credential store, keyed by their name.
+         *
+         * The JavaScript adapter augments this interface with the names of the credentials that
+         * actually exist, so the editor can suggest them.
+         */
+        interface Secrets {
+            [name: string]: Secret;
+        }
+
+        /**
+         * One entry of the central ioBroker credential store (`system.credentials.<name>`).
+         * All encrypted fields are already decrypted.
+         *
+         * A credential has one of two forms: a single `key` (API keys, passwords) or a
+         * `login`/`password` pair. Which of them a credential really has is declared for every
+         * existing credential by the JavaScript adapter, so this type is only the fallback for
+         * names the adapter does not know.
+         */
+        interface Secret {
+            /** The key of a credential with the "key" form, e.g. an API key or a password */
+            key?: string;
+            /** The user name of a credential with the "login" form */
+            login?: string;
+            /** The password of a credential with the "login" form */
+            password?: string;
+            /** Any further field of the credential */
+            [field: string]: string | number | boolean | undefined;
+        }
     } // end namespace iobJS
 
     // =======================================================
@@ -2479,6 +2509,24 @@ declare global {
      * Status of verbose mode
      */
     const verbose: boolean;
+
+    /**
+     * Decrypted credentials of the central ioBroker credential store.
+     *
+     * The credentials are managed in the admin UI under "Basic settings" -> "Credentials".
+     * A credential either holds a single `key` (e.g. an API key) or a `login`/`password` pair.
+     * The values are always up to date - editing a credential in the admin UI takes effect
+     * immediately, without restarting the script.
+     *
+     * ```js
+     * const password = SECRETS.CameraPassword.key;
+     * const user = SECRETS.MyMailAccount.login;
+     * ```
+     *
+     * `undefined` is returned if no credential with this name exists or if the access to the
+     * credentials was disabled in the instance settings.
+     */
+    const SECRETS: iobJS.Secrets;
 
     /**
      * Queries all states with the given selector

@@ -7,6 +7,7 @@ import type { Scheduler, SchedulerRule } from './lib/scheduler';
 import type { EventObj } from './lib/eventObj';
 import type { PatternEventCompareFunction } from './lib/patternCompareFunctions';
 import type { AstroEvent } from './lib/consts';
+import type { Secrets } from './lib/secrets';
 
 /** ECMAScript version the user scripts are compiled for */
 export type TsTarget = 'es2018' | 'es2019' | 'es2020' | 'es2021' | 'es2022' | 'es2023' | 'es2024' | 'es2025' | 'esnext';
@@ -23,6 +24,8 @@ export interface JavaScriptAdapterConfig {
     enableSetObject: boolean;
     enableSendToHost: boolean;
     enableExec: boolean;
+    /** Scripts may read the central ioBroker credential store via the global `SECRETS` object */
+    enableSecrets?: boolean;
     libraries: string;
     libraryTypings: string;
     subscribe: boolean;
@@ -206,6 +209,8 @@ export type SandboxType = {
     scriptName: string;
     instance: number;
     defaultDataDir: string;
+    /** Decrypted credentials of the central ioBroker credential store, e.g. `SECRETS.CameraPassword.key` */
+    SECRETS: Secrets;
     verbose: boolean | undefined;
     exports: Record<string, any>;
     require: (md: string) => any;
@@ -799,4 +804,6 @@ export interface JavascriptContext {
     logWithLineInfo: (message: string) => void;
     schedules?: string[];
     allowSelfSignedCerts: boolean;
+    /** Decrypted credentials of the central ioBroker credential store, exposed to the scripts as `SECRETS` */
+    secrets: Secrets;
 }

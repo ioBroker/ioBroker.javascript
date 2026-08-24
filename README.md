@@ -27,6 +27,12 @@ Executes Javascript, Typescript Scripts.
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) The credentials of the central storage (Basic settings -> Credentials) are available in the scripts as `SECRETS`, e.g. `SECRETS.CameraPassword.key`. The values are decrypted, read-only and are updated live when a credential is edited in the admin UI
+* (@GermanBluefox) The editor knows the credentials that exist: after `SECRETS.` it offers their names, and after the next dot exactly the fields the selected credential has
+* (@GermanBluefox) Added the Blockly block "credential", which reads one field of the central credential storage
+* (@GermanBluefox) The instance settings list the available credentials with their fields and the expression a script uses for them
+
 ### 10.1.0 (2026-08-16)
 * (@GermanBluefox) Turned `strict` off again for the scripts, as TypeScript 6 enables it by default
 * (@GermanBluefox) Added the tab "TypeScript" to the settings, where the compiler options for the scripts can be configured
