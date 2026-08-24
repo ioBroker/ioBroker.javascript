@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 9.3.0 (2026-06-17)
+* (@GermanBluefox) Implemented the support for credentials manager in the configuration
+
 ## 9.2.4 (2026-06-08)
 * (arteck) Performance optimizations part 2
 * (arteck) fix filter in tab scripts

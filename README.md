@@ -27,7 +27,7 @@ Executes Javascript, Typescript Scripts.
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 10.1.2 (2026-08-24)
 * (@GermanBluefox) Added new rule blocks
 * (@krobipd) Fixed saving of Blockly scripts under Blockly 13: a script containing a named timeout, interval or schedule could not be saved anymore - the save button did not appear (#2349)
 * (@krobipd) Fixed saving of Blockly scripts containing a function with a return value and no statements (#1958)
@@ -87,9 +87,6 @@ Executes Javascript, Typescript Scripts.
 
 ### 9.3.1 (2026-06-18)
 * (@GermanBluefox) Added the possibility to execute one-way scripts without saving it
-
-### 9.3.0 (2026-06-17)
-* (@GermanBluefox) Implemented the support for credentials manager in the configuration
 
 ## License
 The MIT License (MIT)
