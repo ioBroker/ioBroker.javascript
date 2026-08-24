@@ -16,6 +16,8 @@
         - [Create state](#create-state)
         - [Get value of state](#get-value-of-state)
         - [Get Object ID](#get-object-id)
+        - [State exists](#state-exists)
+        - [Credential](#credential)
     - [Actions Blocks](#actions-blocks)
         - [Exec - execute](#exec---execute)
         - [request URL](#request-url)
@@ -792,6 +794,33 @@ if ((await existsStateAsync('zigbee.0.187a3efffee9e4e8.load_power'))) {
 ```
 
 **Note:** With the adapter setting *"Do not subscribe to all states on start"* enabled, `existsState` cannot be evaluated synchronously. The block emits the async form (`await existsStateAsync(...)`), so it works correctly in both modes.
+
+### Credential
+
+Reads one field of the central credential storage, which is managed in the admin under
+**Basic settings** -> **Credentials**. The secret fields are stored encrypted; the block hands the
+decrypted value to the script, so a password never has to be written into a script.
+
+The first dropdown lists the credentials that exist, the second one the fields of the selected
+credential — a credential has either a single **key** (API keys, passwords) or a **login** and a
+**password**. If the instance is not running while the editor is open, the credential list is
+unknown and the name is typed in instead.
+
+```
+Send to telegram [credential [CameraPassword] field [key]]
+```
+
+The generated JavaScript is:
+
+```javascript
+sendTo('telegram.0', SECRETS['CameraPassword']?.key);
+```
+
+The value is always current — editing a credential in the admin takes effect immediately, without
+restarting the script. A credential that was deleted yields `undefined` instead of an error.
+
+**Note:** The instance setting *"Allow scripts to read the credentials"* switches this off. `SECRETS`
+is then empty and the block returns `undefined`.
 
 ## Actions Blocks
 

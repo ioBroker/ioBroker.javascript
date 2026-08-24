@@ -116,6 +116,8 @@ declare global {
             getObject: (id: string, cb: (err: Error | null | undefined, obj?: ioBroker.Object | null) => void) => void;
             getState: (id: string, cb: (err: Error | null | undefined, state?: ioBroker.State | null) => void) => void;
             instances: string[];
+            /** Credentials of the central store: name and the fields each of them has - never a value */
+            secrets: { name: string; fields: string[] }[];
             selectIdDialog: (
                 initValue: string | null,
                 type: ('state' | 'all' | 'meta' | 'script' | 'enum' | null) | ((selected: string) => void),
@@ -442,6 +444,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                     .then(state => cb?.(null, state))
                     .catch(err => cb?.(err)),
             instances: [],
+            secrets: [],
             selectIdDialog: (
                 initValue: string | null,
                 type: ('state' | 'all' | 'meta' | 'script' | 'enum' | null) | ((selected: string) => void),
@@ -542,6 +545,31 @@ class Editor extends React.Component<EditorProps, EditorState> {
     componentDidMount(): void {
         window.addEventListener('beforeunload', this.onBrowserClose, false);
         void this.props.socket.subscribeObject('system.adapter.*', Editor.onInstanceChanged);
+        void this.loadSecrets();
+    }
+
+    /**
+     * Reads which credentials the central store holds, so the Blockly "secret" block can offer them.
+     * Only the names and the field names are transferred - the decrypted values stay in the adapter.
+     *
+     * @param runningInstances The javascript instances that are alive; defaults to the known ones
+     */
+    async loadSecrets(runningInstances?: Record<string, boolean>): Promise<void> {
+        runningInstances ||= this.state.runningInstances;
+        const instance = Object.keys(runningInstances).find(id => runningInstances[id]);
+        if (!instance) {
+            return;
+        }
+        try {
+            const result: { secrets?: { name: string; fields: string[] }[] } = await this.props.socket.sendTo(
+                instance.replace('system.adapter.', ''),
+                'getSecrets',
+                null,
+            );
+            window.main.secrets = result?.secrets || [];
+        } catch (e) {
+            console.error(`Cannot read the credentials: ${e as Error}`);
+        }
     }
 
     componentWillUnmount(): void {
@@ -650,6 +678,8 @@ class Editor extends React.Component<EditorProps, EditorState> {
         if (JSON.stringify(nextProps.runningInstances) !== JSON.stringify(this.state.runningInstances)) {
             _changed = true;
             newState.runningInstances = nextProps.runningInstances;
+            // A (re)started instance may know other credentials than the one we asked before
+            void this.loadSecrets(nextProps.runningInstances);
         }
 
         if (this.state.menuOpened !== nextProps.menuOpened) {

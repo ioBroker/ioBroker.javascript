@@ -160,6 +160,67 @@ export function install(): void {
         return [block.getFieldValue('VAR'), Order.ATOMIC];
     };
 
+    // --- secret (central credential store) -------------------------------------
+    Blockly.System.blocks['secret'] = '<block type="secret"></block>';
+
+    /** The credentials the adapter reported, or an empty list while none are known */
+    const secretList = (): { name: string; fields: string[] }[] => window.main?.secrets || [];
+
+    /** The credential names for the dropdown, or a placeholder if the store is empty */
+    const secretNameOptions = (): [string, string][] =>
+        secretList().length
+            ? secretList().map(secret => [secret.name, secret.name] as [string, string])
+            : [[translate('secret_no_secrets'), '']];
+
+    /**
+     * The fields of the credential the block currently points at. Falls back to the fields of the
+     * two credential forms while the list is not loaded or the name is unknown, so a saved block
+     * keeps its attribute instead of being reset to the first option.
+     */
+    const secretFieldOptions = function (this: FieldDropdown): [string, string][] {
+        const name = this.getSourceBlock()?.getFieldValue('NAME');
+        const fields = secretList().find(secret => secret.name === name)?.fields;
+
+        return (fields?.length ? fields : ['key', 'login', 'password']).map(
+            field => [field, field] as [string, string],
+        );
+    };
+
+    Blocks['secret'] = {
+        init: function (this: Block): void {
+            const input = this.appendDummyInput('SECRET').appendField(translate('secret'));
+
+            // Without a running instance the credentials are unknown - then the name is typed in,
+            // the same fallback `sendto_custom` uses for the instance list
+            if (secretList().length) {
+                input.appendField(new FieldDropdown(secretNameOptions), 'NAME');
+            } else {
+                input.appendField(new FieldTextInput('CameraPassword'), 'NAME');
+            }
+
+            input.appendField(translate('secret_attr')).appendField(new FieldDropdown(secretFieldOptions), 'ATTR');
+
+            this.setInputsInline(true);
+            this.setOutput(true);
+
+            this.setColour(Blockly.System.HUE);
+
+            this.setTooltip(translate('secret_tooltip'));
+            this.setHelpUrl(getHelp('secret_help'));
+        },
+    };
+
+    javascriptGenerator.forBlock['secret'] = function (block: Block): [string, Order] {
+        const name = block.getFieldValue('NAME');
+        const attr = block.getFieldValue('ATTR');
+        // A credential field is normally `key`, `login` or `password`, but the store allows any name
+        const access = /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(attr) ? `.${attr}` : `[${quote(attr)}]`;
+
+        // Optional chaining, so a deleted credential yields undefined instead of throwing.
+        // A member chain never needs parentheses around it, hence ATOMIC - the same as `get_object`.
+        return [`SECRETS[${quote(name)}]?${access}`, Order.ATOMIC];
+    };
+
     // --- Debug output --------------------------------------------------
     Blockly.System.blocks['debug'] =
         '<block type="debug">' +

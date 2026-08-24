@@ -26,5 +26,15 @@
     "sch_astro_sunsetStart": "Begin zonsondergang",
     "Next sunrise": "Volgende zonsopgang",
     "Next sunset": "Volgende zonsondergang",
-    "Local time": "Lokale tijd"
+    "Local time": "Lokale tijd",
+    "Available credentials": "Beschikbare inloggegevens",
+    "The credentials are managed in the admin under \"Basic settings\" -> \"Credentials\". A script reads them like this:": "De inloggegevens worden in de admin beheerd onder \"Basisinstellingen\" -> \"Inloggegevens\". Een script leest ze zo:",
+    "The access to the credentials is switched off, so SECRETS is empty.": "De toegang tot de inloggegevens is uitgeschakeld, daarom is SECRETS leeg.",
+    "The instance is not running, so the credentials cannot be read.": "De instantie draait niet, daarom kunnen de inloggegevens niet worden gelezen.",
+    "Reading credentials...": "Inloggegevens worden gelezen...",
+    "No credentials defined yet.": "Er zijn nog geen inloggegevens aangemaakt.",
+    "Credential": "Inloggegevens",
+    "Field": "Veld",
+    "Usage in a script": "Gebruik in een script",
+    "Copy to clipboard": "Naar klembord kopiëren"
 }

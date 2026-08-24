@@ -26,5 +26,15 @@
     "sch_astro_sunsetStart": "Début du coucher du soleil",
     "Next sunrise": "prochain lever de soleil",
     "Next sunset": "Prochain coucher de soleil",
-    "Local time": "Heure locale"
+    "Local time": "Heure locale",
+    "Available credentials": "Identifiants disponibles",
+    "The credentials are managed in the admin under \"Basic settings\" -> \"Credentials\". A script reads them like this:": "Les identifiants sont gérés dans l'admin sous \"Paramètres de base\" -> \"Identifiants\". Un script les lit ainsi :",
+    "The access to the credentials is switched off, so SECRETS is empty.": "L'accès aux identifiants est désactivé, SECRETS est donc vide.",
+    "The instance is not running, so the credentials cannot be read.": "L'instance n'est pas en cours d'exécution, les identifiants ne peuvent donc pas être lus.",
+    "Reading credentials...": "Lecture des identifiants...",
+    "No credentials defined yet.": "Aucun identifiant n'a encore été défini.",
+    "Credential": "Identifiant",
+    "Field": "Champ",
+    "Usage in a script": "Utilisation dans un script",
+    "Copy to clipboard": "Copier dans le presse-papiers"
 }

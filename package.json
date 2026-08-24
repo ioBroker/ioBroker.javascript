@@ -1,6 +1,6 @@
 {
   "name": "iobroker.javascript",
-  "version": "10.1.0",
+  "version": "10.1.1",
   "description": "Rules Engine for ioBroker",
   "author": "bluefox <dogafox@gmail.com>",
   "contributors": [
@@ -67,7 +67,7 @@
     "@iobroker/eslint-config": "^2.3.4",
     "@iobroker/plugin-sentry": "^3.2.0",
     "@iobroker/testing": "^5.3.0",
-    "@tsconfig/node22": "^22.0.5",
+    "@tsconfig/node22": "^22.0.6",
     "@types/node-schedule": "^2.1.8",
     "@types/nodemailer": "^8.0.1",
     "@types/request": "^2.48.13",

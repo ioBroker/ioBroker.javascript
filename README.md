@@ -30,6 +30,12 @@ Executes Javascript, Typescript Scripts.
 ### **WORK IN PROGRESS**
 * (@GermanBluefox) Added new rule blocks
 
+### 10.1.1 (2026-08-24)
+* (@GermanBluefox) The credentials of the central storage (Basic settings -> Credentials) are available in the scripts as `SECRETS`, e.g. `SECRETS.CameraPassword.key`. The values are decrypted, read-only and are updated live when a credential is edited in the admin UI
+* (@GermanBluefox) The editor knows the credentials that exist: after `SECRETS.` it offers their names, and after the next dot exactly the fields the selected credential has
+* (@GermanBluefox) Added the Blockly block "credential", which reads one field of the central credential storage
+* (@GermanBluefox) The instance settings list the available credentials with their fields and the expression a script uses for them
+
 ### 10.1.0 (2026-08-16)
 * (@GermanBluefox) Turned `strict` off again for the scripts, as TypeScript 6 enables it by default
 * (@GermanBluefox) Added the tab "TypeScript" to the settings, where the compiler options for the scripts can be configured
@@ -80,12 +86,6 @@ Executes Javascript, Typescript Scripts.
 
 ### 9.3.0 (2026-06-17)
 * (@GermanBluefox) Implemented the support for credentials manager in the configuration
-
-### 9.2.4 (2026-06-08)
-* (arteck) Performance optimizations part 2
-* (arteck) fix filter in tab scripts
-* (@GermanBluefox) Fixed a subscription leak on script stop for RegExp-notation string ids (dispatch index)
-* (@GermanBluefox) `extendObject` no longer throws into the script when the object contains non-clonable values (e.g. functions)
 
 ## License
 The MIT License (MIT)

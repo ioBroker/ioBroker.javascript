@@ -1,4 +1,10 @@
 The newest change log is in README.md
+## 9.2.4 (2026-06-08)
+* (arteck) Performance optimizations part 2
+* (arteck) fix filter in tab scripts
+* (@GermanBluefox) Fixed a subscription leak on script stop for RegExp-notation string ids (dispatch index)
+* (@GermanBluefox) `extendObject` no longer throws into the script when the object contains non-clonable values (e.g. functions)
+
 ## 9.2.3 (2026-05-27)
 * (arteck) Performance optimizations done
 * (@GermanBluefox) Added on mouse over the value of the state
