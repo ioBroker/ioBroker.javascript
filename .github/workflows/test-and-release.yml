@@ -56,6 +56,10 @@ jobs:
             - uses: actions/setup-node@v7
               with:
                   node-version: 24.x
+            # The editor's tsconfig extends the root one, which extends "@tsconfig/node22" from the
+            # root devDependencies - without a root install vite/oxc cannot resolve it and every
+            # test file fails to transform
+            - run: npm i
             # "-f" like the "npm" script does - the editor's peer dependencies do not resolve without it
             - run: npm i -f
               working-directory: src-editor
