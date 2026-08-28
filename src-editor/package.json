@@ -48,7 +48,7 @@
         "sass": "^1.103.1",
         "styled-components": "^6.5.3",
         "suncalc2": "^1.8.1",
-        "typescript": "~6.0.3",
+        "typescript": "~7.0.2",
         "vite": "^8.2.2",
         "vite-plugin-commonjs": "^0.10.4"
     },
