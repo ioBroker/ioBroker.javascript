@@ -333,9 +333,20 @@ export class FieldMultilineInput extends Blockly.Field {
                     x: constants.FIELD_BORDER_RECT_X_PADDING,
                     y: y + constants.FIELD_BORDER_RECT_Y_PADDING,
                     dy: constants.FIELD_TEXT_BASELINE,
+                    // The ioBroker comment block has a yellow background. Do
+                    // not inherit Blockly's white text colour here.
+                    // Blockly's theme stylesheet can override the normal
+                    // .blocklyText fill. Keep the persisted comment text
+                    // readable after the editor closes.
+                    fill: '#212121',
                 },
                 textGroup,
             );
+            // Set the SVG presentation property with CSS priority as well.
+            // Blockly's theme rules can mark `.blocklyText` as !important;
+            // an inline style with the same priority keeps comment text
+            // readable on the yellow comment block.
+            span.style.setProperty('fill', '#212121', 'important');
             span.appendChild(document.createTextNode(lines[i]));
             y += lineHeight;
         }
@@ -518,8 +529,18 @@ export class FieldMultilineInput extends Blockly.Field {
 
             // In RTL mode block fields and LTR input fields the left edge moves,
             // whereas the right edge is fixed.  Reposition the editor.
-            const x = block.RTL ? bBox.right - div!.offsetWidth : bBox.left;
-            const y = bBox.top;
+            let x = block.RTL ? bBox.right - div!.offsetWidth : bBox.left;
+            let y = bBox.top;
+
+            // WidgetDiv is absolutely positioned inside the Blockly injection
+            // div, while getScaledBBox() returns page coordinates. Convert the
+            // field position to the WidgetDiv parent's coordinate system.
+            const parent = div?.parentElement;
+            if (parent) {
+                const parentRect = parent.getBoundingClientRect();
+                x -= parentRect.left + window.scrollX;
+                y -= parentRect.top + window.scrollY;
+            }
 
             div!.style.left = `${x}px`;
             div!.style.top = `${y}px`;
@@ -614,17 +635,13 @@ export class FieldMultilineInput extends Blockly.Field {
      */
     // eslint-disable-next-line @typescript-eslint/naming-convention
     showEditor_(e?: Event, quietInput?: boolean): void {
-        // super.showEditor_(e, quietInput);
         this.workspace_ = (this.sourceBlock_ as BlockSvg).workspace;
-        if (
-            !quietInput &&
-            this.workspace_.options.modalInputs &&
-            (Blockly.utils.userAgent.MOBILE || Blockly.utils.userAgent.ANDROID || Blockly.utils.userAgent.IPAD)
-        ) {
-            this.showPromptEditor_();
-        } else {
-            this.showInlineEditor_(!!quietInput);
-        }
+        // This custom field has no showPromptEditor_ implementation. Calling
+        // it on mobile aborts the click handler before focus, so the keyboard
+        // never opens and the workspace can remain blocked by WidgetDiv.
+        // The inline textarea is supported by mobile browsers and keeps the
+        // editor positioned over the field.
+        this.showInlineEditor_(!!quietInput);
         this.forceRerender();
     }
 
