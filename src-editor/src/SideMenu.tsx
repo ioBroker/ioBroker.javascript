@@ -151,8 +151,8 @@ const styles: Record<string, any> = {
         transitionProperty: 'opacity',
     },
     folderIcon: {
-        width: 20,
-        height: 20,
+        width: 28,
+        height: 28,
     },
     folderIconReorder: {
         paddingTop: 4,
