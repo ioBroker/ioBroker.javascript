@@ -2168,53 +2168,78 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
             return nowDate >= dayBegin && nowDate <= dayEnd;
         },
         clearSchedule: function (schedule) {
-            if (context.scheduler?.get(schedule)) {
+            // Wizard schedules: `schedule()` returns the bare scheduler ID, `getSchedules()` returns
+            // a ScheduleName object with the ID prefixed by "schedule_". Accept both.
+            const wizardId = typeof schedule === 'string'
+                ? schedule
+                : schedule &&
+                    typeof schedule === 'object' &&
+                    schedule.type === 'schedule' &&
+                    typeof schedule.id === 'string'
+                    ? schedule.id.substring('schedule_'.length)
+                    : null;
+            if (wizardId !== null && context.scheduler?.get(wizardId)) {
                 if (sandbox.verbose) {
                     sandbox.log('clearSchedule() => wizard cleared', 'info');
                 }
-                const pos = script.wizards.indexOf(schedule);
+                const pos = script.wizards.indexOf(wizardId);
                 if (pos !== -1) {
                     script.wizards.splice(pos, 1);
                     if (sandbox.__engine.__schedules > 0) {
                         sandbox.__engine.__schedules--;
                     }
                 }
-                context.scheduler.remove(schedule);
+                else {
+                    // Schedule of another script (getSchedules(true)) => remove it from its owner too
+                    const owner = Object.keys(context.scripts).find(n => context.scripts[n].wizards?.includes(wizardId));
+                    if (owner) {
+                        context.scripts[owner].wizards.splice(context.scripts[owner].wizards.indexOf(wizardId), 1);
+                    }
+                }
+                context.scheduler.remove(wizardId);
                 return true;
             }
+            // Support both full IobSchedule objects (with nested _ioBroker) and
+            // bare _ioBroker metadata objects as returned by getSchedules()
+            const ioBrokerMeta = schedule && typeof schedule === 'object'
+                ? schedule._ioBroker || schedule
+                : undefined;
+            const cancelCronAt = (schedules, i, ownScript) => {
+                if (!mods.nodeSchedule.cancelJob(schedules[i])) {
+                    sandbox.log('Error by canceling scheduled job', 'error');
+                }
+                schedules.splice(i, 1);
+                if (ownScript && sandbox.__engine.__schedules > 0) {
+                    sandbox.__engine.__schedules--;
+                }
+                if (sandbox.verbose) {
+                    sandbox.log('clearSchedule() => cleared', 'info');
+                }
+                return true;
+            };
             for (let i = 0; i < script.schedules.length; i++) {
-                // Support both full IobSchedule objects (with nested _ioBroker) and
-                // bare _ioBroker metadata objects as returned by getSchedules()
-                const ioBrokerMeta = schedule && typeof schedule === 'object'
-                    ? schedule._ioBroker || schedule
-                    : undefined;
                 if (ioBrokerMeta?.type === 'cron') {
                     if (script.schedules[i]._ioBroker.id === ioBrokerMeta.id) {
-                        if (!mods.nodeSchedule.cancelJob(script.schedules[i])) {
-                            sandbox.log('Error by canceling scheduled job', 'error');
-                        }
-                        script.schedules.splice(i, 1);
-                        if (sandbox.__engine.__schedules > 0) {
-                            sandbox.__engine.__schedules--;
-                        }
-                        if (sandbox.verbose) {
-                            sandbox.log('clearSchedule() => cleared', 'info');
-                        }
-                        return true;
+                        return cancelCronAt(script.schedules, i, true);
                     }
                 }
                 else if (script.schedules[i] === schedule) {
-                    if (!mods.nodeSchedule.cancelJob(script.schedules[i])) {
-                        sandbox.log('Error by canceling scheduled job', 'error');
+                    return cancelCronAt(script.schedules, i, true);
+                }
+            }
+            // Not found in this script: `getSchedules(true)` returns the schedules of all scripts,
+            // and according to the documentation they must be clearable as well
+            if (ioBrokerMeta?.type === 'cron' && ioBrokerMeta.id) {
+                for (const name of Object.keys(context.scripts)) {
+                    const schedules = context.scripts[name].schedules;
+                    if (!schedules || context.scripts[name] === script) {
+                        continue;
                     }
-                    script.schedules.splice(i, 1);
-                    if (sandbox.__engine.__schedules > 0) {
-                        sandbox.__engine.__schedules--;
+                    for (let i = 0; i < schedules.length; i++) {
+                        if (schedules[i]._ioBroker.id === ioBrokerMeta.id) {
+                            return cancelCronAt(schedules, i, false);
+                        }
                     }
-                    if (sandbox.verbose) {
-                        sandbox.log('clearSchedule() => cleared', 'info');
-                    }
-                    return true;
                 }
             }
             if (sandbox.verbose) {
@@ -2223,7 +2248,8 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
             return false;
         },
         getSchedules: function (allScripts) {
-            const schedules = context.scheduler?.getList() || [];
+            // Wizard schedules are stored globally => filter them by script if only the own ones are requested
+            const schedules = (context.scheduler?.getList() || []).filter(s => allScripts || s.scriptName === sandbox.scriptName);
             if (allScripts) {
                 Object.keys(context.scripts).forEach(name => context.scripts[name].schedules &&
                     // IO-8: Spread instead of JSON.parse(JSON.stringify()) – _ioBroker has only primitive fields

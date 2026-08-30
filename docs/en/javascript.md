@@ -632,6 +632,17 @@ let sch = schedule('*/2 * * * *', () => { /* ... */ });
 clearSchedule(sch);
 ```
 
+`clearSchedule` accepts everything `schedule` returns (a CRON job object or the ID of a schedule of the time wizard)
+and also the entries of [getSchedules](#getschedules):
+
+```js
+// Clear all schedules of this script
+getSchedules().forEach(sch => clearSchedule(sch));
+```
+
+It returns `true` if the schedule was found and cleared, otherwise `false`.
+Schedules created with the astro option cannot be cleared this way.
+
 ### getAttr
 ```js
 getAttr({ attr1: { attr2: 5 } }, 'attr1.attr2');

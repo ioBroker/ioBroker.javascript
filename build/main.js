@@ -2809,6 +2809,8 @@ class JavaScript extends adapter_core_1.Adapter {
                     }
                 }
             }
+            // The jobs are canceled => an onStop callback must not see them anymore via getSchedules()
+            this.scripts[name].schedules = [];
             // Stop all time wizards jobs
             if (this.context.scheduler) {
                 for (let i = 0; i < this.scripts[name].wizards.length; i++) {
@@ -2817,6 +2819,7 @@ class JavaScript extends adapter_core_1.Adapter {
                     }
                 }
             }
+            this.scripts[name].wizards = [];
             // if callback for on stop
             if (typeof this.scripts[name].onStopCb === 'function') {
                 this.scripts[name].onStopTimeout =
