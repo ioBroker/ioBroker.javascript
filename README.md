@@ -27,7 +27,7 @@ Executes Javascript, Typescript Scripts.
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 10.1.3 (2026-08-30)
 * (@GermanBluefox) The plain text export named its files after the script ID instead of the script name, so every dot of a name came out as an underscore - `HK-Balkontuer_v0.1` was exported as `HK-Balkontuer_v0_1.js`, and importing it back renamed the script to that. The files are now named after the script (#2364)
 * (@GermanBluefox) Importing a plain text export treated a dot inside a file name as a folder level, so `PW-TV-Control_v0.6.js` created a folder `PW-TV-Control_v0` containing a script named `6`. Only the directories of the ZIP are folders now (#2364)
 * (@GermanBluefox) The folder icons in the script tree were drawn at less than half the size of the script icons next to them: they spaced themselves with a padding, and since `CssBaseline` sets `box-sizing: border-box` that padding was subtracted from their 20px instead of being added to them. They use a margin now, like the script icons always did (#2360)
@@ -98,9 +98,6 @@ Executes Javascript, Typescript Scripts.
 * (@GermanBluefox) TypeScript 6 support
 * (@GermanBluefox) GUI was migrated to React 19 and MUI 9
 * (@GermanBluefox) Showed the host name in the instance selection dialog
-
-### 9.3.1 (2026-06-18)
-* (@GermanBluefox) Added the possibility to execute one-way scripts without saving it
 
 ## License
 The MIT License (MIT)
