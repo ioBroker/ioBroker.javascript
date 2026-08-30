@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 9.3.1 (2026-06-18)
+* (@GermanBluefox) Added the possibility to execute one-way scripts without saving it
+
 ## 9.3.0 (2026-06-17)
 * (@GermanBluefox) Implemented the support for credentials manager in the configuration
 
