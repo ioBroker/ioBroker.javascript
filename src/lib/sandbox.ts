@@ -3,7 +3,7 @@ import * as jsonataMod from 'jsonata';
 import type { SendMailOptions } from 'nodemailer';
 import type { AxiosError, AxiosHeaderValue, AxiosResponse, ResponseType } from 'axios';
 
-import { isObject, isArray, promisify, getHttpRequestConfig } from './tools';
+import { isObject, isArray, promisify, getHttpRequestConfig, escapeRegExp } from './tools';
 import type {
     JavaScriptAdapterConfig,
     AstroRule,
@@ -3351,7 +3351,8 @@ export function sandBox(
                     obj.enumIds = structuredClone(e.enumIds);
                     obj.enumNames = structuredClone(e.enumNames);
                     if (typeof enumName === 'string') {
-                        const r = new RegExp(`^enum\\.${enumName}\\.`);
+                        // an enum name is a plain name, not a pattern - see #2239
+                        const r = new RegExp(`^enum\\.${escapeRegExp(enumName)}\\.`);
                         for (let i = obj.enumIds.length - 1; i >= 0; i--) {
                             if (!r.test(obj.enumIds[i])) {
                                 obj.enumIds.splice(i, 1);
@@ -3442,7 +3443,8 @@ export function sandBox(
         },
         getEnums: function (enumName?: string): { id: string; members: string[]; name: ioBroker.StringOrTranslated }[] {
             const result: { id: string; members: string[]; name: ioBroker.StringOrTranslated }[] = [];
-            const r = enumName ? new RegExp(`^enum\\.${enumName}\\.`) : false;
+            // an enum name is a plain name, not a pattern - see #2239
+            const r = enumName ? new RegExp(`^enum\\.${escapeRegExp(enumName)}\\.`) : false;
             for (const enumId of enums) {
                 if (!r || r.test(enumId)) {
                     const common: ioBroker.EnumCommon =

@@ -14,6 +14,7 @@ import {
 } from 'node:fs';
 import { join, normalize, dirname } from 'node:path';
 import type { ScriptType } from '../types';
+import { escapeRegExp } from './tools';
 
 const MODE_0777 = 511;
 
@@ -235,17 +236,35 @@ export class Mirror {
         return `script.js.${pathDB.join('.')}`;
     }
 
+    /**
+     * The direct children of a folder, as a pattern over the script IDs.
+     *
+     * The segments are names the user chooses, so they are literals and not pattern syntax. Unescaped
+     * they used to break the sync in two ways: `Lampen (Flur` made the pattern invalid and threw a
+     * `SyntaxError` right in the middle of `sync()`, while `[ab]` stayed valid but matched the
+     * children of the folder `a` instead of its own (#2239).
+     *
+     * @param segments The path segments below `script.js`
+     */
+    private static _childrenOf(segments: string[]): RegExp {
+        const path = segments
+            .filter(segment => segment.length)
+            .map(segment => escapeRegExp(segment))
+            .join('\\.');
+
+        return new RegExp(`^script\\.js${path ? `\\.${path}` : ''}\\.[^.]+$`);
+    }
+
     private _getFilesInPath(pathDisk: string): string[] {
-        pathDisk = pathDisk.substring(this.diskRoot.length + 1);
-        const id = pathDisk.replace(/\./g, '\\.').replace(/[/\\]/g, '\\.');
-        const reg = new RegExp(`script\\.js${id ? `.${id}` : ''}\\.[^.]+$`);
+        const reg = Mirror._childrenOf(pathDisk.substring(this.diskRoot.length + 1).split(/[/\\]/));
         return Object.keys(this.diskList)
             .filter(file => reg.test(file))
             .map(id => id.split('.').pop() || '');
     }
 
     private _getObjectsInPath(pathDB: string): string[] {
-        const reg = new RegExp(`${pathDB.replace(/\./g, '\\.')}\\.[^.]+$`);
+        // `pathDB` is always `script.js` or `script.js.<folder>...` - see `_getDbPath()`
+        const reg = Mirror._childrenOf(pathDB.split('.').slice(2));
         return Object.keys(this.dbList)
             .filter(id => reg.test(id))
             .map(id => id.split('.').pop() || '');

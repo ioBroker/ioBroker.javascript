@@ -2677,7 +2677,8 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                     obj.enumIds = structuredClone(e.enumIds);
                     obj.enumNames = structuredClone(e.enumNames);
                     if (typeof enumName === 'string') {
-                        const r = new RegExp(`^enum\\.${enumName}\\.`);
+                        // an enum name is a plain name, not a pattern - see #2239
+                        const r = new RegExp(`^enum\\.${(0, tools_1.escapeRegExp)(enumName)}\\.`);
                         for (let i = obj.enumIds.length - 1; i >= 0; i--) {
                             if (!r.test(obj.enumIds[i])) {
                                 obj.enumIds.splice(i, 1);
@@ -2750,7 +2751,8 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
         },
         getEnums: function (enumName) {
             const result = [];
-            const r = enumName ? new RegExp(`^enum\\.${enumName}\\.`) : false;
+            // an enum name is a plain name, not a pattern - see #2239
+            const r = enumName ? new RegExp(`^enum\\.${(0, tools_1.escapeRegExp)(enumName)}\\.`) : false;
             for (const enumId of enums) {
                 if (!r || r.test(enumId)) {
                     const common = objects[enumId].common || {};

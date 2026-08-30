@@ -28,6 +28,7 @@ Executes Javascript, Typescript Scripts.
 
 ## Changelog
 ### **WORK IN PROGRESS**
+* (@GermanBluefox) Fixed the script mirror for folder names containing regular expression characters: a folder called e.g. `Lampen (Flur` aborted the synchronization with a `SyntaxError`, a folder called e.g. `[ab]` silently synchronized the scripts of another folder (#2239)
 * (@GermanBluefox) The Blockly block "http (POST)" got a "content type" selector, so an API that insists on `Content-Type: application/json` no longer needs an `exec` block. "automatic" is the default and behaves exactly as before, "own" allows any other type (#1983)
 * (@GermanBluefox) `getSchedules()` returned the schedules of the time wizard of **all** scripts, even without the argument `true`. Now only the schedules of the own script are returned (#2164)
 * (@GermanBluefox) `clearSchedule()` did not accept the objects that `getSchedules()` returns for schedules of the time wizard, so such a schedule stayed in the script and in the schedule counter (#2164)

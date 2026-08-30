@@ -134,6 +134,19 @@ export function hashSource(source: string | Buffer): string {
     return createHash('md5').update(source).digest('hex');
 }
 
+/**
+ * Escapes every RegExp metacharacter, so the text can be interpolated into a pattern as a literal.
+ *
+ * Script IDs and file names are built from names the user chooses freely. A name like `Lampe (Flur)`
+ * is perfectly valid, but pasted into a pattern unescaped it either throws a `SyntaxError` or
+ * silently changes what the pattern matches.
+ *
+ * @param text The text to use literally inside a regular expression
+ */
+export function escapeRegExp(text: string): string {
+    return text.replace(/[.*+?^${}()|[\]\\-]/g, '\\$&');
+}
+
 export function getHttpRequestConfig(
     url: string,
     options?: {

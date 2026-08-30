@@ -188,4 +188,166 @@ describe('Mirror', () => {
             }).timeout(WAIT_FOR_CHANGE + 4000);
         });
     });
+
+    /**
+     * Script folders are named by the user, and `sync()` turns those names into regular expressions
+     * to find the direct children of a folder. A name like `Lampen (Flur` used to be pasted into the
+     * pattern unescaped, so `new RegExp()` threw a `SyntaxError` in the middle of the recursive sync
+     * and everything after the folder stayed unsynchronized. Names that stayed valid - `a|b`,
+     * `[ab]` - silently matched the wrong scripts instead (#2239).
+     */
+    describe('Folder names with RegExp metacharacters', () => {
+        /**
+         * Every metacharacter, including the ones Windows does not allow in a file name. These are
+         * checked against the pattern itself, not against a directory on disk.
+         */
+        const METACHARACTERS = ['(', ')', '[ab]', '{1}', 'a|b', 'a*b', 'a+b', 'a?b', '^a', 'a$', 'a.b', 'a-b'];
+
+        /** The subset that can be a directory on every platform the adapter is tested on */
+        const LEGAL_ON_DISK = ['(', ')', '[ab]', '{1}', 'a+b', '^a', 'a$', 'a-b', 'Lampen (Flur', 'Skript [Test]'];
+
+        /** Mirror logs its progress at every level - without this the run is unreadable */
+        const silentLog = () => ({
+            log: () => {},
+            silly: () => {},
+            debug: () => {},
+            info: () => {},
+            warn: () => {},
+            error: () => {},
+        });
+
+        /** A DB channel - the object a script folder is represented by */
+        const folder = id => ({ _id: id, type: 'channel', common: { name: id.split('.').pop() }, native: {} });
+
+        /** A DB script */
+        const script = (id, source) => ({
+            _id: id,
+            type: 'script',
+            common: {
+                name: id.split('.').pop(),
+                source,
+                engineType: 'Javascript/js',
+                engine: 'system.adapter.javascript.0',
+            },
+            native: {},
+        });
+
+        /** Everything a `Mirror` calls on its adapter while it is constructed */
+        function adapterStub(dbObjects) {
+            const written = {};
+
+            return {
+                written,
+                namespace: 'javascript.0',
+                getObjectView: (design, _search, _params, cb) => {
+                    const wanted = design === 'system' ? 'channel' : 'script';
+                    cb(null, {
+                        rows: Object.values(dbObjects)
+                            .filter(obj => obj.type === wanted)
+                            .map(obj => ({ id: obj._id, value: obj })),
+                    });
+                },
+                getForeignObject: (_id, cb) => cb(null, null),
+                getForeignState: (_id, cb) => cb(null, { val: 0 }),
+                setForeignObject: (id, obj, cb) => {
+                    written[id] = obj;
+                    cb && cb(null);
+                },
+                setForeignState: (_id, _val, _ack, cb) => cb && cb(null),
+            };
+        }
+
+        let root = null;
+        let mirrors = [];
+
+        beforeEach(() => {
+            root = fs.mkdtempSync(path.join(os.tmpdir(), 'mirror-test-regexp-'));
+            mirrors = [];
+        });
+
+        afterEach(() => {
+            // the constructor arms fs.watch on the temp directory - closing first keeps the removal
+            // below from being reported as a change
+            for (const mirror of mirrors) {
+                Object.values(mirror.watchedFolder || {}).forEach(watcher => watcher.close());
+            }
+            fs.rmSync(root, { recursive: true, force: true });
+        });
+
+        /**
+         * @param dbObjects the objects `scanDB()` finds
+         */
+        function createMirror(dbObjects) {
+            const adapter = adapterStub(dbObjects);
+            const mirror = new (Mirror.Mirror || Mirror)({ diskRoot: root, adapter, log: silentLog() });
+            mirrors.push(mirror);
+            return { mirror, written: adapter.written };
+        }
+
+        for (const name of METACHARACTERS) {
+            it(`finds the children of the DB folder "${name}"`, () => {
+                const folderId = `script.js.${name}`;
+                const { mirror } = createMirror({ [folderId]: folder(folderId) });
+
+                mirror.dbList = {
+                    [folderId]: folder(folderId),
+                    [`${folderId}.mine`]: script(`${folderId}.mine`, 'log("mine");'),
+                    // a sibling whose ID an unescaped name may match by accident
+                    'script.js.a': folder('script.js.a'),
+                    'script.js.a.foreign': script('script.js.a.foreign', 'log("foreign");'),
+                };
+
+                const children = mirror._getObjectsInPath(folderId);
+
+                if (children.length !== 1 || children[0] !== 'mine') {
+                    throw new Error(`"${name}" selected [${children.join(', ')}] instead of [mine]`);
+                }
+            });
+        }
+
+        for (const name of LEGAL_ON_DISK) {
+            it(`syncs the folder "${name}" from disk into the DB`, () => {
+                fs.mkdirSync(path.join(root, name));
+                fs.writeFileSync(path.join(root, name, 'inside.js'), 'log("inside");');
+
+                const folderId = `script.js.${name}`;
+                const { written } = createMirror({ [folderId]: folder(folderId) });
+
+                // if the pattern threw, sync() never got as far as the file below the folder
+                const scriptId = `${folderId}.inside`;
+                if (!written[scriptId]) {
+                    throw new Error(
+                        `${scriptId} was not created in the DB. Written instead: ${Object.keys(written).join(', ') || '(nothing)'}`,
+                    );
+                }
+                if (written[scriptId].common.source !== 'log("inside");') {
+                    throw new Error(`Wrong source for ${scriptId}: ${written[scriptId].common.source}`);
+                }
+            });
+        }
+
+        it('does not claim the scripts of a folder it only matches by accident', () => {
+            // "[ab]" as a pattern matches a single "a", so the sync of "[ab]" used to believe that
+            // the script inside "a" is one of its own children
+            fs.mkdirSync(path.join(root, '[ab]'));
+            fs.mkdirSync(path.join(root, 'a'));
+            fs.writeFileSync(path.join(root, 'a', 'other.js'), 'log("other");');
+
+            const { written } = createMirror({
+                'script.js.[ab]': folder('script.js.[ab]'),
+                'script.js.a': folder('script.js.a'),
+                'script.js.a.other': script('script.js.a.other', 'log("other");'),
+            });
+
+            const wrong = Object.keys(written).filter(id => id.startsWith('script.js.[ab].'));
+            if (wrong.length) {
+                throw new Error(`The sync of "[ab]" claimed foreign scripts: ${wrong.join(', ')}`);
+            }
+
+            // and the script of "a" is still where it was
+            if (!fs.existsSync(path.join(root, 'a', 'other.js'))) {
+                throw new Error('The script of the folder "a" disappeared');
+            }
+        });
+    });
 });
