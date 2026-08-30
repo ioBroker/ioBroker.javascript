@@ -159,22 +159,24 @@ const styles: Record<string, any> = {
         transitionDuration: '0.5s',
         transitionProperty: 'opacity',
     },
+    /*
+     * The spacing is a margin and not a padding on purpose. `CssBaseline` - added with the migration
+     * to `@iobroker/gui-components` - sets `box-sizing: border-box` for everything, and a padding is
+     * then subtracted from the 20px instead of being added to them: the folder icon was left with
+     * 8x12px of drawing area and appeared half the size of the script icons next to it (#2360).
+     * The script icons keep their size because they space themselves with margins - see `scriptIcon`.
+     */
     folderIcon: {
         width: 20,
         height: 20,
+        marginTop: 4,
+        marginBottom: 4,
+        marginLeft: 8,
+        marginRight: 4,
     },
-    folderIconReorder: {
-        paddingTop: 4,
-        paddingBottom: 4,
-        paddingLeft: 8,
-        paddingRight: 4,
-    },
+    /** Only outside the reorder mode does a click on the folder icon open and close it */
     folderIconNoReorder: {
         cursor: 'pointer',
-        paddingTop: 4,
-        paddingBottom: 4,
-        paddingLeft: 8,
-        paddingRight: 4,
     },
     script: {
         cursor: 'pointer',
@@ -1278,13 +1280,10 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
         if (item.type === 'folder') {
             iconStyle = {
                 ...styles.folderIcon,
-                ...(reorder ? styles.folderIconReorder : styles.folderIconNoReorder),
+                ...(reorder ? undefined : styles.folderIconNoReorder),
             };
         } else {
-            iconStyle = {
-                ...styles.scriptIcon,
-                // ...(reorder ? styles.scriptIconReorder : styles.scriptIconNoReorder),
-            };
+            iconStyle = { ...styles.scriptIcon };
         }
         if (item.id === GLOBAL_ID) {
             iconStyle.color = '#356956';
