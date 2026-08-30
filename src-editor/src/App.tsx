@@ -83,6 +83,21 @@ const styles: Record<string, any> = {
         backgroundColor: theme.palette.background && theme.palette.background.default,
         position: 'relative',
     }),
+    /*
+     * `Editor` renders tabs, toolbar and the editor area as three siblings, so somebody has to divide
+     * the height between them. As a flex column the first two keep their own height and the editor
+     * takes the rest - no element can be taller than the pane anymore and hang over the gutter of the
+     * splitter below it, where it used to swallow the mousedown that starts the resize (#2351).
+     * No `position` on purpose: the "close all but current" button is positioned absolutely and has
+     * always been placed against `content`.
+     */
+    editorPane: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+    },
     splitterDivWithMenu: {
         width: `calc(100% - 300px)`,
         height: '100%',
@@ -1127,59 +1142,64 @@ export default class App extends GenericApp<AppProps, AppState> {
         );
 
         return (
-            <Editor
-                key="editor"
-                scriptsHash={this.state.scriptsHash}
-                debugMode={this.state.debugMode}
-                onDebugModeChange={value => {
-                    if (!value) {
-                        this.setState({ debugMode: false, debugInstance: null });
-                    } else {
-                        this.setState({ debugMode: true });
+            <Box
+                sx={styles.editorPane}
+                key="editorPane"
+            >
+                <Editor
+                    key="editor"
+                    scriptsHash={this.state.scriptsHash}
+                    debugMode={this.state.debugMode}
+                    onDebugModeChange={value => {
+                        if (!value) {
+                            this.setState({ debugMode: false, debugInstance: null });
+                        } else {
+                            this.setState({ debugMode: true });
+                        }
+                    }}
+                    visible={!this.state.resizing}
+                    socket={this.socket}
+                    adapterName={this.adapterName}
+                    onLocate={menuSelectId => this.setState({ menuSelectId })}
+                    password={this.state.password}
+                    runningInstances={this.state.runningInstances}
+                    menuOpened={this.state.menuOpened}
+                    searchText={this.state.searchText}
+                    themeType={this.state.themeType}
+                    themeName={this.state.themeName}
+                    theme={this.state.theme}
+                    expertMode={this.state.expertMode}
+                    onChange={(id, common) => this.onUpdateScript(id, common)}
+                    newRuleId={this.state.newRuleId}
+                    onNewRuleHandled={() => this.setState({ newRuleId: '' })}
+                    isAnyRulesExists={isAnyRulesExists}
+                    debugInstance={this.state.debugInstance}
+                    onSelectedChange={(id, editing) => {
+                        const newState: Partial<AppState> = {};
+                        let changed = false;
+                        if (id !== this.state.selected) {
+                            changed = true;
+                            newState.selected = id;
+                        }
+                        if (JSON.stringify(editing) !== JSON.stringify(this.state.editing)) {
+                            changed = true;
+                            newState.editing = [...editing];
+                        }
+                        if (changed) {
+                            this.setState(newState as AppState);
+                        }
+                    }}
+                    onRestart={id => this.socket.extendObject(id, { common: { enabled: true } })}
+                    selected={
+                        this.state.selected && this.scripts[this.state.selected]?.type === 'script'
+                            ? this.state.selected
+                            : ''
                     }
-                }}
-                visible={!this.state.resizing}
-                socket={this.socket}
-                adapterName={this.adapterName}
-                onLocate={menuSelectId => this.setState({ menuSelectId })}
-                password={this.state.password}
-                runningInstances={this.state.runningInstances}
-                menuOpened={this.state.menuOpened}
-                searchText={this.state.searchText}
-                themeType={this.state.themeType}
-                themeName={this.state.themeName}
-                theme={this.state.theme}
-                expertMode={this.state.expertMode}
-                onChange={(id, common) => this.onUpdateScript(id, common)}
-                newRuleId={this.state.newRuleId}
-                onNewRuleHandled={() => this.setState({ newRuleId: '' })}
-                isAnyRulesExists={isAnyRulesExists}
-                debugInstance={this.state.debugInstance}
-                onSelectedChange={(id, editing) => {
-                    const newState: Partial<AppState> = {};
-                    let changed = false;
-                    if (id !== this.state.selected) {
-                        changed = true;
-                        newState.selected = id;
-                    }
-                    if (JSON.stringify(editing) !== JSON.stringify(this.state.editing)) {
-                        changed = true;
-                        newState.editing = [...editing];
-                    }
-                    if (changed) {
-                        this.setState(newState as AppState);
-                    }
-                }}
-                onRestart={id => this.socket.extendObject(id, { common: { enabled: true } })}
-                selected={
-                    this.state.selected && this.scripts[this.state.selected]?.type === 'script'
-                        ? this.state.selected
-                        : ''
-                }
-                objects={this.scripts}
-                resizing={this.state.resizing}
-                onChangedChanged={changed => (this.changedScripts = changed)}
-            />
+                    objects={this.scripts}
+                    resizing={this.state.resizing}
+                    onChangedChanged={changed => (this.changedScripts = changed)}
+                />
+            </Box>
         );
     }
 

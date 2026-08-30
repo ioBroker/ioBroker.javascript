@@ -158,12 +158,21 @@ const styles: Record<string, any> = {
         filter: 'grayscale(100%)',
         opacity: 0.5,
     },
-    editorDiv: (theme: IobTheme): React.CSSProperties => ({
-        height: `calc(100% - ${(parseInt(theme.toolbar.height as string, 10) || 48) + 38 /* Theme.toolbar.height */ + 10}px)`,
+    /*
+     * The editor area is the last of the three siblings this component renders into its pane - tabs,
+     * toolbar, editor. Its height used to be guessed as `calc(100% - 96px)` from the height the tabs
+     * and the toolbar are *expected* to have. Whenever they were taller, the editor hung over the
+     * bottom edge of its pane and the horizontal scrollbar it draws there landed on the 8px gutter of
+     * the splitter, which swallowed the mousedown - the log could not be resized anymore (#2351).
+     * `styles.editorPane` of `App.tsx` is a flex column, so the editor now simply takes what is left.
+     */
+    editorDiv: {
+        flex: '1 1 0',
+        minHeight: 0,
         width: '100%',
         overflow: 'hidden',
         position: 'relative',
-    }),
+    },
     textButton: {
         marginRight: 10,
         minHeight: 24,

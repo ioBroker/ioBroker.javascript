@@ -88,6 +88,12 @@ const styles: Record<string, any> = {
     }),
     table: {
         fontFamily: 'monospace',
+        // A monospace element without a font size of its own is rendered by the browser in its
+        // *fixed width* default size (13px in Chrome) instead of the normal one. The log relied on
+        // that until `CssBaseline` gave the body an explicit `font-size` - since then the log
+        // inherited 16px and was bigger than the editor next to it (#2351). 13px is what it used to
+        // be, and it sits next to the 12px of the code editor.
+        fontSize: 13,
         width: '100%',
     },
     toolbox: {
