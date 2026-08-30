@@ -27,8 +27,11 @@ const CORE_FILES = [
     join(PACKAGE_DIR, 'javascript_compressed.js'),
 ];
 
+/** Where the Blockly plugins of the editor live */
+const PLUGINS_DIR = join(EDITOR_DIR, 'src', 'Components', 'blockly-plugins');
+
 /** Where the converted block modules live */
-const MODULES_DIR = join(EDITOR_DIR, 'src', 'Components', 'blockly-plugins', 'blocks');
+const MODULES_DIR = join(PLUGINS_DIR, 'blocks');
 
 /**
  * The ioBroker block definitions and their order - the same file `bridge.ts` reads, so the harness
@@ -78,6 +81,34 @@ function bundleModule(id) {
     });
 
     return result.outputFiles[0].text;
+}
+
+/**
+ * Bundles a source snippet the same way and runs it inside an environment's window.
+ *
+ * The corpus only needs the block modules, but a test may need one of the field plugins, which
+ * `initBlockly()` - not `loadOwnBlocks()` - installs in the editor. Bundling stays here so that this
+ * file remains the only one that knows how a module reaches jsdom.
+ *
+ * @param {ReturnType<typeof createBlocklyEnvironment>} env
+ * @param {string} contents Source of the entry module; imports are relative to `resolveDir`
+ * @param {string} [resolveDir] Directory the imports are resolved from, `PLUGINS_DIR` by default
+ */
+function runInEnvironment(env, contents, resolveDir = PLUGINS_DIR) {
+    const result = buildSync({
+        stdin: { contents, resolveDir, sourcefile: 'harness-entry.js' },
+        bundle: true,
+        format: 'iife',
+        platform: 'browser',
+        write: false,
+        logLevel: 'silent',
+        alias: BLOCKLY_ALIAS,
+        absWorkingDir: EDITOR_DIR,
+    });
+
+    const script = env.window.document.createElement('script');
+    script.textContent = result.outputFiles[0].text;
+    env.window.document.head.appendChild(script);
 }
 
 /**
@@ -226,4 +257,12 @@ function createBlocklyEnvironment() {
     return { Blockly: window.Blockly, window, origins, coreKeys, generate, save };
 }
 
-module.exports = { createBlocklyEnvironment, BLOCKLY_DIR, MODULES_DIR, CORE_FILES, BLOCK_ORDER };
+module.exports = {
+    createBlocklyEnvironment,
+    runInEnvironment,
+    BLOCKLY_DIR,
+    MODULES_DIR,
+    PLUGINS_DIR,
+    CORE_FILES,
+    BLOCK_ORDER,
+};

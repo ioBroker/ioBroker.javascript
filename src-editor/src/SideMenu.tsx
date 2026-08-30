@@ -76,6 +76,15 @@ const GLOBAL_ID = `${ROOT_ID}.global`;
 const NARROW_WIDTH = 350;
 const LEVEL_PADDING = 16;
 
+/** Width of an `IconButton size="medium"` at the end of a row: 24px icon plus 2 * 8px padding */
+const BUTTON_WIDTH = 40;
+/** The start/stop button is smaller - see `styles.iconButtons` */
+const SMALL_BUTTON_WIDTH = 32;
+/** `ListItemSecondaryAction` of MUI is positioned with `right: 16px` */
+const SECONDARY_ACTION_OFFSET = 16;
+/** Gap between the name and the first button */
+const TEXT_GAP = 8;
+
 const styles: Record<string, any> = {
     drawerPaper: {
         position: 'relative',
@@ -1009,23 +1018,61 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
                 </IconButton>,
             ];
         }
-        if (this.state.width > NARROW_WIDTH) {
-            if (item.id !== ROOT_ID && item.id !== COMMON_ID && item.id !== GLOBAL_ID && !children?.length) {
-                return (
-                    <IconButton
-                        style={this.props.debugMode ? styles.iconButtonsDisabled : undefined}
-                        key="delete"
-                        title={I18n.t('Delete folder')}
-                        disabled={item.id === GLOBAL_ID || item.id === COMMON_ID || this.props.debugMode}
-                        onClick={e => this.onDelete(item, e)}
-                        size="medium"
-                    >
-                        <IconDelete />
-                    </IconButton>
-                );
-            }
+        if (this.isFolderDeletable(item, children)) {
+            return (
+                <IconButton
+                    style={this.props.debugMode ? styles.iconButtonsDisabled : undefined}
+                    key="delete"
+                    title={I18n.t('Delete folder')}
+                    disabled={item.id === GLOBAL_ID || item.id === COMMON_ID || this.props.debugMode}
+                    onClick={e => this.onDelete(item, e)}
+                    size="medium"
+                >
+                    <IconDelete />
+                </IconButton>
+            );
         }
         return null;
+    }
+
+    /** Whether a folder row offers the delete button - only an empty folder of the user can be deleted */
+    isFolderDeletable(item: ListElement, children: ListElement[]): boolean {
+        return (
+            this.state.width > NARROW_WIDTH &&
+            item.id !== ROOT_ID &&
+            item.id !== COMMON_ID &&
+            item.id !== GLOBAL_ID &&
+            !children?.length
+        );
+    }
+
+    /**
+     * How much room the buttons at the end of a row occupy.
+     *
+     * They are rendered as MUI's `secondaryAction`, which is positioned absolutely and therefore
+     * takes no part in the layout of the row - whatever else is in the row has to leave the space
+     * for it. The row reserves it as its own right padding, so the name may use everything that is
+     * left. It used to be a fixed 185px subtracted from the name instead, which was more than the
+     * buttons need and ignored the icon column, so a name was cut off although there was still
+     * free space next to it.
+     *
+     * @param item The row
+     * @param children Rows below it, which decide whether a folder may be deleted
+     */
+    getSecondaryActionWidth(item: ListElement, children: ListElement[]): number {
+        if (this.state.reorder) {
+            return 0;
+        }
+
+        let buttons: number;
+        if (item.type === 'folder') {
+            buttons = this.isFolderDeletable(item, children) ? BUTTON_WIDTH : 0;
+        } else {
+            // start/stop and edit, plus delete where the drawer is wide enough for it
+            buttons = SMALL_BUTTON_WIDTH + BUTTON_WIDTH + (this.state.width > NARROW_WIDTH ? BUTTON_WIDTH : 0);
+        }
+
+        return buttons ? buttons + SECONDARY_ACTION_OFFSET : 0;
     }
 
     onDelete(item: string | ListElement | null, e?: React.MouseEvent): Promise<void> {
@@ -1048,21 +1095,17 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
         this.props.onEdit && this.props.onEdit(item.id);
     }
 
-    getTextStyle(item: ListElement): React.CSSProperties {
-        if (!this.state.reorder && item.type !== 'folder') {
-            return {
-                //width: 130,
-                width: `calc(100% - ${this.state.width > NARROW_WIDTH ? 185 : 137}px)`,
-                overflow: 'hidden',
-                whiteSpace: 'nowrap',
-                flex: 'none',
-                padding: '0 16px 0 0',
-            };
-        }
-
+    // eslint-disable-next-line class-methods-use-this
+    getTextStyle(): React.CSSProperties {
         return {
+            // The row keeps the buttons free with its own right padding - see
+            // `getSecondaryActionWidth()` - so the name may take everything that is left of it.
+            // `minWidth` is what lets a flex item shrink below its content and turn into an ellipsis.
+            flex: '1 1 auto',
+            minWidth: 0,
+            overflow: 'hidden',
             whiteSpace: 'nowrap',
-            padding: '0 16px 0 0',
+            padding: `0 ${TEXT_GAP}px 0 0`,
         };
     }
 
@@ -1213,6 +1256,9 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
             marginLeft: depthPx,
             cursor: item.type === 'folder' && reorder ? 'default' : 'inherit',
             width: `calc(100% - ${depthPx}px)`,
+            // `styles.script` and `styles.folder` set "padding: 0", so this has to come after them -
+            // it keeps the room the absolutely positioned buttons need
+            paddingRight: this.getSecondaryActionWidth(item, children),
         };
 
         if (!reorder) {
@@ -1308,7 +1354,7 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
                         '& .MuiListItemText-primary':
                             item.id === this.state.selected && !reorder ? styles.selected : undefined,
                     }}
-                    style={this.getTextStyle(item)}
+                    style={this.getTextStyle()}
                     primary={
                         <span style={{ display: 'flex', alignItems: 'center' }}>
                             <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>{title}</span>

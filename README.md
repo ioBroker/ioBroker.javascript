@@ -28,6 +28,8 @@ Executes Javascript, Typescript Scripts.
 
 ## Changelog
 ### **WORK IN PROGRESS**
+* (@GermanBluefox) The script list cut off long names, although there was still free space next to them: the space for the buttons at the end of a row was a fixed 185px, which is more than the three buttons occupy, and it did not account for the icon column
+* (@GermanBluefox) Fixed the Blockly comment block: the text was written in white on the yellow block and could not be read, the editor opened somewhere else on the page instead of over the block, and on a smartphone or tablet it did not open at all and left the whole workspace unusable until the page was reloaded (#2348)
 * (@GermanBluefox) Fixed the script mirror for folder names containing regular expression characters: a folder called e.g. `Lampen (Flur` aborted the synchronization with a `SyntaxError`, a folder called e.g. `[ab]` silently synchronized the scripts of another folder (#2239)
 * (@GermanBluefox) The Blockly block "http (POST)" got a "content type" selector, so an API that insists on `Content-Type: application/json` no longer needs an `exec` block. "automatic" is the default and behaves exactly as before, "own" allows any other type (#1983)
 * (@GermanBluefox) `getSchedules()` returned the schedules of the time wizard of **all** scripts, even without the argument `true`. Now only the schedules of the own script are returned (#2164)

@@ -152,13 +152,23 @@ export class FieldMultilineInput extends Blockly.Field {
      */
     initView(): void {
         this.createBorderRect_();
+        // The renderer colours field text with `.blocklyEditableField>text` - a *direct* child
+        // selector - while `.blocklyText` alone is white. The lines of this field live in their own
+        // group, so that group has to carry the class, otherwise only the white rule applies and the
+        // text is unreadable on the comment block (#2348). `blocklyEditableText` was the class name
+        // before Blockly 13; the upstream plugin uses the one below since 13.x.
         this.textGroup = Blockly.utils.dom.createSvgElement(
             Blockly.utils.Svg.G,
             {
-                class: 'blocklyEditableText',
+                class: 'blocklyEditableField',
             },
             this.fieldGroup_,
         );
+        if (this.fieldGroup_) {
+            // `Field.initView()` does this for every other field - it carries the cursor and the
+            // focus ring of the keyboard navigation
+            Blockly.utils.dom.addClass(this.fieldGroup_, 'blocklyField');
+        }
     }
 
     /**
@@ -518,8 +528,19 @@ export class FieldMultilineInput extends Blockly.Field {
 
             // In RTL mode block fields and LTR input fields the left edge moves,
             // whereas the right edge is fixed.  Reposition the editor.
-            const x = block.RTL ? bBox.right - div!.offsetWidth : bBox.left;
-            const y = bBox.top;
+            let x = block.RTL ? bBox.right - div!.offsetWidth : bBox.left;
+            let y = bBox.top;
+
+            // Since Blockly 13 the WidgetDiv is a child of the injection div instead of the body, so
+            // its absolute position is relative to that div - while `getScaledBBox()` still returns
+            // page coordinates. Without this conversion the editor opens somewhere else on the page
+            // (#2348). `FieldTextInput.resizeEditor_()` of Blockly does the same.
+            const parent = div?.parentElement;
+            if (parent) {
+                const parentRect = parent.getBoundingClientRect();
+                x -= parentRect.left + window.scrollX;
+                y -= parentRect.top + window.scrollY;
+            }
 
             div!.style.left = `${x}px`;
             div!.style.top = `${y}px`;
@@ -616,15 +637,12 @@ export class FieldMultilineInput extends Blockly.Field {
     showEditor_(e?: Event, quietInput?: boolean): void {
         // super.showEditor_(e, quietInput);
         this.workspace_ = (this.sourceBlock_ as BlockSvg).workspace;
-        if (
-            !quietInput &&
-            this.workspace_.options.modalInputs &&
-            (Blockly.utils.userAgent.MOBILE || Blockly.utils.userAgent.ANDROID || Blockly.utils.userAgent.IPAD)
-        ) {
-            this.showPromptEditor_();
-        } else {
-            this.showInlineEditor_(!!quietInput);
-        }
+        // On a touch device this used to call `showPromptEditor_()`, which does not exist: this field
+        // extends `Blockly.Field` and never had it, and Blockly removed the method from
+        // `FieldTextInput` as well. The resulting TypeError aborted the click handler, so the editor
+        // never opened and the workspace stayed blocked until the page was reloaded (#2348).
+        // A modal prompt is a single-line input anyway and cannot edit a multiline value.
+        this.showInlineEditor_(!!quietInput);
         this.forceRerender();
     }
 
