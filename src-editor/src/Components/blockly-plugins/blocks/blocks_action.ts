@@ -15,11 +15,16 @@
 import { Blocks, FieldCheckbox, FieldDropdown, FieldTextInput, type Block, type Field } from 'blockly/core';
 import { javascriptGenerator, Order } from 'blockly/javascript';
 
-import { isTrue, logLevelOptions, objectNameOf, updateStatementInput, warnIfNotNestedIn } from './helpers';
+import { isTrue, logLevelOptions, objectNameOf, quote, updateStatementInput, warnIfNotNestedIn } from './helpers';
 
 /** A block whose shape follows the "with results" checkbox */
 type ShapedBlock = Block & {
     updateShape_: (withStatement?: boolean) => void;
+};
+
+/** A block whose shape follows the "content type" dropdown */
+type ContentTypeBlock = Block & {
+    updateContentTypeShape_: (isCustom: boolean) => void;
 };
 
 export function install(): void {
@@ -48,6 +53,20 @@ export function install(): void {
     const responseTypeOptions = (): [string, string][] => [
         [translate('http_type_text'), 'text'],
         [translate('http_type_arraybuffer'), 'arraybuffer'],
+    ];
+
+    /**
+     * `default` keeps the previous behaviour: no `Content-Type` header is sent and axios derives one
+     * from the data. `custom` reveals a text field for everything not in the list.
+     */
+    const contentTypeOptions = (): [string, string][] => [
+        [translate('http_content_type_default'), 'default'],
+        ['application/json', 'application/json'],
+        ['application/x-www-form-urlencoded', 'application/x-www-form-urlencoded'],
+        ['text/plain', 'text/plain'],
+        ['text/xml', 'text/xml'],
+        ['application/xml', 'application/xml'],
+        [translate('http_content_type_custom'), 'custom'],
     ];
 
     /** The mutation hooks shared by `exec` and `request`, which both hide their callback body */
@@ -255,6 +274,7 @@ export function install(): void {
         '  <field name="TIMEOUT">2000</field>' +
         '  <field name="UNIT">ms</field>' +
         '  <field name="TYPE">text</field>' +
+        '  <field name="CONTENT_TYPE">default</field>' +
         '  <value name="URL">' +
         '    <shadow type="text">' +
         '      <field name="TEXT">http://</field>' +
@@ -278,6 +298,15 @@ export function install(): void {
                 .appendField(translate('http_type'))
                 .appendField(new FieldDropdown(responseTypeOptions()), 'TYPE');
 
+            this.appendDummyInput('CONTENT_TYPE')
+                .appendField(translate('http_content_type'))
+                .appendField(
+                    new FieldDropdown(contentTypeOptions(), function (this: Field, option: string): undefined {
+                        (this.getSourceBlock() as ContentTypeBlock).updateContentTypeShape_(option === 'custom');
+                    }),
+                    'CONTENT_TYPE',
+                );
+
             this.appendValueInput('DATA').appendField(translate('http_post_data'));
 
             this.appendStatementInput('STATEMENT').setCheck(null);
@@ -290,6 +319,30 @@ export function install(): void {
 
             this.setTooltip(translate('http_post_tooltip'));
             this.setHelpUrl(getHelp('http_post_help'));
+        },
+
+        mutationToDom: function (this: Block): Element {
+            const container = document.createElement('mutation');
+            container.setAttribute('custom_content_type', String(this.getFieldValue('CONTENT_TYPE') === 'custom'));
+            return container;
+        },
+
+        domToMutation: function (this: ContentTypeBlock, xmlElement: Element): void {
+            this.updateContentTypeShape_(isTrue(xmlElement.getAttribute('custom_content_type')));
+        },
+
+        updateContentTypeShape_: function (this: Block, isCustom: boolean): void {
+            if (isCustom) {
+                if (!this.getInput('CONTENT_TYPE_CUSTOM')) {
+                    this.appendDummyInput('CONTENT_TYPE_CUSTOM')
+                        .appendField(' ')
+                        .appendField(new FieldTextInput('application/json'), 'CONTENT_TYPE_CUSTOM');
+                    // appendDummyInput() adds at the end - the field belongs next to its dropdown
+                    this.moveInputBefore('CONTENT_TYPE_CUSTOM', 'DATA');
+                }
+            } else if (this.getInput('CONTENT_TYPE_CUSTOM')) {
+                this.removeInput('CONTENT_TYPE_CUSTOM');
+            }
         },
     };
 
@@ -309,7 +362,14 @@ export function install(): void {
         const vData = javascriptGenerator.valueToCode(block, 'DATA', Order.ATOMIC) || 'null';
         const statement = javascriptGenerator.statementToCode(block, 'STATEMENT');
 
-        return `httpPost(${vUrl}, ${vData}, { timeout: ${fTimeout}, responseType: '${fType}' }, async (err, response) => {\n${statement}});\n`;
+        // Blocks saved before the content type existed have no such field => no header, as before
+        const fContentType = block.getFieldValue('CONTENT_TYPE') || 'default';
+        const contentType =
+            fContentType === 'custom' ? (block.getFieldValue('CONTENT_TYPE_CUSTOM') || '').trim() : fContentType;
+        const headers =
+            contentType && contentType !== 'default' ? `, headers: { 'Content-Type': ${quote(contentType)} }` : '';
+
+        return `httpPost(${vUrl}, ${vData}, { timeout: ${fTimeout}, responseType: '${fType}'${headers} }, async (err, response) => {\n${statement}});\n`;
     };
 
     // --- http_response -----------------------------------------------------------
@@ -349,9 +409,7 @@ export function install(): void {
         init: function (this: Block): void {
             this.appendDummyInput().appendField(`🌐 ${translate('http_response_tofile')}`);
 
-            this.appendValueInput('FILENAME')
-                .appendField(translate('http_response_tofile_filename'))
-                .setCheck(null);
+            this.appendValueInput('FILENAME').appendField(translate('http_response_tofile_filename')).setCheck(null);
 
             this.setInputsInline(false);
             this.setOutput(true, 'String');

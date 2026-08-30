@@ -1,0 +1,52 @@
+<!-- httpPost with an explicit Content-Type (#1983).
+     The toolbox entry only ever covers the default "automatic", where no header is sent at all,
+     so neither the fixed list nor the "own" branch of the generator would otherwise be reached. -->
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="http_post">
+    <mutation custom_content_type="false"></mutation>
+    <field name="TIMEOUT">2000</field>
+    <field name="UNIT">ms</field>
+    <field name="TYPE">text</field>
+    <field name="CONTENT_TYPE">application/json</field>
+    <value name="URL">
+      <shadow type="text">
+        <field name="TEXT">http://localhost/api</field>
+      </shadow>
+    </value>
+    <value name="DATA">
+      <shadow type="text">
+        <field name="TEXT">{"on":true}</field>
+      </shadow>
+    </value>
+    <statement name="STATEMENT">
+      <block type="debug">
+        <field name="Severity">info</field>
+        <value name="TEXT">
+          <block type="http_response">
+            <field name="ATTR">response.statusCode</field>
+          </block>
+        </value>
+      </block>
+    </statement>
+    <next>
+      <block type="http_post">
+        <mutation custom_content_type="true"></mutation>
+        <field name="TIMEOUT">2000</field>
+        <field name="UNIT">ms</field>
+        <field name="TYPE">text</field>
+        <field name="CONTENT_TYPE">custom</field>
+        <field name="CONTENT_TYPE_CUSTOM">application/vnd.api+json</field>
+        <value name="URL">
+          <shadow type="text">
+            <field name="TEXT">http://localhost/api</field>
+          </shadow>
+        </value>
+        <value name="DATA">
+          <shadow type="text">
+            <field name="TEXT">{"on":true}</field>
+          </shadow>
+        </value>
+      </block>
+    </next>
+  </block>
+</xml>

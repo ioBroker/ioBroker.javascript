@@ -623,6 +623,45 @@
         "uk": "arraybuffer",
         "zh-cn": "arraybuffer"
     },
+    "http_content_type": {
+        "en": "content type",
+        "de": "Content-Type",
+        "ru": "тип содержимого",
+        "pt": "tipo de conteúdo",
+        "nl": "inhoudstype",
+        "fr": "type de contenu",
+        "it": "tipo di contenuto",
+        "es": "tipo de contenido",
+        "pl": "typ zawartości",
+        "uk": "тип вмісту",
+        "zh-cn": "内容类型"
+    },
+    "http_content_type_default": {
+        "en": "automatic",
+        "de": "automatisch",
+        "ru": "автоматически",
+        "pt": "automático",
+        "nl": "automatisch",
+        "fr": "automatique",
+        "it": "automatico",
+        "es": "automático",
+        "pl": "automatycznie",
+        "uk": "автоматично",
+        "zh-cn": "自动"
+    },
+    "http_content_type_custom": {
+        "en": "own",
+        "de": "eigener",
+        "ru": "свой",
+        "pt": "próprio",
+        "nl": "eigen",
+        "fr": "personnalisé",
+        "it": "personalizzato",
+        "es": "propio",
+        "pl": "własny",
+        "uk": "власний",
+        "zh-cn": "自定义"
+    },
     "http_get": {
         "en": "http (GET)",
         "de": "http (GET)",
