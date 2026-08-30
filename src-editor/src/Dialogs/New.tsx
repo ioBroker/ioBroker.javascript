@@ -17,6 +17,8 @@ import {
 import { Check as IconOk, Cancel as IconCancel, Clear as ClearIcon } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/gui-components';
+
+import { nameToIdPart } from '@/scriptNames';
 import type { ScriptType } from '@/types';
 
 interface DialogNewProps {
@@ -63,12 +65,8 @@ class DialogNew extends React.Component<DialogNewProps, DialogNewState> {
     }
 
     getId(name?: string): string {
-        name = name || this.state.name || '';
-        name = name
-            .replace(/[\\/\][.*,;'"`<>?\s]/g, '_')
-            .trim()
-            .replace(/\.$/, '_');
-        return `${this.state ? this.state.parent : this.props.parent}.${name}`;
+        const idPart = nameToIdPart(name || this.state.name || '');
+        return `${this.state ? this.state.parent : this.props.parent}.${idPart}`;
     }
 
     handleOk = (): void => {

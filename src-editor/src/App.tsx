@@ -39,6 +39,7 @@ import ruLang from './i18n/ru.json';
 import ukLang from './i18n/uk.json';
 import zhCnLang from './i18n/zh-cn.json';
 import JSZip from 'jszip';
+import { getScriptName, nameToFileName, scriptIdToZipFolder, zipPathToScript } from '@/scriptNames';
 import type { ScriptType } from '@/types';
 import PasswordDialog from '@/Dialogs/Password';
 
@@ -953,6 +954,7 @@ export default class App extends GenericApp<AppProps, AppState> {
         } else {
             // Export as ZIP with same structure of scripts but in plain text
             const zip = new JSZip();
+            const usedPaths = new Set<string>();
             for (const [id, obj] of Object.entries(this.scripts)) {
                 if (obj.type === 'script') {
                     const scriptObj = obj;
@@ -966,9 +968,22 @@ export default class App extends GenericApp<AppProps, AppState> {
                                 : 'js';
                     let text = `/******* (ext=${ext}/engine=${scriptObj.common.engine}/debug=${scriptObj.common.debug}/verbose=${scriptObj.common.verbose}/enabled=${scriptObj.common.enabled}) *******/\n`;
                     text += scriptObj.common.source || '';
-                    // Convert dots in the path to slashes to create folder structure, e.g. common.myFolder.myScript → common/myFolder/myScript.js
-                    const filePath = `${id.substring('script.js.'.length).replace(/\./g, '/')}.${ext}`;
-                    zip.file(filePath, text);
+
+                    // The dots of the ID are the folder structure, but the file is named after the
+                    // script and not after the last level of the ID: an ID cannot hold a dot, so a
+                    // script called "v0.1" is stored there as "v0_1" - naming the file after it
+                    // silently renamed the script on the way out (#2364)
+                    const folder = scriptIdToZipFolder(id);
+                    let fileName = nameToFileName(getScriptName(id, scriptObj, I18n.getLanguage()));
+
+                    // Two scripts of one folder may carry the same name, their IDs cannot
+                    const key = `${folder}/${fileName}.${ext}`.toLowerCase();
+                    if (usedPaths.has(key)) {
+                        fileName = `${fileName}_${id.split('.').pop()}`;
+                    }
+                    usedPaths.add(key);
+
+                    zip.file(`${folder ? `${folder}/` : ''}${fileName}.${ext}`, text);
                 }
             }
             void zip.generateAsync({ type: 'blob' }).then(blob => {
@@ -1047,10 +1062,8 @@ export default class App extends GenericApp<AppProps, AppState> {
                                     }
                                 }
 
-                                // Convert file path back to script ID: common/myFolder/myScript.js → script.js.common.myFolder.myScript
-                                const scriptPath = relativePath.replace(/\.\w+$/, '').replace(/\//g, '.');
-                                const id = `script.js.${scriptPath}`;
-                                const name = scriptPath.split('.').pop() || scriptPath;
+                                // common/myFolder/myScript.js → script.js.common.myFolder.myScript
+                                const { id, name, parts: pathParts } = zipPathToScript(relativePath);
 
                                 // Ensure parent folders exist
                                 const parts = id.split('.');
@@ -1062,7 +1075,9 @@ export default class App extends GenericApp<AppProps, AppState> {
                                                 _id: folderId,
                                                 type: 'channel',
                                                 common: {
-                                                    name: parts[i - 1],
+                                                    // the unsanitized path part - a folder may carry
+                                                    // a dot in its name too
+                                                    name: pathParts[i - 3] || parts[i - 1],
                                                     expert: true,
                                                 },
                                                 native: {},
