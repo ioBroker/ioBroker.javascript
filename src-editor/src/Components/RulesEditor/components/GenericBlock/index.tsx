@@ -897,26 +897,42 @@ export abstract class GenericBlock<
         );
     }
 
+    /**
+     * Builds the `.replace()` call that puts the value behind `%s` or `%old` into a text.
+     *
+     * `%.1s` (any number of digits) rounds a numeric value to that many digits after the decimal point.
+     * The rounding goes through `formatValue()` of the sandbox, so the decimal separator follows the
+     * system setting `isFloatComma` - a German system gets `29,4` - and the float noise of a value like
+     * `29.400000000000002` is gone. A numeric string counts as a number; anything else is inserted as it
+     * is, whatever the pattern says, and a plain `%s` still inserts the raw value.
+     *
+     * The value goes in through a callback on purpose: handed over as a replacement string, a value
+     * containing `$&` or `$1` would be interpreted by `String.replace()` instead of being inserted.
+     */
+    static getValueReplace(token: 's' | 'old', valueExpr: string): string {
+        return `.replace(/%(?:\\.(\\d+))?${token}/g, (_m, d) => { const v = ${valueExpr}; return d !== undefined && (typeof v === "number" || (typeof v === "string" && v.trim() !== "")) && isFinite(v) ? formatValue(v, parseInt(d, 10)) : v; })`;
+    }
+
     static getReplacesInText(context: RuleContext): string {
         let value = '';
         // the enum trigger hands over the same event object as a state subscription, so the same
         // substitutions apply - it just has no single oid to recognise it by
         if ((context.trigger as RuleBlockConfigTriggerState)?.oidType || context.trigger?.id === 'TriggerEnumMembers') {
-            value =
-                '.replace(/%s/g, obj.state.val).replace(/%id/g, obj.id).replace(/%name/g, obj.common && obj.common.name).replace(/%old/g, obj.oldState.val)';
+            value = `${GenericBlock.getValueReplace('s', 'obj.state.val')}.replace(/%id/g, obj.id).replace(/%name/g, obj.common && obj.common.name)${GenericBlock.getValueReplace('old', 'obj.oldState.val')}`;
         } else if (context.trigger?.id === 'TriggerMessage') {
             // the payload of a message may be an object, and "[object Object]" is not what %s is for
-            value = '.replace(/%s/g, typeof data === "object" ? JSON.stringify(data) : data)';
+            value = GenericBlock.getValueReplace('s', 'typeof data === "object" ? JSON.stringify(data) : data');
         } else if (context.trigger?.id === 'TriggerFile') {
-            // %s is the name of the changed file, %id the object it belongs to - as with a state
-            value = '.replace(/%s/g, fileName).replace(/%id/g, fileId)';
+            // %s is the name of the changed file, %id the object it belongs to - as with a state.
+            // Nothing to round here, but a `%.1s` is still replaced and not left in the text
+            value = '.replace(/%(?:\\.\\d+)?s/g, fileName).replace(/%id/g, fileId)';
         } else if (context.trigger?.id === 'TriggerObject') {
             // there is no value behind an object change, so %s is what changed
-            value = '.replace(/%s/g, id).replace(/%id/g, id)';
+            value = '.replace(/%(?:\\.\\d+)?s/g, id).replace(/%id/g, id)';
         } else if (context.trigger?.id === 'TriggerLog') {
-            value = '.replace(/%s/g, info.message).replace(/%id/g, info.from)';
+            value = '.replace(/%(?:\\.\\d+)?s/g, info.message).replace(/%id/g, info.from)';
         } else if (context.conditionsStates.length) {
-            value = `.replace(/%s/g, ${context.conditionsStates[0].name}).replace(/%id/g, "${context.conditionsStates[0].id}")`;
+            value = `${GenericBlock.getValueReplace('s', context.conditionsStates[0].name)}.replace(/%id/g, "${context.conditionsStates[0].id}")`;
         }
         return value;
     }

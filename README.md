@@ -27,6 +27,9 @@ Executes Javascript, Typescript Scripts.
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Rules: the text of an action can round the trigger value with `%.1s` - any number of digits after the decimal point, also `%.2old` for the old value - formatted with the decimal separator of the system, so `Kühlschrank zu warm (%.1s°C)` gives `29,4°C` where `%s` gave `29.400000000000002°C`
+
 ### 10.1.3 (2026-08-30)
 * (@GermanBluefox) The plain text export named its files after the script ID instead of the script name, so every dot of a name came out as an underscore - `HK-Balkontuer_v0.1` was exported as `HK-Balkontuer_v0_1.js`, and importing it back renamed the script to that. The files are now named after the script (#2364)
 * (@GermanBluefox) Importing a plain text export treated a dot inside a file name as a folder level, so `PW-TV-Control_v0.6.js` created a folder `PW-TV-Control_v0` containing a script named `6`. Only the directories of the ZIP are folders now (#2364)

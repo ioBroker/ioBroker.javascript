@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
 
-import type { RuleBlockConfig, RuleUserRules } from '@iobroker/javascript-rules-dev';
+import type { RuleBlockConfig, RuleContext, RuleUserRules } from '@iobroker/javascript-rules-dev';
 
 import { compile } from '../helpers/Compile';
 import StandardBlocks from '../components/StandardBlocks';
 import ActionSetStateChanged from '../components/Blocks/ActionSetStateChanged';
-import type { GenericBlock } from '../components/GenericBlock';
+import { GenericBlock } from '../components/GenericBlock';
 
 /**
  * What a rule turns into is a JavaScript script, and nothing in the editor ever parses it - a block
@@ -104,7 +104,7 @@ describe('rule compilation', () => {
 
         it('substitutes %s with the payload', () => {
             expect(compileParsed(withNotification(trigger))).toContain(
-                '.replace(/%s/g, typeof data === "object" ? JSON.stringify(data) : data)',
+                'const v = typeof data === "object" ? JSON.stringify(data) : data;',
             );
         });
 
@@ -131,7 +131,7 @@ describe('rule compilation', () => {
 
         it('substitutes %s with the file name and %id with the object', () => {
             expect(compileParsed(withNotification(trigger))).toContain(
-                '.replace(/%s/g, fileName).replace(/%id/g, fileId)',
+                String.raw`.replace(/%(?:\.\d+)?s/g, fileName).replace(/%id/g, fileId)`,
             );
         });
 
@@ -159,7 +159,7 @@ describe('rule compilation', () => {
         it('subscribes with onObject and hands over the id', () => {
             const code = compileParsed(withNotification(trigger));
             expect(code).toContain('onObject("hm-rpc.0.*", async function (id, obj)');
-            expect(code).toContain('.replace(/%s/g, id).replace(/%id/g, id)');
+            expect(code).toContain(String.raw`.replace(/%(?:\.\d+)?s/g, id).replace(/%id/g, id)`);
         });
 
         // A deleted object arrives without `obj` - that is the only thing telling the two apart
@@ -202,7 +202,7 @@ describe('rule compilation', () => {
 
         it('substitutes %s with the message and %id with the source instance', () => {
             expect(compileParsed(withNotification(trigger))).toContain(
-                '.replace(/%s/g, info.message).replace(/%id/g, info.from)',
+                String.raw`.replace(/%(?:\.\d+)?s/g, info.message).replace(/%id/g, info.from)`,
             );
         });
 
@@ -421,7 +421,7 @@ describe('rule compilation', () => {
         // The callback is a plain state subscription, so %s means what it means everywhere else
         it('substitutes %s with the new value and %id with the state that changed', () => {
             const code = compileParsed(withNotification(trigger));
-            expect(code).toContain('.replace(/%s/g, obj.state.val)');
+            expect(code).toContain('const v = obj.state.val;');
             expect(code).toContain('.replace(/%id/g, obj.id)');
         });
 
@@ -533,6 +533,89 @@ describe('rule compilation', () => {
             const ids = blocks.map(block => block.getStaticData().id);
             expect(ids).toContain('ActionSetStateChanged');
             expect(ids).toContain('ActionSetState');
+        });
+    });
+});
+
+/**
+ * What the substitution does at runtime. The generated `.replace()` chain is run against a fake event
+ * with a `formatValue()` that behaves like the one of the sandbox on a system with `isFloatComma`, so
+ * the cases cover what a user gets in the message, not only what the code looks like.
+ */
+describe('value substitution in texts', () => {
+    const formatValue = (value: number | string, decimals: number): string =>
+        Number(value).toFixed(decimals).replace('.', ',');
+
+    function context(trigger: BlockConfig): RuleContext {
+        return { trigger, condition: { index: 0 }, conditionsStates: [], conditionsVars: [], conditionsDebug: [] };
+    }
+
+    function substitute(text: string, ctx: RuleContext, scope: Record<string, unknown>): string {
+        const replaces = GenericBlock.getReplacesInText(ctx);
+        const names = Object.keys(scope);
+        const fn = new Function(...names, 'formatValue', `return ${JSON.stringify(text)}${replaces};`);
+        return fn(...names.map(name => scope[name]), formatValue);
+    }
+
+    describe('with a state trigger', () => {
+        const ctx = context({ id: 'TriggerState', acceptedBy: 'triggers', _id: 1, oidType: 'number' } as BlockConfig);
+        const event = (val: unknown, oldVal: unknown = 20): Record<string, unknown> => ({
+            id: 'hm-rpc.0.fridge.TEMP',
+            common: { name: 'Fridge' },
+            state: { val },
+            oldState: { val: oldVal },
+        });
+
+        it('inserts the raw value for %s, float noise included', () => {
+            expect(substitute('Fridge too warm (%s°C)', ctx, { obj: event(29.400000000000002) })).toBe(
+                'Fridge too warm (29.400000000000002°C)',
+            );
+        });
+
+        it('rounds to the given digits after the decimal point with the separator of the system', () => {
+            expect(substitute('%.1s°C', ctx, { obj: event(29.400000000000002) })).toBe('29,4°C');
+            expect(substitute('%.0s / %.3s', ctx, { obj: event(29.46) })).toBe('29 / 29,460');
+        });
+
+        it('rounds a numeric string, too', () => {
+            expect(substitute('%.1s', ctx, { obj: event('29.400000000000002') })).toBe('29,4');
+        });
+
+        it('leaves a value that is no number as it is, whatever the pattern says', () => {
+            expect(substitute('%.1s', ctx, { obj: event('on') })).toBe('on');
+            expect(substitute('%.1s', ctx, { obj: event(true) })).toBe('true');
+            expect(substitute('%.1s', ctx, { obj: event(null) })).toBe('null');
+            expect(substitute('%.1s', ctx, { obj: event('') })).toBe('');
+        });
+
+        it('rounds the old value with %.Nold and keeps %old raw', () => {
+            expect(substitute('%old -> %.2old', ctx, { obj: event(1, 20.456) })).toBe('20.456 -> 20,46');
+        });
+
+        it('still substitutes %id and %name', () => {
+            expect(substitute('%name (%id): %s', ctx, { obj: event(5) })).toBe('Fridge (hm-rpc.0.fridge.TEMP): 5');
+        });
+
+        it('inserts a value containing replacement patterns literally', () => {
+            expect(substitute('[%s]', ctx, { obj: event('$& $1 $$') })).toBe('[$& $1 $$]');
+        });
+    });
+
+    describe('with a message trigger', () => {
+        const ctx = context({ id: 'TriggerMessage', acceptedBy: 'triggers', _id: 1, message: 'm' } as BlockConfig);
+
+        it('rounds a numeric payload and serialises an object', () => {
+            expect(substitute('%.1s', ctx, { data: 2.26 })).toBe('2,3');
+            expect(substitute('%s', ctx, { data: { a: 1 } })).toBe('{"a":1}');
+            expect(substitute('%.1s', ctx, { data: { a: 1 } })).toBe('{"a":1}');
+        });
+    });
+
+    describe('with a file trigger', () => {
+        const ctx = context({ id: 'TriggerFile', acceptedBy: 'triggers', _id: 1 } as BlockConfig);
+
+        it('replaces %s and a %.1s with the file name', () => {
+            expect(substitute('%s|%.1s|%id', ctx, { fileName: 'a.txt', fileId: 'vis.0' })).toBe('a.txt|a.txt|vis.0');
         });
     });
 });
