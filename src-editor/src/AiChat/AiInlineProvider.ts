@@ -84,8 +84,14 @@ export function registerAiInlineProvider(
                         for (const p of preferenceOrder) {
                             const hit = cachedProviders.providers.find(pr => pr.provider === p);
                             if (hit) {
-                                // `custom` is routed as openai on the wire (same protocol); baseUrl triggers it backend-side.
-                                provider = p === 'custom' ? 'openai' : p;
+                                /*
+                                 * The provider goes out as it is. `custom` used to be rewritten to
+                                 * `openai` here because both speak the same protocol - but the backend
+                                 * picks the *credentials* by that name, so the request went to the
+                                 * custom endpoint carrying the OpenAI key, and with an empty one it was
+                                 * sent without any key at all (#2369).
+                                 */
+                                provider = p;
                                 baseUrl = hit.baseUrl || '';
                                 break;
                             }

@@ -245,7 +245,9 @@ export async function loadModels(
         queries.push(
             socket
                 .sendTo(instanceId, 'testApiConnection', {
-                    provider: provider === 'custom' ? 'openai' : provider,
+                    // `custom` stays `custom`: the backend picks the credentials by this name, and
+                    // rewriting it to `openai` made it read the OpenAI key for the custom endpoint (#2369)
+                    provider,
                     // apiKey/baseUrl intentionally omitted — backend resolves from this.config
                 })
                 .then((result: { models?: string[]; error?: string }) => {

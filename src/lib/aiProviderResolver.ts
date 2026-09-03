@@ -78,13 +78,23 @@ export function resolveProviderCredentials(
     const cfg = config || {};
     const keyField = PROVIDER_KEY_FIELD[provider as AiProvider];
     const apiKey = keyField ? (cfg[keyField] || '').toString().trim() : '';
-    // baseUrl only applies to openai-compatible providers (custom / openai endpoint override).
-    // An empty/whitespace messageBaseUrl counts as "not provided" and falls back to the stored value,
-    // so the frontend can safely send `baseUrl: ''` without overriding a configured custom URL.
-    const baseUrl =
-        provider === 'custom' || provider === 'openai'
-            ? (messageBaseUrl || cfg.gptBaseUrl || '').toString().trim()
-            : '';
+    /*
+     * The stored `gptBaseUrl` belongs to the `custom` provider and to no other. `openai` used to
+     * inherit it, which sent every request meant for api.openai.com - and the OpenAI key with it -
+     * to whatever host the custom endpoint pointed at, with no way to opt out: an empty
+     * `messageBaseUrl` counts as "not provided" and fell back to the stored value again (#2369).
+     *
+     * `openai` still honours an *explicit* `messageBaseUrl`, which is the escape hatch for a proxy
+     * in front of OpenAI, but it no longer inherits the custom endpoint of another provider.
+     */
+    let baseUrl = '';
+    if (provider === 'custom') {
+        // An empty/whitespace messageBaseUrl counts as "not provided" and falls back to the stored
+        // value, so the frontend can safely send `baseUrl: ''` without losing the configured URL.
+        baseUrl = (messageBaseUrl || cfg.gptBaseUrl || '').toString().trim();
+    } else if (provider === 'openai') {
+        baseUrl = (messageBaseUrl || '').toString().trim();
+    }
     return { apiKey, baseUrl };
 }
 

@@ -709,7 +709,7 @@
                     "label": "Test Custom API",
                     "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik00IDFoMTZ2NUg0VjF6bTEgMXYzaDE0VjJINXptLTEgNmgxNnY1SDRWOHptMSAxdjNoMTRWOUg1em0tMSA2aDE2djVINHYtNXptMSAxdjNoMTR2LTNINXptMi0xMmgydjFIN1Yzem0wIDZoMnYxSDdWOXptMCA2aDJ2MUg3di0xeiIvPjwvc3ZnPg==",
                     "command": "testApiConnection",
-                    "jsonData": "{\"apiKey\": \"${data.gptBaseUrlKey}\", \"baseUrl\": \"${data.gptBaseUrl}\", \"provider\": \"openai\", \"credentialType\": \"${data.credentialType}\", \"credentialId\": \"${data.credentialIdGptBaseUrlKey}\"}",
+                    "jsonData": "{\"apiKey\": \"${data.gptBaseUrlKey}\", \"baseUrl\": \"${data.gptBaseUrl}\", \"provider\": \"custom\", \"credentialType\": \"${data.credentialType}\", \"credentialId\": \"${data.credentialIdGptBaseUrlKey}\"}",
                     "variant": "outlined",
                     "disabled": "!data.gptBaseUrl",
                     "xs": 12,

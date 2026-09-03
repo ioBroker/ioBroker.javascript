@@ -30,6 +30,8 @@ Executes Javascript, Typescript Scripts.
 ### **WORK IN PROGRESS**
 * (@GermanBluefox) Rules: the text of an action can round the trigger value with `%.1s` - any number of digits after the decimal point, also `%.2old` for the old value - formatted with the decimal separator of the system, so `Kühlschrank zu warm (%.1s°C)` gives `29,4°C` where `%s` gave `29.400000000000002°C`
 * (@GermanBluefox) Corrected the function block in blockly
+* (@GermanBluefox) A custom OpenAI-compatible AI endpoint answered "Invalid API key" in the inline completion and while loading the model list, although the test button in the settings said "ok": both asked the adapter for the provider `openai`, and the adapter picks the key by that name, so they used the "OpenAI API key" instead of the "Custom API key". The custom endpoint is now addressed as what it is, everywhere (#2369)
+* (@GermanBluefox) A configured "Custom API Base URL" also redirected every request meant for OpenAI itself to that address - with the OpenAI key attached and no way to switch it off. The base URL now belongs to the custom endpoint alone, so both can be used side by side. If the key of your custom endpoint is in the "OpenAI API key" field, move it to the "Custom API key" field; the adapter writes a warning in the log if it finds such a setup (#2369)
 
 ### 10.1.3 (2026-08-30)
 * (@GermanBluefox) The plain text export named its files after the script ID instead of the script name, so every dot of a name came out as an underscore - `HK-Balkontuer_v0.1` was exported as `HK-Balkontuer_v0_1.js`, and importing it back renamed the script to that. The files are now named after the script (#2364)

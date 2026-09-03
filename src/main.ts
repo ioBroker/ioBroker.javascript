@@ -1055,6 +1055,34 @@ class JavaScript extends Adapter {
     }
 
     /**
+     * Warns about the one setup that the fix for #2369 stops working.
+     *
+     * Until 10.1.3 a custom OpenAI-compatible endpoint was addressed as `provider: 'openai'`, so its
+     * requests were signed with the OpenAI key and routed to the custom URL. The documented
+     * workaround was therefore to put the *custom* endpoint's key into the OpenAI field. Both halves
+     * of that are gone now - the two providers no longer share a key or a URL - and such a setup
+     * would silently start answering 401. Deliberately no fallback to `gptKey`: that is what used to
+     * hand a real OpenAI key to a third-party host.
+     */
+    private warnAboutMisplacedCustomAiKey(): void {
+        if (!(this.config.gptBaseUrl || '').trim()) {
+            return;
+        }
+        const manager = this.config.credentialType === 'manager';
+        const custom = manager
+            ? getProviderCredentialId(this.config, 'custom')
+            : (this.config.gptBaseUrlKey || '').trim();
+        const openai = manager ? getProviderCredentialId(this.config, 'openai') : (this.config.gptKey || '').trim();
+        if (!custom && openai) {
+            this.log.warn(
+                `A custom AI endpoint ("${this.config.gptBaseUrl}") is configured, but its own API key is empty. ` +
+                    `Requests to it are no longer signed with the OpenAI key - move the key of that endpoint into ` +
+                    `the "Custom API key" field of the adapter settings.`,
+            );
+        }
+    }
+
+    /**
      * In `manager` mode, subscribe to all configured AI credentials so that edits made in the
      * admin credential manager (Settings → Credentials) are picked up live, without restarting
      * the adapter (the `system.credentials.*` objects are global, not part of the instance config).
@@ -2015,6 +2043,7 @@ class JavaScript extends Adapter {
         // In `manager` credential mode, subscribe to the configured AI credentials so changes in the
         // central credential store are picked up live (the keys are cached for the AI sendTo handlers).
         await this.subscribeAiCredentials();
+        this.warnAboutMisplacedCustomAiKey();
 
         // Read the central credential store, so the scripts can use `SECRETS.<name>.<field>`.
         // Later changes are picked up in `onObjectChange`.
