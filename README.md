@@ -27,7 +27,7 @@ Executes Javascript, Typescript Scripts.
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 10.1.4 (2026-09-03)
 * (@GermanBluefox) Rules: the text of an action can round the trigger value with `%.1s` - any number of digits after the decimal point, also `%.2old` for the old value - formatted with the decimal separator of the system, so `Kühlschrank zu warm (%.1s°C)` gives `29,4°C` where `%s` gave `29.400000000000002°C`
 * (@GermanBluefox) Corrected the function block in blockly
 * (@GermanBluefox) A custom OpenAI-compatible AI endpoint answered "Invalid API key" in the inline completion and while loading the model list, although the test button in the settings said "ok": both asked the adapter for the provider `openai`, and the adapter picks the key by that name, so they used the "OpenAI API key" instead of the "Custom API key". The custom endpoint is now addressed as what it is, everywhere (#2369)
@@ -99,11 +99,6 @@ Executes Javascript, Typescript Scripts.
 * (@GermanBluefox) Fixed the mirror tests on macOS. They asserted on the first event a watcher reported, while `fs.watch` there works at directory granularity and sends an event for the watched directory before the one for the file. They now wait for the change they are about, and say what arrived instead if it never comes
 * (@GermanBluefox) Made the mirror tests independent of how long a watch takes to arm. The change under test is repeated while waiting, so it cannot be made before the watcher is listening - the same commit produced a green and a red macOS job over that
 * (@GermanBluefox) Added a wizard to the rule editor that builds a rule step by step - trigger, condition and action are configured in place, and the last step shows the finished rule
-
-### 10.0.0 (2026-08-04)
-* (@GermanBluefox) TypeScript 6 support
-* (@GermanBluefox) GUI was migrated to React 19 and MUI 9
-* (@GermanBluefox) Showed the host name in the instance selection dialog
 
 ## License
 The MIT License (MIT)

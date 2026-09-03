@@ -1,4 +1,9 @@
 The newest change log is in README.md
+## 10.0.0 (2026-08-04)
+* (@GermanBluefox) TypeScript 6 support
+* (@GermanBluefox) GUI was migrated to React 19 and MUI 9
+* (@GermanBluefox) Showed the host name in the instance selection dialog
+
 ## 9.3.1 (2026-06-18)
 * (@GermanBluefox) Added the possibility to execute one-way scripts without saving it
 
