@@ -1,15 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Box } from '@mui/material';
-import type { ThemeType } from '@iobroker/gui-components';
+import { useTheme } from '@mui/material/styles';
+import type { IobTheme } from '@iobroker/gui-components';
 
-import { getBlocklyDarkTheme } from '../Components/blocklyDarkTheme';
+import { getBlocklyTheme } from '../Components/blocklyTheme';
 
 interface AiBlocklyPreviewProps {
     xml: string;
-    themeType: ThemeType;
 }
 
-const AiBlocklyPreview: React.FC<AiBlocklyPreviewProps> = ({ xml, themeType }) => {
+const AiBlocklyPreview: React.FC<AiBlocklyPreviewProps> = ({ xml }) => {
+    // The preview paints its workspace in the colours of the admin, so it needs the whole palette
+    // and not just the theme type the chat panel used to pass down - the `ThemeProvider` of
+    // `App.tsx` has it.
+    const theme = useTheme<IobTheme>();
     const containerRef = useRef<HTMLDivElement>(null);
     const workspaceRef = useRef<any>(null);
     const [dynamicHeight, setDynamicHeight] = useState(60);
@@ -49,7 +53,7 @@ const AiBlocklyPreview: React.FC<AiBlocklyPreviewProps> = ({ xml, themeType }) =
                 move: { scrollbars: false, drag: false, wheel: false },
                 sounds: false,
                 renderer: 'thrasos',
-                theme: themeType === 'dark' ? getBlocklyDarkTheme() : 'classic',
+                theme: getBlocklyTheme(theme),
                 media: 'google-blockly/media/',
             });
 
@@ -103,7 +107,7 @@ const AiBlocklyPreview: React.FC<AiBlocklyPreviewProps> = ({ xml, themeType }) =
                 workspaceRef.current = null;
             }
         };
-    }, [xml, themeType]);
+    }, [xml, theme]);
 
     return (
         <Box

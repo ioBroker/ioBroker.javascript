@@ -3,7 +3,7 @@ import React from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import { Cancel as IconCancel, Check as IconOk } from '@mui/icons-material';
 
-import { I18n, Message as DialogMessage, type ThemeType } from '@iobroker/gui-components';
+import { I18n, Message as DialogMessage, type IobTheme, type ThemeType } from '@iobroker/gui-components';
 
 import DialogError from '../Dialogs/Error';
 import DialogExport from '../Dialogs/Export';
@@ -17,7 +17,7 @@ import {
     migrateGenerators,
 } from './blockly-plugins';
 import { loadOwnBlocks } from './blockly-plugins/bridge';
-import { getBlocklyDarkTheme } from './blocklyDarkTheme';
+import { getBlocklyTheme } from './blocklyTheme';
 
 let languageBlocklyLoaded = false;
 let languageOwnLoaded = false;
@@ -52,6 +52,7 @@ interface BlocklyEditorProps {
     code: string;
     scriptId: string;
     themeType: ThemeType;
+    theme: IobTheme;
 }
 
 interface BlocklyEditorState {
@@ -61,6 +62,7 @@ interface BlocklyEditorState {
     message: string | { text: string; title: string };
     error: string | { text: string; title: string };
     themeType: ThemeType;
+    themeName: string;
     exportText: string;
     importText: boolean;
     searchText: string;
@@ -101,6 +103,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
             message: '',
             error: '',
             themeType: this.props.themeType,
+            themeName: this.props.theme.name,
             exportText: '',
             importText: false,
             searchText: this.props.searchText || '',
@@ -255,8 +258,10 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
             this.searchId();
         }
 
-        if (this.state.themeType !== nextProps.themeType) {
-            this.setState({ themeType: nextProps.themeType }, () => this.updateBackground());
+        if (this.state.themeType !== nextProps.themeType || this.state.themeName !== nextProps.theme.name) {
+            this.setState({ themeType: nextProps.themeType, themeName: nextProps.theme.name }, () =>
+                this.updateBackground(),
+            );
         }
 
         if (this.originalCode !== nextProps.code) {
@@ -836,7 +841,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         // https://developers.google.com/blockly/reference/js/blockly.blocklyoptions_interface.md
         this.blocklyWorkspace = BlocklyEditor.Blockly.inject(this.blockly, {
             renderer: 'thrasos',
-            theme: this.state.themeType === 'dark' ? getBlocklyDarkTheme() : 'classic',
+            theme: getBlocklyTheme(this.props.theme),
             media: 'google-blockly/media/',
             toolbox: toolboxXml,
             zoom: {
@@ -942,12 +947,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
     }
 
     updateBackground(): void {
-        if (this.state.themeType === 'dark') {
-            this.blocklyWorkspace?.setTheme(getBlocklyDarkTheme());
-        } else if (this.blocklyWorkspace) {
-            this.blocklyWorkspace.getThemeManager();
-            this.blocklyWorkspace.setTheme(BlocklyEditor.Blockly.Themes.Classic);
-        }
+        this.blocklyWorkspace?.setTheme(getBlocklyTheme(this.props.theme));
     }
 
     componentWillUnmount(): void {

@@ -406,10 +406,7 @@ const AiChatMessage: React.FC<AiChatMessageProps> = ({
                                     key={index}
                                     sx={{ my: 1 }}
                                 >
-                                    <AiBlocklyPreview
-                                        xml={part.content}
-                                        themeType={themeType}
-                                    />
+                                    <AiBlocklyPreview xml={part.content} />
                                     <Box sx={{ display: 'flex', gap: 0.5, mt: 0.5 }}>
                                         {onApplyCode && (
                                             <Button

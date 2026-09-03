@@ -236,9 +236,6 @@ const styles: Record<string, any> = {
     tabButton: {
         minHeight: 48,
     },
-    tabButtonWrapper: {
-        display: 'inline-block',
-    },
     menuIcon: {
         width: 18,
         height: 18,
@@ -1166,9 +1163,22 @@ class Editor extends React.Component<EditorProps, EditorState> {
                     indicatorColor="primary"
                     style={{
                         position: 'relative',
-                        marginLeft: 10,
-                        width: this.state.editing.length > 1 ? 'calc(100% - 50px)' : '100%',
+                        width: '100%',
                         display: 'inline-block',
+                    }}
+                    /*
+                     * The tab row carries the 1px rule that separates it from the toolbar (`MuiTabs`
+                     * root, see the ioBroker themes). That rule has to reach both edges of the pane,
+                     * so the 10px the first tab is inset by and the lane the "close all but current"
+                     * button needs on the right sit on the tab strip. They used to be a `margin-left`
+                     * and a `calc(100% - 50px)` width on the tab row itself, which pulled the rule
+                     * 10px clear of the left edge and 40px clear of the right one.
+                     */
+                    sx={{
+                        '& .MuiTabs-list': {
+                            paddingLeft: '10px',
+                            paddingRight: this.state.editing.length > 1 ? '50px' : '10px',
+                        },
                     }}
                     textColor="primary"
                     variant="scrollable"
@@ -1202,7 +1212,6 @@ class Editor extends React.Component<EditorProps, EditorState> {
                                     key={id}
                                     label={label}
                                     value={id}
-                                    sx={{ '& .MuiTab-wrapper': styles.tabButtonWrapper }}
                                 />
                             );
                         }
@@ -1272,7 +1281,6 @@ class Editor extends React.Component<EditorProps, EditorState> {
                                 style={styles.tabButton}
                                 value={id}
                                 title={title}
-                                sx={{ '& .MuiTab-wrapper': styles.tabButtonWrapper }}
                             />
                         );
                     })}
@@ -1286,7 +1294,6 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             style={styles.tabButton}
                             value={this.props.debugInstance.adapter}
                             title={this.props.debugInstance.adapter}
-                            sx={{ '& .MuiTab-wrapper': styles.tabButtonWrapper }}
                         />
                     ) : (
                         ''
@@ -2125,6 +2132,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                         command={this.state.cmdToBlockly}
                         key="BlocklyEditor"
                         themeType={this.state.themeType}
+                        theme={this.props.theme}
                         searchText={this.state.searchText}
                         code={this.scripts[this.state.selected].source || ''}
                         scriptId={this.state.selected}

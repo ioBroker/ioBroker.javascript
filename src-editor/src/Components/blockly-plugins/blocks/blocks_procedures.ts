@@ -11,7 +11,18 @@
  *   `Blocks['procedures_defreturn']` and friends. Those methods are not part of the public typings,
  *   so they are read through `coreBlock()`.
  */
-import { Blocks, FieldTextInput, Msg, Procedures, icons, utils, type Block, type BlockSvg, type Connection, type Workspace } from 'blockly/core';
+import {
+    Blocks,
+    FieldTextInput,
+    Msg,
+    Procedures,
+    icons,
+    utils,
+    type Block,
+    type BlockSvg,
+    type Connection,
+    type Workspace,
+} from 'blockly/core';
 import { javascriptGenerator, Order } from 'blockly/javascript';
 
 import { b64DecodeUnicode, FieldScript } from './field_script';
@@ -181,10 +192,7 @@ export function install(): void {
         }
         let loopTrap = '';
         if (generator.INFINITE_LOOP_TRAP) {
-            loopTrap = generator.prefixLines(
-                generator.injectId(generator.INFINITE_LOOP_TRAP, block),
-                generator.INDENT,
-            );
+            loopTrap = generator.prefixLines(generator.injectId(generator.INFINITE_LOOP_TRAP, block), generator.INDENT);
         }
         let returnValue = '';
         let xfix2 = '';
@@ -262,10 +270,7 @@ export function install(): void {
                 this.setMutator(new icons.MutatorIcon(['procedures_mutatorarg'], this as unknown as BlockSvg));
 
                 const options = this.workspace.options as any;
-                if (
-                    (options.comments || options.parentWorkspace?.options.comments) &&
-                    Msg[`${messages}_COMMENT`]
-                ) {
+                if ((options.comments || options.parentWorkspace?.options.comments) && Msg[`${messages}_COMMENT`]) {
                     this.setCommentText(Msg[`${messages}_COMMENT`]);
                 }
 
@@ -319,23 +324,32 @@ export function install(): void {
                 return containerBlock;
             },
 
-            /** Reconfigure this block based on the mutator dialog's components */
+            /**
+             * Reconfigure this block based on the mutator dialog's components.
+             *
+             * Kept in step with `compose` of the standard block, which cannot be reused as it is:
+             * it also reads the container's "STATEMENTS" checkbox and would give this block the
+             * statement input it deliberately does not have - its body is the script field.
+             */
             compose: function (this: ProcedureBlock, containerBlock: Block): void {
                 // Parameter list.
                 this.arguments_ = [];
                 this.paramIds_ = [];
                 this.argumentVarModels_ = [];
                 let paramBlock = containerBlock.getInputTargetBlock('STACK');
-                while (paramBlock) {
+                // An insertion marker is the preview of a block still being dragged, not a parameter
+                while (paramBlock && !paramBlock.isInsertionMarker()) {
                     const varName = paramBlock.getFieldValue('NAME');
                     this.arguments_.push(varName);
-                    const variable = (this.workspace as any).getVariable(varName, '');
-                    if (variable != null) {
-                        this.argumentVarModels_.push(variable);
-                    } else {
-                        console.log(`Failed to get variable named ${varName}, ignoring.`);
-                    }
-
+                    /*
+                     * Blockly 13 dropped `Workspace.getVariable` in favour of the variable map. The
+                     * call threw on the *first* parameter, and since the name had already been pushed
+                     * the block was left holding exactly one - however many the dialog contained
+                     * (#2368). The model is pushed even when it is null, so that `mutationToDom`,
+                     * which walks the models and indexes `paramIds_` with them, stays aligned with
+                     * `arguments_`.
+                     */
+                    this.argumentVarModels_.push(this.workspace.getVariableMap().getVariable(varName, ''));
                     this.paramIds_.push(paramBlock.id);
                     paramBlock = paramBlock.nextConnection && paramBlock.nextConnection.targetBlock();
                 }
@@ -438,10 +452,10 @@ export function install(): void {
     javascriptGenerator.forBlock['procedures_callcustomnoreturn'] = function (block: Block): string {
         // Generated code for a function call as a statement is the same as a function call as a
         // value, with the addition of a line ending.
-        const tuple = javascriptGenerator.forBlock['procedures_callcustomreturn'](
-            block,
-            javascriptGenerator,
-        ) as [string, Order];
+        const tuple = javascriptGenerator.forBlock['procedures_callcustomreturn'](block, javascriptGenerator) as [
+            string,
+            Order,
+        ];
 
         return `${tuple[0]};\n`;
     };

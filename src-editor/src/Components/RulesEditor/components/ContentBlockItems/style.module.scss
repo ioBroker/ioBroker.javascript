@@ -138,8 +138,16 @@
         height: 100%;
     }
 }
+/*
+ * The "or"/"else" section, folded away. `.contentBlockItem` gives every section a 64px floor so an
+ * empty one is still a comfortable drop target - that floor has to go here, or the folded section
+ * keeps those 64px, shows the top 64px of the very cards it is supposed to hide and clips them
+ * against `overflow: hidden`. Being the last thing in the rule, that clipped card looked like a
+ * rule that could not be scrolled to its end.
+ */
 .contentHeightOff {
     height: 0;
+    min-height: 0;
     overflow: hidden;
     animation: none;
 }
@@ -178,7 +186,6 @@
    layout everywhere, so only the collapse animation of the "or"/"else" sections stays here. */
 @media screen and (max-width: 835px) {
     .contentHeightOff {
-        min-height: 0;
         transition: min-height 0.3s;
     }
     .contentHeightOn {
