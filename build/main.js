@@ -1181,6 +1181,8 @@ class JavaScript extends adapter_core_1.Adapter {
                     const messages = obj.message?.messages;
                     const tools = obj.message?.tools;
                     const provider = (obj.message?.provider || 'openai').trim();
+                    // How long the caller is willing to wait - see `resolveRequestTimeout`
+                    const requestTimeout = (0, aiProviderResolver_1.resolveRequestTimeout)(obj.message?.timeout);
                     const { apiKey, baseUrl } = await this.resolveAiCredentials(provider, {
                         messageBaseUrl: obj.message?.baseUrl,
                     });
@@ -1237,8 +1239,16 @@ class JavaScript extends adapter_core_1.Adapter {
                             messages,
                             stream: false,
                             ...(tools?.length ? { tools } : {}),
-                            // Disable thinking/reasoning for local models to save context and speed
-                            ...(baseUrl ? { reasoning_effort: 'none' } : {}),
+                            /*
+                             * `reasoning_effort` used to be pinned to `none` for every custom base URL,
+                             * to save context and time on a local model. Behind a proxy that fronts a
+                             * subscription, the same setting turns off the reasoning the model is being
+                             * used for, or is rejected outright. It is a setting now, and the default is
+                             * to leave the parameter out and let the endpoint decide.
+                             */
+                            ...(this.config.aiReasoningEffort
+                                ? { reasoning_effort: this.config.aiReasoningEffort }
+                                : {}),
                         };
                     }
                     const body = JSON.stringify(bodyObj);
@@ -1254,7 +1264,7 @@ class JavaScript extends adapter_core_1.Adapter {
                         const req = requestModule.request(url, {
                             method: 'POST',
                             headers: chatHeaders,
-                            timeout: 600000,
+                            timeout: requestTimeout,
                             ...(isHttps && this.config.allowSelfSignedCerts ? { rejectUnauthorized: false } : {}),
                         }, res => {
                             let data = '';
@@ -1312,7 +1322,7 @@ class JavaScript extends adapter_core_1.Adapter {
                         });
                         req.on('timeout', () => {
                             req.destroy();
-                            this.sendTo(obj.from, obj.command, { error: 'Connection timeout (600s)' }, obj.callback);
+                            this.sendTo(obj.from, obj.command, { error: `Connection timeout (${Math.round(requestTimeout / 1000)}s)` }, obj.callback);
                         });
                         req.write(bodyBuffer);
                         req.end();
@@ -2438,7 +2448,7 @@ class JavaScript extends adapter_core_1.Adapter {
             return false;
         }
     }
-    execute(script, name, engineType, verbose, debug, 
+    execute(script, name, engineType, verbose, debug,
     /**
      * Optional sink for the "execute" message API. When provided, the script runs in an
      * ephemeral diagnostic mode: every log line (the script's own `log()`/`console.*` output

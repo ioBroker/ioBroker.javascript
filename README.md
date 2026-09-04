@@ -27,11 +27,20 @@ Executes Javascript, Typescript Scripts.
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) The reasoning of an OpenAI-compatible endpoint was switched off unconditionally: `reasoning_effort: "none"` went out with every request as soon as a custom base URL was configured. That is right for a small local model and wrong for everything else - behind a proxy it turns off the reasoning of the very model one is paying for, or is rejected. It is a setting now ("Reasoning effort"), and the default leaves the parameter out and lets the endpoint decide
+* (@GermanBluefox) The AI editor told the adapter how long it was willing to wait, and the adapter never read it: a stuck inline completion held its slot for the full ten minutes instead of the fifteen seconds it asked for
+* (@GermanBluefox) The inline completion took the model chosen in the AI chat but picked the provider itself, so a model of one provider could be requested with the credentials and at the endpoint of another. Model and provider are now remembered and used together
+* (@GermanBluefox) When two providers offer a model of the same name - a proxy and the vendor behind it, for instance - which of them served it was decided by whichever answered first, and could change from one reload to the next. The provider configured first wins now, so the direct route is preferred over a proxy
+
 ### 10.1.4 (2026-09-03)
 * (@GermanBluefox) Rules: the text of an action can round the trigger value with `%.1s` - any number of digits after the decimal point, also `%.2old` for the old value - formatted with the decimal separator of the system, so `Kühlschrank zu warm (%.1s°C)` gives `29,4°C` where `%s` gave `29.400000000000002°C`
 * (@GermanBluefox) Corrected the function block in blockly
 * (@GermanBluefox) A custom OpenAI-compatible AI endpoint answered "Invalid API key" in the inline completion and while loading the model list, although the test button in the settings said "ok": both asked the adapter for the provider `openai`, and the adapter picks the key by that name, so they used the "OpenAI API key" instead of the "Custom API key". The custom endpoint is now addressed as what it is, everywhere (#2369)
 * (@GermanBluefox) A configured "Custom API Base URL" also redirected every request meant for OpenAI itself to that address - with the OpenAI key attached and no way to switch it off. The base URL now belongs to the custom endpoint alone, so both can be used side by side. If the key of your custom endpoint is in the "OpenAI API key" field, move it to the "Custom API key" field; the adapter writes a warning in the log if it finds such a setup (#2369)
+* (@GermanBluefox) A folded "or"/"else" section of a rule still occupied the 64px every section reserves as a drop target, and showed the top 64px of the very cards it was supposed to hide - clipped, and out of reach of the scrollbar. Being the last thing in the rule, that looked like a rule that could not be scrolled to its end
+* (@GermanBluefox) The 1px line between the script tabs and the toolbar stopped 10px short of the left edge and 40px short of the right one: the tab row carried a margin and a `calc(100% - 50px)` width to leave room for the "close all but current" button. Both are padding on the tab strip now, so the line reaches the edges of the pane
+* (@GermanBluefox) Blockly was grey in every dark theme - workspace, toolbox and flyout were hard-coded colours, which left a grey block sitting in the middle of, for instance, the navy "modernDark" admin. They follow the colours of the active ioBroker theme now, in light themes as well. The blocks themselves keep the colour of their category
 
 ### 10.1.3 (2026-08-30)
 * (@GermanBluefox) The plain text export named its files after the script ID instead of the script name, so every dot of a name came out as an underscore - `HK-Balkontuer_v0.1` was exported as `HK-Balkontuer_v0_1.js`, and importing it back renamed the script to that. The files are now named after the script (#2364)

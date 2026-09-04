@@ -1,6 +1,8 @@
 import type * as monacoEditor from 'monaco-editor';
 import type { AdminConnection } from '@iobroker/gui-components';
 
+import { readRememberedModel } from './AiChatService';
+
 const DEBOUNCE_MS = 800;
 
 const SYSTEM_PROMPT = `You are a code completion engine for ioBroker JavaScript adapter scripts.
@@ -77,32 +79,27 @@ export function registerAiInlineProvider(
                             }
                         }
 
-                        // Prefer local/custom (faster), then cloud providers.
-                        const preferenceOrder = ['custom', 'openai', 'deepseek', 'anthropic', 'gemini'];
-                        let provider = '';
-                        let baseUrl = '';
-                        for (const p of preferenceOrder) {
-                            const hit = cachedProviders.providers.find(pr => pr.provider === p);
-                            if (hit) {
-                                /*
-                                 * The provider goes out as it is. `custom` used to be rewritten to
-                                 * `openai` here because both speak the same protocol - but the backend
-                                 * picks the *credentials* by that name, so the request went to the
-                                 * custom endpoint carrying the OpenAI key, and with an empty one it was
-                                 * sent without any key at all (#2369).
-                                 */
-                                provider = p;
-                                baseUrl = hit.baseUrl || '';
-                                break;
-                            }
-                        }
-                        if (!provider) {
+                        /*
+                         * Model and provider are taken together, because they belong together.
+                         *
+                         * The model used to come from the chat panel while the provider was picked
+                         * here by a preference order, so a model of one provider could be requested
+                         * with the credentials - and at the endpoint - of another. On top of that
+                         * `custom` was rewritten to `openai`, and since the backend picks the
+                         * credentials by that name the request reached the custom endpoint carrying
+                         * the OpenAI key, or none at all (#2369).
+                         *
+                         * Without a remembered pair there is nothing to complete with: the model is
+                         * chosen in the chat panel, and an empty one only ever produced an error that
+                         * the editor swallowed anyway.
+                         */
+                        const { model: savedModel, provider } = readRememberedModel();
+                        const hit = provider && cachedProviders.providers.find(pr => pr.provider === provider);
+                        if (!savedModel || !hit) {
                             resolve(undefined);
                             return;
                         }
-
-                        // Get saved model or use first available
-                        const savedModel = window.localStorage.getItem('openai-model') || '';
+                        const baseUrl = hit.baseUrl || '';
 
                         // Build context: lines before and after cursor
                         const totalLines = model.getLineCount();

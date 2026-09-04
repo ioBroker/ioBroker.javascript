@@ -98,6 +98,28 @@ export function resolveProviderCredentials(
     return { apiKey, baseUrl };
 }
 
+/** Ceiling for an AI request, and the budget when the caller names none */
+export const MAX_AI_REQUEST_TIMEOUT_MS = 600_000;
+
+/**
+ * How long to wait for an AI endpoint, from the `timeout` the caller put in the message.
+ *
+ * The inline completion asks for a short budget because it must not sit on the editor, the chat
+ * panel for a long one because a reasoning model takes its time. The field was sent all along but
+ * never read, so both of them waited out the full ten minutes.
+ *
+ * @param messageTimeout the value from the sendTo message, in milliseconds
+ */
+export function resolveRequestTimeout(messageTimeout?: unknown): number {
+    const requested = parseInt(messageTimeout as string, 10);
+    // Nothing usable, or a zero - which is how Node itself spells "no timeout" - gets the ceiling
+    if (isNaN(requested) || requested <= 0) {
+        return MAX_AI_REQUEST_TIMEOUT_MS;
+    }
+    // A second is the floor: below that not even a local model gets a chance to answer
+    return Math.min(Math.max(requested, 1000), MAX_AI_REQUEST_TIMEOUT_MS);
+}
+
 /**
  * For the testApiConnection sendTo command: if the caller supplied an apiKey
  * (settings-dialog form value), use it; otherwise fall back to the stored key.

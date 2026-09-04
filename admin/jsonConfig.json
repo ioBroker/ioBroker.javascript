@@ -715,6 +715,22 @@
                     "xs": 12,
                     "sm": 3,
                     "showProcess": true
+                },
+                "aiReasoningEffort": {
+                    "newLine": true,
+                    "type": "select",
+                    "label": "Reasoning effort",
+                    "help": "Only for OpenAI-compatible endpoints. Leave on \"Endpoint default\" unless the endpoint needs to be told.",
+                    "options": [
+                        { "value": "", "label": "Endpoint default" },
+                        { "value": "none", "label": "Off (local models)" },
+                        { "value": "minimal", "label": "Minimal" },
+                        { "value": "low", "label": "Low" },
+                        { "value": "medium", "label": "Medium" },
+                        { "value": "high", "label": "High" }
+                    ],
+                    "xs": 12,
+                    "sm": 5
                 }
             }
         }

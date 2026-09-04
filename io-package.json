@@ -547,6 +547,7 @@
     "gptKey": "",
     "gptBaseUrl": "",
     "gptBaseUrlKey": "",
+    "aiReasoningEffort": "",
     "claudeKey": "",
     "geminiKey": "",
     "deepseekKey": "",

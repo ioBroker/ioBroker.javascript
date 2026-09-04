@@ -209,6 +209,37 @@ export interface LoadModelsResult {
     errors: string[];
 }
 
+/** Where the chosen model is remembered, together with the provider it belongs to */
+const MODEL_KEY = 'openai-model';
+const MODEL_PROVIDER_KEY = 'openai-model-provider';
+
+/**
+ * Remembers the chosen model *and* whose model it is.
+ *
+ * A model name alone does not say which provider serves it, so whoever reads it back has to guess -
+ * and the inline completion used to guess by preference order, which paired a model of one provider
+ * with the credentials of another.
+ *
+ * @param model the model name, as the provider lists it
+ * @param provider the provider that offered it, if known
+ */
+export function rememberModel(model: string, provider?: AiProviderName): void {
+    window.localStorage.setItem(MODEL_KEY, model);
+    if (provider) {
+        window.localStorage.setItem(MODEL_PROVIDER_KEY, provider);
+    } else {
+        window.localStorage.removeItem(MODEL_PROVIDER_KEY);
+    }
+}
+
+/** The remembered model and its provider; either may be empty when nothing was chosen yet */
+export function readRememberedModel(): { model: string; provider: AiProviderName | '' } {
+    return {
+        model: window.localStorage.getItem(MODEL_KEY) || '',
+        provider: (window.localStorage.getItem(MODEL_PROVIDER_KEY) || '') as AiProviderName | '',
+    };
+}
+
 export async function loadModels(
     socket: AdminConnection,
     runningInstances: Record<string, unknown>,
@@ -226,18 +257,8 @@ export async function loadModels(
     const allModels: string[] = [];
     const providerMap: Record<string, AiProviderName> = {};
     const errors: string[] = [];
-
-    const addModels = (models: string[], provider: AiProviderName): void => {
-        for (const m of models) {
-            if (!isChatModel(m)) {
-                continue;
-            }
-            if (!providerMap[m]) {
-                allModels.push(m);
-                providerMap[m] = provider;
-            }
-        }
-    };
+    /** What each provider answered, collected first and assigned afterwards - see below */
+    const offered: Partial<Record<AiProviderName, string[]>> = {};
 
     const queries: Promise<void>[] = [];
 
@@ -252,7 +273,7 @@ export async function loadModels(
                 })
                 .then((result: { models?: string[]; error?: string }) => {
                     if (result.models) {
-                        addModels(result.models, provider);
+                        offered[provider] = result.models;
                     } else if (result.error) {
                         errors.push(`${displayName || provider}: ${result.error}`);
                     }
@@ -275,6 +296,23 @@ export async function loadModels(
     }
 
     await Promise.all(queries);
+
+    /*
+     * Assign each model to a provider in the order the providers are configured, not in the order
+     * their answers happened to arrive. The same model name can be offered twice - by the vendor
+     * itself and by a proxy in front of it - and while the models were claimed inside the `.then()`
+     * of a race, which of the two served it was decided by whichever request finished first.
+     * `config.providers` puts the vendors before the custom endpoint, so the direct route wins.
+     */
+    for (const provider of config.providers) {
+        for (const m of offered[provider] || []) {
+            if (!isChatModel(m) || providerMap[m]) {
+                continue;
+            }
+            allModels.push(m);
+            providerMap[m] = provider;
+        }
+    }
 
     allModels.sort();
     return { models: allModels, providerMap, errors };

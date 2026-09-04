@@ -10,9 +10,10 @@
  * These functions are extracted so they can be unit-tested in isolation.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PROVIDER_CREDENTIAL_ID_FIELD = exports.PROVIDER_KEY_FIELD = void 0;
+exports.MAX_AI_REQUEST_TIMEOUT_MS = exports.PROVIDER_CREDENTIAL_ID_FIELD = exports.PROVIDER_KEY_FIELD = void 0;
 exports.getProviderCredentialId = getProviderCredentialId;
 exports.resolveProviderCredentials = resolveProviderCredentials;
+exports.resolveRequestTimeout = resolveRequestTimeout;
 exports.resolveTestCredentials = resolveTestCredentials;
 exports.listAvailableProviders = listAvailableProviders;
 /** Maps each provider to the adapter-config field holding its API key. */
@@ -72,6 +73,26 @@ function resolveProviderCredentials(config, provider, messageBaseUrl) {
         baseUrl = (messageBaseUrl || '').toString().trim();
     }
     return { apiKey, baseUrl };
+}
+/** Ceiling for an AI request, and the budget when the caller names none */
+exports.MAX_AI_REQUEST_TIMEOUT_MS = 600_000;
+/**
+ * How long to wait for an AI endpoint, from the `timeout` the caller put in the message.
+ *
+ * The inline completion asks for a short budget because it must not sit on the editor, the chat
+ * panel for a long one because a reasoning model takes its time. The field was sent all along but
+ * never read, so both of them waited out the full ten minutes.
+ *
+ * @param messageTimeout the value from the sendTo message, in milliseconds
+ */
+function resolveRequestTimeout(messageTimeout) {
+    const requested = parseInt(messageTimeout, 10);
+    // Nothing usable, or a zero - which is how Node itself spells "no timeout" - gets the ceiling
+    if (isNaN(requested) || requested <= 0) {
+        return exports.MAX_AI_REQUEST_TIMEOUT_MS;
+    }
+    // A second is the floor: below that not even a local model gets a chance to answer
+    return Math.min(Math.max(requested, 1000), exports.MAX_AI_REQUEST_TIMEOUT_MS);
 }
 /**
  * For the testApiConnection sendTo command: if the caller supplied an apiKey

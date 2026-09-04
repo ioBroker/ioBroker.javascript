@@ -25,6 +25,8 @@ import {
     getCodeModeSystemPrompt,
     getBlocklyCodeModeSystemPrompt,
     clearCaches,
+    readRememberedModel,
+    rememberModel,
 } from './AiChatService';
 import { buildScriptSummary, findScriptsUsingDatapoint } from './AiScriptAnalyzer';
 import { IOBROKER_TOOLS, executeToolCall } from './AiToolExecutor';
@@ -159,10 +161,14 @@ export function useAiChat(options: UseAiChatOptions): UseAiChatReturn {
     const devicesRef = useRef<DeviceObject[] | null>(null);
     const docsRef = useRef<string | null>(null);
 
-    const setModel = useCallback((m: string) => {
-        setModelState(m);
-        window.localStorage.setItem('openai-model', m);
-    }, []);
+    const setModel = useCallback(
+        (m: string) => {
+            setModelState(m);
+            // together with its provider, so the inline completion does not have to guess whose model it is
+            rememberModel(m, modelProviderMap[m]);
+        },
+        [modelProviderMap],
+    );
 
     const doLoadModels = useCallback(async () => {
         setModelsLoading(true);
@@ -173,12 +179,12 @@ export function useAiChat(options: UseAiChatOptions): UseAiChatReturn {
             setModelProviderMap(result.providerMap);
 
             if (result.models.length > 0) {
-                const saved = window.localStorage.getItem('openai-model');
-                if (saved && result.models.includes(saved)) {
-                    setModelState(saved);
-                } else {
-                    setModelState(result.models[0]);
-                }
+                const saved = readRememberedModel().model;
+                const effective = saved && result.models.includes(saved) ? saved : result.models[0];
+                setModelState(effective);
+                // The list may have picked the model rather than the user, and the provider of a
+                // remembered one can have changed - either way this is the pair that is now in use.
+                rememberModel(effective, result.providerMap[effective]);
             }
 
             if (result.errors.length > 0) {

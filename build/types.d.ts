@@ -48,6 +48,11 @@ export interface JavaScriptAdapterConfig {
     gptKey: string;
     gptBaseUrl: string;
     gptBaseUrlKey: string;
+    /**
+     * `reasoning_effort` for the OpenAI-compatible providers. Empty means the parameter is not sent
+     * at all and the endpoint decides - which is what a reasoning model behind a proxy wants.
+     */
+    aiReasoningEffort?: '' | 'none' | 'minimal' | 'low' | 'medium' | 'high';
     claudeKey: string;
     geminiKey: string;
     deepseekKey: string;

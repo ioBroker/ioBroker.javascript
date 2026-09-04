@@ -6,6 +6,8 @@ const {
     resolveProviderCredentials,
     resolveTestCredentials,
     listAvailableProviders,
+    resolveRequestTimeout,
+    MAX_AI_REQUEST_TIMEOUT_MS,
 } = require('../build/lib/aiProviderResolver');
 
 describe('Test AI Provider Resolver', function () {
@@ -384,6 +386,42 @@ describe('Test AI Provider Resolver', function () {
                 { provider: 'openai' },
                 { provider: 'custom', baseUrl: 'http://192.168.1.10:11434/v1' },
             ]);
+        });
+    });
+
+    /**
+     * The chat panel is willing to wait for a slow reasoning model, the inline completion is not -
+     * it sits on the editor. Both used to be given the same ten minutes, because the `timeout` of
+     * the message was sent by the frontend and never read by the handler.
+     */
+    describe('resolveRequestTimeout', function () {
+        it('takes the budget the caller asked for', function () {
+            assert.equal(resolveRequestTimeout(15000), 15000);
+        });
+
+        it('accepts it as a string, the way it arrives in a sendTo message', function () {
+            assert.equal(resolveRequestTimeout('15000'), 15000);
+        });
+
+        it('falls back to the maximum when the caller names none', function () {
+            assert.equal(resolveRequestTimeout(undefined), MAX_AI_REQUEST_TIMEOUT_MS);
+            assert.equal(resolveRequestTimeout(null), MAX_AI_REQUEST_TIMEOUT_MS);
+            assert.equal(resolveRequestTimeout(''), MAX_AI_REQUEST_TIMEOUT_MS);
+            assert.equal(resolveRequestTimeout('soon'), MAX_AI_REQUEST_TIMEOUT_MS);
+        });
+
+        it('does not let a caller wait longer than the ceiling', function () {
+            assert.equal(resolveRequestTimeout(3600000), MAX_AI_REQUEST_TIMEOUT_MS);
+        });
+
+        it('keeps a second as the floor', function () {
+            assert.equal(resolveRequestTimeout(1), 1000);
+            assert.equal(resolveRequestTimeout(999), 1000);
+        });
+
+        it('reads a zero the way Node does - as no timeout - and caps it at the ceiling', function () {
+            assert.equal(resolveRequestTimeout(0), MAX_AI_REQUEST_TIMEOUT_MS);
+            assert.equal(resolveRequestTimeout(-5000), MAX_AI_REQUEST_TIMEOUT_MS);
         });
     });
 });
