@@ -542,6 +542,25 @@
                         "marginBottom": 16
                     }
                 },
+                "aiEditorHelpers": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "label": "Show AI helpers in the script editor",
+                    "help": "Code actions above functions, tooltips for object IDs and CRON expressions, and inline code suggestions",
+                    "default": true,
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 12
+                },
+                "_aiProvidersHeader": {
+                    "newLine": true,
+                    "type": "header",
+                    "text": "API keys",
+                    "size": 5,
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 12
+                },
                 "credentialType": {
                     "newLine": true,
                     "type": "select",

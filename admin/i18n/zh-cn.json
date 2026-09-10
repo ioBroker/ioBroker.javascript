@@ -107,5 +107,8 @@
   "useUnknownInCatchVariables help": "将 \"catch\" 块中的错误变量类型设为 \"unknown\" 而不是 \"any\"。",
   "www.typescriptlang.org/tsconfig": "www.typescriptlang.org/tsconfig",
   "mirrorPath forbidden": "此路径不允许用于镜像。请更改。",
-  "mirrorPath help": "一个位于 ioBroker 安装目录之外的专用空目录，iobroker 用户需有写入权限。如果其中的文件夹消失，其中的脚本将从数据库中删除。"
+  "mirrorPath help": "一个位于 ioBroker 安装目录之外的专用空目录，iobroker 用户需有写入权限。如果其中的文件夹消失，其中的脚本将从数据库中删除。",
+  "Show AI helpers in the script editor": "在脚本编辑器中显示 AI 助手",
+  "Code actions above functions, tooltips for object IDs and CRON expressions, and inline code suggestions": "函数上方的代码操作、对象 ID 和 CRON 表达式的提示，以及内联代码建议",
+  "API keys": "API 密钥"
 }

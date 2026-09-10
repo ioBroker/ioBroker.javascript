@@ -9,6 +9,7 @@ import { type AdminConnection, I18n } from '@iobroker/gui-components';
 import type { DebuggerLocation, SetBreakpointParameterType } from './Debugger/types';
 import type { EditorAiActionRequest } from '../AiChat/AiChatTypes';
 import { findSymbolAtLine } from '../AiChat/aiCodeLensProvider';
+import { areAiHelpersEnabled, onAiHelpersEnabledChanged } from '../AiChat/aiHelpersEnabled';
 
 function isIdOfGlobalScript(id: string): boolean {
     return /^script\.js\.global\./.test(id);
@@ -118,6 +119,7 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
     private showStateValueDisposable: monacoEditor.IDisposable | null = null;
     private cronHoverDisposable: monacoEditor.IDisposable | null = null;
     private codeLensDisposable: monacoEditor.IDisposable | null = null;
+    private aiHelpersUnsubscribe: (() => void) | null = null;
     private inlineChatWidgetInstance: { dispose: () => void; show: () => void } | null = null;
     private inlineDiffInstance: { dispose: () => void } | null = null;
     private inlineDiffCssInjected: boolean = false;
@@ -278,14 +280,12 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
                         .catch(() => {});
                 }
 
-                // Register state-info hover provider (shows live value when hovering over an object ID)
-                if (this.monaco && !this.stateHoverDisposable) {
+                // "On button press" variant of the state tooltip: Alt+I / context menu shows the value
+                // at the cursor. This one is always available - it only reacts to an explicit user action
+                // and is therefore not part of the switchable AI helpers.
+                if (this.monaco && !this.showStateValueDisposable) {
                     import('../AiChat/stateHoverProvider')
-                        .then(({ registerStateHoverProvider, registerShowStateValueAction }) => {
-                            if (this.monaco) {
-                                this.stateHoverDisposable = registerStateHoverProvider(this.monaco, this.props.socket);
-                            }
-                            // "On button press" variant: Alt+I / context menu shows the value at the cursor.
+                        .then(({ registerShowStateValueAction }) => {
                             if (this.monaco && this.editor && !this.showStateValueDisposable) {
                                 this.showStateValueDisposable = registerShowStateValueAction(
                                     this.editor,
@@ -297,31 +297,15 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
                         .catch(() => {});
                 }
 
-                // Register cron hover provider (shows human-readable description when hovering over a cron expression)
-                if (this.monaco && !this.cronHoverDisposable) {
-                    import('../AiChat/cronHoverProvider')
-                        .then(({ registerCronHoverProvider }) => {
-                            if (this.monaco) {
-                                this.cronHoverDisposable = registerCronHoverProvider(this.monaco);
-                            }
-                        })
-                        .catch(() => {});
-                }
-
-                // Register AI inline completions if enabled
-                if (this.props.aiCompletionsEnabled && this.monaco && !this.inlineProviderDisposable) {
-                    import('../AiChat/AiInlineProvider')
-                        .then(({ registerAiInlineProvider }) => {
-                            if (this.monaco) {
-                                this.inlineProviderDisposable = registerAiInlineProvider(
-                                    this.monaco,
-                                    this.props.socket,
-                                    this.props.runningInstances,
-                                );
-                            }
-                        })
-                        .catch(() => {});
-                }
+                // Hovers, code lens and inline completions - switchable per javascript instance
+                this.registerAiHelpers();
+                this.aiHelpersUnsubscribe = onAiHelpersEnabledChanged(enabled => {
+                    if (enabled) {
+                        this.registerAiHelpers();
+                    } else {
+                        this.disposeAiHelpers();
+                    }
+                });
 
                 // Load typings for the JS editor
                 this.loadTypings();
@@ -335,40 +319,6 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
 
                 // Register VS-Code-like AI actions (context menu + keyboard shortcuts)
                 this.registerAiActions();
-
-                // Register AI code-lens provider (Explain / Refactor / Tests above each function)
-                if (this.monaco && this.editor && this.props.onAiAction && !this.codeLensDisposable) {
-                    import('../AiChat/aiCodeLensProvider')
-                        .then(({ registerAiCodeLensProvider }) => {
-                            if (this.monaco && this.editor && this.props.onAiAction) {
-                                this.codeLensDisposable = registerAiCodeLensProvider(
-                                    this.monaco,
-                                    this.editor,
-                                    (action, code, rangeLabel, startLine, endLine) => {
-                                        // Build the Monaco-convention range for the symbol body
-                                        // so the inline diff can later target it precisely.
-                                        const model = this.editor?.getModel();
-                                        const endCol = model
-                                            ? model.getLineMaxColumn(Math.min(endLine, model.getLineCount()))
-                                            : 1;
-                                        this.props.onAiAction?.({
-                                            action,
-                                            code,
-                                            rangeLabel,
-                                            range: {
-                                                startLine,
-                                                startColumn: 1,
-                                                endLine,
-                                                endColumn: endCol,
-                                            },
-                                            kind: 'codelens',
-                                        });
-                                    },
-                                );
-                            }
-                        })
-                        .catch(() => {});
-                }
 
                 setTimeout(() => {
                     this.highlightText(this.state.searchText);
@@ -445,6 +395,109 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         }
     }
 
+    /**
+     * Register everything that decorates the editor on its own: the object-ID and CRON hover
+     *  tooltips, the code-lens row above each function and the inline (ghost text) completions.
+     *
+     * All of it can be switched off per javascript instance ("AI settings" tab), because some
+     *  users find the additional overlays distracting. Nothing happens here while it is off -
+     *  the providers are not even registered with Monaco, so they cost neither time nor requests.
+     */
+    registerAiHelpers(): void {
+        if (!areAiHelpersEnabled() || !this.monaco || !this.editor) {
+            return;
+        }
+
+        // Hover with the live value when the mouse rests on an ioBroker object ID
+        if (!this.stateHoverDisposable) {
+            import('../AiChat/stateHoverProvider')
+                .then(({ registerStateHoverProvider }) => {
+                    if (this.monaco && areAiHelpersEnabled() && !this.stateHoverDisposable) {
+                        this.stateHoverDisposable = registerStateHoverProvider(this.monaco, this.props.socket);
+                    }
+                })
+                .catch(() => {});
+        }
+
+        // Hover with a human-readable description of a CRON expression
+        if (!this.cronHoverDisposable) {
+            import('../AiChat/cronHoverProvider')
+                .then(({ registerCronHoverProvider }) => {
+                    if (this.monaco && areAiHelpersEnabled() && !this.cronHoverDisposable) {
+                        this.cronHoverDisposable = registerCronHoverProvider(this.monaco);
+                    }
+                })
+                .catch(() => {});
+        }
+
+        // Inline completions - additionally require the editor-local switch
+        if (this.props.aiCompletionsEnabled && !this.inlineProviderDisposable) {
+            import('../AiChat/AiInlineProvider')
+                .then(({ registerAiInlineProvider }) => {
+                    if (this.monaco && areAiHelpersEnabled() && !this.inlineProviderDisposable) {
+                        this.inlineProviderDisposable = registerAiInlineProvider(
+                            this.monaco,
+                            this.props.socket,
+                            this.props.runningInstances,
+                        );
+                    }
+                })
+                .catch(() => {});
+        }
+
+        // Code lens: Explain / Refactor / Tests above each function and class
+        if (this.props.onAiAction && !this.codeLensDisposable) {
+            import('../AiChat/aiCodeLensProvider')
+                .then(({ registerAiCodeLensProvider }) => {
+                    if (
+                        this.monaco &&
+                        this.editor &&
+                        this.props.onAiAction &&
+                        areAiHelpersEnabled() &&
+                        !this.codeLensDisposable
+                    ) {
+                        this.codeLensDisposable = registerAiCodeLensProvider(
+                            this.monaco,
+                            this.editor,
+                            (action, code, rangeLabel, startLine, endLine) => {
+                                // Build the Monaco-convention range for the symbol body
+                                // so the inline diff can later target it precisely.
+                                const model = this.editor?.getModel();
+                                const endCol = model
+                                    ? model.getLineMaxColumn(Math.min(endLine, model.getLineCount()))
+                                    : 1;
+                                this.props.onAiAction?.({
+                                    action,
+                                    code,
+                                    rangeLabel,
+                                    range: {
+                                        startLine,
+                                        startColumn: 1,
+                                        endLine,
+                                        endColumn: endCol,
+                                    },
+                                    kind: 'codelens',
+                                });
+                            },
+                        );
+                    }
+                })
+                .catch(() => {});
+        }
+    }
+
+    /** Counterpart of `registerAiHelpers`: remove every automatically shown decoration again. */
+    disposeAiHelpers(): void {
+        this.stateHoverDisposable?.dispose();
+        this.stateHoverDisposable = null;
+        this.cronHoverDisposable?.dispose();
+        this.cronHoverDisposable = null;
+        this.inlineProviderDisposable?.dispose();
+        this.inlineProviderDisposable = null;
+        this.codeLensDisposable?.dispose();
+        this.codeLensDisposable = null;
+    }
+
     componentWillUnmount(): void {
         this.contentChangeDisposable?.dispose();
         this.contentChangeDisposable = null;
@@ -468,6 +521,8 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         this.cronHoverDisposable = null;
         this.codeLensDisposable?.dispose();
         this.codeLensDisposable = null;
+        this.aiHelpersUnsubscribe?.();
+        this.aiHelpersUnsubscribe = null;
         this.inlineChatWidgetInstance?.dispose();
         this.inlineChatWidgetInstance = null;
         this.hideInlineDiff();
@@ -1317,18 +1372,20 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
 
         // Toggle AI inline completions
         if (nextProps.aiCompletionsEnabled !== this.props.aiCompletionsEnabled) {
-            if (nextProps.aiCompletionsEnabled && this.monaco && !this.inlineProviderDisposable) {
-                import('../AiChat/AiInlineProvider')
-                    .then(({ registerAiInlineProvider }) => {
-                        if (this.monaco) {
-                            this.inlineProviderDisposable = registerAiInlineProvider(
-                                this.monaco,
-                                this.props.socket,
-                                this.props.runningInstances,
-                            );
-                        }
-                    })
-                    .catch(() => {});
+            if (nextProps.aiCompletionsEnabled && this.monaco && areAiHelpersEnabled()) {
+                if (!this.inlineProviderDisposable) {
+                    import('../AiChat/AiInlineProvider')
+                        .then(({ registerAiInlineProvider }) => {
+                            if (this.monaco && areAiHelpersEnabled() && !this.inlineProviderDisposable) {
+                                this.inlineProviderDisposable = registerAiInlineProvider(
+                                    this.monaco,
+                                    this.props.socket,
+                                    this.props.runningInstances,
+                                );
+                            }
+                        })
+                        .catch(() => {});
+                }
             } else if (!nextProps.aiCompletionsEnabled && this.inlineProviderDisposable) {
                 this.inlineProviderDisposable.dispose();
                 this.inlineProviderDisposable = null;

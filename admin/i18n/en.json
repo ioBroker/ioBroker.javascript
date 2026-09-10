@@ -107,5 +107,8 @@
   "useUnknownInCatchVariables help": "Type the error variable in \"catch\" blocks as \"unknown\" instead of \"any\".",
   "www.typescriptlang.org/tsconfig": "www.typescriptlang.org/tsconfig",
   "mirrorPath forbidden": "This path is not allowed for mirroring. Please change it.",
-  "mirrorPath help": "A dedicated, empty directory outside the ioBroker installation, writable by the iobroker user. If a folder disappears there, the scripts in it are deleted from the database."
+  "mirrorPath help": "A dedicated, empty directory outside the ioBroker installation, writable by the iobroker user. If a folder disappears there, the scripts in it are deleted from the database.",
+  "Show AI helpers in the script editor": "Show AI helpers in the script editor",
+  "Code actions above functions, tooltips for object IDs and CRON expressions, and inline code suggestions": "Code actions above functions, tooltips for object IDs and CRON expressions, and inline code suggestions",
+  "API keys": "API keys"
 }

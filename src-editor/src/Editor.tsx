@@ -107,6 +107,7 @@ import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
 import { getAllScripts } from './AiChat/AiScriptAnalyzer';
 import { findBestTarget } from './AiChat/findAiBlockTarget';
 import type { ScriptInfo, EditorAiActionRequest, EditorApi } from './AiChat/AiChatTypes';
+import { setAiHelpersEnabled } from './AiChat/aiHelpersEnabled';
 
 declare global {
     interface Window {
@@ -252,6 +253,8 @@ interface EditorProps {
     menuOpened: boolean;
     themeType: ThemeType;
     runningInstances: Record<string, boolean>;
+    /** `native.aiEditorHelpers` per javascript instance. A missing entry means "not configured" => enabled */
+    aiEditorHelpers: Record<string, boolean>;
     onChange: (id: string, common: ioBroker.ScriptCommon) => void;
     onSelectedChange: (selected: string, editing: string[]) => void;
     onRestart?: (id: string) => void;
@@ -552,6 +555,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
         window.addEventListener('beforeunload', this.onBrowserClose, false);
         void this.props.socket.subscribeObject('system.adapter.*', Editor.onInstanceChanged);
         void this.loadSecrets();
+        setAiHelpersEnabled(this.isAiHelpersEnabled());
     }
 
     /**
@@ -584,6 +588,9 @@ class Editor extends React.Component<EditorProps, EditorState> {
     }
 
     componentDidUpdate(prevProps: EditorProps): void {
+        // The instance settings or the selected script (and with it the engine) may have changed
+        setAiHelpersEnabled(this.isAiHelpersEnabled());
+
         if (prevProps.scriptsHash !== this.props.scriptsHash) {
             // Check if any currently editing script was modified externally
             for (const id of this.state.editing) {
@@ -1449,6 +1456,22 @@ class Editor extends React.Component<EditorProps, EditorState> {
             );
         }
         return null;
+    }
+
+    /**
+     * The AI helpers (code lens above functions, object-ID and CRON tooltips, inline completions)
+     *  can be switched off per javascript instance in its settings ("AI settings" tab).
+     *  The engine of the currently selected script decides. If nothing is known about the instance,
+     *  the helpers stay enabled, so the setting is a pure opt-out.
+     */
+    isAiHelpersEnabled(): boolean {
+        const engine = this.state.selected ? this.scripts[this.state.selected]?.engine : undefined;
+        if (engine && this.props.aiEditorHelpers[engine] !== undefined) {
+            return this.props.aiEditorHelpers[engine];
+        }
+        // No engine assigned (yet): disable only if every known instance disabled it
+        const known = Object.keys(this.props.aiEditorHelpers);
+        return !known.length || known.some(id => this.props.aiEditorHelpers[id]);
     }
 
     getToolbar(): React.JSX.Element | null {

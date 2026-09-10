@@ -186,7 +186,7 @@
     },
     "dependencies": [
       {
-        "js-controller": ">=6.0.11"
+        "js-controller": ">=7.2.2"
       }
     ],
     "globalDependencies": [
@@ -548,6 +548,7 @@
     "gptBaseUrl": "",
     "gptBaseUrlKey": "",
     "aiReasoningEffort": "",
+    "aiEditorHelpers": true,
     "claudeKey": "",
     "geminiKey": "",
     "deepseekKey": "",

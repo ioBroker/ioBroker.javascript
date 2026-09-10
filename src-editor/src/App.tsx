@@ -180,6 +180,8 @@ interface AppState extends GenericAppState {
     expertMode: boolean;
     logHorzLayout: boolean;
     runningInstances: Record<string, boolean>;
+    /** `native.aiEditorHelpers` of every javascript instance, keyed by `system.adapter.javascript.N`. Missing entry means "not configured" => enabled */
+    aiEditorHelpers: Record<string, boolean>;
     confirm: string;
     importFile: boolean;
     message: string;
@@ -306,6 +308,12 @@ export default class App extends GenericApp<AppProps, AppState> {
                         newState.instanceHosts = { ...this.state.instanceHosts, [idNum]: obj.common.host };
                         changed = true;
                     }
+                    // the user may switch the AI helpers off in the instance settings while the editor is open
+                    const aiHelpers = (obj.native as { aiEditorHelpers?: boolean })?.aiEditorHelpers !== false;
+                    if (this.state.aiEditorHelpers[id] !== aiHelpers) {
+                        newState.aiEditorHelpers = { ...this.state.aiEditorHelpers, [id]: aiHelpers };
+                        changed = true;
+                    }
                 } else if (!obj && this.state.instances.includes(idNum)) {
                     this.socket.unsubscribeState(`${id}.alive`, this.onInstanceAliveChange);
                     newState.instances = [...this.state.instances];
@@ -313,6 +321,8 @@ export default class App extends GenericApp<AppProps, AppState> {
                     newState.instances.splice(pos, 1);
                     newState.instanceHosts = { ...this.state.instanceHosts };
                     delete newState.instanceHosts[idNum];
+                    newState.aiEditorHelpers = { ...this.state.aiEditorHelpers };
+                    delete newState.aiEditorHelpers[id];
                     changed = true;
                 }
             }
@@ -365,6 +375,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                 expertMode: window.localStorage.getItem('App.expertMode') === 'true',
                 logHorzLayout: window.localStorage.getItem('App.logHorzLayout') === 'true',
                 runningInstances: {},
+                aiEditorHelpers: {},
                 confirm: '',
                 importFile: false,
                 message: '',
@@ -384,6 +395,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                 newState.instances = instancesResult.instances;
                 newState.runningInstances = instancesResult.runningInstances;
                 newState.instanceHosts = instancesResult.instanceHosts;
+                newState.aiEditorHelpers = instancesResult.aiEditorHelpers;
 
                 this.javascriptPassword = this.socket.systemConfig?.native.javascriptPassword || '';
 
@@ -430,6 +442,7 @@ export default class App extends GenericApp<AppProps, AppState> {
         instances: number[];
         runningInstances: Record<string, boolean>;
         instanceHosts: Record<number, string>;
+        aiEditorHelpers: Record<string, boolean>;
     }> {
         const instancesArray = await this.socket.getAdapterInstances(this.adapterName);
         const instances: number[] = instancesArray.map(obj => parseInt(obj._id.split('.').pop() || '0')).sort();
@@ -438,11 +451,14 @@ export default class App extends GenericApp<AppProps, AppState> {
 
         // remember on which host every instance runs
         const instanceHosts: Record<number, string> = {};
+        // remember which instance allows the AI helpers in the editor
+        const aiEditorHelpers: Record<string, boolean> = {};
         instancesArray.forEach(obj => {
             const idNum = parseInt(obj._id.split('.').pop() || '0', 10) || 0;
             if (obj?.common?.host) {
                 instanceHosts[idNum] = obj.common.host;
             }
+            aiEditorHelpers[obj._id] = (obj.native as { aiEditorHelpers?: boolean })?.aiEditorHelpers !== false;
         });
 
         // subscribe on instances
@@ -454,7 +470,7 @@ export default class App extends GenericApp<AppProps, AppState> {
             await this.socket.subscribeState(id, this.onInstanceAliveChange);
         }
 
-        return { instances, runningInstances, instanceHosts };
+        return { instances, runningInstances, instanceHosts, aiEditorHelpers };
     }
 
     async readAllScripts(): Promise<Record<string, ioBroker.ChannelObject | ioBroker.ScriptObject>> {
@@ -1178,6 +1194,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                     onLocate={menuSelectId => this.setState({ menuSelectId })}
                     password={this.state.password}
                     runningInstances={this.state.runningInstances}
+                    aiEditorHelpers={this.state.aiEditorHelpers}
                     menuOpened={this.state.menuOpened}
                     searchText={this.state.searchText}
                     themeType={this.state.themeType}

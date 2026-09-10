@@ -107,5 +107,8 @@
   "useUnknownInCatchVariables help": "Типизировать переменную ошибки в блоках \"catch\" как \"unknown\" вместо \"any\".",
   "www.typescriptlang.org/tsconfig": "www.typescriptlang.org/tsconfig",
   "mirrorPath forbidden": "Этот путь нельзя использовать для зеркалирования. Измените его.",
-  "mirrorPath help": "Отдельный пустой каталог вне установки ioBroker, доступный для записи пользователю iobroker. Если папка там исчезнет, скрипты из неё будут удалены из базы данных."
+  "mirrorPath help": "Отдельный пустой каталог вне установки ioBroker, доступный для записи пользователю iobroker. Если папка там исчезнет, скрипты из неё будут удалены из базы данных.",
+  "Show AI helpers in the script editor": "Показывать ИИ-помощники в Skript-Editor",
+  "Code actions above functions, tooltips for object IDs and CRON expressions, and inline code suggestions": "Действия над функциями, подсказки для ID объектов и CRON-выражений, а также встроенные предложения кода",
+  "API keys": "API-ключи"
 }

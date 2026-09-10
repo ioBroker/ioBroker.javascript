@@ -107,5 +107,8 @@
   "useUnknownInCatchVariables help": "Typer la variable d'erreur des blocs \"catch\" comme \"unknown\" au lieu de \"any\".",
   "www.typescriptlang.org/tsconfig": "www.typescriptlang.org/tsconfig",
   "mirrorPath forbidden": "Ce chemin n'est pas autorisé pour la mise en miroir. Veuillez le modifier.",
-  "mirrorPath help": "Un répertoire dédié et vide en dehors de l'installation ioBroker, accessible en écriture à l'utilisateur iobroker. Si un dossier y disparaît, les scripts qu'il contient sont supprimés de la base de données."
+  "mirrorPath help": "Un répertoire dédié et vide en dehors de l'installation ioBroker, accessible en écriture à l'utilisateur iobroker. Si un dossier y disparaît, les scripts qu'il contient sont supprimés de la base de données.",
+  "Show AI helpers in the script editor": "Afficher les assistants IA dans l'éditeur de scripts",
+  "Code actions above functions, tooltips for object IDs and CRON expressions, and inline code suggestions": "Actions de code au-dessus des fonctions, infobulles pour les ID d'objets et les expressions CRON, et suggestions de code en ligne",
+  "API keys": "Clés API"
 }

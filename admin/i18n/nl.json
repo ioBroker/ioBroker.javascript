@@ -107,5 +107,8 @@
   "useUnknownInCatchVariables help": "De foutvariabele in \"catch\"-blokken typeren als \"unknown\" in plaats van \"any\".",
   "www.typescriptlang.org/tsconfig": "www.typescriptlang.org/tsconfig",
   "mirrorPath forbidden": "Dit pad is niet toegestaan voor spiegeling. Wijzig het.",
-  "mirrorPath help": "Een eigen, lege map buiten de ioBroker-installatie, beschrijfbaar voor de gebruiker iobroker. Verdwijnt daar een map, dan worden de scripts erin uit de database verwijderd."
+  "mirrorPath help": "Een eigen, lege map buiten de ioBroker-installatie, beschrijfbaar voor de gebruiker iobroker. Verdwijnt daar een map, dan worden de scripts erin uit de database verwijderd.",
+  "Show AI helpers in the script editor": "AI-hulpmiddelen in de scripteditor tonen",
+  "Code actions above functions, tooltips for object IDs and CRON expressions, and inline code suggestions": "Codeacties boven functies, tooltips voor object-ID's en CRON-expressies en inline codesuggesties",
+  "API keys": "API-sleutels"
 }

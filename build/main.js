@@ -2448,7 +2448,7 @@ class JavaScript extends adapter_core_1.Adapter {
             return false;
         }
     }
-    execute(script, name, engineType, verbose, debug,
+    execute(script, name, engineType, verbose, debug, 
     /**
      * Optional sink for the "execute" message API. When provided, the script runs in an
      * ephemeral diagnostic mode: every log line (the script's own `log()`/`console.*` output
