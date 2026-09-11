@@ -27,7 +27,7 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 10.2.0 (2026-09-11)
 * (@GermanBluefox) Rules: an empty "and" band folds down to its heading. A rule without conditions runs its actions on every trigger, but that band was still the tallest thing in the rule - a drop area with a 64px floor, the "just check" selector and an "or" row per group, 292px for nothing. It is 41px now and says "without condition", clicking the heading opens it again, dragging a condition over it opens it by itself, and a band that has conditions in it never folds
 * (@GermanBluefox) Rules: the block palette takes half the room it did. An entry carried 24px of padding around a 30px icon, which left 66px of sidebar for one line of text - so four blocks filled the whole height and everything else was behind a scrollbar. Entries are 31px apart now, the icon-only tabs above them no longer reserve the height of a label they do not have, and the sidebar is 168px instead of 200px wide. A name too long for that gets the full text as its tooltip. The button that folds the palette away also sits on the palette's line now instead of one pixel to the left of it, where it hung over the edge of the window once the palette was folded away
 * (@GermanBluefox) Rules: picking the state of a trigger took the editor down with "n.replace is not a function" when a condition on a string state had no value entered yet. Choosing a state compiles the whole rule again, and the empty value arrived at the comparison as the boolean `false`. A condition without a value now compares against an empty text, and a number entered for a state that is a string is used as its text
@@ -75,46 +75,6 @@ Executes JavaScript, TypeScript Scripts.
 * (@GermanBluefox) The editor knows the credentials that exist: after `SECRETS.` it offers their names, and after the next dot exactly the fields the selected credential has
 * (@GermanBluefox) Added the Blockly block "credential", which reads one field of the central credential storage
 * (@GermanBluefox) The instance settings list the available credentials with their fields and the expression a script uses for them
-
-### 10.1.0 (2026-08-16)
-* (@GermanBluefox) Turned `strict` off again for the scripts, as TypeScript 6 enables it by default
-* (@GermanBluefox) Added the tab "TypeScript" to the settings, where the compiler options for the scripts can be configured
-* (@GermanBluefox) Added snapshot tests for the Blockly code generation (`npm run test:blockly`)
-* (@GermanBluefox) Removed two leftover `.only` markers that had disabled almost the whole test suite
-* (@GermanBluefox) Pinned the line endings of transformed TypeScript sources to LF, so a compiler update cannot rewrite every script
-* (@GermanBluefox) Moved the micro benchmarks into `npm run test:performance`, as they measure relative speed against timeouts and cannot block a build
-* (@GermanBluefox) Updated Blockly from 11.1.1 to 13.2.1. The generated code is unchanged
-* (@GermanBluefox) `updateBlockly.js` now copies from the installed npm package instead of cloning the git master branch, so the shipped Blockly version is reproducible
-* (@GermanBluefox) Blockly is now bundled from the npm package instead of being loaded as vendored script tags. Custom blocks of other adapters keep working unchanged
-* (@GermanBluefox) Removed 828 kB of vendored Blockly code from the repository
-* (@GermanBluefox) Converted all block definitions from JavaScript to TypeScript. The generated code is unchanged
-* (@GermanBluefox) Fixed the object blocks under Blockly 13: the attribute rows were no longer right-aligned, and editing the attributes of an "object" block threw
-* (@GermanBluefox) Dropped the dead field editor code of the CRON and script fields, which had been written against Blockly 1.x
-* (@GermanBluefox) Fixed the multi-and/multi-or blocks under Blockly 13, which threw when their conditions were edited
-* (@GermanBluefox) Removed a phantom block type "Convert" that a stray assignment in the conversion blocks had registered
-* (@GermanBluefox) Added `BLOCKLY_TS.md` for adapter developers: what Blockly 13 changed for custom blocks and how to write them in TypeScript
-* (@GermanBluefox) Moved the Blockly translations into `words.json` and typed the lookup helpers
-* (@GermanBluefox) Redesign of Rules
-* (@GermanBluefox) Added a wizard to the rule editor that builds a rule step by step - trigger, condition and action are configured in place, and the last step shows the finished rule
-* (@GermanBluefox) The wizard opens by itself for a newly created rule - once, and not for a duplicated one. Afterwards it stays available in the block palette
-* (@GermanBluefox) Fixed the type declarations of 3rd party libraries: they were placed under the name the library has on disk while their `package.json` went to the name the scripts import, so TypeScript never connected the two and everything imported from such a library was `any` (#2341)
-* (@GermanBluefox) Stopped wrapping a library's declarations in `declare module`, which cut a barrel file off from what it re-exports. Declarations that are not a module themselves are still wrapped
-* (@GermanBluefox) Fixed following the imports inside a declaration file: only the first import of a file was followed, and only if it was on the first line. For rxjs 6 that loaded 6 of its ~800 declaration files
-* (@GermanBluefox) Side effect imports (`import "./x";`) inside a declaration file are now followed as well. `@iobroker/types` consists of nothing else, so the `ioBroker.*` types were missing in scripts and in the editor
-* (@GermanBluefox) A definition file that cannot be read no longer discards all type declarations of its package
-* (@GermanBluefox) Added regression tests for the type declarations of 3rd party libraries, which compile against them and insist that wrong code is rejected
-* (@GermanBluefox) `createState` now stringifies `common.def` of an object, json or array state, as js-controller expects it and as `setState` already does with the value. Creating such a state with an initial value no longer warns "Default value has to be stringified" (#2307)
-* (@GermanBluefox) Documented that an object in the second position of `createState` is always the `common`, and how to give a state a non-primitive initial value
-* (@GermanBluefox) Restored the check of the mirror path in the instance configuration. It was lost when the admin configuration moved to `jsonConfig.json`, so a forbidden path was accepted without a word and only refused later in the log (#2296)
-* (@GermanBluefox) The mirror path field now explains what the directory has to be, and suggests one
-* (@GermanBluefox) Scripts are no longer deleted from the database when the mirror directory as a whole becomes unreachable, e.g. because a share is not mounted
-* (@GermanBluefox) Libraries that name their declarations through an `exports` map are typed now. Their legacy `types` field is often a stub pointing at a file that does not exist - rxjs 7 is one - which left everything imported from them as `any` (#928)
-* (@GermanBluefox) The declarations of a library are laid out around its entry point, so `moduleResolution: node10` finds it even when they live in a subdirectory
-* (@GermanBluefox) The manifest handed to TypeScript describes that layout instead of the one on disk. An `exports` map pointing at paths that do not exist there made TypeScript refuse the library altogether
-* (@GermanBluefox) The package.json of a library is read from disk instead of through Node, which refuses it when the library does not export it
-* (@GermanBluefox) Fixed the mirror tests on macOS. They asserted on the first event a watcher reported, while `fs.watch` there works at directory granularity and sends an event for the watched directory before the one for the file. They now wait for the change they are about, and say what arrived instead if it never comes
-* (@GermanBluefox) Made the mirror tests independent of how long a watch takes to arm. The change under test is repeated while waiting, so it cannot be made before the watcher is listening - the same commit produced a green and a red macOS job over that
-* (@GermanBluefox) Added a wizard to the rule editor that builds a rule step by step - trigger, condition and action are configured in place, and the last step shows the finished rule
 
 ## License
 The MIT License (MIT)

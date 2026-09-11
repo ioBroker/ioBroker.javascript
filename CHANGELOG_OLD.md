@@ -1,4 +1,44 @@
 The newest change log is in README.md
+## 10.1.0 (2026-08-16)
+* (@GermanBluefox) Turned `strict` off again for the scripts, as TypeScript 6 enables it by default
+* (@GermanBluefox) Added the tab "TypeScript" to the settings, where the compiler options for the scripts can be configured
+* (@GermanBluefox) Added snapshot tests for the Blockly code generation (`npm run test:blockly`)
+* (@GermanBluefox) Removed two leftover `.only` markers that had disabled almost the whole test suite
+* (@GermanBluefox) Pinned the line endings of transformed TypeScript sources to LF, so a compiler update cannot rewrite every script
+* (@GermanBluefox) Moved the micro benchmarks into `npm run test:performance`, as they measure relative speed against timeouts and cannot block a build
+* (@GermanBluefox) Updated Blockly from 11.1.1 to 13.2.1. The generated code is unchanged
+* (@GermanBluefox) `updateBlockly.js` now copies from the installed npm package instead of cloning the git master branch, so the shipped Blockly version is reproducible
+* (@GermanBluefox) Blockly is now bundled from the npm package instead of being loaded as vendored script tags. Custom blocks of other adapters keep working unchanged
+* (@GermanBluefox) Removed 828 kB of vendored Blockly code from the repository
+* (@GermanBluefox) Converted all block definitions from JavaScript to TypeScript. The generated code is unchanged
+* (@GermanBluefox) Fixed the object blocks under Blockly 13: the attribute rows were no longer right-aligned, and editing the attributes of an "object" block threw
+* (@GermanBluefox) Dropped the dead field editor code of the CRON and script fields, which had been written against Blockly 1.x
+* (@GermanBluefox) Fixed the multi-and/multi-or blocks under Blockly 13, which threw when their conditions were edited
+* (@GermanBluefox) Removed a phantom block type "Convert" that a stray assignment in the conversion blocks had registered
+* (@GermanBluefox) Added `BLOCKLY_TS.md` for adapter developers: what Blockly 13 changed for custom blocks and how to write them in TypeScript
+* (@GermanBluefox) Moved the Blockly translations into `words.json` and typed the lookup helpers
+* (@GermanBluefox) Redesign of Rules
+* (@GermanBluefox) Added a wizard to the rule editor that builds a rule step by step - trigger, condition and action are configured in place, and the last step shows the finished rule
+* (@GermanBluefox) The wizard opens by itself for a newly created rule - once, and not for a duplicated one. Afterwards it stays available in the block palette
+* (@GermanBluefox) Fixed the type declarations of 3rd party libraries: they were placed under the name the library has on disk while their `package.json` went to the name the scripts import, so TypeScript never connected the two and everything imported from such a library was `any` (#2341)
+* (@GermanBluefox) Stopped wrapping a library's declarations in `declare module`, which cut a barrel file off from what it re-exports. Declarations that are not a module themselves are still wrapped
+* (@GermanBluefox) Fixed following the imports inside a declaration file: only the first import of a file was followed, and only if it was on the first line. For rxjs 6 that loaded 6 of its ~800 declaration files
+* (@GermanBluefox) Side effect imports (`import "./x";`) inside a declaration file are now followed as well. `@iobroker/types` consists of nothing else, so the `ioBroker.*` types were missing in scripts and in the editor
+* (@GermanBluefox) A definition file that cannot be read no longer discards all type declarations of its package
+* (@GermanBluefox) Added regression tests for the type declarations of 3rd party libraries, which compile against them and insist that wrong code is rejected
+* (@GermanBluefox) `createState` now stringifies `common.def` of an object, json or array state, as js-controller expects it and as `setState` already does with the value. Creating such a state with an initial value no longer warns "Default value has to be stringified" (#2307)
+* (@GermanBluefox) Documented that an object in the second position of `createState` is always the `common`, and how to give a state a non-primitive initial value
+* (@GermanBluefox) Restored the check of the mirror path in the instance configuration. It was lost when the admin configuration moved to `jsonConfig.json`, so a forbidden path was accepted without a word and only refused later in the log (#2296)
+* (@GermanBluefox) The mirror path field now explains what the directory has to be, and suggests one
+* (@GermanBluefox) Scripts are no longer deleted from the database when the mirror directory as a whole becomes unreachable, e.g. because a share is not mounted
+* (@GermanBluefox) Libraries that name their declarations through an `exports` map are typed now. Their legacy `types` field is often a stub pointing at a file that does not exist - rxjs 7 is one - which left everything imported from them as `any` (#928)
+* (@GermanBluefox) The declarations of a library are laid out around its entry point, so `moduleResolution: node10` finds it even when they live in a subdirectory
+* (@GermanBluefox) The manifest handed to TypeScript describes that layout instead of the one on disk. An `exports` map pointing at paths that do not exist there made TypeScript refuse the library altogether
+* (@GermanBluefox) The package.json of a library is read from disk instead of through Node, which refuses it when the library does not export it
+* (@GermanBluefox) Fixed the mirror tests on macOS. They asserted on the first event a watcher reported, while `fs.watch` there works at directory granularity and sends an event for the watched directory before the one for the file. They now wait for the change they are about, and say what arrived instead if it never comes
+* (@GermanBluefox) Made the mirror tests independent of how long a watch takes to arm. The change under test is repeated while waiting, so it cannot be made before the watcher is listening - the same commit produced a green and a red macOS job over that
+* (@GermanBluefox) Added a wizard to the rule editor that builds a rule step by step - trigger, condition and action are configured in place, and the last step shows the finished rule
+
 ## 10.0.0 (2026-08-04)
 * (@GermanBluefox) TypeScript 6 support
 * (@GermanBluefox) GUI was migrated to React 19 and MUI 9
