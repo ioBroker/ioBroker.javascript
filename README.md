@@ -27,6 +27,9 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Rules: selection of state fixed
+
 ### 10.2.0 (2026-09-11)
 * (@GermanBluefox) Rules: an empty "and" band folds down to its heading. A rule without conditions runs its actions on every trigger, but that band was still the tallest thing in the rule - a drop area with a 64px floor, the "just check" selector and an "or" row per group, 292px for nothing. It is 41px now and says "without condition", clicking the heading opens it again, dragging a condition over it opens it by itself, and a band that has conditions in it never folds
 * (@GermanBluefox) Rules: the block palette takes half the room it did. An entry carried 24px of padding around a 30px icon, which left 66px of sidebar for one line of text - so four blocks filled the whole height and everything else was behind a scrollbar. Entries are 31px apart now, the icon-only tabs above them no longer reserve the height of a label they do not have, and the sidebar is 168px instead of 200px wide. A name too long for that gets the full text as its tooltip. The button that folds the palette away also sits on the palette's line now instead of one pixel to the left of it, where it hung over the edge of the window once the palette was folded away

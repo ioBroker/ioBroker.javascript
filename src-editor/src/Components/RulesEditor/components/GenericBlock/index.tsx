@@ -476,7 +476,11 @@ export abstract class GenericBlock<
         );
     }
 
-    renderSlider(input: RuleInputSlider, value: number, onChange: (value: number) => void): React.JSX.Element {
+    renderSlider(
+        input: RuleInputSlider,
+        value: number | string,
+        onChange: (value: number) => void,
+    ): React.JSX.Element {
         const { className } = this.props;
         const { attr, frontText, backText, nameBlock, min, max, step, unit, doNotTranslate, doNotTranslateBack } =
             input;
@@ -499,10 +503,7 @@ export abstract class GenericBlock<
                         variant="outlined"
                         size="small"
                         value={value}
-                        onChange={val => {
-                            console.log(val);
-                            onChange(val);
-                        }}
+                        onChange={val => onChange(val)}
                     />
                     {backText && (
                         <div

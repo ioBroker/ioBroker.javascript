@@ -155,8 +155,13 @@ class ActionSetStateDelayed extends GenericBlock<RuleBlockConfigActionSetStateDe
                         },
                     ];
                     const f = parseFloat(this.state.settings.value as string);
-                    if (this.state.settings.value !== undefined && (isNaN(f) || f < oidMin || f > oidMax)) {
-                        settings = { value: oidMax };
+                    if (this.state.settings.value !== undefined) {
+                        if (isNaN(f) || f < oidMin || f > oidMax) {
+                            settings = { value: oidMax };
+                        } else if (typeof this.state.settings.value !== 'number') {
+                            // a numeric string must be stored as a number, as the slider cannot handle strings
+                            settings = { value: f };
+                        }
                     }
                     break;
                 }

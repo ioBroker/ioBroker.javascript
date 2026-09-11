@@ -12,7 +12,7 @@ interface CustomSliderProps {
     error?: string;
     size?: 'small' | 'medium';
     variant?: 'standard' | 'filled' | 'outlined';
-    value?: number;
+    value?: number | string;
     type?: string;
     style?: object;
     onChange: (newValue: number) => void;
@@ -39,7 +39,17 @@ const CustomSlider = ({
     const [inputText, setInputText] = useState(0);
     min = min !== undefined ? min : 0;
     max = max !== undefined ? max : 0;
-    step = step !== undefined ? step : (max - min) / 100;
+    step = step !== undefined && step > 0 ? step : (max - min) / 100 || 1;
+
+    // The stored value can be a string (e.g. taken over from a text input of another object type).
+    // MUI's slider crashes on anything that is neither a number nor an array, so normalize it here.
+    const numberValue = ((): number => {
+        const val = typeof value === 'number' ? value : parseFloat(value as string);
+        if (!isFinite(val)) {
+            return min;
+        }
+        return val < min ? min : val > max ? max : val;
+    })();
 
     const marks = [
         {
@@ -54,7 +64,7 @@ const CustomSlider = ({
 
     return (
         <Slider
-            defaultValue={customValue ? value : inputText}
+            defaultValue={customValue ? numberValue : inputText}
             // getAriaValueText={customValue ? value : inputText}
             aria-labelledby="discrete-slider"
             valueLabelDisplay="auto"
@@ -66,7 +76,7 @@ const CustomSlider = ({
             // error={error || ''}
             // label={label}
             // variant={variant || 'standard'}
-            value={customValue ? value : inputText}
+            value={customValue ? numberValue : inputText}
             // type={type || 'text'}
             // helperText={error || ''}
             style={style}
