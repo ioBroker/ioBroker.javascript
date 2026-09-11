@@ -183,6 +183,24 @@
                         "marginBottom": 16
                     }
                 },
+                "_tsHeaderTypings": {
+                    "newLine": true,
+                    "type": "header",
+                    "text": "Type definitions",
+                    "size": 5,
+                    "xs": 12,
+                    "sm": 12
+                },
+                "loadTypings": {
+                    "newLine": true,
+                    "type": "checkbox",
+                    "label": "Load type definitions",
+                    "help": "loadTypings help",
+                    "default": true,
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 12
+                },
                 "_tsHeaderLanguage": {
                     "newLine": true,
                     "type": "header",

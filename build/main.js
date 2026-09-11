@@ -73,6 +73,7 @@ const axios = __importStar(require("axios"));
 const wake_on_lan = __importStar(require("wake_on_lan"));
 const nodeSchedule = __importStar(require("node-schedule"));
 const adapter_core_1 = require("@iobroker/adapter-core");
+const lazyTsServer_1 = require("./lib/lazyTsServer");
 const mirror_1 = require("./lib/mirror");
 const protectFs_1 = __importDefault(require("./lib/protectFs"));
 const words_1 = require("./lib/words");
@@ -226,8 +227,24 @@ function formatHoursMinutesSeconds(date) {
 (0, virtual_tsc_1.setTypeScriptResolveOptions)({
     paths: [require.resolve('typescript')],
 });
-// compiler instance for global JS declarations
-const jsDeclarationServer = new virtual_tsc_1.Server(typescriptSettings_1.jsDeclarationCompilerOptions, isCI ? false : undefined);
+/**
+ * How long a TypeScript language service may keep its program and type checker after the last
+ * compilation. They are what makes the compiler expensive (~95 MB heap each), and scripts are
+ * compiled in bursts - at startup and when the user saves one - so after a minute of quiet the
+ * memory is better given back. The next compilation rebuilds it in about a second.
+ * See https://github.com/ioBroker/ioBroker.javascript/issues/2373
+ */
+const TS_MEMORY_RELEASE_DELAY_MS = 60_000;
+/**
+ * How long a script editor counts as open after its last sign of life. The editor pings the adapter
+ * every 10 seconds while its tab is visible; after this long without a ping the GUI is considered
+ * gone and the type definitions and compilers are given back.
+ */
+const EDITOR_ONLINE_TIMEOUT_MS = 30_000;
+/** How often it is checked whether the editor has gone away */
+const EDITOR_CHECK_INTERVAL_MS = 10_000;
+// compiler instance for global JS declarations. Built on the first compilation only - see LazyTsServer
+const jsDeclarationServer = new lazyTsServer_1.LazyTsServer(typescriptSettings_1.jsDeclarationCompilerOptions, isCI ? false : undefined, TS_MEMORY_RELEASE_DELAY_MS);
 /**
  * Stores the IDs of script objects whose change should be ignored because
  * the compiled source was just updated
@@ -343,8 +360,18 @@ class JavaScript extends adapter_core_1.Adapter {
     globalScriptLines = 0;
     /** Running counter to build unique names for ad-hoc scripts started via the "execute" message */
     executeCounter = 0;
-    // compiler instance for typescript
+    // compiler instance for typescript. Built on the first compilation only - see LazyTsServer
     tsServer;
+    /** Set once the type definitions have been read from disk - see `prepareTypings()` */
+    typingsLoaded = false;
+    /** The declaration files that came from the packages, so they can be given back again */
+    typingPackageFiles = [];
+    /** Until when a script editor counts as open. Refreshed by every `editorPing` */
+    editorOnlineUntil = 0;
+    /** Checks regularly whether the editor is gone and the type definitions can be unloaded */
+    editorCheckInterval = null;
+    /** Set once the user has been told that TypeScript is compiled without type definitions */
+    typingsWarningShown = false;
     logCollectors = [];
     ignoreObjectChange = new Set();
     debugState = {
@@ -487,7 +514,7 @@ class JavaScript extends adapter_core_1.Adapter {
             allowSelfSignedCerts: false,
             secrets: this.secretsManager.secrets,
         };
-        this.tsServer = new virtual_tsc_1.Server(typescriptSettings_1.tsCompilerOptions, this.tsLog);
+        this.tsServer = new lazyTsServer_1.LazyTsServer(typescriptSettings_1.tsCompilerOptions, this.tsLog, TS_MEMORY_RELEASE_DELAY_MS);
     }
     async onObjectChange(id, obj) {
         // Check if we should ignore this change (once!) because we just updated the compiled sources
@@ -795,6 +822,12 @@ class JavaScript extends adapter_core_1.Adapter {
             }
             await this.unsubscribeAiCredentials();
             this.secretsManager.destroy();
+            if (this.editorCheckInterval) {
+                clearInterval(this.editorCheckInterval);
+                this.editorCheckInterval = null;
+            }
+            this.tsServer.destroy();
+            jsDeclarationServer.destroy();
             await this.stopAllScripts();
         }
         catch (err) {
@@ -1024,7 +1057,19 @@ class JavaScript extends adapter_core_1.Adapter {
                     });
                 }
                 break;
+            case 'editorPing': {
+                // A script editor says it is still open. As long as that is the case, the type
+                // definitions and the compilers stay in memory, so saving a script stays fast.
+                this.editorOnlineUntil = Date.now() + EDITOR_ONLINE_TIMEOUT_MS;
+                if (obj.callback) {
+                    this.sendTo(obj.from, obj.command, { ok: true }, obj.callback);
+                }
+                break;
+            }
             case 'loadTypings': {
+                // The editor is asking - now the type definitions are worth their memory
+                this.editorOnlineUntil = Date.now() + EDITOR_ONLINE_TIMEOUT_MS;
+                this.prepareTypings(false);
                 // Load typings for the editor
                 const typings = {};
                 // try to load TypeScript lib files from disk
@@ -1615,9 +1660,18 @@ class JavaScript extends adapter_core_1.Adapter {
         this.activeStr = `${this.namespace}.scriptEnabled.`;
         this.mods.fs = new protectFs_1.default(this.log, (0, adapter_core_1.getAbsoluteDefaultDataDir)());
         this.mods['fs/promises'] = this.mods.fs.promises; // to avoid require('fs/promises');
-        // The instance configuration is only available now, so the compiler has to be created again
-        // with the options the user has selected in the "TypeScript" tab
-        this.tsServer = new virtual_tsc_1.Server((0, typescriptSettings_1.getTsCompilerOptions)(this.config), this.tsLog);
+        // The instance configuration is only available now, so the compiler gets the options
+        // the user has selected in the "TypeScript" tab. Nothing was compiled yet, so this
+        // does not throw any work away.
+        this.tsServer.setOptions((0, typescriptSettings_1.getTsCompilerOptions)(this.config));
+        // As long as a script editor is open, the compilers keep their program, so saving a script
+        // does not have to wait for it to be built again
+        const editorIsOpen = () => this.isEditorOnline();
+        this.tsServer.setKeepAlive(editorIsOpen);
+        jsDeclarationServer.setKeepAlive(editorIsOpen);
+        // ... and once it has been closed for a while, everything is given back
+        this.editorCheckInterval = setInterval(() => this.unloadTypings(), EDITOR_CHECK_INTERVAL_MS);
+        this.editorCheckInterval.unref();
         // try to read TS declarations
         try {
             tsAmbient = {
@@ -1640,8 +1694,11 @@ class JavaScript extends adapter_core_1.Adapter {
             tsAmbient = {};
         }
         await this.installLibraries();
-        // Load the TS declarations for Node.js and all 3rd party modules
-        this.loadTypeScriptDeclarations();
+        // The TS declarations for Node.js and the 3rd party modules are NOT read here. Only two things
+        // need them - compiling a TypeScript script and the autocompletion of the built-in editor - and
+        // they are not free: 2.5 MB of declaration files that add about 90 MB to the compiler's program.
+        // An instance that runs plain JavaScript and is edited elsewhere never asks for them, and then
+        // they are never read. See `prepareTypings()`.
         await this.getData();
         this.context.scheduler = new scheduler_1.Scheduler(this.log, Date, this.mods.suncalc, this.config.latitude, this.config.longitude);
         await this.dayTimeSchedules();
@@ -1702,6 +1759,7 @@ class JavaScript extends adapter_core_1.Adapter {
                                     const filename = (0, typescriptTools_1.scriptIdToTSFilename)(obj._id);
                                     let tsCompiled;
                                     try {
+                                        this.prepareTypings(true);
                                         tsCompiled = this.tsServer.compile(filename, transformedSource);
                                     }
                                     catch (err) {
@@ -1749,20 +1807,46 @@ class JavaScript extends adapter_core_1.Adapter {
                                 // javascript
                                 const sourceCode = obj.common.source;
                                 this.globalScript += `${sourceCode}\n`;
-                                // try to compile the declarations so TypeScripts can use
-                                // functions defined in global JavaScripts
-                                const filename = (0, typescriptTools_1.scriptIdToTSFilename)(obj._id);
-                                let tsCompiled;
-                                try {
-                                    tsCompiled = jsDeclarationServer.compile(filename, sourceCode);
+                                // The declarations let TypeScripts use the functions defined in global
+                                // JavaScripts. Generating them means building the whole TypeScript program,
+                                // which costs a second or two and around 95 MB of heap - and it has to happen
+                                // in every instance, because global scripts do not belong to one. So the
+                                // result is stored on the object, the same way the compiled TypeScript
+                                // sources are, and only generated again when the source or the declarations
+                                // of the global scripts before this one have changed.
+                                // The prefix keeps this hash apart from the one the TypeScript branch
+                                // writes: a script that is switched between JavaScript and TypeScript
+                                // must never accept the stored result of the other engine.
+                                const sourceHash = (0, tools_1.hashSource)(`${tsSourceHashBase},jsDeclarations${this.globalDeclarations}${sourceCode}`);
+                                let declarations;
+                                if (typeof obj.common.declarations === 'string' &&
+                                    typeof obj.common.sourceHash === 'string' &&
+                                    sourceHash === obj.common.sourceHash) {
+                                    // We can reuse the stored declarations
+                                    declarations = obj.common.declarations;
                                 }
-                                catch (err) {
-                                    this.log.warn(`${obj._id}: Error while generating type declarations, skipping:\n${err}`);
-                                    continue;
+                                else {
+                                    const filename = (0, typescriptTools_1.scriptIdToTSFilename)(obj._id);
+                                    let tsCompiled;
+                                    try {
+                                        tsCompiled = jsDeclarationServer.compile(filename, sourceCode);
+                                    }
+                                    catch (err) {
+                                        this.log.warn(`${obj._id}: Error while generating type declarations, skipping:\n${err}`);
+                                        continue;
+                                    }
+                                    if (tsCompiled.success && tsCompiled.declarations != null) {
+                                        declarations = tsCompiled.declarations;
+                                        // Store them, so the next start does not have to build the program again
+                                        this.ignoreObjectChange.add(obj._id); // ignore the next change and don't restart scripts
+                                        void this.extendForeignObject(obj._id, {
+                                            common: { sourceHash, declarations },
+                                        });
+                                    }
                                 }
                                 // if declarations were generated, remember them
-                                if (tsCompiled.success && tsCompiled.declarations != null) {
-                                    this.provideDeclarationsForGlobalScript(obj._id, tsCompiled.declarations);
+                                if (declarations != null) {
+                                    this.provideDeclarationsForGlobalScript(obj._id, declarations);
                                 }
                             }
                         }
@@ -1846,6 +1930,60 @@ class JavaScript extends adapter_core_1.Adapter {
         this.tsServer.provideAmbientDeclarations({ [declarationPath]: declarations });
         jsDeclarationServer.provideAmbientDeclarations({ [declarationPath]: declarations });
     }
+    /**
+     * Makes sure the type definitions of Node.js, ioBroker and the configured libraries are available.
+     * Called right before the two things that need them: compiling a TypeScript script and answering
+     * the editor's request for the typings. Everything else - running JavaScript, generating the
+     * declarations of a global JavaScript - works without them, and an instance that only does that
+     * never reads them at all.
+     *
+     * When the user switched them off, a TypeScript compilation is warned about once: without them the
+     * compiler does not know `require`, `process` or `Buffer`, so the script very likely fails to
+     * compile - and the reason would otherwise not be obvious.
+     *
+     * @param forTypeScript Whether a TypeScript compilation is about to happen (only then it is worth warning)
+     */
+    prepareTypings(forTypeScript) {
+        if (this.config.loadTypings === false) {
+            if (forTypeScript && !this.typingsWarningShown) {
+                this.typingsWarningShown = true;
+                this.log.warn('A TypeScript script is compiled, but "Load type definitions" is switched off in the instance settings. ' +
+                    'Node.js and ioBroker types are unknown to the compiler, which will most likely fail the compilation.');
+            }
+            return;
+        }
+        if (this.typingsLoaded || !tsAmbient) {
+            return;
+        }
+        this.typingsLoaded = true;
+        this.loadTypeScriptDeclarations();
+    }
+    /** Whether a script editor has recently said that it is open */
+    isEditorOnline() {
+        return Date.now() < this.editorOnlineUntil;
+    }
+    /**
+     * Gives the type definitions back once no editor is open any more. Only the files that were read
+     * from the packages are dropped - the declarations of the global scripts are generated and cannot
+     * be read again, so they stay. The compilers are thrown away with them, which also frees the
+     * `lib*.d.ts` in their virtual file systems. The next TypeScript compilation or editor request
+     * reads everything again.
+     */
+    unloadTypings() {
+        if (!this.typingsLoaded || this.isEditorOnline()) {
+            return;
+        }
+        this.log.debug(`No script editor open - releasing the type definitions (${this.typingPackageFiles.length} files)`);
+        for (const fileName of this.typingPackageFiles) {
+            delete tsAmbient[fileName];
+        }
+        this.tsServer.forgetDeclarations(this.typingPackageFiles);
+        jsDeclarationServer.forgetDeclarations(this.typingPackageFiles);
+        this.tsServer.unload();
+        jsDeclarationServer.unload();
+        this.typingPackageFiles = [];
+        this.typingsLoaded = false;
+    }
     loadTypeScriptDeclarations() {
         // try to load the typings on disk for all 3rd party modules
         const packages = [
@@ -1904,6 +2042,8 @@ class JavaScript extends adapter_core_1.Adapter {
                 }
             }
             this.log.debug(`Loaded TypeScript definitions for "${pkg}": ${JSON.stringify(Object.keys(pkgTypings))}`);
+            // remember which files these were, so they can be given back when nobody needs them
+            this.typingPackageFiles.push(...Object.keys(pkgTypings));
             // remember the declarations for the editor
             Object.assign(tsAmbient, pkgTypings);
             // and give the language servers access to them
@@ -2554,6 +2694,7 @@ class JavaScript extends adapter_core_1.Adapter {
             const filename = (0, typescriptTools_1.scriptIdToTSFilename)(name);
             let tsCompiled;
             try {
+                this.prepareTypings(true);
                 tsCompiled = this.tsServer.compile(filename, transformedSource);
             }
             catch (err) {
@@ -2954,6 +3095,7 @@ class JavaScript extends adapter_core_1.Adapter {
                     const filename = (0, typescriptTools_1.scriptIdToTSFilename)(name);
                     let tsCompiled;
                     try {
+                        this.prepareTypings(true);
                         tsCompiled = this.tsServer.compile(filename, transformedSource);
                     }
                     catch (err) {

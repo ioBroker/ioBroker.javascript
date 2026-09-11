@@ -553,5 +553,8 @@
     "only if changed": "только при изменении",
     "A block failed while generating the script, so the changes cannot be saved": "Один из блоков вызвал ошибку при генерации скрипта, изменения не могут быть сохранены",
     "Blockly error": "Ошибка Blockly",
-    "Export error": "Ошибка экспорта"
+    "Export error": "Ошибка экспорта",
+    "without condition": "без условия",
+    "Show conditions": "Показать условия",
+    "Hide empty conditions": "Скрыть пустые условия"
 }

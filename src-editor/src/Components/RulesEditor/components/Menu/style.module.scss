@@ -1,10 +1,10 @@
 .menuRules {
-    width: 200px;
+    width: 168px;
     display: flex;
     flex-direction: column;
     background: var(--backgroundColor);
     border-right: 1px solid var(--lineColor);
-    padding: 10px;
+    padding: 6px;
     opacity: 1;
     overflow-x: hidden;
     transition:
@@ -16,10 +16,15 @@
 }
 .wizardButton {
     flex: none;
-    margin-bottom: 8px !important;
+    margin-bottom: 4px !important;
+    padding: 2px 8px !important;
+    font-size: 13px !important;
     color: var(--lineColorActive) !important;
     border-color: var(--lineColor) !important;
     white-space: nowrap;
+    [class*='MuiButton-startIcon'] svg {
+        font-size: 18px;
+    }
 }
 .switchesRenderWrapper {
     overflow-x: hidden;
@@ -50,11 +55,18 @@
 }
 .marginAuto {
     margin-top: auto;
-    margin-bottom: 20px;
+    margin-bottom: 6px;
 }
 .inputWidth {
     margin-top: 0 !important;
-    margin-bottom: 5px !important;
+    margin-bottom: 2px !important;
+    input {
+        padding: 6px 8px;
+        font-size: 13px;
+    }
+    label {
+        font-size: 13px;
+    }
 }
 .menuWrapper {
     display: flex;
@@ -73,16 +85,21 @@
     align-items: center;
     justify-content: center;
     color: var(--lineColorActive);
-    /* Flush against the right edge of the palette, in both states - .menuWrapper is only as wide as
-       the palette. The old `221px` assumed the palette was 200px wide plus its 10px padding, but it
-       is `box-sizing: border-box`, so the padding is inside those 200px and the button floated 21px
-       clear of it, over the rule bands. The -1px makes the button's left border sit on the
-       palette's right border instead of next to it. */
-    left: calc(100% - 1px);
+    /* Starts exactly where the palette ends, in both states - .menuWrapper is only as wide as the
+       palette, so this follows the palette's width instead of repeating it. A fixed value used to
+       be added up by hand out of the width and the padding, which was wrong twice over: the padding
+       is inside the width (`box-sizing: border-box`), and the sum had to be corrected every time
+       the palette was resized. It was then pulled 1px to the left so the two borders would not
+       double up - but that hung the button over the palette's line, and over the left edge of the
+       window once the palette was collapsed. Dropping the button's own left border below does the
+       same job without moving it. */
+    left: 100%;
     /* level with the palette's own tab bar. It used to be at 30px, which put it exactly beside the
        first rule card - close enough to be taken for that card's delete button. */
     top: 4px;
     border: 1px solid var(--lineColor);
+    /* the palette's right border already draws this edge */
+    border-left: none;
     cursor: pointer;
     transition:
         left 0.5s,
@@ -106,32 +123,41 @@
 }
 .nothingFound {
     color: var(--lineColor);
-    margin: 16px;
-    font-size: 21px;
+    margin: 10px 6px;
+    font-size: 14px;
     transition: color 0.2s;
 }
 .resetSearch {
     font-weight: bold;
     color: var(--lineColor);
     cursor: pointer;
-    margin: 10px 0;
-    transition:
-        color 0.3s,
-        font-size 0.3s;
+    margin: 6px 0;
+    transition: color 0.3s;
     &:hover {
         color: var(--lineColorHover);
-        font-size: 22px;
+        text-decoration: underline;
     }
 }
 .controlPanel {
     display: flex;
     align-items: center;
-    width: 200px;
+    width: 100%;
+    /* Three icon-only tabs. Material sizes those for a label underneath the icon, which is 72px of
+       height for an icon that is 20px tall. */
+    [class*='MuiTabs-root'] {
+        min-height: 0;
+        width: 100%;
+    }
     button {
         width: calc(100% / 3);
         min-width: auto;
+        min-height: 0;
+        padding: 4px 0;
         color: var(--lineColor);
         transition: color 0.2s;
+        svg {
+            font-size: 20px;
+        }
     }
     .controlPanelAppBar {
         background: none;

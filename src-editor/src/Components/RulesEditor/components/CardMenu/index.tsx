@@ -34,7 +34,9 @@ const CardMenu = ({
         onDoubleClick={onDoubleClick}
         onTouchMove={onTouchMove}
         key={id}
-        title={title ? I18n.t(title) : undefined}
+        /* The palette is narrow and a few of the longer names do not fit, so the full name is the
+           fallback tooltip for every entry that does not bring one of its own. */
+        title={I18n.t(title || name)}
         className={Utils.clsx(cls.switchesItem, active && cls.switchesItemActive, `block-${id}`)}
     >
         <MaterialDynamicIcon

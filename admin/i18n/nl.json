@@ -110,5 +110,8 @@
   "mirrorPath help": "Een eigen, lege map buiten de ioBroker-installatie, beschrijfbaar voor de gebruiker iobroker. Verdwijnt daar een map, dan worden de scripts erin uit de database verwijderd.",
   "Show AI helpers in the script editor": "AI-hulpmiddelen in de scripteditor tonen",
   "Code actions above functions, tooltips for object IDs and CRON expressions, and inline code suggestions": "Codeacties boven functies, tooltips voor object-ID's en CRON-expressies en inline codesuggesties",
-  "API keys": "API-sleutels"
+  "API keys": "API-sleutels",
+  "Type definitions": "Typedefinities",
+  "Load type definitions": "Typedefinities laden",
+  "loadTypings help": "Typedefinities van Node.js, ioBroker en de geconfigureerde bibliotheken. Ze worden alleen gelezen wanneer ze echt nodig zijn - om een TypeScript-script te compileren of voor de ingebouwde editor - omdat ze de compiler ongeveer 90 MB kosten. Uitgeschakeld worden ze nooit gelezen: de editor verliest zijn automatische aanvulling en TypeScript-scripts compileren niet meer. Gewoon JavaScript, ook de declaraties van globale JavaScripts, blijft ongemoeid."
 }

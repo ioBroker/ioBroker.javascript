@@ -70,9 +70,21 @@ class ConditionState extends GenericBlock<RuleBlockConfigActionActionState, Cond
 
     static compile(config: RuleBlockConfigActionActionState, context: RuleContext): string {
         let value = config.value;
-        if (value === null || value === undefined) {
+        // Nothing was entered yet. The numeric comparisons below compare against `false`, as they
+        // always did - a string comparison needs a string, see `asText()`.
+        const valueIsEmpty = value === null || value === undefined;
+        if (valueIsEmpty) {
             value = false;
         }
+        /**
+         * The value as text, for the comparisons of a string state. `value` is a
+         * `string | boolean | number` - the `false` from above when nothing was entered, and a
+         * number when one was typed for a state that is a string now. Both used to go into
+         * `.replace()` unchecked and threw "replace is not a function" as soon as the rule was
+         * compiled again, which happens on every change of the trigger.
+         */
+        const asText = (): string => (valueIsEmpty ? '' : String(value)).replace(/"/g, '\\"');
+
         let debugValue: string;
 
         let result;
@@ -103,7 +115,7 @@ class ConditionState extends GenericBlock<RuleBlockConfigActionActionState, Cond
             if (config.useTrigger) {
                 debugValue = 'obj.state.val';
                 if ((context?.trigger as RuleBlockConfigTriggerState)?.oidType === 'string') {
-                    value = (value as string).replace(/"/g, '\\"');
+                    value = asText();
                     result = `subCondVar${config._id} ${compare} "${value}"`;
                 } else {
                     if (value === '') {
@@ -117,7 +129,7 @@ class ConditionState extends GenericBlock<RuleBlockConfigActionActionState, Cond
             } else {
                 debugValue = `(await getStateAsync("${config.oid}")).val`;
                 if (config.oidType === 'string') {
-                    value = (value as string).replace(/"/g, '\\"');
+                    value = asText();
                     result = `subCondVar${config._id} ${compare} "${value}"`;
                 } else {
                     if (value === '') {
@@ -133,7 +145,7 @@ class ConditionState extends GenericBlock<RuleBlockConfigActionActionState, Cond
             if (config.useTrigger) {
                 debugValue = 'obj.state.val';
                 if ((context?.trigger as RuleBlockConfigTriggerState)?.oidType === 'string') {
-                    value = (value as string).replace(/"/g, '\\"');
+                    value = asText();
                     result = `obj.state.val.includes("${value}")`;
                 } else {
                     result = `false`;
@@ -141,7 +153,7 @@ class ConditionState extends GenericBlock<RuleBlockConfigActionActionState, Cond
             } else {
                 debugValue = `(await getStateAsync("${config.oid}")).val`;
                 if (config.oidType === 'string') {
-                    value = (value as string).replace(/"/g, '\\"');
+                    value = asText();
                     result = `subCondVar${config._id}.includes("${value}")`;
                 } else {
                     result = `false`;

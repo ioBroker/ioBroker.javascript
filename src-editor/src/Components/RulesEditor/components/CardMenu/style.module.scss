@@ -1,18 +1,27 @@
+/*
+ * A palette entry. These are a list to pick from, not cards in their own right, so they are kept
+ * tight: the 12px of padding and 5px of margin they used to carry put 34px of nothing between two
+ * one-line entries, and only four of them fitted in the sidebar at once.
+ */
 .switchesItem {
-    max-width: 200px;
+    max-width: 100%;
     width: auto;
     display: flex;
-    margin: 5px 0;
-    padding: 12px 0;
+    margin: 1px 0;
+    padding: 4px 0;
     align-items: center;
     border: 1px solid rgba(255, 255, 255, 0);
-    transition: all 0.7s;
+    transition:
+        border 0.2s,
+        color 0.2s,
+        background 0.2s;
     color: var(--colorInput);
     span {
         overflow: hidden;
         text-overflow: ellipsis;
         width: 100%;
-        margin-left: 15px;
+        margin-left: 8px;
+        font-size: 13px;
         color: var(--lineColorActive);
         white-space: nowrap;
     }
@@ -32,9 +41,10 @@
     cursor: pointer;
 }
 .iconTheme {
-    width: 30px !important;
-    height: 30px !important;
-    margin-left: 5px;
+    width: 20px !important;
+    height: 20px !important;
+    flex: none;
+    margin-left: 4px;
     * {
         color: var(--lineColorActive) !important;
     }

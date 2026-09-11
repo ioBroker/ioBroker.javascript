@@ -110,5 +110,8 @@
   "mirrorPath help": "A dedicated, empty directory outside the ioBroker installation, writable by the iobroker user. If a folder disappears there, the scripts in it are deleted from the database.",
   "Show AI helpers in the script editor": "Show AI helpers in the script editor",
   "Code actions above functions, tooltips for object IDs and CRON expressions, and inline code suggestions": "Code actions above functions, tooltips for object IDs and CRON expressions, and inline code suggestions",
-  "API keys": "API keys"
+  "API keys": "API keys",
+  "Type definitions": "Type definitions",
+  "Load type definitions": "Load type definitions",
+  "loadTypings help": "Type definitions of Node.js, ioBroker and the configured libraries. They are read only when they are actually needed - to compile a TypeScript script or to answer the built-in editor - because they add about 90 MB to the compiler. Switching them off keeps them from ever being read: the editor loses its autocompletion and TypeScript scripts no longer compile. Plain JavaScript, including the declarations of global JavaScripts, is unaffected."
 }
