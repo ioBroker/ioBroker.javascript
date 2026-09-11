@@ -27,7 +27,7 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 10.2.1 (2026-09-11)
 * (@GermanBluefox) Rules: selection of state fixed
 
 ### 10.2.0 (2026-09-11)
@@ -72,12 +72,6 @@ Executes JavaScript, TypeScript Scripts.
 * (@krobipd) Fixed saving of Blockly scripts containing a function with a return value and no statements (#1958)
 * (@krobipd) The Blockly regression tests now also cover saving: every block is serialized the way the editor does it and reloaded to the same code
 * (@krobipd) When a block fails while the script is regenerated after a change, the editor now shows the error instead of silently never offering the save button; a failing export shows its error too
-
-### 10.1.1 (2026-08-24)
-* (@GermanBluefox) The credentials of the central storage (Basic settings -> Credentials) are available in the scripts as `SECRETS`, e.g. `SECRETS.CameraPassword.key`. The values are decrypted, read-only and are updated live when a credential is edited in the admin UI
-* (@GermanBluefox) The editor knows the credentials that exist: after `SECRETS.` it offers their names, and after the next dot exactly the fields the selected credential has
-* (@GermanBluefox) Added the Blockly block "credential", which reads one field of the central credential storage
-* (@GermanBluefox) The instance settings list the available credentials with their fields and the expression a script uses for them
 
 ## License
 The MIT License (MIT)
