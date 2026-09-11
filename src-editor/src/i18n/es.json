@@ -553,5 +553,8 @@
     "only if changed": "solo si cambia",
     "A block failed while generating the script, so the changes cannot be saved": "Un bloque falló al generar el script, los cambios no se pueden guardar",
     "Blockly error": "Error de Blockly",
-    "Export error": "Error de exportación"
+    "Export error": "Error de exportación",
+    "without condition": "sin condición",
+    "Show conditions": "Mostrar condiciones",
+    "Hide empty conditions": "Ocultar condiciones vacías"
 }

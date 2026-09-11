@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { type ConnectDropTarget, type XYCoord, useDrop } from 'react-dnd';
 
 import { Select, MenuItem, IconButton } from '@mui/material';
-import { HelpOutlined as IconHelp } from '@mui/icons-material';
+import { HelpOutlined as IconHelp, ExpandMore as IconUnfold, ChevronRight as IconFold } from '@mui/icons-material';
 
 import {
     type AdminConnection,
@@ -231,6 +231,27 @@ const ContentBlockItems = ({
     const [showHelp, setShowHelp] = useState(false);
     const [showConditionDialog, setShowConditionDialog] = useState(false);
 
+    /*
+     * A rule without conditions runs its actions on every trigger - `compileConditions` turns an
+     * empty "and" band into `true`. That band is still the tallest thing in such a rule: a drop
+     * area with a 64px floor, the "just check" selector, and an "or" row for every group. So when
+     * there is nothing in it, it folds down to its heading. Dragging a condition over the folded
+     * heading, or clicking it, opens it again; a band that has conditions in it never folds.
+     */
+    const conditionsAreEmpty = typeBlock === 'conditions' && !userRules.conditions.some(group => group.length);
+    const [foldEmptyConditions, setFoldEmptyConditions] = useStateLocal<boolean>(true, 'foldEmptyConditions');
+    const folded = conditionsAreEmpty && foldEmptyConditions;
+
+    // Unfolds while a condition is dragged over the folded heading, so the band can be dropped into
+    const [, foldedDropRef] = useDrop<RuleBlockDescription>({
+        accept: 'box',
+        hover: ({ acceptedBy }) => {
+            if (acceptedBy === 'conditions' && folded) {
+                setFoldEmptyConditions(false);
+            }
+        },
+    });
+
     useEffect(() => {
         if (
             typeBlock === 'conditions' &&
@@ -259,7 +280,14 @@ const ContentBlockItems = ({
         <div className={`${cls.mainBlockItemRules} ${BAND_CLASS[typeBlock]}`}>
             <span
                 id="width"
-                className={cls.nameBlockItems}
+                // Passing null once the band has conditions in it lets react-dnd let go of the
+                // node instead of holding on to a heading that is no longer a drop target
+                ref={el => {
+                    foldedDropRef(conditionsAreEmpty ? el : null);
+                }}
+                className={Utils.clsx(cls.nameBlockItems, conditionsAreEmpty && cls.nameBlockItemsFoldable)}
+                onClick={conditionsAreEmpty ? () => setFoldEmptyConditions(!foldEmptyConditions) : undefined}
+                title={conditionsAreEmpty ? I18n.t(folded ? 'Show conditions' : 'Hide empty conditions') : undefined}
             >
                 <MaterialDynamicIcon
                     iconName={iconName}
@@ -268,8 +296,14 @@ const ContentBlockItems = ({
                     socket={socket}
                 />
                 {name}
+                {conditionsAreEmpty ? (
+                    <>
+                        {folded ? <IconFold className={cls.foldIcon} /> : <IconUnfold className={cls.foldIcon} />}
+                        {folded ? <span className={cls.foldHint}>{I18n.t('without condition')}</span> : null}
+                    </>
+                ) : null}
             </span>
-            {typeBlock === 'conditions' ? (
+            {typeBlock === 'conditions' && !folded ? (
                 <div style={{ width: '100%' }}>
                     <Select
                         variant="standard"
@@ -294,19 +328,22 @@ const ContentBlockItems = ({
                     </IconButton>
                 </div>
             ) : null}
-            <AdditionallyContentBlockItems
-                setTourStep={setTourStep}
-                tourStep={tourStep}
-                isTourOpen={isTourOpen}
-                blockValue={typeBlock === 'actions' ? 'then' : typeBlock === 'conditions' ? 0 : typeBlock}
-                typeBlock={typeBlock}
-                setUserRules={setUserRules}
-                userRules={userRules}
-                theme={theme}
-                themeName={themeName}
-                themeType={themeType}
-            />
-            {additionally &&
+            {folded ? null : (
+                <AdditionallyContentBlockItems
+                    setTourStep={setTourStep}
+                    tourStep={tourStep}
+                    isTourOpen={isTourOpen}
+                    blockValue={typeBlock === 'actions' ? 'then' : typeBlock === 'conditions' ? 0 : typeBlock}
+                    typeBlock={typeBlock}
+                    setUserRules={setUserRules}
+                    userRules={userRules}
+                    theme={theme}
+                    themeName={themeName}
+                    themeType={themeType}
+                />
+            )}
+            {!folded &&
+                additionally &&
                 [...Array(typeBlock === 'actions' ? 1 : userRules.conditions.length - 1)].map((e, index) => {
                     const booleanAdditionally = (value = index): boolean =>
                         typeBlock === 'actions'
@@ -374,7 +411,7 @@ const ContentBlockItems = ({
                         </Fragment>
                     );
                 })}
-            {additionally && typeBlock === 'conditions' && (
+            {!folded && additionally && typeBlock === 'conditions' && (
                 <div
                     onClick={() => {
                         setAdditionallyClickItems([

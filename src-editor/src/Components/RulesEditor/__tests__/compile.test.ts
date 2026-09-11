@@ -88,6 +88,95 @@ describe('rule compilation', () => {
         });
     });
 
+    describe('ConditionState', () => {
+        /**
+         * Picking the state of a trigger sets its `oidType`, and every change of a trigger compiles
+         * the whole rule again. A condition that was dropped in but not filled in yet has no value,
+         * and that used to reach `.replace()` as the boolean `false` - "n.replace is not a function",
+         * thrown out of the compiler, which takes the rules editor down.
+         */
+        function ruleWithCondition(condition: BlockConfig, oidType: string): Partial<RuleUserRules> {
+            return {
+                triggers: [
+                    {
+                        id: 'TriggerState',
+                        acceptedBy: 'triggers',
+                        _id: 1,
+                        oid: 'javascript.0.text',
+                        oidType,
+                    } as BlockConfig,
+                ],
+                conditions: [[condition]],
+                actions: {
+                    then: [{ id: 'ActionPrintText', acceptedBy: 'actions', _id: 9, text: 'hit' }] as BlockConfig[],
+                    else: [],
+                },
+            };
+        }
+
+        it('compiles a condition on a string state that has no value yet', () => {
+            const code = compileParsed(
+                ruleWithCondition(
+                    { id: 'ConditionState', acceptedBy: 'conditions', _id: 2, useTrigger: true, tagCard: '=' },
+                    'string',
+                ),
+            );
+            expect(code).toContain('subCondVar2 == ""');
+        });
+
+        it('compiles "includes" on a string state that has no value yet', () => {
+            const code = compileParsed(
+                ruleWithCondition(
+                    {
+                        id: 'ConditionState',
+                        acceptedBy: 'conditions',
+                        _id: 2,
+                        useTrigger: false,
+                        oid: 'javascript.0.text',
+                        oidType: 'string',
+                        tagCard: 'includes',
+                    },
+                    'string',
+                ),
+            );
+            expect(code).toContain('subCondVar2.includes("")');
+        });
+
+        it('compiles a number that was entered for a state that is a string', () => {
+            const code = compileParsed(
+                ruleWithCondition(
+                    {
+                        id: 'ConditionState',
+                        acceptedBy: 'conditions',
+                        _id: 2,
+                        useTrigger: true,
+                        tagCard: '=',
+                        value: 42,
+                    },
+                    'string',
+                ),
+            );
+            expect(code).toContain('subCondVar2 == "42"');
+        });
+
+        it('still escapes a quote in the compared text', () => {
+            const code = compileParsed(
+                ruleWithCondition(
+                    {
+                        id: 'ConditionState',
+                        acceptedBy: 'conditions',
+                        _id: 2,
+                        useTrigger: true,
+                        tagCard: '=',
+                        value: 'a"b',
+                    },
+                    'string',
+                ),
+            );
+            expect(code).toContain('subCondVar2 == "a\\"b"');
+        });
+    });
+
     describe('TriggerMessage', () => {
         const trigger: BlockConfig = {
             id: 'TriggerMessage',

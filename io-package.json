@@ -558,6 +558,7 @@
     "credentialIdGeminiKey": "",
     "credentialIdDeepseekKey": "",
     "credentialIdGptBaseUrlKey": "",
+    "loadTypings": true,
     "tsTarget": "es2022",
     "tsStrict": false,
     "tsNoImplicitAny": "",

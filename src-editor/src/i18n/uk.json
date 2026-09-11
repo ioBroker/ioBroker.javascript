@@ -553,5 +553,8 @@
     "only if changed": "лише при зміні",
     "A block failed while generating the script, so the changes cannot be saved": "Один із блоків спричинив помилку під час генерації скрипту, зміни не можуть бути збережені",
     "Blockly error": "Помилка Blockly",
-    "Export error": "Помилка експорту"
+    "Export error": "Помилка експорту",
+    "without condition": "без умови",
+    "Show conditions": "Показати умови",
+    "Hide empty conditions": "Сховати порожні умови"
 }

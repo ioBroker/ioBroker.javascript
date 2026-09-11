@@ -561,5 +561,8 @@
     "only if changed": "only if changed",
     "A block failed while generating the script, so the changes cannot be saved": "A block failed while generating the script, so the changes cannot be saved",
     "Blockly error": "Blockly error",
-    "Export error": "Export error"
+    "Export error": "Export error",
+    "without condition": "without condition",
+    "Show conditions": "Show conditions",
+    "Hide empty conditions": "Hide empty conditions"
 }

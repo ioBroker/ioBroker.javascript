@@ -195,8 +195,23 @@ interface AppState extends GenericAppState {
     password: string;
 }
 
+/**
+ * How often the editor tells the adapter that it is open. Has to be clearly below the 30 seconds
+ * after which the adapter considers the editor gone, so a single lost ping changes nothing.
+ */
+const EDITOR_PING_INTERVAL_MS = 10_000;
+
 export default class App extends GenericApp<AppProps, AppState> {
     private hosts: string[] = [];
+    /**
+     * Tells the adapter that this editor is open. As long as the pings arrive, the adapter keeps the
+     * TypeScript type definitions and the compiler in memory, so saving a script does not have to wait
+     * for them to be read and built again. About 100 MB, which the adapter gives back a little after
+     * the last ping (https://github.com/ioBroker/ioBroker.javascript/issues/2373).
+     */
+    private editorPingInterval: ReturnType<typeof setInterval> | null = null;
+    /** Only ever one ping at a time - an adapter that does not know the command never answers */
+    private editorPingPending = false;
     private importFile: string | null = null;
     private importFileName: string | null = null;
     private scripts: Record<string, ioBroker.ScriptObject | ioBroker.ChannelObject> = {};
@@ -434,8 +449,59 @@ export default class App extends GenericApp<AppProps, AppState> {
                 await this.socket.subscribeObject('script.*', this.onScriptsChanged);
                 await this.socket.subscribeObject('system.adapter.*', this.onInstanceChanged);
                 await this.socket.subscribeObject('system.host.*', this.onHostChanged);
+
+                this.startEditorPing();
             },
         );
+    }
+
+    /**
+     * Signs of life for the adapter. Only sent while the tab is actually visible: a forgotten
+     * background tab should not keep 100 MB alive in the adapter for days.
+     */
+    sendEditorPing = (): void => {
+        if (typeof document !== 'undefined' && document.visibilityState !== 'visible') {
+            return;
+        }
+        if (this.editorPingPending) {
+            // The previous ping was never answered - an adapter that is too old to know the
+            // command stays silent, and then there is no point in sending more
+            return;
+        }
+        const instance = Object.keys(this.state.runningInstances).find(id => this.state.runningInstances[id]);
+        if (!instance) {
+            return;
+        }
+        this.editorPingPending = true;
+        const done = (): void => {
+            this.editorPingPending = false;
+        };
+        this.socket.sendTo(instance.replace('system.adapter.', ''), 'editorPing', null).then(done, done);
+    };
+
+    onVisibilityChange = (): void => {
+        // Back in the foreground: say so at once instead of waiting for the next interval
+        if (document.visibilityState === 'visible') {
+            this.sendEditorPing();
+        }
+    };
+
+    startEditorPing(): void {
+        if (this.editorPingInterval) {
+            return;
+        }
+        this.sendEditorPing();
+        this.editorPingInterval = setInterval(this.sendEditorPing, EDITOR_PING_INTERVAL_MS);
+        document.addEventListener('visibilitychange', this.onVisibilityChange);
+    }
+
+    componentWillUnmount(): void {
+        if (this.editorPingInterval) {
+            clearInterval(this.editorPingInterval);
+            this.editorPingInterval = null;
+        }
+        document.removeEventListener('visibilitychange', this.onVisibilityChange);
+        super.componentWillUnmount();
     }
 
     async subscribeOnInstances(): Promise<{

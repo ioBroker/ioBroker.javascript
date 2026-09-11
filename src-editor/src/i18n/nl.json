@@ -553,5 +553,8 @@
     "only if changed": "alleen bij wijziging",
     "A block failed while generating the script, so the changes cannot be saved": "Een blok veroorzaakte een fout bij het genereren van het script, de wijzigingen kunnen niet worden opgeslagen",
     "Blockly error": "Blockly-fout",
-    "Export error": "Exportfout"
+    "Export error": "Exportfout",
+    "without condition": "zonder voorwaarde",
+    "Show conditions": "Voorwaarden tonen",
+    "Hide empty conditions": "Lege voorwaarden verbergen"
 }

@@ -111,6 +111,30 @@
 .mainBlockItemRules + .mainBlockItemRules {
     border-top: 1px solid var(--lineColor);
 }
+/* The heading of the empty "and" band doubles as its fold control */
+.nameBlockItemsFoldable {
+    cursor: pointer;
+    user-select: none;
+    &:hover .foldIcon,
+    &:hover .foldHint {
+        opacity: 1;
+    }
+}
+.foldIcon {
+    font-size: 18px !important;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+/* An empty band means the actions run on every trigger - worth saying while it is folded away */
+.foldHint {
+    color: var(--lineColor);
+    font-weight: 400;
+    letter-spacing: normal;
+    text-transform: none;
+    font-size: 12px;
+    opacity: 0.75;
+    transition: opacity 0.2s;
+}
 .contentBlockItem {
     display: flex;
     flex-direction: column;

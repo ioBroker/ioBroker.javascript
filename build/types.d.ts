@@ -64,6 +64,14 @@ export interface JavaScriptAdapterConfig {
     credentialIdDeepseekKey?: string;
     credentialIdGptBaseUrlKey?: string;
 
+    /**
+     * Whether the type definitions of Node.js, ioBroker and the configured libraries are read at
+     * start. They are only needed for the autocompletion of the built-in editor and to type-check
+     * TypeScript scripts - an instance that runs plain JavaScript and is edited elsewhere can do
+     * without them. Missing (older configuration) means "load them".
+     */
+    loadTypings?: boolean;
+
     // TypeScript compiler options for the user scripts
     tsTarget?: TsTarget;
     tsStrict?: boolean;
