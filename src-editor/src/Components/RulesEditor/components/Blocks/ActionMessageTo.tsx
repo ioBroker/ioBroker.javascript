@@ -1,6 +1,6 @@
 import { I18n } from '@iobroker/gui-components';
 
-import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import type {
     RuleBlockConfig,
     RuleBlockDescription,
@@ -8,6 +8,7 @@ import type {
     RuleInputAny,
     RuleTagCardTitle,
     GenericBlockProps,
+    RuleBlockSummary,
 } from '@iobroker/javascript-rules-dev';
 
 interface RuleBlockConfigActionMessageTo extends RuleBlockConfig {

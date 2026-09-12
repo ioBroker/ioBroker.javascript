@@ -1,12 +1,13 @@
 import React from 'react';
 import { I18n } from '@iobroker/gui-components';
-import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import { renderValue } from '../../helpers/utils';
 import type {
     RuleBlockConfigActionOperationState,
     RuleBlockDescription,
     RuleInputAny,
     GenericBlockProps,
+    RuleBlockSummary,
 } from '@iobroker/javascript-rules-dev';
 
 class ActionOperateStates extends GenericBlock<RuleBlockConfigActionOperationState> {

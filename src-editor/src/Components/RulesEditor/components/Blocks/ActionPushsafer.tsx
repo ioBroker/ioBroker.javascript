@@ -1,9 +1,10 @@
-import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import type {
     RuleBlockConfigActionPushsafer,
     RuleBlockDescription,
     RuleContext,
     GenericBlockProps,
+    RuleBlockSummary,
 } from '@iobroker/javascript-rules-dev';
 
 class ActionPushsafer extends GenericBlock<RuleBlockConfigActionPushsafer> {

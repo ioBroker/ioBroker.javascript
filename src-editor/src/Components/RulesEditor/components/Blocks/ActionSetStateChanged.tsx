@@ -1,8 +1,13 @@
 import { I18n } from '@iobroker/gui-components';
 
 import ActionSetState from './ActionSetState';
-import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
-import type { RuleBlockConfigActionSetState, RuleBlockDescription, RuleContext } from '@iobroker/javascript-rules-dev';
+import { GenericBlock } from '../GenericBlock';
+import type {
+    RuleBlockConfigActionSetState,
+    RuleBlockDescription,
+    RuleContext,
+    RuleBlockSummary,
+} from '@iobroker/javascript-rules-dev';
 
 /**
  * Writes a state only when the value actually differs from what is there.

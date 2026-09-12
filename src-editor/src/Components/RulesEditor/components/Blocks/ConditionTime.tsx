@@ -1,6 +1,6 @@
 import { I18n } from '@iobroker/gui-components';
 
-import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import type {
     RuleBlockConfigConditionTime,
     RuleBlockDescription,
@@ -9,6 +9,7 @@ import type {
     RuleTagCard,
     RuleTagCardTitle,
     GenericBlockProps,
+    RuleBlockSummary,
 } from '@iobroker/javascript-rules-dev';
 
 const DAYS: number[] = [

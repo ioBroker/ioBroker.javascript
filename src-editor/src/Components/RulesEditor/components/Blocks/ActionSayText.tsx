@@ -1,10 +1,11 @@
 import { I18n } from '@iobroker/gui-components';
-import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import type {
     RuleBlockConfigActionSayText,
     RuleBlockDescription,
     RuleContext,
     GenericBlockProps,
+    RuleBlockSummary,
 } from '@iobroker/javascript-rules-dev';
 
 // copied from https://github.com/ioBroker/ioBroker.sayit/blob/master/admin/blockly.js#L37

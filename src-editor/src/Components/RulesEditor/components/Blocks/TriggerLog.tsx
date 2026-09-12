@@ -1,6 +1,6 @@
 import { I18n } from '@iobroker/gui-components';
 
-import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import { STANDARD_FUNCTION_LOG, STANDARD_FUNCTION_LOG_ONCHANGE } from '../../helpers/Compile';
 import type {
     RuleBlockConfig,
@@ -8,6 +8,7 @@ import type {
     RuleContext,
     RuleTagCardTitle,
     GenericBlockProps,
+    RuleBlockSummary,
 } from '@iobroker/javascript-rules-dev';
 
 interface RuleBlockConfigTriggerLog extends RuleBlockConfig {

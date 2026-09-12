@@ -1,6 +1,6 @@
 import { I18n } from '@iobroker/gui-components';
 
-import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import { STANDARD_FUNCTION_STATE, STANDARD_FUNCTION_STATE_ONCHANGE } from '../../helpers/Compile';
 import type {
     RuleBlockConfig,
@@ -9,10 +9,11 @@ import type {
     RuleInputAny,
     RuleTagCardTitle,
     GenericBlockProps,
+    RuleBlockSummary,
 } from '@iobroker/javascript-rules-dev';
 
 interface RuleBlockConfigTriggerEnumMembers extends RuleBlockConfig {
-    /** Id of the enum whose members are watched, e.g. `enum.rooms.living_room` */
+    /** ID of the enum whose members are watched, e.g. `enum.rooms.living_room` */
     enumId: string;
 }
 

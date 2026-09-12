@@ -1,10 +1,11 @@
 import { I18n } from '@iobroker/gui-components';
-import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import type {
     RuleBlockConfigActionSendEmail,
     RuleBlockDescription,
     RuleContext,
     GenericBlockProps,
+    RuleBlockSummary,
 } from '@iobroker/javascript-rules-dev';
 
 class ActionSendEmail extends GenericBlock<RuleBlockConfigActionSendEmail> {

@@ -1,10 +1,11 @@
 import { I18n } from '@iobroker/gui-components';
-import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import type {
     RuleBlockConfigActionTelegram,
     RuleBlockDescription,
     RuleContext,
     GenericBlockProps,
+    RuleBlockSummary,
 } from '@iobroker/javascript-rules-dev';
 
 class ActionTelegram extends GenericBlock<RuleBlockConfigActionTelegram> {

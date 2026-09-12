@@ -49,22 +49,8 @@ import type {
     RuleBlockConfigTriggerState,
     GenericBlockState,
     GenericBlockProps,
+    RuleBlockSummary,
 } from '@iobroker/javascript-rules-dev';
-
-/**
- * A short description of what *one particular* block does - "Flur · Bewegung" instead of "Zustand".
- *
- * A block returns this from `getSummary()`. It is what the card shows instead of its generic name,
- * and it is what makes a collapsed block readable.
- */
-export interface RuleBlockSummary {
-    /** Small line above the title, usually the selected variant: "bei Änderung", "Steuerung" */
-    kicker?: string;
-    /** The one line that tells this block apart from every other block of the same type */
-    title: string;
-    /** Muted second line for the detail behind the title, e.g. the object ID behind its name */
-    subtitle?: string;
-}
 
 export abstract class GenericBlock<
     Settings extends RuleBlockConfig = RuleBlockConfig,
@@ -251,8 +237,42 @@ export abstract class GenericBlock<
         return cached ? Utils.getObjectNameFromObj(cached, I18n.getLanguage()) || undefined : undefined;
     }
 
+    private summaryObjectIcon(oid: string | undefined): string | undefined {
+        if (!oid) {
+            return undefined;
+        }
+
+        const iconKey = `${oid}___icon`;
+        const cached = (this.state as Record<string, string | null | undefined>)[iconKey];
+        if (cached === undefined) {
+            setTimeout(async (): Promise<void> => {
+                const object = await this.props.socket.getObject(oid);
+                const icon = await this.findIcon(object);
+                if (this.mounted) {
+                    this.setState({ [iconKey]: icon } as unknown as TState);
+                }
+            }, 0);
+            return undefined;
+        }
+
+        return cached || undefined;
+    }
+
+    private summaryObjectId(): string | undefined {
+        const objectInput = this.state.inputs.find(
+            input =>
+                (input as RuleInputAll).nameRender === 'renderObjectID' &&
+                typeof (this.state.settings as Record<string, unknown>)[(input as RuleInputAll).attr || ''] ===
+                    'string',
+        ) as RuleInputObjectID | undefined;
+
+        return objectInput?.attr
+            ? (this.state.settings as unknown as Record<string, string | undefined>)[objectInput.attr] || undefined
+            : undefined;
+    }
+
     /**
-     * The label a select shows for a stored value, for use in `getSummary`.
+     * The label select shows for a stored value, for use in `getSummary`.
      *
      * The settings keep the raw value - a Telegram chat ID, a Pushover priority number - while the
      * option list that turns it into something readable lives on the input.
@@ -277,7 +297,7 @@ export abstract class GenericBlock<
                   doNotTranslate?: boolean;
               }
             | undefined;
-        // a select may store what a number input wrote, so compare as text
+        // Select may store what a number input wrote, so compare as text
         const option = input?.options?.find(item => String(item.value) === String(value));
         if (!option) {
             return undefined;
@@ -476,11 +496,7 @@ export abstract class GenericBlock<
         );
     }
 
-    renderSlider(
-        input: RuleInputSlider,
-        value: number | string,
-        onChange: (value: number) => void,
-    ): React.JSX.Element {
+    renderSlider(input: RuleInputSlider, value: number | string, onChange: (value: number) => void): React.JSX.Element {
         const { className } = this.props;
         const { attr, frontText, backText, nameBlock, min, max, step, unit, doNotTranslate, doNotTranslateBack } =
             input;
@@ -544,7 +560,7 @@ export abstract class GenericBlock<
             return null;
         }
 
-        if (obj.common?.icon) {
+        if (obj.common?.icon && (obj.type === 'state' || obj.type === 'channel' || obj.type === 'device')) {
             return getSelectIdIcon(obj, '../..');
         }
 
@@ -1347,6 +1363,7 @@ export abstract class GenericBlock<
 
         const summary: RuleBlockSummary | null = this.getSummary();
         const collapsed: boolean = this.isCollapsed(!!summary);
+        const summaryIcon = collapsed ? this.summaryObjectIcon(this.summaryObjectId()) : undefined;
 
         return (
             <Fragment>
@@ -1374,11 +1391,21 @@ export abstract class GenericBlock<
                         }}
                     />
                 )}
-                <div className={cls.blockName}>
+                <div
+                    className={cls.blockName}
+                    data-rules-expanded={!collapsed}
+                >
                     <div
                         className={Utils.clsx(cls.headerRow, summary && cls.headerRowClickable)}
                         onClick={summary ? () => this.toggleCollapsed(!collapsed) : undefined}
                     >
+                        {summaryIcon ? (
+                            <img
+                                className={cls.summaryObjectIcon}
+                                src={summaryIcon}
+                                alt=""
+                            />
+                        ) : null}
                         {/* Leading disclosure arrow. It deliberately sits on the left: on the right
                             it was a few pixels away from the delete button of the card, so aiming
                             for "collapse" risked deleting the block. Blocks that cannot collapse

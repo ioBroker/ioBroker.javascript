@@ -1,12 +1,13 @@
 import { I18n } from '@iobroker/gui-components';
 
-import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import { STANDARD_FUNCTION_STOP } from '../../helpers/Compile';
 import type {
     RuleBlockConfig,
     RuleBlockDescription,
     RuleTagCardTitle,
     GenericBlockProps,
+    RuleBlockSummary,
 } from '@iobroker/javascript-rules-dev';
 
 interface RuleBlockConfigTriggerOnStop extends RuleBlockConfig {

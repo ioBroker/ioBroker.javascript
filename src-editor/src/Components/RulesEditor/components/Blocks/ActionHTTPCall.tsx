@@ -1,12 +1,13 @@
 import { I18n } from '@iobroker/gui-components';
 
-import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import type {
     RuleBlockConfigActionHTTPCall,
     RuleBlockDescription,
     RuleContext,
     RuleTagCardTitle,
     GenericBlockProps,
+    RuleBlockSummary,
 } from '@iobroker/javascript-rules-dev';
 
 class ActionHTTPCall extends GenericBlock<RuleBlockConfigActionHTTPCall> {

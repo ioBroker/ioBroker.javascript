@@ -1,6 +1,6 @@
 import React from 'react';
 import { I18n } from '@iobroker/gui-components';
-import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import type {
     RuleBlockConfigActionSetState,
     RuleBlockConfigActionSetStateDelayed,
@@ -9,6 +9,7 @@ import type {
     RuleInputAny,
     RuleTagCardTitle,
     GenericBlockProps,
+    RuleBlockSummary,
 } from '@iobroker/javascript-rules-dev';
 import { renderValue } from '../../helpers/utils';
 

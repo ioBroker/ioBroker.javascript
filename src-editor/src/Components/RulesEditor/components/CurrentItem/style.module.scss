@@ -4,7 +4,7 @@
     min-width: 200px;
     /* was `calc(100% - 72px)`: the delete button used to hang outside the card, so every column
        gave away 72px of its width. It now sits inside, top right. */
-    width: auto;
+    width: min(380px, calc(100% - 24px));
     height: fit-content;
     display: flex;
     /* right side is kept clear for the delete button, which now sits inside the card - wide enough
@@ -36,6 +36,9 @@
 .cardStyleActive {
     width: 300px;
     z-index: 100;
+}
+.cardStyle:has([data-rules-expanded='true']) {
+    width: calc(100% - 24px);
 }
 .controlMenu {
     display: flex;
@@ -116,6 +119,10 @@
     display: none;
 }
 @media screen and (max-width: 600px) {
+    .cardStyle {
+        width: calc(100% - 24px);
+    }
+
     .drag_mobile {
         display: flex;
         width: 30px;

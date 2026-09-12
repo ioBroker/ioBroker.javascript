@@ -7,8 +7,9 @@ import type {
     RuleInputAny,
     RuleTagCardTitle,
     GenericBlockProps,
+    RuleBlockSummary,
 } from '@iobroker/javascript-rules-dev';
-import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 
 import { renderValue } from '../../helpers/utils';
 

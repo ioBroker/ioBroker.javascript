@@ -1,5 +1,5 @@
 import { I18n } from '@iobroker/gui-components';
-import { GenericBlock, type RuleBlockSummary } from '../GenericBlock';
+import { GenericBlock } from '../GenericBlock';
 import { NO_FUNCTION } from '../../helpers/Compile';
 import type {
     RuleBlockConfigTriggerScriptSave,
@@ -7,6 +7,7 @@ import type {
     RuleContext,
     RuleTagCardTitle,
     GenericBlockProps,
+    RuleBlockSummary,
 } from '@iobroker/javascript-rules-dev';
 
 class TriggerScriptSave extends GenericBlock<RuleBlockConfigTriggerScriptSave> {

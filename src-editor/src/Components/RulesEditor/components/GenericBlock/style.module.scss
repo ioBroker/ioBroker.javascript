@@ -41,6 +41,12 @@
     min-width: 0;
     flex: 1;
 }
+.summaryObjectIcon {
+    width: 20px;
+    height: 20px;
+    flex: none;
+    object-fit: contain;
+}
 /* the block variant above the title - "bei Änderung", "Steuerung" */
 .kicker {
     font-size: 10px;
