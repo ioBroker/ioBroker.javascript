@@ -22,7 +22,7 @@ const styles = {
     },
 };
 
-class ActionSetState extends GenericBlock<RuleBlockConfigActionSetState> {
+export default class ActionSetState extends GenericBlock<RuleBlockConfigActionSetState> {
     constructor(props: GenericBlockProps<RuleBlockConfigActionSetState>) {
         // `new.target` and not `ActionSetState`, so a block deriving from this one describes itself
         // with its own name and icon instead of inheriting this one's - see ActionSetStateChanged.
@@ -323,6 +323,18 @@ class ActionSetState extends GenericBlock<RuleBlockConfigActionSetState> {
         this.onTagChange();
     }
 
+    /**
+     * Append the unit of the object to the value, but only for the input types that show the unit behind the value
+     * field: a unit makes no sense for booleans, buttons, colors or value lists.
+     */
+    withUnit(value: string): string {
+        const { oidUnit, oidType, oidStates, oidRole } = this.state.settings;
+        if (!oidUnit || oidStates || oidType === 'boolean' || oidRole?.includes('color')) {
+            return value;
+        }
+        return `${value} ${oidUnit}`;
+    }
+
     getSummary(): RuleBlockSummary | null {
         const { oid, value, toggle, useTrigger, tagCard } = this.state.settings;
         if (!oid) {
@@ -334,8 +346,10 @@ class ActionSetState extends GenericBlock<RuleBlockConfigActionSetState> {
             target = I18n.t('Trigger value');
         } else if (toggle) {
             target = I18n.t('toggle');
+        } else if (value === undefined || value === '') {
+            target = '…';
         } else {
-            target = value === undefined || value === '' ? '…' : String(value);
+            target = this.withUnit(String(value));
         }
 
         return {
@@ -363,5 +377,3 @@ class ActionSetState extends GenericBlock<RuleBlockConfigActionSetState> {
         return ActionSetState.getStaticData();
     }
 }
-
-export default ActionSetState;

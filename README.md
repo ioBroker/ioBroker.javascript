@@ -27,7 +27,7 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
-### 10.2.2 (2026-09-12)
+### **WORK IN PROGRESS**
 * (@GermanBluefox) Rules: selection of state fixed
 
 ### 10.2.0 (2026-09-11)
