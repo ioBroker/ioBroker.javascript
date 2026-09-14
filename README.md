@@ -27,8 +27,9 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
-### 10.2.3 (2026-09-13)
+### **WORK IN PROGRESS**
 * (@GermanBluefox) Rules: selection of state fixed
+* (@GermanBluefox) Fixed debugger
 
 ### 10.2.0 (2026-09-11)
 * (@GermanBluefox) Rules: an empty "and" band folds down to its heading. A rule without conditions runs its actions on every trigger, but that band was still the tallest thing in the rule - a drop area with a 64px floor, the "just check" selector and an "or" row per group, 292px for nothing. It is 41px now and says "without condition", clicking the heading opens it again, dragging a condition over it opens it by itself, and a band that has conditions in it never folds

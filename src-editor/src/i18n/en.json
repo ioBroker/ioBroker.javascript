@@ -59,6 +59,8 @@
     "Day of week": "Day of week",
     "Debug instance": "Debug instance",
     "Debug options": "Debug options",
+    "Debug script": "Debug script",
+    "No breakpoint possible on this line": "No breakpoint possible on this line",
     "December": "December",
     "Default": "Default",
     "Define cron...": "Define cron...",

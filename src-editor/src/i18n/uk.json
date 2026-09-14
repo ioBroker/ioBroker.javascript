@@ -56,6 +56,8 @@
     "Date": "Дата",
     "Debug instance": "Екземпляр налагодження",
     "Debug options": "Параметри налагодження",
+    "Debug script": "Налагодити скрипт",
+    "No breakpoint possible on this line": "У цьому рядку точка зупинки неможлива",
     "December": "Грудень",
     "Default": "За замовчуванням",
     "Define cron...": "Визначити cron...",

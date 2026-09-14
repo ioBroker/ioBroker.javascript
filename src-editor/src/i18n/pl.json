@@ -56,6 +56,8 @@
     "Date": "Data",
     "Debug instance": "Debuguj instancję",
     "Debug options": "Opcje debugowania",
+    "Debug script": "Debuguj skrypt",
+    "No breakpoint possible on this line": "W tej linii nie można ustawić punktu przerwania",
     "December": "Grudzień",
     "Default": "Domyślna",
     "Define cron...": "Zdefiniuj CRON ...",

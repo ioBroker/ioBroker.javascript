@@ -1864,7 +1864,8 @@ class JavaScript extends adapter_core_1.Adapter {
                 }
             }
         }
-        if (this.config.mirrorPath?.trim()) {
+        // The process started for debugging of one script must not synchronize the scripts with the disk
+        if (this.config.mirrorPath?.trim() && !this.context.debugMode) {
             this.config.mirrorInstance = parseInt(this.config.mirrorInstance, 10) || 0;
             if (this.instance === this.config.mirrorInstance) {
                 const ioBDataDir = (0, adapter_core_1.getAbsoluteDefaultDataDir)() + node_path_1.sep;
@@ -2618,6 +2619,8 @@ class JavaScript extends adapter_core_1.Adapter {
         try {
             script.script.runInNewContext(sandbox, {
                 filename: name,
+                // The debugger recognizes the context of the debugged script by this name
+                contextName: name,
                 displayErrors: true,
                 // lineOffset: this.globalScriptLines
             });
@@ -3514,11 +3517,12 @@ class JavaScript extends adapter_core_1.Adapter {
     debugSendToInspector(message) {
         if (this.debugState.child) {
             try {
-                this.log.info(`send to debugger: ${message}`);
+                this.log.debug(`send to debugger: ${typeof message === 'string' ? message : JSON.stringify(message)}`);
                 this.debugState.child.send(message);
             }
-            catch {
-                void this.debugStop().then(() => this.log.info(`${this.debugState.scriptName}: Debugging was stopped, because started in normal mode`));
+            catch (e) {
+                const scriptName = this.debugState.scriptName;
+                void this.debugStop().then(() => this.log.warn(`${scriptName}: Debugging was stopped, because the inspector is not reachable: ${e.message}`));
             }
         }
         else {
@@ -3591,20 +3595,11 @@ class JavaScript extends adapter_core_1.Adapter {
                         }
                         case 'paused': {
                             this.debugState.paused = true;
-                            console.log(`host: PAUSED`);
                             break;
                         }
                         case 'resumed': {
                             this.debugState.paused = false;
                             //console.log(`STARTED`);
-                            break;
-                        }
-                        case 'log': {
-                            console.log(`[${oMessage.severity}] ${oMessage.text}`);
-                            break;
-                        }
-                        case 'readyToDebug': {
-                            console.log(`host: readyToDebug (set breakpoints): [${oMessage.scriptId}] ${oMessage.script}`);
                             break;
                         }
                     }

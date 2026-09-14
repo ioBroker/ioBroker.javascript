@@ -8,7 +8,7 @@ import { ListItemButton, ListItemText, Input, InputAdornment, IconButton, List, 
 import { MdCheck as CheckIcon, MdAdd as IconAdd, MdDelete as IconDelete } from 'react-icons/md';
 
 import { I18n, type IobTheme, type ThemeType } from '@iobroker/gui-components';
-import type { DebugScopes, CallFrame, DebugValue, DebugVariable, DebugObject } from './types';
+import type { DebugScope, CallFrame, DebugValue, DebugVariable, DebugObject } from './types';
 
 const styles: Record<string, any> = {
     frameRoot: {
@@ -42,6 +42,15 @@ const styles: Record<string, any> = {
         color: '#53a944',
     },
     scopeType_closure: {
+        color: '#365b80',
+    },
+    scopeType_block: {
+        color: '#53a944',
+    },
+    scopeType_catch: {
+        color: '#53a944',
+    },
+    scopeType_script: {
         color: '#365b80',
     },
     scopeType_user: {
@@ -138,7 +147,7 @@ const styles: Record<string, any> = {
 interface StackProps {
     currentScriptId: string | null;
     mainScriptId?: string;
-    scopes: DebugScopes | null;
+    scopes: DebugScope[];
     expressions: DebugVariable[];
     callFrames: CallFrame[] | undefined;
     currentFrame: number;
@@ -146,7 +155,7 @@ interface StackProps {
     onChangeCurrentFrame: (index: number) => void;
     onWriteScopeValue: (options: {
         variableName: string;
-        scopeNumber: 0;
+        scopeNumber: number;
         newValue: {
             value: any;
             valueType:
@@ -161,12 +170,13 @@ interface StackProps {
 
 interface StackState {
     editValue: {
-        type: 'expression' | 'local' | 'closure' | 'global';
+        type: 'expression' | 'scope';
         valueType: 'function' | 'string' | 'boolean' | 'number' | 'object' | 'undefined' | 'null' | 'bigint' | 'symbol';
         index: number;
         name: string;
         value: string;
-        scopeId?: string;
+        /** Index of the edited scope in the scope chain */
+        scopeNumber?: number;
     } | null;
     callFrames: CallFrame[] | undefined;
     framesSizes: number[];
@@ -174,7 +184,7 @@ interface StackState {
 
 function previewToObject(obj: DebugObject): Record<string, any> | string {
     const result: Record<string, any> = {};
-    if (obj.className === 'ReferenceError') {
+    if (obj.subtype === 'error' || obj.className === 'ReferenceError') {
         return obj.description;
     }
     obj.preview?.properties?.forEach(item => {
@@ -311,14 +321,16 @@ class Stack extends React.Component<StackProps, StackState> {
                 >
                     {name}
                 </td>
-                <IconButton
-                    style={styles.scopeButtonDel}
-                    size="small"
-                    disabled={!!this.state.editValue}
-                    onClick={() => this.props.onExpressionDelete(i)}
-                >
-                    <IconDelete />
-                </IconButton>
+                <td style={styles.scopeButton}>
+                    <IconButton
+                        style={styles.scopeButtonDel}
+                        size="small"
+                        disabled={!!this.state.editValue}
+                        onClick={() => this.props.onExpressionDelete(i)}
+                    >
+                        <IconDelete />
+                    </IconButton>
+                </td>
             </tr>
         );
     }
@@ -334,7 +346,7 @@ class Stack extends React.Component<StackProps, StackState> {
         ) {
             return null;
         }
-        const fileName = (frame.url.split('/').pop() || '').replace(/^script\.js\./, '');
+        const fileName = ((frame.url || '').split('/').pop() || '').replace(/^script\.js\./, '');
         return (
             <ListItemButton
                 key={frame.callFrameId}
@@ -351,7 +363,7 @@ class Stack extends React.Component<StackProps, StackState> {
                     }}
                     title={frame.url}
                     primary={frame.functionName || 'anonymous'}
-                    secondary={`${fileName} (${frame.location.lineNumber}:${frame.location.columnNumber})`}
+                    secondary={`${fileName} (${frame.location.lineNumber + 1}:${(frame.location.columnNumber || 0) + 1})`}
                 />
             </ListItemButton>
         );
@@ -363,6 +375,14 @@ class Stack extends React.Component<StackProps, StackState> {
                 return 'none';
             }
             return <span style={styles.valueNone}>none</span>;
+        }
+        const unserializableValue = (value as DebugValue).unserializableValue;
+        if (unserializableValue !== undefined) {
+            // NaN, Infinity, -0 or BigInt
+            if (forEdit) {
+                return unserializableValue;
+            }
+            return <span style={styles.valueNumber}>{unserializableValue}</span>;
         }
         if (value.type === 'undefined') {
             if (forEdit) {
@@ -393,6 +413,12 @@ class Stack extends React.Component<StackProps, StackState> {
                     {text}
                 </span>
             );
+        }
+        if (value.type === 'object' && (value as DebugObject).subtype === 'null') {
+            if (forEdit) {
+                return 'null';
+            }
+            return <span style={styles.valueNull}>null</span>;
         }
         if (value.type === 'object') {
             const val = previewToObject(value as DebugObject);
@@ -474,7 +500,7 @@ class Stack extends React.Component<StackProps, StackState> {
 
         this.props.onWriteScopeValue({
             variableName: this.state.editValue?.name || '',
-            scopeNumber: 0,
+            scopeNumber: this.state.editValue?.scopeNumber || 0,
             newValue: {
                 value: this.scopeValue,
                 valueType: typeof this.scopeValue,
@@ -491,19 +517,19 @@ class Stack extends React.Component<StackProps, StackState> {
         this.editRef.current?.focus();
     }
 
-    renderScope(scopeId: string, item: DebugVariable, type: 'global' | 'local' | 'closure'): React.JSX.Element {
+    renderScope(scope: DebugScope, item: DebugVariable): React.JSX.Element {
         const editable =
-            !this.props.currentFrame &&
             item.value &&
             (item.value.type === 'undefined' ||
                 item.value.type === 'string' ||
                 item.value.type === 'number' ||
                 item.value.type === 'boolean' ||
-                (item.value as DebugValue)?.value === null ||
-                ((item.value as DebugValue)?.value === undefined && item.value.type !== 'object'));
+                (item.value as DebugValue)?.value === null);
 
         const el =
-            this.state.editValue?.type === type && this.state.editValue?.name === item.name
+            this.state.editValue?.type === 'scope' &&
+            this.state.editValue.scopeNumber === scope.index &&
+            this.state.editValue.name === item.name
                 ? [
                       <div
                           key="name"
@@ -563,25 +589,25 @@ class Stack extends React.Component<StackProps, StackState> {
                           key="val"
                           style={styles.scopeNameValue}
                       >
-                          {this.formatValue(item.value)} ({item.value.type})
+                          {this.formatValue(item.value)} {item.value ? `(${item.value.type})` : ''}
                       </div>,
                   ];
 
         return (
-            <tr key={`${type}_${scopeId}_${item.name}`}>
-                <td style={{ ...styles.scopeType, ...styles[`scopeType_${type}`] }}>{type}</td>
+            <tr key={`${scope.index}_${item.name}`}>
+                <td style={{ ...styles.scopeType, ...styles[`scopeType_${scope.type}`] }}>{scope.type}</td>
                 <td
                     style={{
                         ...styles.scopeName,
-                        ...(!this.props.currentFrame && editable ? styles.scopeValueEditable : undefined),
+                        ...(editable ? styles.scopeValueEditable : undefined),
                     }}
                     onDoubleClick={() => {
                         if (editable) {
                             this.scopeValue = (item.value as DebugValue).value;
                             this.setState({
                                 editValue: {
-                                    scopeId,
-                                    type,
+                                    scopeNumber: scope.index,
+                                    type: 'scope',
                                     index: 0,
                                     valueType: item.value.type,
                                     name: item.name,
@@ -604,15 +630,9 @@ class Stack extends React.Component<StackProps, StackState> {
         // first local
         const result: React.JSX.Element[] = this.renderExpressions();
 
-        let items = this.props.scopes?.local?.properties?.result.map(
-            item => this.props.scopes && this.renderScope('', item, 'local'),
+        this.props.scopes.forEach(scope =>
+            scope.properties?.result?.forEach(item => result.push(this.renderScope(scope, item))),
         );
-        items?.forEach(item => item && result.push(item));
-
-        items = this.props.scopes?.closure?.properties?.result.map(
-            item => this.props.scopes && this.renderScope('', item, 'closure'),
-        );
-        items?.forEach(item => item && result.push(item));
 
         return (
             <table style={{ width: '100%', fontSize: 'small' }}>
@@ -661,8 +681,9 @@ class Stack extends React.Component<StackProps, StackState> {
                         </IconButton>
                     </Box>
                     <div style={styles.scopesAfterToolbar}>
-                        {this.props.callFrames?.length &&
-                            this.renderScopes(this.props.callFrames[this.props.currentFrame])}
+                        {this.props.callFrames?.length
+                            ? this.renderScopes(this.props.callFrames[this.props.currentFrame])
+                            : null}
                     </div>
                 </div>
             </ReactSplit>

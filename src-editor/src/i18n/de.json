@@ -59,6 +59,8 @@
     "Day of week": "Wochentag",
     "Debug instance": "Debug-Instanz",
     "Debug options": "Debug-Optionen",
+    "Debug script": "Skript debuggen",
+    "No breakpoint possible on this line": "In dieser Zeile ist kein Haltepunkt möglich",
     "December": "Dezember",
     "Default": "Standard",
     "Define cron...": "Cron definieren ...",

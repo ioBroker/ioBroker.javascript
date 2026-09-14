@@ -130,11 +130,14 @@ class Console extends React.Component<ConsoleProps, ConsoleState> {
         this.messagesEnd = React.createRef();
     }
 
-    static generateLine(message: { ts: number; text: string; severity: ioBroker.LogLevel }): React.JSX.Element {
+    static generateLine(
+        message: { ts: number; text: string; severity: ioBroker.LogLevel },
+        i: number,
+    ): React.JSX.Element {
         return (
             <Box
                 component="tr"
-                key={`tr_${message.ts}_${message.text.substring(message.text.length - 10, message.text.length)}`}
+                key={`tr_${i}_${message.ts}`}
                 sx={styles[message.severity]}
             >
                 <td style={styles.trTime}>{getTimeString(new Date(message.ts))}</td>
@@ -155,7 +158,7 @@ class Console extends React.Component<ConsoleProps, ConsoleState> {
                         key="logTable"
                         style={styles.table}
                     >
-                        <tbody>{lines.map(line => Console.generateLine(line))}</tbody>
+                        <tbody>{lines.map((line, i) => Console.generateLine(line, i))}</tbody>
                     </table>
                     <div
                         key="logScrollPoint"
@@ -177,8 +180,11 @@ class Console extends React.Component<ConsoleProps, ConsoleState> {
     }
 
     onCopy(): void {
-        // eslint-disable-next-line @typescript-eslint/no-base-to-string
-        Utils.copyToClipboard(this.props.console.join('\n'));
+        Utils.copyToClipboard(
+            this.props.console
+                .map(line => `${getTimeString(new Date(line.ts))} ${line.severity} ${line.text}`)
+                .join('\n'),
+        );
     }
 
     scrollToBottom(): void {

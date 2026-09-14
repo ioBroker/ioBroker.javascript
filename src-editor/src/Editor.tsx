@@ -1861,6 +1861,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             <IconButton
                                 style={styles.toolbarButtons}
                                 color={this.props.debugMode ? 'primary' : 'default'}
+                                title={I18n.t('Debug script')}
                                 disabled={!this.props.debugMode && !isInstanceRunning}
                                 onClick={() => {
                                     if (!this.props.debugMode && isScriptRunning) {

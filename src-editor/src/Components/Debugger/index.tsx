@@ -1,20 +1,7 @@
 import React from 'react';
 import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
 
-import {
-    Tabs,
-    Tab,
-    Toolbar,
-    LinearProgress,
-    IconButton,
-    List,
-    ListItemButton,
-    ListItemText,
-    DialogTitle,
-    Dialog,
-    Badge,
-    Box,
-} from '@mui/material';
+import { Tabs, Tab, Toolbar, LinearProgress, IconButton, Badge, Box } from '@mui/material';
 
 import {
     MdClose as IconClose,
@@ -40,7 +27,7 @@ import type {
     SetBreakpointParameterType,
     DebugCommandToBackEnd,
     DebugCommandFromBackEnd,
-    DebugScopes,
+    DebugScope,
 } from './types';
 
 const styles: Record<string, any> = {
@@ -49,8 +36,11 @@ const styles: Record<string, any> = {
         height: `calc(100% - ${parseInt(theme.toolbar.height as string, 10) + 38 /*Theme.toolbar.height */ + 5}px)`,
         overflow: 'hidden',
         position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
     }),
     toolbar: {
+        flexShrink: 0,
         minHeight: 38, //Theme.toolbar.height,
         boxShadow:
             '0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12)',
@@ -108,23 +98,12 @@ const styles: Record<string, any> = {
         minHeight: 24,
     },
 
-    bpListItem: {
-        borderTop: '1px dashed #bfbfbf44',
-    },
-    monospace: {
-        fontFamily: 'Courier New, monospace',
-        whiteSpace: 'pre',
-        fontSize: 12,
-    },
-    arrow: {
-        color: '#fffa4f',
-    },
     splitter: {
-        height: 'calc(100% - 52px)',
-        '& .layout-pane': {
-            overflow: 'hidden',
-            height: '100%',
-        },
+        // takes the rest of the height under the toolbar
+        flexGrow: 1,
+        minHeight: 0,
+        width: '100%',
+        position: 'relative',
     },
 };
 
@@ -152,9 +131,8 @@ interface DebuggerState {
     logWarnings: number;
     logs: number;
     paused: boolean;
-    queryBreakpoints: DebuggerLocation[] | null;
     running: boolean;
-    scopes: DebugScopes;
+    scopes: DebugScope[];
     script: string;
     selected: string | null;
     started: boolean;
@@ -221,8 +199,7 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
             console: [],
             finished: false,
             currentFrame: 0,
-            scopes: {},
-            queryBreakpoints: null,
+            scopes: [],
             logErrors: 0,
             logWarnings: 0,
             logs: 0,
@@ -240,21 +217,19 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
             const obj = await this.props.socket.getObject(this.props.src);
             instance = obj?.common?.engine?.replace('system.adapter.', '') || '';
         }
-        this.setState({ instance }, () => {
-            if (this.state.instance) {
-                void this.props.socket.setState(`${this.state.instance}.debug.from`, {
-                    val: '{"cmd": "subscribed"}',
-                    ack: true,
-                });
-                //.then(() => );
-                setTimeout(
-                    () => this.props.socket.subscribeState(`${this.state.instance}.debug.from`, this.fromInstance),
-                    200,
-                );
-            } else {
-                this.setState({ error: 'Unknown instance' });
-            }
-        });
+        if (!instance) {
+            this.setState({ error: 'Unknown instance' });
+            return;
+        }
+        await new Promise<void>(resolve => this.setState({ instance }, resolve));
+        try {
+            // Overwrite the last message of the previous session, so it will not be processed in this session.
+            // The subscription delivers this value, and then the debugging will be started (see "subscribed")
+            await this.props.socket.setState(`${instance}.debug.from`, { val: '{"cmd": "subscribed"}', ack: true });
+            await this.props.socket.subscribeState(`${instance}.debug.from`, this.fromInstance);
+        } catch (e) {
+            this.setState({ error: `Cannot start debugging: ${e}` });
+        }
     }
 
     componentWillUnmount(): void {
@@ -268,42 +243,57 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
         void this.props.socket.setState(`${this.state.instance}.debug.to`, { val: JSON.stringify(cmd), ack: false });
     }
 
-    reinitBreakpoints(cb: null | (() => void)): void {
-        if (this.state.breakpoints.length) {
-            const breakpointsObj: SetBreakpointParameterType[] = JSON.parse(JSON.stringify(this.state.breakpoints));
-            const breakpoints: DebuggerLocation[] = breakpointsObj.map(item => item.location);
-            this.setState({ breakpoints: [] }, () => {
-                this.sendToInstance({ breakpoints, cmd: 'sb' });
-                if (this.state.stopOnException) {
-                    this.sendToInstance({ cmd: 'stopOnException', state: true });
-                }
+    /**
+     * Sets the breakpoints of the previous session again. The script IDs change with every start of the debugger,
+     * so the breakpoints of the main script are moved to its current ID. Breakpoints in other scripts are dropped.
+     */
+    reinitBreakpoints(previousMainScriptId: string | null, cb: () => void): void {
+        const breakpoints: DebuggerLocation[] = this.state.breakpoints
+            .filter(bp => !previousMainScriptId || bp.location.scriptId === previousMainScriptId)
+            .map(bp => ({ ...bp.location, scriptId: this.mainScriptId || '' }));
 
-                cb && cb();
-            });
-        } else if (this.state.stopOnException) {
-            this.sendToInstance({ cmd: 'stopOnException', state: true });
-            cb && cb();
-        } else if (cb) {
+        this.setState({ breakpoints: [] }, () => {
+            if (breakpoints.length) {
+                this.sendToInstance({ breakpoints, cmd: 'sb' });
+            }
+            if (this.state.stopOnException) {
+                this.sendToInstance({ cmd: 'stopOnException', state: true });
+            }
             cb();
-        }
+        });
     }
 
-    static getLocation(context: { callFrames: CallFrame[] }): DebuggerLocation | null {
-        if (context.callFrames) {
-            const frame = context.callFrames[0];
-            return frame.location;
+    saveBreakpoints(breakpoints: SetBreakpointParameterType[]): void {
+        // Only the breakpoints of the main script can be restored in the next session
+        window.localStorage.setItem(
+            `javascript.tools.bp.${this.props.src}`,
+            JSON.stringify(breakpoints.filter(bp => bp.location.scriptId === this.mainScriptId)),
+        );
+    }
+
+    static getLocation(context: { callFrames: CallFrame[] } | null | undefined): DebuggerLocation | null {
+        return context?.callFrames?.[0]?.location || null;
+    }
+
+    static getTabLabel(url: string | undefined, scriptId: string): string {
+        if (!url) {
+            return scriptId;
         }
-        return null;
+        const parts = url.split(/iobroker\.javascript/i);
+        return (parts[1] || parts[0]).replace('script.js.', '');
     }
 
     readCurrentScope(): void {
-        const frame = this.state.context?.callFrames && this.state.context.callFrames[this.state.currentFrame];
+        const frame = this.state.context?.callFrames?.[this.state.currentFrame];
         if (frame) {
-            const scopes = frame.scopeChain.filter(scope => scope.type !== 'global');
+            // the index in the scope chain is required to write the variables
+            const scopes = frame.scopeChain
+                .map((scope, index) => ({ ...scope, index }))
+                .filter(scope => scope.type !== 'global');
             if (scopes.length) {
                 this.sendToInstance({ cmd: 'scope', scopes });
-            } else if (this.state.scopes.global || this.state.scopes.local || this.state.scopes.closure) {
-                this.setState({ scopes: {} });
+            } else if (this.state.scopes.length) {
+                this.setState({ scopes: [] });
             }
         }
     }
@@ -342,7 +332,10 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
                         this.props.debugInstance || { scriptName: this.props.src },
                     );
                 } else if (data.cmd === 'readyToDebug') {
+                    const previousMainScriptId = this.mainScriptId;
                     this.mainScriptId = data.scriptId;
+                    // the script IDs of a previous session are not valid anymore
+                    this.scripts = {};
                     this.scripts[data.scriptId] = data.script;
                     if (data.script.startsWith('(async () => {debugger;\n')) {
                         this.scripts[data.scriptId] =
@@ -351,10 +344,9 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
                         this.scripts[data.scriptId] = data.script.substring('debugger;'.length);
                     }
 
-                    const tabs = JSON.parse(JSON.stringify(this.state.tabs));
-                    tabs[data.scriptId] = this.props.debugInstance
-                        ? data.url
-                        : this.props.src.replace('script.js.', '');
+                    const tabs: Record<string, string> = {
+                        [data.scriptId]: this.props.debugInstance ? data.url : this.props.src.replace('script.js.', ''),
+                    };
 
                     const ts = `${Date.now()}.${Math.random() * 10000}`;
                     data.context?.callFrames?.forEach((item, i) => (item.id = ts + i));
@@ -373,7 +365,7 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
                             context: data.context,
                         },
                         () =>
-                            this.reinitBreakpoints(() => {
+                            this.reinitBreakpoints(previousMainScriptId, () => {
                                 this.readCurrentScope();
                                 this.readExpressions();
                             }),
@@ -382,33 +374,35 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
                     const ts = `${Date.now()}.${Math.random() * 10000}`;
                     data.context?.callFrames?.forEach((item, i) => (item.id = ts + i));
                     const location = Debugger.getLocation(data.context);
-                    const tabs = JSON.parse(JSON.stringify(this.state.tabs));
-                    const parts = data.context.callFrames[0].url.split('iobroker.javascript');
-                    if (location) {
-                        tabs[location.scriptId] = (parts[1] || parts[0]).replace('script.js.', '');
-                    }
 
                     const newState: Partial<DebuggerState> = {
-                        tabs,
                         paused: true,
                         location,
                         currentFrame: 0,
                         context: data.context,
                     };
-
-                    newState.script =
-                        !location?.scriptId || this.scripts[location.scriptId] === undefined
-                            ? I18n.t('loading...')
-                            : this.scripts[location.scriptId];
-                    newState.selected = location?.scriptId;
+                    if (location) {
+                        if (!this.state.tabs[location.scriptId]) {
+                            newState.tabs = {
+                                ...this.state.tabs,
+                                [location.scriptId]: Debugger.getTabLabel(
+                                    data.context.callFrames[0].url,
+                                    location.scriptId,
+                                ),
+                            };
+                        }
+                        newState.selected = location.scriptId;
+                        newState.script =
+                            this.scripts[location.scriptId] === undefined
+                                ? I18n.t('loading...')
+                                : this.scripts[location.scriptId];
+                    }
 
                     this.setState(newState as DebuggerState, () => {
                         this.readCurrentScope();
                         this.readExpressions();
-                        if (location?.scriptId) {
-                            if (!this.scripts[location.scriptId]) {
-                                this.sendToInstance({ cmd: 'source', scriptId: location.scriptId });
-                            }
+                        if (location && this.scripts[location.scriptId] === undefined) {
+                            this.sendToInstance({ cmd: 'source', scriptId: location.scriptId });
                         }
                     });
                 } else if (data.cmd === 'script') {
@@ -442,14 +436,13 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
                         finished: true,
                         starting: false,
                         started: true,
+                        paused: false,
                     });
                 } else if (data.cmd === 'sb') {
-                    const breakpoints: SetBreakpointParameterType[] = JSON.parse(
-                        JSON.stringify(this.state.breakpoints),
-                    );
+                    const breakpoints: SetBreakpointParameterType[] = [...this.state.breakpoints];
                     let changed = false;
                     data.breakpoints
-                        .filter(bp => bp)
+                        .filter(bp => bp?.location)
                         .forEach(bp => {
                             const found = breakpoints.find(
                                 item =>
@@ -461,57 +454,22 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
                                 breakpoints.push(bp);
                             }
                         });
-                    changed &&
-                        window.localStorage.setItem(
-                            `javascript.tools.bp.${this.props.src}`,
-                            JSON.stringify(breakpoints),
-                        );
-                    changed && this.setState({ breakpoints });
+                    if (changed) {
+                        this.saveBreakpoints(breakpoints);
+                        this.setState({ breakpoints });
+                    }
                 } else if (data.cmd === 'cb') {
-                    const breakpoints: SetBreakpointParameterType[] = JSON.parse(
-                        JSON.stringify(this.state.breakpoints),
-                    );
-                    let changed = false;
-
-                    data.breakpoints
-                        .filter(id => id !== undefined && id !== null)
-                        .forEach(bp => {
-                            const found = breakpoints.find(item => item.id === bp);
-                            if (found) {
-                                const pos = breakpoints.indexOf(found);
-                                breakpoints.splice(pos, 1);
-                                changed = true;
-                            }
-                        });
-                    changed &&
-                        window.localStorage.setItem(
-                            `javascript.tools.bp.${this.props.src}`,
-                            JSON.stringify(breakpoints),
-                        );
-                    changed && this.setState({ breakpoints });
+                    const breakpoints = this.state.breakpoints.filter(item => !data.breakpoints.includes(item.id));
+                    if (breakpoints.length !== this.state.breakpoints.length) {
+                        this.saveBreakpoints(breakpoints);
+                        this.setState({ breakpoints });
+                    }
                 } else if (data.cmd === 'scope') {
-                    // const global = data.scopes.find(scope => scope.type === 'global') || null;
-                    const local = data.scopes.find(scope => scope.type === 'local') || undefined;
-                    const closure = data.scopes.find(scope => scope.type === 'closure') || undefined;
-
-                    console.log(JSON.stringify(closure));
-
-                    this.setState({
-                        scopes: { local, closure },
-                    });
+                    this.setState({ scopes: data.scopes.filter(scope => scope).sort((a, b) => a.index - b.index) });
                 } else if (data.cmd === 'setValue') {
-                    const scopes: DebugScopes = JSON.parse(JSON.stringify(this.state.scopes));
-                    let item;
-                    if (data.scopeNumber === 0) {
-                        item = scopes?.local?.properties?.result.find(item => item.name === data.variableName);
-                    } else {
-                        item = scopes?.closure?.properties?.result.find(item => item.name === data.variableName);
-                    }
-                    if (item) {
-                        // @ts-expect-error fix later
-                        item.value.value = data.newValue.value;
-                        this.setState({ scopes });
-                    }
+                    // read the values again, as the change can influence the expressions too
+                    this.readCurrentScope();
+                    this.readExpressions();
                 } else if (data.cmd === 'expressions') {
                     // update values
                     const expressions: DebugVariable[] = JSON.parse(JSON.stringify(this.state.expressions));
@@ -524,83 +482,50 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
                         }
                     });
                     changed && this.setState({ expressions });
-
-                    console.log(`expressions: ${JSON.stringify(data)}`);
                 } else if (data.cmd === 'getPossibleBreakpoints') {
-                    if (data.breakpoints?.length === 1) {
-                        this.sendToInstance({ breakpoints: data.breakpoints, cmd: 'sb' });
-                    } else if (!data.breakpoints?.length) {
-                        window.alert('cannot set');
+                    if (data.breakpoints?.length) {
+                        // Like other debuggers, set the breakpoint on the first possible position of the line
+                        this.sendToInstance({ breakpoints: [data.breakpoints[0]], cmd: 'sb' });
                     } else {
-                        this.setState({ queryBreakpoints: data.breakpoints });
+                        this.setState({ error: I18n.t('No breakpoint possible on this line') });
                     }
                 } else {
                     console.error(`Unknown command: ${JSON.stringify(data)}`);
                 }
-            } catch {
-                // ignore
+            } catch (e) {
+                console.error(`Cannot process message from debugger: ${e}`);
             }
         }
     };
 
-    getTextAtLocation(location: DebuggerLocation): React.JSX.Element[] {
-        let line = this.state.script.split(/\r\n|\n/)[location.lineNumber];
-        let arrow;
-        if (location.columnNumber !== undefined && location.columnNumber >= 10) {
-            line = line.substring(location.columnNumber - 10, location.columnNumber + 20);
-            arrow = `${''.padStart(10, ' ')}↑`;
-        } else if (location.columnNumber !== undefined) {
-            line = line.substring(0, 30 - location.columnNumber);
-            arrow = `${''.padStart(location.columnNumber, ' ')}↑`;
+    /** Show the position and the variables of the selected call frame */
+    selectFrame(i: number): void {
+        const frame = this.state.context?.callFrames?.[i];
+        if (!frame) {
+            return;
         }
-        return [
-            <div
-                key="line"
-                style={styles.monospace}
-            >
-                {line}
-            </div>,
-            <div
-                key="arrow"
-                style={{ ...styles.monospace, ...styles.arrow }}
-            >
-                {arrow}
-            </div>,
-        ];
-    }
-
-    renderQueryBreakpoints(): React.JSX.Element | null {
-        if (this.state.queryBreakpoints) {
-            return (
-                <Dialog
-                    onClose={() => this.setState({ queryBreakpoints: null })}
-                    aria-labelledby="bp-dialog-title"
-                    open={!0}
-                >
-                    <DialogTitle id="bp-dialog-title">{I18n.t('Select breakpoint')}</DialogTitle>
-                    <List>
-                        {this.state.queryBreakpoints.map((bp, i) => (
-                            <ListItemButton
-                                style={styles.bpListItem}
-                                dense
-                                onClick={() => {
-                                    this.sendToInstance({
-                                        breakpoints: [bp],
-                                        cmd: 'sb',
-                                    });
-                                    this.setState({ queryBreakpoints: null });
-                                }}
-                                key={i}
-                            >
-                                <ListItemText primary={this.getTextAtLocation(bp)} />
-                            </ListItemButton>
-                        ))}
-                    </List>
-                </Dialog>
-            );
+        const location = frame.location;
+        const loaded = this.scripts[location.scriptId] !== undefined;
+        const newState: Partial<DebuggerState> = {
+            currentFrame: i,
+            scopes: [],
+            location,
+            selected: location.scriptId,
+            script: loaded ? this.scripts[location.scriptId] : I18n.t('loading...'),
+        };
+        if (!this.state.tabs[location.scriptId]) {
+            newState.tabs = {
+                ...this.state.tabs,
+                [location.scriptId]: Debugger.getTabLabel(frame.url, location.scriptId),
+            };
         }
-
-        return null;
+        this.setState(newState as DebuggerState, () => {
+            this.readCurrentScope();
+            this.readExpressions();
+            if (!loaded) {
+                this.sendToInstance({ cmd: 'source', scriptId: location.scriptId });
+            }
+        });
     }
 
     renderError(): React.JSX.Element | null {
@@ -810,7 +735,7 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
                     <IconButton
                         style={styles.buttonException}
                         color={this.state.stopOnException ? 'primary' : 'default'}
-                        disabled={disabled || !this.state.paused}
+                        disabled={disabled}
                         onClick={() => this.onToggleException()}
                         title={I18n.t('Stop on exception')}
                         size="medium"
@@ -858,7 +783,7 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
                     script={this.state.script}
                     paused={this.state.paused}
                     breakpoints={breakpoints}
-                    location={this.state.location}
+                    location={this.state.location?.scriptId === this.state.selected ? this.state.location : null}
                     themeType={this.props.themeType}
                     themeName={this.props.themeName}
                     onToggleBreakpoint={i => this.toggleBreakpoint(i)}
@@ -881,12 +806,7 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
                 themeType={this.props.themeType}
                 callFrames={this.state.context?.callFrames}
                 currentFrame={this.state.currentFrame}
-                onChangeCurrentFrame={i => {
-                    this.setState({ currentFrame: i, scopes: {} }, () => {
-                        this.readCurrentScope();
-                        this.readExpressions();
-                    });
-                }}
+                onChangeCurrentFrame={i => this.selectFrame(i)}
                 onWriteScopeValue={obj => {
                     this.sendToInstance({
                         cmd: 'setValue',
@@ -988,7 +908,9 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
         }
 
         return (
-            <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+            <div
+                style={{ width: '100%', height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+            >
                 <Tabs
                     sx={styles.tabsRoot}
                     component="div"
@@ -1026,7 +948,7 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
                         value="console"
                     />
                 </Tabs>
-                <div style={{ width: '100%', height: 'calc(100% - 36px)', overflow: 'hidden' }}>
+                <div style={{ width: '100%', flexGrow: 1, minHeight: 0, overflow: 'hidden' }}>
                     {this.state.toolsTab === 'stack' && !disabled ? this.renderFrames() : null}
                     {this.state.toolsTab === 'console' && !disabled ? this.renderConsole() : null}
                 </div>
@@ -1042,22 +964,21 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
             >
                 {this.state.starting ? <LinearProgress /> : null}
                 {this.renderToolbar()}
-                <ReactSplit
-                    direction={SplitDirection.Vertical}
-                    initialSizes={this.state.toolSizes}
-                    minHeights={[100, 100]}
-                    onResizeFinished={(_gutterIdx, toolSizes) => {
-                        this.setState({ toolSizes });
-                        window.localStorage.setItem('JS.toolSizes', JSON.stringify(toolSizes));
-                    }}
-                    gutterClassName={this.props.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
-                >
-                    <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
-                        {this.renderCode()}
-                        {this.renderQueryBreakpoints()}
-                    </div>
-                    <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>{this.renderTools()}</div>
-                </ReactSplit>
+                <div style={styles.splitter}>
+                    <ReactSplit
+                        direction={SplitDirection.Vertical}
+                        initialSizes={this.state.toolSizes}
+                        minHeights={[100, 100]}
+                        onResizeFinished={(_gutterIdx, toolSizes) => {
+                            this.setState({ toolSizes });
+                            window.localStorage.setItem('JS.toolSizes', JSON.stringify(toolSizes));
+                        }}
+                        gutterClassName={this.props.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
+                    >
+                        <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>{this.renderCode()}</div>
+                        <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>{this.renderTools()}</div>
+                    </ReactSplit>
+                </div>
                 {this.renderError()}
             </Box>
         );

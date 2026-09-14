@@ -56,6 +56,8 @@
     "Date": "Date",
     "Debug instance": "Instance de débogage",
     "Debug options": "Options de débogage",
+    "Debug script": "Déboguer le script",
+    "No breakpoint possible on this line": "Aucun point d'arrêt possible sur cette ligne",
     "December": "décembre",
     "Default": "Défaut",
     "Define cron...": "Définir le cron ...",

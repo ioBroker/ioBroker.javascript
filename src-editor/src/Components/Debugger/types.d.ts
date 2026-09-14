@@ -128,7 +128,17 @@ interface DebuggerScope {
     /**
      * Scope type.
      */
-    type: 'local' | 'closure' | 'global';
+    type:
+        | 'global'
+        | 'local'
+        | 'with'
+        | 'closure'
+        | 'catch'
+        | 'block'
+        | 'script'
+        | 'eval'
+        | 'module'
+        | 'wasm-expression-stack';
     /**
      * Object representing the scope. For <code>global</code> and <code>with</code> scopes it represents the actual object; for the rest of the scopes, it is artificial transient object enumerating scope variables as its properties.
      */
@@ -187,9 +197,12 @@ interface DebugValue {
     value: string;
     name: string;
     subtype?: string;
+    /** NaN, Infinity, -Infinity, -0 or BigInt values */
+    unserializableValue?: string;
 }
 interface DebugObject {
     type: 'object';
+    subtype?: string;
     className: string;
     objectId: string;
     description: string;
@@ -209,21 +222,13 @@ interface DebugVariable {
     writable?: boolean;
 }
 
-interface DebugScopes {
-    local?: {
-        properties: {
-            result: DebugVariable[];
-        };
-    };
-    closure?: {
-        properties: {
-            result: DebugVariable[];
-        };
-    };
-    global?: {
-        properties: {
-            result: DebugVariable[];
-        };
+interface DebugScope {
+    type: DebuggerScope['type'];
+    name?: string;
+    /** Index of the scope in the scope chain of the call frame. It is required to write the variables */
+    index: number;
+    properties: {
+        result: DebugVariable[];
     };
 }
 
@@ -238,7 +243,7 @@ export interface DebugCommandToBackEndStopOnException {
 
 export interface DebugCommandToBackEndScope {
     cmd: 'scope';
-    scopes: DebuggerScope[];
+    scopes: (DebuggerScope & { index: number })[];
 }
 export interface DebugCommandToBackEndExpressions {
     cmd: 'expressions';
@@ -277,7 +282,7 @@ export interface DebugCommandToBackEndSetVariable {
     cmd: 'setValue';
     variableName: string;
     scopeNumber: number;
-    newValue: any;
+    newValue: { value: any; valueType?: string };
     callFrameId: string | undefined;
 }
 export type DebugCommandToBackEnd =
@@ -348,18 +353,13 @@ export interface DebugCommandFromBackEndBreakpointsCleared {
 }
 export interface DebugCommandFromBackEndBreakpointsScope {
     cmd: 'scope';
-    scopes: {
-        type: 'local' | 'closure' | 'global';
-        properties: {
-            result: DebugVariable[];
-        };
-    }[];
+    scopes: DebugScope[];
 }
 export interface DebugCommandFromBackEndSetValue {
     cmd: 'setValue';
     variableName: string;
     scopeNumber: number;
-    newValue: DebugValue;
+    newValue: { value: any };
 }
 
 export interface DebugCommandFromBackEndExpressions {

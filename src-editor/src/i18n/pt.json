@@ -56,6 +56,8 @@
     "Date": "Encontro",
     "Debug instance": "Instância de depuração",
     "Debug options": "Opções de depuração",
+    "Debug script": "Depurar script",
+    "No breakpoint possible on this line": "Não é possível definir um ponto de interrupção nesta linha",
     "December": "dezembro",
     "Default": "Predefinição",
     "Define cron...": "Definir cron...",

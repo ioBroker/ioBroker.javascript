@@ -56,6 +56,8 @@
     "Date": "日期",
     "Debug instance": "调试实例",
     "Debug options": "调试选项",
+    "Debug script": "调试脚本",
+    "No breakpoint possible on this line": "此行无法设置断点",
     "December": "十二月",
     "Default": "默认",
     "Define cron...": "定义周期任务...",

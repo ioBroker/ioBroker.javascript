@@ -56,6 +56,8 @@
     "Date": "Fecha",
     "Debug instance": "Instancia de depuración",
     "Debug options": "Opciones de depuración",
+    "Debug script": "Depurar script",
+    "No breakpoint possible on this line": "No es posible un punto de interrupción en esta línea",
     "December": "diciembre",
     "Default": "Defecto",
     "Define cron...": "Definir cron ...",
