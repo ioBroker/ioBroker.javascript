@@ -297,7 +297,7 @@
     "timeouts_getinterval": "Intervall",
     "timeouts_getinterval_tooltip": "Intervall",
     "timeouts_getinterval_help": "getinterval",
-    "Trigger": "Trigger",
+    "Trigger": "Auslösen",
     "on_onchange": "wurde geändert",
     "on_any": "wurde aktualisiert",
     "on_gt": "ist größer als letztes",
