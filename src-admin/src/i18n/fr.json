@@ -5,7 +5,7 @@
     "Help": "Utiliser le formulaire avec 49.1245 et non 49°34'0\". Sinon il sera converti automatiquement.",
     "Latitude °": "Latitude °",
     "Longitude °": "Longitude °",
-    "Offset": "Compenser",
+    "Offset": "Décalage",
     "Time event": "Événement temporel",
     "Use system settings": "Utiliser les paramètres système",
     "Used as end of the daytime": "Utilisé en fin de journée",
@@ -36,5 +36,5 @@
     "Credential": "Identifiant",
     "Field": "Champ",
     "Usage in a script": "Utilisation dans un script",
-    "Copy to clipboard": "Copier dans le presse-papiers"
+    "Copy to clipboard": "Copier dans le presse-papier"
 }
