@@ -276,6 +276,13 @@ const ContentBlockItems = ({
 
     const [animation, setAnimation] = useState<boolean | number>(false);
 
+    /*
+     * "else" is the other branch of the conditions. Without any condition `compileConditions` yields
+     * `true`, so an else-action could never run - the band offers no "else" then. Else-actions that
+     * are already there stay visible, so they can still be seen and removed.
+     */
+    const showElse = userRules.conditions.some(group => group.length) || !!userRules.actions.else.length;
+
     return (
         <div className={`${cls.mainBlockItemRules} ${BAND_CLASS[typeBlock]}`}>
             <span
@@ -344,73 +351,75 @@ const ContentBlockItems = ({
             )}
             {!folded &&
                 additionally &&
-                [...Array(typeBlock === 'actions' ? 1 : userRules.conditions.length - 1)].map((e, index) => {
-                    const booleanAdditionally = (value = index): boolean =>
-                        typeBlock === 'actions'
-                            ? !!additionallyClickItems
-                            : !!(additionallyClickItems as { _id: number; open: boolean }[]).find(
-                                  (el, idx) => idx === value && el.open,
-                              );
+                [...Array(typeBlock === 'actions' ? (showElse ? 1 : 0) : userRules.conditions.length - 1)].map(
+                    (e, index) => {
+                        const booleanAdditionally = (value = index): boolean =>
+                            typeBlock === 'actions'
+                                ? !!additionallyClickItems
+                                : !!(additionallyClickItems as { _id: number; open: boolean }[]).find(
+                                      (el, idx) => idx === value && el.open,
+                                  );
 
-                    return (
-                        <Fragment key={`${index}_block_${typeBlock}`}>
-                            <div
-                                onClick={() => {
-                                    if (typeBlock === 'actions') {
-                                        setAdditionallyClickItems(!additionallyClickItems);
-                                        return null;
-                                    }
-                                    let newAdditionally: { _id: number; open: boolean }[] = JSON.parse(
-                                        JSON.stringify(additionallyClickItems),
-                                    );
-                                    if (userRules.conditions[index + 1].length) {
-                                        newAdditionally[index].open = !newAdditionally[index].open;
+                        return (
+                            <Fragment key={`${index}_block_${typeBlock}`}>
+                                <div
+                                    onClick={() => {
+                                        if (typeBlock === 'actions') {
+                                            setAdditionallyClickItems(!additionallyClickItems);
+                                            return null;
+                                        }
+                                        let newAdditionally: { _id: number; open: boolean }[] = JSON.parse(
+                                            JSON.stringify(additionallyClickItems),
+                                        );
+                                        if (userRules.conditions[index + 1].length) {
+                                            newAdditionally[index].open = !newAdditionally[index].open;
+                                            setAdditionallyClickItems(newAdditionally);
+                                            return null;
+                                        }
+
+                                        newAdditionally = newAdditionally.filter((_el, idx) => idx !== index);
+
                                         setAdditionallyClickItems(newAdditionally);
-                                        return null;
+
+                                        setAnimation(index);
+
+                                        setTimeout(() => {
+                                            setAnimation(false);
+                                            setUserRules({
+                                                ...userRules,
+                                                conditions: [
+                                                    ...userRules.conditions.filter((el, idx) => idx !== index + 1),
+                                                ],
+                                            });
+                                        }, 250);
+                                    }}
+                                    key={index}
+                                    className={cls.blockCardAdd}
+                                >
+                                    {booleanAdditionally() ? '-' : '+'}
+                                    <div className={cls.cardAdd}>{nameAdditionally}</div>
+                                </div>
+                                <AdditionallyContentBlockItems
+                                    blockValue={
+                                        typeBlock === 'actions'
+                                            ? 'else'
+                                            : typeBlock === 'conditions'
+                                              ? index + 1
+                                              : typeBlock
                                     }
-
-                                    newAdditionally = newAdditionally.filter((_el, idx) => idx !== index);
-
-                                    setAdditionallyClickItems(newAdditionally);
-
-                                    setAnimation(index);
-
-                                    setTimeout(() => {
-                                        setAnimation(false);
-                                        setUserRules({
-                                            ...userRules,
-                                            conditions: [
-                                                ...userRules.conditions.filter((el, idx) => idx !== index + 1),
-                                            ],
-                                        });
-                                    }, 250);
-                                }}
-                                key={index}
-                                className={cls.blockCardAdd}
-                            >
-                                {booleanAdditionally() ? '-' : '+'}
-                                <div className={cls.cardAdd}>{nameAdditionally}</div>
-                            </div>
-                            <AdditionallyContentBlockItems
-                                blockValue={
-                                    typeBlock === 'actions'
-                                        ? 'else'
-                                        : typeBlock === 'conditions'
-                                          ? index + 1
-                                          : typeBlock
-                                }
-                                typeBlock={typeBlock}
-                                setUserRules={setUserRules}
-                                userRules={userRules}
-                                boolean={booleanAdditionally()}
-                                animation={Boolean(animation === index)}
-                                theme={theme}
-                                themeName={themeName}
-                                themeType={themeType}
-                            />
-                        </Fragment>
-                    );
-                })}
+                                    typeBlock={typeBlock}
+                                    setUserRules={setUserRules}
+                                    userRules={userRules}
+                                    boolean={booleanAdditionally()}
+                                    animation={Boolean(animation === index)}
+                                    theme={theme}
+                                    themeName={themeName}
+                                    themeType={themeType}
+                                />
+                            </Fragment>
+                        );
+                    },
+                )}
             {!folded && additionally && typeBlock === 'conditions' && (
                 <div
                     onClick={() => {

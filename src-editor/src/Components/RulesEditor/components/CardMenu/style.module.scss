@@ -22,7 +22,8 @@
         width: 100%;
         margin-left: 8px;
         font-size: 13px;
-        color: var(--lineColorActive);
+        /* in the palette, the colour of the band the block goes into - see ../Menu/style.module.scss */
+        color: var(--bandColor, var(--lineColorActive));
         white-space: nowrap;
     }
     &:hover {
@@ -46,6 +47,6 @@
     flex: none;
     margin-left: 4px;
     * {
-        color: var(--lineColorActive) !important;
+        color: var(--bandColor, var(--lineColorActive)) !important;
     }
 }

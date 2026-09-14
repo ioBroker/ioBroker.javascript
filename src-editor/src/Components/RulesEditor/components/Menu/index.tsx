@@ -20,6 +20,16 @@ import { STEPS } from '../../helpers/Tour';
 import type { RuleBlockDescription, RuleBlockType, RuleUserRules } from '@iobroker/javascript-rules-dev';
 import type { GenericBlock } from '@/Components/RulesEditor/components/GenericBlock';
 
+/**
+ * Each tab is drawn in the colour of the band its blocks end up in, so the palette and the rule
+ * speak the same colours - see ../ContentBlockItems/style.module.scss.
+ */
+const TAB_CLASS: Record<RuleBlockType, string> = {
+    triggers: cls.tabTriggers,
+    conditions: cls.tabConditions,
+    actions: cls.tabActions,
+};
+
 interface MenuProps {
     addClass: Record<number, boolean>;
     setAllBlocks: (blocks: (typeof GenericBlock<any>)[]) => void;
@@ -118,8 +128,10 @@ const Menu = ({
                 >
                     {hamburgerOnOff ? <IconShowPalette /> : <IconHidePalette />}
                 </div>
+                {/* The palette carries the colour of the selected tab, for the indicator underneath the
+                    tabs and for the blocks listed below them */}
                 <div
-                    className={`${Utils.clsx(cls.menuRules, addClass[1035] && cls.addClassBackground, addClass[835] && cls.addClassPosition)} ${hamburgerOnOff ? cls.menuOff : null}`}
+                    className={`${Utils.clsx(cls.menuRules, TAB_CLASS[filter.type], addClass[1035] && cls.addClassBackground, addClass[835] && cls.addClassPosition)} ${hamburgerOnOff ? cls.menuOff : null}`}
                 >
                     {/* The palette asks the user to know which block they need; the wizard asks the
                         other way round, in the order a rule is read. */}
@@ -143,20 +155,20 @@ const Menu = ({
                                 onChange={handleChange}
                             >
                                 <Tab
-                                    className="blocks-triggers"
+                                    className={Utils.clsx('blocks-triggers', cls.tabTriggers)}
                                     title={I18n.t('Triggers')}
                                     icon={<MaterialDynamicIcon iconName="FlashOn" />}
                                     {...a11yProps(0)}
                                 />
                                 <Tab
                                     title={I18n.t('Conditions')}
-                                    className="blocks-conditions"
+                                    className={Utils.clsx('blocks-conditions', cls.tabConditions)}
                                     icon={<MaterialDynamicIcon iconName="Help" />}
                                     {...a11yProps(1)}
                                 />
                                 <Tab
                                     title={I18n.t('Actions')}
-                                    className="blocks-actions"
+                                    className={Utils.clsx('blocks-actions', cls.tabActions)}
                                     icon={<MaterialDynamicIcon iconName="PlayForWork" />}
                                     {...a11yProps(2)}
                                 />

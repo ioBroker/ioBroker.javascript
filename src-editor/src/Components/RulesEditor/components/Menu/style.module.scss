@@ -153,8 +153,12 @@
         min-width: auto;
         min-height: 0;
         padding: 4px 0;
-        color: var(--lineColor);
-        transition: color 0.2s;
+        color: var(--bandColor, var(--lineColor));
+        /* every tab has its colour now, so the selected one stands out by brightness instead */
+        opacity: 0.6;
+        transition:
+            color 0.2s,
+            opacity 0.2s;
         svg {
             font-size: 20px;
         }
@@ -164,14 +168,25 @@
         box-shadow: none;
     }
     [class*='Mui-selected'] {
-        color: var(--lineColorActive) !important;
+        color: var(--bandColor, var(--lineColorActive)) !important;
+        opacity: 1;
     }
     [class*='MuiTabs-indicator'] {
-        background-color: var(--lineColorActive);
+        background-color: var(--bandColor, var(--lineColorActive));
     }
     [class*='Mui-disabled'] {
         color: var(--disabledColor) !important;
     }
+}
+/* The colours of the rule bands - see ../ContentBlockItems/style.module.scss */
+.tabTriggers {
+    --bandColor: var(--railTrigger);
+}
+.tabConditions {
+    --bandColor: var(--railCondition);
+}
+.tabActions {
+    --bandColor: var(--railAction);
 }
 .addClassMenu {
     position: absolute;
