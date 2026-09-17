@@ -5,7 +5,7 @@
     "Help": "Utilice el formulario con 49.1245 y no con 49°34'0\". De lo contrario, se convertirá automáticamente.",
     "Latitude °": "Latitud °",
     "Longitude °": "longitud °",
-    "Offset": "Compensar",
+    "Offset": "Desplazamiento",
     "Time event": "evento de tiempo",
     "Use system settings": "Usar la configuración del sistema",
     "Used as end of the daytime": "Utilizado como final del día.",
