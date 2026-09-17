@@ -28,7 +28,7 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 10.2.5 (2026-09-17)
 * (@GermanBluefox) Added the functions help dialog in editor
 
 ### 10.2.4 (2026-09-14)
@@ -70,13 +70,6 @@ Executes JavaScript, TypeScript Scripts.
 * (@GermanBluefox) `clearSchedule()` did not accept the objects that `getSchedules()` returns for schedules of the time wizard, so such a schedule stayed in the script and in the schedule counter (#2164)
 * (@GermanBluefox) `clearSchedule()` can now clear the CRON jobs of other scripts too, as documented for `getSchedules(true)` (#2164)
 * (@GermanBluefox) `getSchedules()` no longer lists the already canceled schedules of the own script in an `onStop` callback (#2164)
-
-### 10.1.2 (2026-08-24)
-* (@GermanBluefox) Added new rule blocks
-* (@krobipd) Fixed saving of Blockly scripts under Blockly 13: a script containing a named timeout, interval or schedule could not be saved anymore - the save button did not appear (#2349)
-* (@krobipd) Fixed saving of Blockly scripts containing a function with a return value and no statements (#1958)
-* (@krobipd) The Blockly regression tests now also cover saving: every block is serialized the way the editor does it and reloaded to the same code
-* (@krobipd) When a block fails while the script is regenerated after a change, the editor now shows the error instead of silently never offering the save button; a failing export shows its error too
 
 ## License
 The MIT License (MIT)

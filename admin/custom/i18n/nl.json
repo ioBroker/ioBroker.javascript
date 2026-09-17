@@ -5,7 +5,7 @@
     "Help": "Gebruik het formulier met 49.1245 en niet met 49°34'0\". Anders wordt het automatisch omgezet.",
     "Latitude °": "Breedtegraad °",
     "Longitude °": "Lengtegraad °",
-    "Offset": "Offset",
+    "Offset": "Verschuiving",
     "Time event": "Tijd evenement",
     "Use system settings": "Gebruik systeeminstellingen",
     "Used as end of the daytime": "Gebruikt als einde van de dag",
@@ -36,5 +36,5 @@
     "Credential": "Inloggegevens",
     "Field": "Veld",
     "Usage in a script": "Gebruik in een script",
-    "Copy to clipboard": "Naar klembord kopiëren"
+    "Copy to clipboard": "Kopiëren naar klembord"
 }
