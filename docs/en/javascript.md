@@ -1,9 +1,8 @@
 ## Content
-- [Note](#note)
 - [Global functions](#global-functions)
     - [Best practice](#best-practice)
 
-- [Functions](#following-functions-can-be-used-in-scripts)
+- [Functions](#the-following-functions-can-be-used-in-scripts)
     - [require - load some module](#require---load-some-module)
     - [console - Gives out the message into log](#console---gives-out-the-message-into-log)
     - [exec - execute some OS command, like "cp file1 file2"](#exec---execute-some-os-command-like-cp-file1-file2)
@@ -90,7 +89,6 @@
     - [registerNotification](#registerNotification)
 
 - [Scripts activity](#scripts-activity)
-- [Changelog](#changelog)
 
 ## Global functions
 You can define the global scripts in the `global` folder.
@@ -146,7 +144,7 @@ exec('ls /var/log', (error, stdout, stderr) => {
 Node.js uses /bin/sh to execute commands. If you want to use another shell, you can use the option object as described in the [Node.js documentation](https://nodejs.org/api/child_process.html#child_processexeccommand-options-callback) for child_process.exec.
 It is the best practice to always use fill path names to commands to make sure the right command is executed.
 
-**Notice:** you must enable *Enable command "setObject"* option to call it.
+**Notice:** you must enable *Enable command "exec"* option to call it.
 
 ### on - Subscribe on changes or updates of some state
 ```js
@@ -243,29 +241,29 @@ You can use the following parameters to specify the trigger:
 | oldAck      | bool       | Acknowledged state of previous value is equal to given one                                                                                          |
 | oldQ        | number     | Quality code state of previous value is equal to given one. You can use '*' for matching to any code                                                |
 |             |            |                                                                                                                                                     |
-| ts          | string     | New value time stamp must be equal to given one (state.ts == ts)                                                                                    |
-| tsGt        | string     | New value time stamp must be not equal to the given one (state.ts != ts)                                                                            |
-| tsGe        | string     | New value time stamp must be greater than given value (state.ts > ts)                                                                               |
-| tsLt        | string     | New value time stamp must be greater or equal to given one (state.ts >= ts)                                                                         |
-| tsLe        | string     | New value time stamp must be smaller than given one (state.ts < ts)                                                                                 |
+| ts          | number     | New value time stamp must be equal to given one (state.ts == ts)                                                                                    |
+| tsGt        | number     | New value time stamp must be greater than given one (state.ts > ts)                                                                                 |
+| tsGe        | number     | New value time stamp must be greater or equal to given one (state.ts >= ts)                                                                         |
+| tsLt        | number     | New value time stamp must be smaller than given one (state.ts < ts)                                                                                 |
+| tsLe        | number     | New value time stamp must be smaller or equal to given one (state.ts <= ts)                                                                         |
 |             |            |                                                                                                                                                     |
-| oldTs       | string     | Previous time stamp must be equal to given one (oldState.ts == ts)                                                                                  |
-| oldTsGt     | string     | Previous time stamp must be not equal to the given one (oldState.ts != ts)                                                                          |
-| oldTsGe     | string     | Previous time stamp must be greater than given value (oldState.ts > ts)                                                                             |
-| oldTsLt     | string     | Previous time stamp must be greater or equal to given one (oldState.ts >= ts)                                                                       |
-| oldTsLe     | string     | Previous time stamp must be smaller than given one (oldState.ts < ts)                                                                               |
+| oldTs       | number     | Previous time stamp must be equal to given one (oldState.ts == ts)                                                                                  |
+| oldTsGt     | number     | Previous time stamp must be greater than given one (oldState.ts > ts)                                                                               |
+| oldTsGe     | number     | Previous time stamp must be greater or equal to given one (oldState.ts >= ts)                                                                       |
+| oldTsLt     | number     | Previous time stamp must be smaller than given one (oldState.ts < ts)                                                                               |
+| oldTsLe     | number     | Previous time stamp must be smaller or equal to given one (oldState.ts <= ts)                                                                       |
 |             |            |                                                                                                                                                     |
-| lc          | string     | Last change time stamp must be equal to given one (state.lc == lc)                                                                                  |
-| lcGt        | string     | Last change time stamp must be not equal to the given one (state.lc != lc)                                                                          |
-| lcGe        | string     | Last change time stamp must be greater than given value (state.lc > lc)                                                                             |
-| lcLt        | string     | Last change time stamp must be greater or equal to given one (state.lc >= lc)                                                                       |
-| lcLe        | string     | Last change time stamp must be smaller than given one (state.lc < lc)                                                                               |
+| lc          | number     | Last change time stamp must be equal to given one (state.lc == lc)                                                                                  |
+| lcGt        | number     | Last change time stamp must be greater than given one (state.lc > lc)                                                                               |
+| lcGe        | number     | Last change time stamp must be greater or equal to given one (state.lc >= lc)                                                                       |
+| lcLt        | number     | Last change time stamp must be smaller than given one (state.lc < lc)                                                                               |
+| lcLe        | number     | Last change time stamp must be smaller or equal to given one (state.lc <= lc)                                                                       |
 |             |            |                                                                                                                                                     |
-| oldLc       | string     | Previous last change time stamp must be equal to given one (oldState.lc == lc)                                                                      |
-| oldLcGt     | string     | Previous last change time stamp must be not equal to the given one (oldState.lc != lc)                                                              |
-| oldLcGe     | string     | Previous last change time stamp must be greater than given value (oldState.lc > lc)                                                                 |
-| oldLcLt     | string     | Previous last change time stamp must be greater or equal to given one (oldState.lc >= lc)                                                           |
-| oldLcLe     | string     | Previous last change time stamp must be smaller than given one (oldState.lc < lc)                                                                   |
+| oldLc       | number     | Previous last change time stamp must be equal to given one (oldState.lc == lc)                                                                      |
+| oldLcGt     | number     | Previous last change time stamp must be greater than given one (oldState.lc > lc)                                                                   |
+| oldLcGe     | number     | Previous last change time stamp must be greater or equal to given one (oldState.lc >= lc)                                                           |
+| oldLcLt     | number     | Previous last change time stamp must be smaller than given one (oldState.lc < lc)                                                                   |
+| oldLcLe     | number     | Previous last change time stamp must be smaller or equal to given one (oldState.lc <= lc)                                                           |
 |             |            |                                                                                                                                                     |
 | channelId   | string     | Channel ID must be equal to given one                                                                                                               |
 |             | RegExp     | Channel ID matched to regular expression                                                                                                            |
@@ -563,7 +561,7 @@ on({ astro: 'sunset', shift: 10 }, () => {
 });
 ```
 
-## scheduleById
+### scheduleById
 ```js
 scheduleById(id, callback);
 scheduleById(id, ack, callback);
@@ -655,7 +653,7 @@ If the first attribute is string, the function will try to parse the string as J
 ```js
 getAstroDate(pattern, date, offsetMinutes);
 ```
-Returns a javascript Date object for the specified astro-name (e.g. `"sunrise"` or `"sunriseEnd"`). For valid values, see the list of allowed values in the [Astro](#astro--function) section in the *schedule* function.
+Returns a javascript Date object for the specified astro-name (e.g. `"sunrise"` or `"sunriseEnd"`). For valid values, see the list of allowed values in the [Astro](#astro-function) section in the *schedule* function.
 
 The returned Date object is calculated for the passed *date*. If no date is provided, the current day is used.
 
@@ -701,7 +699,7 @@ Time can be Date object or Date with time or just time.
 
 You can use astro-names for the time definition. All 3 parameters can be set as astro time.
 Following values are possible: `sunrise`, `sunset`, `sunriseEnd`, `sunsetStart`, `dawn`, `dusk`, `nauticalDawn`, `nauticalDusk`, `nightEnd`, `night`, `goldenHourEnd`, `goldenHour`.
-See [Astro](#astro--function) for detail.
+See [Astro](#astro-function) for detail.
 
 ```js
 log(compareTime('sunsetStart', 'sunsetEnd', 'between') ? 'Now is sunrise' : 'Now is no sunrise');
@@ -1205,7 +1203,7 @@ The following commands are supported:
 - `'updateMultihost'`
 - `'upgradeController'` - Upgrade js-controller to newest version
 - `'getInterfaces'` - Returns all available network interfaces of the system
-- `'getInterfaces'` - Starts an adapter upload
+- `'upload'` - Starts an adapter upload
 - `'rebuildAdapter'`
 - `'readBaseSettings'`
 - `'writeBaseSettings'`
@@ -1226,7 +1224,7 @@ sendToHost('myComputer', 'cmdExec', { data: 'ls /' }, (res) => {
 });
 ```
 
-**Notice:** you must enable *Enable command "setObject"* option to call it.
+**Notice:** you must enable *Enable command "sendToHost"* option to call it.
 
 ### sendToHostAsync
 ```js
@@ -2049,7 +2047,7 @@ readFile('0_userdata.0', 'test.jpg', (err, data, mimeType) => {
 });
 ```
 
-## registerNotification
+### registerNotification
 
 *Requires version >= 8.8.0*
 

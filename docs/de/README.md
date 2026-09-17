@@ -6,7 +6,7 @@
 
 - [Blockly](blockly.md)
 - [Benutzung](usage.md)
-- [JavaScript-Referenz](../en/javascript.md) (nur auf Englisch verfügbar)
+- [JavaScript-Referenz](javascript.md)
 - [Upgrade-Anleitung](../en/upgrade-guide.md) (nur auf Englisch verfügbar)
 
 ## KI-Codegenerator - Unterstützung eigener API-Endpunkte

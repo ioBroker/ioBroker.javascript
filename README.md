@@ -16,6 +16,7 @@ Executes JavaScript, TypeScript Scripts.
 
 - 🇺🇸 [Function documentation](docs/en/javascript.md)
 - 🇺🇸 [Upgrade guide](docs/en/upgrade-guide.md)
+- 🇩🇪 [Funktionsdokumentation](docs/de/javascript.md)
 - 🇩🇪 [Benutzung](docs/de/usage.md)
 - Blockly
   - 🇺🇸 Here you can find the description of [blockly](docs/en/blockly.md). 
@@ -27,6 +28,9 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Added the functions help dialog in editor
+
 ### 10.2.4 (2026-09-14)
 * (@GermanBluefox) Rules: selection of state fixed
 * (@GermanBluefox) Fixed debugger

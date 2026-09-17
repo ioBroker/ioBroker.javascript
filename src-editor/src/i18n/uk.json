@@ -558,5 +558,7 @@
     "Export error": "Помилка експорту",
     "without condition": "без умови",
     "Show conditions": "Показати умови",
-    "Hide empty conditions": "Сховати порожні умови"
+    "Hide empty conditions": "Сховати порожні умови",
+    "Documentation": "Документація",
+    "Contents": "Зміст"
 }

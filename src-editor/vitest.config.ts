@@ -9,6 +9,12 @@ export default defineConfig({
             '@': fileURLToPath(new URL('./src', import.meta.url)),
         },
     },
+    server: {
+        fs: {
+            // The documentation test reads `docs/en/javascript.md`, which is outside this package.
+            allow: ['.', '../docs'],
+        },
+    },
     test: {
         environment: 'jsdom',
         include: ['src/**/__tests__/**/*.test.{ts,tsx}'],

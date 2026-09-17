@@ -566,5 +566,7 @@
     "Export error": "Exportfehler",
     "without condition": "ohne Bedingung",
     "Show conditions": "Bedingungen anzeigen",
-    "Hide empty conditions": "Leere Bedingungen ausblenden"
+    "Hide empty conditions": "Leere Bedingungen ausblenden",
+    "Documentation": "Dokumentation",
+    "Contents": "Inhalt"
 }

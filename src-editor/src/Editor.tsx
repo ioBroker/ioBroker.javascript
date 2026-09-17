@@ -50,6 +50,7 @@ import {
     MdAutoFixHigh as IconWizard,
     MdUndo as IconUndo,
     MdRedo as IconRedo,
+    MdHelpOutline as IconHelp,
 } from 'react-icons/md';
 
 import {
@@ -100,6 +101,7 @@ const RulesEditor = React.lazy(() => import('./Components/RulesEditor'));
 const Debugger = React.lazy(() => import('./Components/Debugger'));
 const ScriptEditorComponent = React.lazy(() => import('./Components/ScriptEditorVanillaMonaco'));
 const DialogScriptEditor = React.lazy(() => import('./Dialogs/ScriptEditor'));
+const DialogDocumentation = React.lazy(() => import('./Dialogs/Documentation'));
 const AiChatPanel = React.lazy(() => import('./AiChat/AiChatPanel'));
 const AiDiffView = React.lazy(() => import('./AiChat/AiDiffView'));
 
@@ -293,6 +295,8 @@ interface EditorState {
     showCron: boolean;
     showScript: boolean;
     showAstro: boolean;
+    /** The API documentation is open; `word` is the identifier that was under the cursor */
+    showDoc: { word: string | null } | null;
     astroEvents: null | AstroTimes;
     insert: string;
     searchText: string;
@@ -425,6 +429,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             selected,
             showAdapterDebug: false,
             showAstro: false,
+            showDoc: null,
             showCompiledCode: false,
             showCron: false,
             showDebugMenu: false,
@@ -1924,6 +1929,22 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             <IconDebugMenu />
                         </Badge>
                     </IconButton>
+                    {!this.state.blockly && !this.state.rules ? (
+                        <IconButton
+                            key="documentation"
+                            aria-label="Documentation"
+                            title={I18n.t('Documentation')}
+                            style={styles.toolbarButtons}
+                            onClick={() =>
+                                this.setState({
+                                    showDoc: { word: this.scriptEditorRef.current?.getWordAtCursor() ?? null },
+                                })
+                            }
+                            size="medium"
+                        >
+                            <IconHelp />
+                        </IconButton>
+                    ) : null}
                 </Toolbar>
             );
         }
@@ -2567,6 +2588,23 @@ class Editor extends React.Component<EditorProps, EditorState> {
         return null;
     }
 
+    getDocumentationDialog(): React.JSX.Element | null {
+        if (this.state.showDoc) {
+            return (
+                <Suspense
+                    key="documentation"
+                    fallback={<Connecting />}
+                >
+                    <DialogDocumentation
+                        word={this.state.showDoc.word}
+                        onClose={() => this.setState({ showDoc: null })}
+                    />
+                </Suspense>
+            );
+        }
+        return null;
+    }
+
     getEditorDialog(): React.JSX.Element | null {
         if (this.state.showScript) {
             return (
@@ -2769,6 +2807,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             this.getCronDialog(),
             this.getEditorDialog(),
             this.getAstroDialog(),
+            this.getDocumentationDialog(),
             this.getDebugMenu(),
             this.getToast(),
             this.getTour(),

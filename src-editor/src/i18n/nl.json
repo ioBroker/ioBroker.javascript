@@ -558,5 +558,7 @@
     "Export error": "Exportfout",
     "without condition": "zonder voorwaarde",
     "Show conditions": "Voorwaarden tonen",
-    "Hide empty conditions": "Lege voorwaarden verbergen"
+    "Hide empty conditions": "Lege voorwaarden verbergen",
+    "Documentation": "Documentatie",
+    "Contents": "Inhoud"
 }

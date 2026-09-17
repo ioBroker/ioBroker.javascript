@@ -558,5 +558,7 @@
     "Export error": "Erreur d'exportation",
     "without condition": "sans condition",
     "Show conditions": "Afficher les conditions",
-    "Hide empty conditions": "Masquer les conditions vides"
+    "Hide empty conditions": "Masquer les conditions vides",
+    "Documentation": "Documentation",
+    "Contents": "Sommaire"
 }

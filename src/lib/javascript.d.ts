@@ -2157,43 +2157,43 @@ declare global {
             oldAck?: boolean;
             /** New value time stamp must be equal to given one (state.ts == ts) */
             ts?: number;
-            /** New value time stamp must be not equal to the given one (state.ts != ts) */
+            /** New value time stamp must be greater than given one (state.ts > ts) */
             tsGt?: number;
-            /** New value time stamp must be greater than given value (state.ts > ts) */
-            tsGe?: number;
             /** New value time stamp must be greater or equal to given one (state.ts >= ts) */
-            tsLt?: number;
+            tsGe?: number;
             /** New value time stamp must be smaller than given one (state.ts < ts) */
+            tsLt?: number;
+            /** New value time stamp must be smaller or equal to given one (state.ts <= ts) */
             tsLe?: number;
             /** Previous time stamp must be equal to given one (oldState.ts == ts) */
             oldTs?: number;
-            /** Previous time stamp must be not equal to the given one (oldState.ts != ts) */
+            /** Previous time stamp must be greater than given one (oldState.ts > ts) */
             oldTsGt?: number;
-            /** Previous time stamp must be greater than the given value (oldState.ts > ts) */
-            oldTsGe?: number;
             /** Previous time stamp must be greater or equal to given one (oldState.ts >= ts) */
-            oldTsLt?: number;
+            oldTsGe?: number;
             /** Previous time stamp must be smaller than given one (oldState.ts < ts) */
+            oldTsLt?: number;
+            /** Previous time stamp must be smaller or equal to given one (oldState.ts <= ts) */
             oldTsLe?: number;
             /** Last change time stamp must be equal to given one (state.lc == lc) */
             lc?: number;
-            /** Last change time stamp must be not equal to the given one (state.lc != lc) */
+            /** Last change time stamp must be greater than given one (state.lc > lc) */
             lcGt?: number;
-            /** Last change time stamp must be greater than the given value (state.lc > lc) */
-            lcGe?: number;
             /** Last change time stamp must be greater or equal to given one (state.lc >= lc) */
-            lcLt?: number;
+            lcGe?: number;
             /** Last change time stamp must be smaller than given one (state.lc < lc) */
+            lcLt?: number;
+            /** Last change time stamp must be smaller or equal to given one (state.lc <= lc) */
             lcLe?: number;
             /** Previous last change time stamp must be equal to given one (oldState.lc == lc) */
             oldLc?: number;
-            /** Previous last change time stamp must be not equal to the given one (oldState.lc != lc) */
+            /** Previous last change time stamp must be greater than given one (oldState.lc > lc) */
             oldLcGt?: number;
-            /** Previous last change time stamp must be greater than the given value (oldState.lc > lc) */
-            oldLcGe?: number;
             /** Previous last change time stamp must be greater or equal to given one (oldState.lc >= lc) */
-            oldLcLt?: number;
+            oldLcGe?: number;
             /** Previous last change time stamp must be smaller than given one (oldState.lc < lc) */
+            oldLcLt?: number;
+            /** Previous last change time stamp must be smaller or equal to given one (oldState.lc <= lc) */
             oldLcLe?: number;
             /** Channel ID must be equal or match to given one */
             channelId?: string | string[] | RegExp;

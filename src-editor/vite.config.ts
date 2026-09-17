@@ -1,4 +1,4 @@
-import { defineConfig, type Plugin } from 'vite';
+import { defineConfig, searchForWorkspaceRoot, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import commonjs from 'vite-plugin-commonjs';
 import { federation } from '@module-federation/vite';
@@ -111,6 +111,10 @@ export default defineConfig({
     },
     server: {
         port: 3000,
+        fs: {
+            // The documentation dialog imports `docs/en/javascript.md`, which is outside this package.
+            allow: [searchForWorkspaceRoot(process.cwd()), '../docs'],
+        },
         proxy: {
             '/adapter': 'http://localhost:8081',
             // Dev only: serve `_socket/info.js` (sets window.sysLang) from the real ioBroker,

@@ -203,6 +203,7 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         void this.getEditorSelection;
         void this.getEditorContent;
         void this.getCursorPosition;
+        void this.getWordAtCursor;
         void this.highlightLineRange;
         void this.goToLine;
         void this.replaceSelection;
@@ -1029,6 +1030,20 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
     /** Full editor content. */
     getEditorContent(): string {
         return this.editor?.getModel()?.getValue() ?? '';
+    }
+
+    /** The identifier that is selected or that the cursor is in or right behind, e.g. `setState`. */
+    getWordAtCursor(): string | null {
+        const model = this.editor?.getModel();
+        const selection = this.editor?.getSelection();
+        if (!model || !selection) {
+            return null;
+        }
+        if (!selection.isEmpty()) {
+            const selected = model.getValueInRange(selection).trim();
+            return /^[A-Za-z_$][\w$]*$/.test(selected) ? selected : null;
+        }
+        return model.getWordAtPosition(selection.getPosition())?.word ?? null;
     }
 
     /** Current cursor position (1-based). */
