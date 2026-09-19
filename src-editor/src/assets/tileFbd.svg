@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 244" width="500" height="244">
+    <title>Function block diagram</title>
+    <rect width="500" height="244" fill="#eceff1"/>
+    <g fill="#cfd8dc">
+        <circle cx="20" cy="20" r="2"/><circle cx="60" cy="20" r="2"/><circle cx="100" cy="20" r="2"/>
+        <circle cx="400" cy="224" r="2"/><circle cx="440" cy="224" r="2"/><circle cx="480" cy="224" r="2"/>
+    </g>
+    <g font-family="monospace" font-size="13" fill="#212121">
+        <!-- links -->
+        <g fill="none" stroke-width="3">
+            <path d="M134 78h40v52h24" stroke="#43a047"/>
+            <path d="M134 168h40v-24h24" stroke="#43a047"/>
+            <path d="M292 130h50" stroke="#43a047"/>
+            <path d="M430 130h40" stroke="#43a047"/>
+        </g>
+        <!-- inputs -->
+        <rect x="30" y="56" width="104" height="44" fill="#fff" stroke="#757575"/>
+        <rect x="30" y="56" width="104" height="4" fill="#3f51b5"/>
+        <text x="82" y="76" text-anchor="middle" font-weight="bold" fill="#3f51b5">STATE_IN</text>
+        <text x="82" y="92" text-anchor="middle" font-size="10" fill="#757575">motion</text>
+        <rect x="30" y="146" width="104" height="44" fill="#fff" stroke="#757575"/>
+        <rect x="30" y="146" width="104" height="4" fill="#3f51b5"/>
+        <text x="82" y="166" text-anchor="middle" font-weight="bold" fill="#3f51b5">STATE_IN</text>
+        <text x="82" y="182" text-anchor="middle" font-size="10" fill="#757575">dark</text>
+        <!-- AND -->
+        <rect x="198" y="94" width="94" height="60" fill="#fff" stroke="#757575"/>
+        <rect x="198" y="94" width="94" height="4" fill="#43a047"/>
+        <text x="245" y="114" text-anchor="middle" font-weight="bold" fill="#43a047">AND</text>
+        <text x="204" y="134" font-size="10">IN1</text>
+        <text x="204" y="148" font-size="10">IN2</text>
+        <text x="286" y="134" font-size="10" text-anchor="end">OUT</text>
+        <!-- TON -->
+        <text x="386" y="86" text-anchor="middle" font-size="11">delay</text>
+        <rect x="342" y="94" width="88" height="60" fill="#fff" stroke="#757575"/>
+        <rect x="342" y="94" width="88" height="4" fill="#fb8c00"/>
+        <text x="386" y="114" text-anchor="middle" font-weight="bold" fill="#fb8c00">TON</text>
+        <text x="348" y="134" font-size="10">IN</text>
+        <text x="348" y="148" font-size="10">PT</text>
+        <text x="424" y="134" font-size="10" text-anchor="end">Q</text>
+        <text x="322" y="148" font-size="10" text-anchor="end" fill="#757575">2s</text>
+    </g>
+</svg>

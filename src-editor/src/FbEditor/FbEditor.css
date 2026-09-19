@@ -1,0 +1,229 @@
+/* Everything below `.fb-editor`, so nothing leaks into the rest of the editor */
+.fb-editor {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    --fb-block-bg: #ffffff;
+    --fb-block-border: #757575;
+    --fb-text: #212121;
+    --fb-text-dim: #757575;
+    --fb-comment-bg: #fff8c4;
+    --fb-comment-text: #5d4037;
+}
+
+/* React Flow marks its own root in the dark mode */
+.fb-editor .react-flow.dark {
+    --fb-block-bg: #262626;
+    --fb-block-border: #9e9e9e;
+    --fb-text: #eeeeee;
+    --fb-text-dim: #9e9e9e;
+    --fb-comment-bg: #4a4520;
+    --fb-comment-text: #f5eec2;
+}
+
+.fb-editor .fb-canvas {
+    flex: 1;
+    position: relative;
+    min-width: 0;
+}
+
+/* ---- palette and properties */
+
+.fb-editor .fb-palette,
+.fb-editor .fb-properties {
+    flex-shrink: 0;
+    overflow-y: auto;
+    padding: 8px;
+    box-sizing: border-box;
+    border-color: rgba(128, 128, 128, 0.3);
+    border-style: solid;
+    border-width: 0;
+}
+
+.fb-editor .fb-palette {
+    width: 150px;
+    border-right-width: 1px;
+}
+
+.fb-editor .fb-properties {
+    width: 260px;
+    border-left-width: 1px;
+}
+
+.fb-editor .fb-palette-category {
+    margin-top: 8px;
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.fb-editor .fb-palette-item {
+    cursor: grab;
+    padding: 3px 8px;
+    margin: 2px 0;
+    border-left: 4px solid;
+    border-radius: 2px;
+    font-family: monospace;
+    font-size: 13px;
+    user-select: none;
+}
+
+.fb-editor .fb-palette-item:hover {
+    background: rgba(128, 128, 128, 0.2);
+}
+
+/* ---- blocks */
+
+.fb-editor .fb-block {
+    position: relative;
+    min-width: 110px;
+    max-width: 240px;
+    box-sizing: border-box;
+    background: var(--fb-block-bg);
+    color: var(--fb-text);
+    border: 1px solid var(--fb-block-border);
+    border-top-width: 3px;
+    border-radius: 2px;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.fb-editor .fb-block.fb-selected {
+    box-shadow: 0 0 0 2px #2196f3;
+}
+
+.fb-editor .fb-block.fb-error {
+    border-color: #f44336;
+    box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.5);
+}
+
+.fb-editor .fb-block-name {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    margin-bottom: 4px;
+    text-align: center;
+    white-space: nowrap;
+    color: var(--fb-text);
+    font-size: 11px;
+}
+
+.fb-editor .fb-block-type {
+    height: 22px;
+    line-height: 22px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.fb-editor .fb-block-detail {
+    height: 18px;
+    line-height: 18px;
+    padding: 0 18px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--fb-text-dim);
+    font-size: 11px;
+}
+
+.fb-editor .fb-pin {
+    position: absolute;
+    height: 20px;
+    line-height: 20px;
+    font-size: 11px;
+}
+
+.fb-editor .fb-pin-in {
+    left: 8px;
+}
+
+.fb-editor .fb-pin-out {
+    right: 8px;
+}
+
+/* the value an open input gets, outside the frame */
+.fb-editor .fb-pin-value {
+    position: absolute;
+    right: 100%;
+    height: 20px;
+    line-height: 20px;
+    margin-right: 10px;
+    white-space: nowrap;
+    color: var(--fb-text-dim);
+    font-size: 11px;
+}
+
+.fb-editor .fb-inverted {
+    position: absolute;
+    left: -1px;
+    width: 8px;
+    height: 8px;
+    margin-top: -4px;
+    border: 1px solid var(--fb-block-border);
+    border-radius: 50%;
+    background: var(--fb-block-bg);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.fb-editor .fb-handle {
+    width: 8px;
+    height: 8px;
+    border-radius: 1px;
+    border: none;
+}
+
+/* the position in the execution order, in the corner of the header where no pin is */
+.fb-editor .fb-block-order {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    font-size: 9px;
+    line-height: 12px;
+    color: var(--fb-text-dim);
+}
+
+/* ---- comments */
+
+.fb-editor .fb-comment {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 6px 8px;
+    overflow: hidden;
+    white-space: pre-wrap;
+    background: var(--fb-comment-bg);
+    color: var(--fb-comment-text);
+    border-radius: 2px;
+    font-size: 12px;
+}
+
+.fb-editor .fb-comment.fb-selected {
+    box-shadow: 0 0 0 2px #2196f3;
+}
+
+/* ---- panels on the canvas */
+
+.fb-editor .fb-issues {
+    max-width: 480px;
+    max-height: 160px;
+    overflow-y: auto;
+    padding: 6px 10px;
+    border-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.fb-editor .fb-issue {
+    cursor: pointer;
+}
+
+.fb-editor .fb-issue:hover {
+    text-decoration: underline;
+}
+
+.fb-editor .fb-hint {
+    opacity: 0.7;
+}
