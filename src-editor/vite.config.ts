@@ -113,7 +113,8 @@ export default defineConfig({
         port: 3000,
         fs: {
             // The documentation dialog imports `docs/en/javascript.md`, which is outside this package.
-            allow: [searchForWorkspaceRoot(process.cwd()), '../docs'],
+            // fb-core of the function block diagrams lives in the backend (`src/lib/fb`).
+            allow: [searchForWorkspaceRoot(process.cwd()), '../docs', '../src/lib/fb'],
         },
         proxy: {
             '/adapter': 'http://localhost:8081',

@@ -560,5 +560,9 @@
     "Show conditions": "Показати умови",
     "Hide empty conditions": "Сховати порожні умови",
     "Documentation": "Документація",
-    "Contents": "Зміст"
+    "Contents": "Зміст",
+    "Cannot load the code editor": "Не вдалося завантажити редактор коду",
+    "Cannot load the blocks": "Не вдалося завантажити блоки",
+    "fbd_title": "Функціональна блок-схема",
+    "fbd_description": "Блоки як у ПЛК (CFC): таймери, тригери, порівняння. Для логіки, що працює постійно."
 }

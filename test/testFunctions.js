@@ -205,6 +205,88 @@ describe('Test JS', function () {
         });
     });
 
+    it('Test JS: function block diagram (FBD)', async function () {
+        this.timeout(20000);
+        const fb = require('../build/lib/fb');
+
+        // temperature > 25 => fan
+        const graph = fb.createGraph();
+        const add = (type, x, params) => {
+            const block = fb.createBlock(type, [x, 0], graph);
+            block.params = { ...block.params, ...params };
+            graph.blocks.push(block);
+            return block;
+        };
+        const input = add('STATE_IN', 0, { oid: 'javascript.0.fbdTemperature', type: 'REAL' });
+        const gt = add('GT', 200, { IN2: 25 });
+        const output = add('STATE_OUT', 400, { oid: 'javascript.0.fbdFan', ack: true });
+        graph.links.push(
+            { id: 'l1', from: [input.id, 'Q'], to: [gt.id, 'IN1'] },
+            { id: 'l2', from: [gt.id, 'OUT'], to: [output.id, 'IN'] },
+        );
+
+        const setObject = (id, obj) =>
+            new Promise((resolve, reject) => objects.setObject(id, obj, err => (err ? reject(err) : resolve())));
+        const setState = (id, state) =>
+            new Promise((resolve, reject) => states.setState(id, state, err => (err ? reject(err) : resolve())));
+        const fanIs = val =>
+            new Promise(resolve => {
+                const handler = (id, state) => {
+                    if (id === 'javascript.0.fbdFan' && state?.val === val) {
+                        removeStateChangedHandler(handler);
+                        resolve(state);
+                    }
+                };
+                addStateChangedHandler(handler);
+            });
+
+        for (const [id, type] of [
+            ['javascript.0.fbdTemperature', 'number'],
+            ['javascript.0.fbdFan', 'boolean'],
+        ]) {
+            await setObject(id, {
+                type: 'state',
+                common: { name: id, type, role: 'state', read: true, write: true },
+                native: {},
+            });
+        }
+        await setState('javascript.0.fbdTemperature', { val: 30, ack: true });
+        await setState('javascript.0.fbdFan', { val: false, ack: true });
+
+        // the first cycle reads the temperature it finds
+        const on = fanIs(true);
+        await setObject('script.js.test_fbd', {
+            type: 'script',
+            common: {
+                name: 'test FBD',
+                enabled: true,
+                verbose: false,
+                engine: 'system.adapter.javascript.0',
+                engineType: 'FBD',
+                source: fb.generateSource(graph).source,
+            },
+            native: {},
+        });
+        const written = await on;
+        assert.equal(written.ack, true);
+
+        // a change of the input runs a cycle
+        const off = fanIs(false);
+        await setState('javascript.0.fbdTemperature', { val: 20, ack: true });
+        await off;
+
+        // the adapter reads its scripts at start through this view - a diagram must be in it
+        const view = await new Promise((resolve, reject) =>
+            objects.getObjectView(
+                'script',
+                'javascript',
+                { startkey: 'script.js.', endkey: 'script.js.香' },
+                (err, res) => (err ? reject(err) : resolve(res)),
+            ),
+        );
+        assert.ok(view.rows.some(row => row.id === 'script.js.test_fbd'));
+    });
+
     it('Test JS: test httpGet error', function (done) {
         this.timeout(10000);
         // add a script

@@ -6,9 +6,10 @@
         "allowSyntheticDefaultImports": true,
         "checkJs": false,
         "noEmit": true,
+        // fb-core (see "paths") is shared with the backend and lives outside this package
+        "rootDir": "..",
         "strictNullChecks": true,
         "strict": true,
-        "rootDir": "./src",
         "module": "ESNext",
         "moduleResolution": "Bundler",
         "sourceMap": true,
@@ -20,6 +21,9 @@
         "types": ["vite/client", "@iobroker/types"],
         "paths": {
             "@/*": ["./src/*"],
+            // fb-core (model, block library, code generator of the function block diagrams) lives
+            // in the backend, because the adapter uses it as well
+            "@fb-core": ["../src/lib/fb/index.ts"],
             // "blockly" does not expose its internal modules via "exports", so "bundler"
             // resolution cannot find them. These are type-only imports and are erased on emit.
             "blockly/core/*": ["./node_modules/blockly/core/*"]

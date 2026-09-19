@@ -560,5 +560,9 @@
     "Show conditions": "Pokaż warunki",
     "Hide empty conditions": "Ukryj puste warunki",
     "Documentation": "Dokumentacja",
-    "Contents": "Spis treści"
+    "Contents": "Spis treści",
+    "Cannot load the code editor": "Nie można załadować edytora kodu",
+    "Cannot load the blocks": "Nie można załadować bloków",
+    "fbd_title": "Diagram bloków funkcyjnych",
+    "fbd_description": "Bloki jak w sterowniku PLC (CFC): timery, przerzutniki, porównania. Do logiki działającej stale."
 }

@@ -24,6 +24,8 @@ import type {
 import * as constsMod from './consts';
 import * as wordsMod from './words';
 import * as eventObjMod from './eventObj';
+import * as fbRuntime from './fb/runtime';
+import { FB_RUNTIME_MODULE } from './fb/types';
 import {
     patternCompareFunctions as patternCompareFunctionsMod,
     type PatternEventCompareFunction,
@@ -738,6 +740,11 @@ export function sandBox(
 
             if (mods[md]) {
                 return mods[md];
+            }
+
+            // the blocks of the code generated from a function block diagram come with the adapter
+            if (md === FB_RUNTIME_MODULE) {
+                return fbRuntime;
             }
 
             let error: Error | undefined;

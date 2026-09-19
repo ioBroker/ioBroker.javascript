@@ -24,7 +24,6 @@ import Log from './Log';
 import Editor from './Editor';
 import DialogError from './Dialogs/Error';
 import DialogImportFile from './Dialogs/ImportFile';
-import BlocklyEditor from './Components/BlocklyEditor';
 import { ContextWrapper } from './Components/RulesEditor/components/ContextWrapper';
 
 import enLang from './i18n/en.json';
@@ -42,6 +41,7 @@ import JSZip from 'jszip';
 import { getScriptName, nameToFileName, scriptIdToZipFolder, zipPathToScript } from '@/scriptNames';
 import type { ScriptType } from '@/types';
 import PasswordDialog from '@/Dialogs/Password';
+import { preloadFbEditor } from '@/FbEditor/preload';
 
 const styles: Record<string, any> = {
     root: {
@@ -414,7 +414,6 @@ export default class App extends GenericApp<AppProps, AppState> {
 
                 this.javascriptPassword = this.socket.systemConfig?.native.javascriptPassword || '';
 
-                await this.readAdaptersWithBlockly();
                 const hosts = await this.socket.getHosts();
                 this.hosts = hosts.map(obj => obj._id);
                 // load all scripts
@@ -436,6 +435,14 @@ export default class App extends GenericApp<AppProps, AppState> {
                     newState.expertMode = false;
                 }
                 this.scripts = scripts;
+                // a diagram is likely to be opened - fetch its editor ahead
+                if (
+                    Object.values(scripts).some(
+                        obj => obj.type === 'script' && (obj.common.engineType as ScriptType) === 'FBD',
+                    )
+                ) {
+                    preloadFbEditor();
+                }
 
                 let scriptsHash = this.state.scriptsHash;
                 if (this.compareScripts(scripts)) {
@@ -545,15 +552,6 @@ export default class App extends GenericApp<AppProps, AppState> {
         const scripts = await this.socket.getObjectViewSystem('script', 'script.js.', 'script.js.\u9999');
         Object.keys(scripts).forEach(id => (folders[id] = scripts[id]));
         return folders;
-    }
-
-    async readAdaptersWithBlockly(): Promise<void> {
-        const adapters: Record<string, ioBroker.AdapterObject> = await this.socket.getObjectViewSystem(
-            'adapter',
-            'system.adapter.',
-            'system.adapter.\u9999',
-        );
-        return new Promise(resolve => BlocklyEditor.loadCustomBlockly(adapters, () => resolve()));
     }
 
     onInstanceAliveChange = (id: string, state: ioBroker.State | null | undefined): void => {
@@ -851,8 +849,8 @@ export default class App extends GenericApp<AppProps, AppState> {
                     common: {
                         name,
                         expert: true,
-                        engineType:
-                            (type as 'TypeScript/ts' | 'Blockly' | 'Rules' | 'Javascript/js') || 'Javascript/js',
+                        // FBD is not known to @iobroker/types yet
+                        engineType: ((type as ScriptType) || 'Javascript/js') as ioBroker.ScriptCommon['engineType'],
                         enabled: false,
                         engine: `system.adapter.javascript.${instance || 0}`,
                         source: source || '',
@@ -1047,7 +1045,9 @@ export default class App extends GenericApp<AppProps, AppState> {
                               ? 'blockly'
                               : scriptObj.common.engineType === 'Rules'
                                 ? 'rules'
-                                : 'js';
+                                : (scriptObj.common.engineType as ScriptType) === 'FBD'
+                                  ? 'fbd'
+                                  : 'js';
                     let text = `/******* (ext=${ext}/engine=${scriptObj.common.engine}/debug=${scriptObj.common.debug}/verbose=${scriptObj.common.verbose}/enabled=${scriptObj.common.enabled}) *******/\n`;
                     text += scriptObj.common.source || '';
 
@@ -1141,6 +1141,8 @@ export default class App extends GenericApp<AppProps, AppState> {
                                         engineType = 'Blockly';
                                     } else if (ext === 'rules') {
                                         engineType = 'Rules';
+                                    } else if (ext === 'fbd') {
+                                        engineType = 'FBD';
                                     }
                                 }
 
@@ -1176,7 +1178,8 @@ export default class App extends GenericApp<AppProps, AppState> {
                                     common: {
                                         name,
                                         expert: true,
-                                        engineType: engineType,
+                                        // FBD is not known to @iobroker/types yet
+                                        engineType: engineType as ioBroker.ScriptCommon['engineType'],
                                         engine,
                                         enabled,
                                         source,

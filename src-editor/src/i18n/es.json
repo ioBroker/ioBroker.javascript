@@ -560,5 +560,9 @@
     "Show conditions": "Mostrar condiciones",
     "Hide empty conditions": "Ocultar condiciones vacías",
     "Documentation": "Documentación",
-    "Contents": "Contenido"
+    "Contents": "Contenido",
+    "Cannot load the code editor": "No se puede cargar el editor de código",
+    "Cannot load the blocks": "No se pueden cargar los bloques",
+    "fbd_title": "Diagrama de bloques de funciones",
+    "fbd_description": "Bloques como en un PLC (CFC): temporizadores, biestables, comparaciones. Para lógica que se ejecuta de forma continua."
 }

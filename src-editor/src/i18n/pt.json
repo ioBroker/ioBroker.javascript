@@ -560,5 +560,9 @@
     "Show conditions": "Mostrar condições",
     "Hide empty conditions": "Ocultar condições vazias",
     "Documentation": "Documentação",
-    "Contents": "Conteúdo"
+    "Contents": "Conteúdo",
+    "Cannot load the code editor": "Não foi possível carregar o editor de código",
+    "Cannot load the blocks": "Não foi possível carregar os blocos",
+    "fbd_title": "Diagrama de blocos funcionais",
+    "fbd_description": "Blocos como num CLP (CFC): temporizadores, flip-flops, comparações. Para lógica que funciona continuamente."
 }

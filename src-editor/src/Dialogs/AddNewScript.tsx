@@ -22,6 +22,8 @@ import ImgJS from '../assets/tileJS.png';
 import ImgTS from '../assets/tileTS.png';
 import ImgBlockly from '../assets/tileBlockly.png';
 import ImgRules from '../assets/tileRules.png';
+import ImgFbd from '../assets/tileFbd.svg';
+import { preloadFbEditor } from '../FbEditor/preload';
 
 const styles: Record<string, React.CSSProperties> = {
     card: {
@@ -222,6 +224,55 @@ class DialogAddNew extends React.Component<DialogAddNewProps> {
         );
     }
 
+    getFbdCard(): React.JSX.Element {
+        return (
+            <Card
+                style={styles.card}
+                // whoever looks at it is likely to open the editor next
+                onMouseEnter={preloadFbEditor}
+            >
+                <CardActionArea onClick={() => this.props.onClose && this.props.onClose('FBD')}>
+                    <CardMedia
+                        style={styles.media}
+                        image={ImgFbd}
+                        title={I18n.t('fbd_title')}
+                    />
+                    <CardContent>
+                        <h2>{I18n.t('fbd_title')}</h2>
+                        <div style={styles.complexity}>{I18n.t('normal')}</div>
+                        <div style={styles.text}>{I18n.t('fbd_description')}</div>
+                    </CardContent>
+                </CardActionArea>
+                <CardActions>
+                    <Button
+                        size="small"
+                        color="primary"
+                        variant="contained"
+                        onClick={() => this.props.onClose && this.props.onClose('FBD')}
+                    >
+                        {I18n.t('Add')}
+                    </Button>
+                    <Button
+                        size="small"
+                        color="secondary"
+                        onClick={() => {
+                            // there is an English and a German description only
+                            const lang = I18n.getLanguage() === 'de' ? 'de' : 'en';
+                            window
+                                .open(
+                                    `https://github.com/ioBroker/ioBroker.javascript/blob/master/docs/${lang}/fbd.md`,
+                                    '_blank',
+                                )
+                                ?.focus();
+                        }}
+                    >
+                        {I18n.t('Learn More')}
+                    </Button>
+                </CardActions>
+            </Card>
+        );
+    }
+
     render(): React.JSX.Element {
         return (
             <Dialog
@@ -235,6 +286,7 @@ class DialogAddNew extends React.Component<DialogAddNewProps> {
                 <DialogContent style={{ textAlign: 'center' }}>
                     {this.getRulesCard()}
                     {this.getBlocklyCard()}
+                    {this.getFbdCard()}
                     {this.getJSCard()}
                     {this.getTSCard()}
                 </DialogContent>

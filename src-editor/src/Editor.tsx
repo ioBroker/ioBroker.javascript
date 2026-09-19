@@ -1,5 +1,4 @@
 import React, { Suspense } from 'react';
-import Tour from 'reactour';
 
 import {
     Toolbar,
@@ -67,6 +66,8 @@ import ImgTypeScript from './assets/typescript.svg';
 import ImgBlockly2Js from './assets/blockly2js.svg';
 import ImgRules2Js from './assets/rules2js.svg';
 import ImgRules from './assets/rules.svg';
+import ImgFbd from './assets/fbd.svg';
+import ImgFbd2Js from './assets/fbd2js.svg';
 
 import ImgOidName from './assets/oid-name.svg';
 import ImgOidNamePath from './assets/oid-name-path.svg';
@@ -90,6 +91,7 @@ import steps, { STEPS } from './Components/RulesEditor/helpers/Tour';
 import type { AstroTimes, ScriptType } from './types';
 import Connecting from './Components/Connecting';
 import { decryptText, encryptText } from './Components/crypto';
+import { loadFbEditor } from './FbEditor/preload';
 
 import type BlocklyEditorImport from './Components/BlocklyEditor';
 import type ScriptEditorVanillaMonacoImport from './Components/ScriptEditorVanillaMonaco';
@@ -104,6 +106,9 @@ const DialogScriptEditor = React.lazy(() => import('./Dialogs/ScriptEditor'));
 const DialogDocumentation = React.lazy(() => import('./Dialogs/Documentation'));
 const AiChatPanel = React.lazy(() => import('./AiChat/AiChatPanel'));
 const AiDiffView = React.lazy(() => import('./AiChat/AiDiffView'));
+// the tour of the Rules editor
+const Tour = React.lazy(() => import('reactour'));
+const FbEditor = React.lazy(loadFbEditor);
 
 import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
 import { getAllScripts } from './AiChat/AiScriptAnalyzer';
@@ -136,9 +141,15 @@ const images: Record<ScriptType | 'def', string> = {
     Blockly: ImgBlockly,
     'Javascript/js': ImgJS,
     Rules: ImgRules,
+    FBD: ImgFbd,
     def: ImgJS,
     'TypeScript/ts': ImgTypeScript,
 };
+
+/** A function block diagram - a script type that `@iobroker/types` does not know yet */
+function isFbd(common: { engineType?: string } | null | undefined): boolean {
+    return common?.engineType === 'FBD';
+}
 
 const MENU_ITEM_HEIGHT = 48;
 const COLOR_DEBUG = '#02a102';
@@ -288,6 +299,8 @@ interface EditorState {
     changed: Record<string, boolean>;
     blockly: boolean | null;
     rules: boolean | null;
+    /** A function block diagram */
+    fbd: boolean | null;
     debugEnabled: boolean;
     verboseEnabled: boolean;
     showCompiledCode: boolean;
@@ -424,6 +437,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             triggerPrettier: 1,
             scriptConflict: '',
             rules: null,
+            fbd: null,
             runningInstances: this.props.runningInstances || {},
             searchText: '',
             selected,
@@ -674,6 +688,10 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             newState.rules = this.scripts[newState.selected].engineType === 'Rules';
                             _changed = true;
                         }
+                        if (this.state.fbd !== isFbd(this.scripts[newState.selected])) {
+                            newState.fbd = isFbd(this.scripts[newState.selected]);
+                            _changed = true;
+                        }
                         if (this.state.verboseEnabled !== this.scripts[newState.selected].verbose) {
                             newState.verboseEnabled = this.scripts[newState.selected].verbose;
                             _changed = true;
@@ -744,6 +762,10 @@ class Editor extends React.Component<EditorProps, EditorState> {
                 }
                 if (this.state.rules !== (this.scripts[this.state.selected].engineType === 'Rules')) {
                     newState.rules = this.scripts[this.state.selected].engineType === 'Rules';
+                    _changed = true;
+                }
+                if (this.state.fbd !== isFbd(this.scripts[this.state.selected])) {
+                    newState.fbd = isFbd(this.scripts[this.state.selected]);
                     _changed = true;
                 }
                 if (this.state.verboseEnabled !== this.scripts[this.state.selected].verbose) {
@@ -868,6 +890,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             newState.selected = nextProps.selected;
             newState.blockly = this.scripts[nextProps.selected].engineType === 'Blockly';
             newState.rules = this.scripts[nextProps.selected].engineType === 'Rules';
+            newState.fbd = isFbd(this.scripts[nextProps.selected]);
             newState.verboseEnabled = this.scripts[nextProps.selected].verbose;
             newState.debugEnabled = this.scripts[nextProps.selected].debug;
             newState.showCompiledCode = false;
@@ -1052,6 +1075,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
         this.setState({
             selected,
             rules: common.engineType === 'Rules',
+            fbd: isFbd(common),
             blockly: common.engineType === 'Blockly',
             showCompiledCode: false,
             verboseEnabled: common.verbose,
@@ -1108,6 +1132,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
 
                     newState.blockly = common?.engineType === 'Blockly';
                     newState.rules = common?.engineType === 'Rules';
+                    newState.fbd = isFbd(common);
                     newState.verboseEnabled = !!common?.verbose;
                     newState.debugEnabled = !!common?.debug;
                     newState.showCompiledCode = false;
@@ -1577,7 +1602,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             {I18n.t('Cancel')}
                         </Button>
                     ) : null}
-                    {!this.state.showCompiledCode && !this.state.rules ? (
+                    {!this.state.showCompiledCode && !this.state.rules && !this.state.fbd ? (
                         <IconButton
                             key="undo"
                             title={I18n.t('Undo')}
@@ -1595,7 +1620,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             <IconUndo />
                         </IconButton>
                     ) : null}
-                    {!this.state.showCompiledCode && !this.state.rules ? (
+                    {!this.state.showCompiledCode && !this.state.rules && !this.state.fbd ? (
                         <IconButton
                             key="redo"
                             title={I18n.t('Redo')}
@@ -1698,7 +1723,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                         </MenuItem>
                     </Menu>
 
-                    {!this.props.debugInstance && !this.state.showCompiledCode && (
+                    {!this.props.debugInstance && !this.state.showCompiledCode && !this.state.fbd && (
                         <IconButton
                             style={styles.toolbarButtons}
                             key="prettier"
@@ -1751,6 +1776,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                     {!this.props.debugMode &&
                     !this.state.blockly &&
                     !this.state.rules &&
+                    !this.state.fbd &&
                     !this.state.showCompiledCode ? (
                         <IconButton
                             key="select-cron"
@@ -1763,7 +1789,9 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             <IconCron />
                         </IconButton>
                     ) : null}
-                    {this.scripts[this.state.selected] && this.scripts[this.state.selected].engineType !== 'Rules' ? (
+                    {this.scripts[this.state.selected] &&
+                    this.scripts[this.state.selected].engineType !== 'Rules' &&
+                    !isFbd(this.scripts[this.state.selected]) ? (
                         <>
                             <IconButton
                                 key="ai"
@@ -1809,6 +1837,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                     {!this.props.debugMode &&
                         !this.state.blockly &&
                         !this.state.rules &&
+                        !this.state.fbd &&
                         !this.state.showCompiledCode && (
                             <IconButton
                                 key="select-id"
@@ -1861,8 +1890,9 @@ class Editor extends React.Component<EditorProps, EditorState> {
                     {this.props.expertMode &&
                         !changed &&
                         (this.props.debugMode ||
-                            (!this.state.blockly && !this.state.rules) ||
-                            ((this.state.blockly || this.state.rules) && this.state.showCompiledCode)) && (
+                            (!this.state.blockly && !this.state.rules && !this.state.fbd) ||
+                            ((this.state.blockly || this.state.rules || this.state.fbd) &&
+                                this.state.showCompiledCode)) && (
                             <IconButton
                                 style={styles.toolbarButtons}
                                 color={this.props.debugMode ? 'primary' : 'default'}
@@ -1881,7 +1911,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             </IconButton>
                         )}
 
-                    {(this.state.blockly || this.state.rules) && (
+                    {(this.state.blockly || this.state.rules || this.state.fbd) && (
                         <Button
                             key="blockly-code"
                             aria-label="blockly"
@@ -1908,8 +1938,8 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             }}
                         >
                             <img
-                                alt={this.state.blockly ? 'blockly2js' : 'rules2js'}
-                                src={this.state.blockly ? ImgBlockly2Js : ImgRules2Js}
+                                alt={this.state.blockly ? 'blockly2js' : this.state.fbd ? 'fbd2js' : 'rules2js'}
+                                src={this.state.blockly ? ImgBlockly2Js : this.state.fbd ? ImgFbd2Js : ImgRules2Js}
                             />
                         </Button>
                     )}
@@ -1929,7 +1959,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             <IconDebugMenu />
                         </Badge>
                     </IconButton>
-                    {!this.state.blockly && !this.state.rules ? (
+                    {!this.state.blockly && !this.state.rules && !this.state.fbd ? (
                         <IconButton
                             key="documentation"
                             aria-label="Documentation"
@@ -1971,7 +2001,8 @@ class Editor extends React.Component<EditorProps, EditorState> {
             this.props.objects[this.state.selected] &&
             this.state.blockly !== null &&
             (!this.state.blockly || this.state.showCompiledCode) &&
-            (!this.state.rules || this.state.showCompiledCode)
+            (!this.state.rules || this.state.showCompiledCode) &&
+            (!this.state.fbd || this.state.showCompiledCode)
         ) {
             this.scripts[this.state.selected] ||= this.getScriptFromObject(this.state.selected)!;
 
@@ -2174,6 +2205,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                 <Suspense fallback={<Connecting />}>
                     <BlocklyEditor
                         ref={this.blocklyEditorRef}
+                        socket={this.props.socket}
                         command={this.state.cmdToBlockly}
                         key="BlocklyEditor"
                         themeType={this.state.themeType}
@@ -2264,6 +2296,41 @@ class Editor extends React.Component<EditorProps, EditorState> {
                     key="blocklyEditorDiv"
                 >
                     {blocklyEditor}
+                </Box>
+            );
+        }
+        return null;
+    }
+
+    getFbdEditor(): React.JSX.Element | null {
+        if (
+            !this.props.debugMode &&
+            this.state.instancesLoaded &&
+            this.state.selected &&
+            this.props.objects[this.state.selected] &&
+            this.state.fbd &&
+            !this.state.showCompiledCode &&
+            this.state.visible
+        ) {
+            this.scripts[this.state.selected] ||= this.getScriptFromObject(this.state.selected)!;
+
+            return (
+                <Box
+                    sx={styles.editorDiv}
+                    key="fbdEditorDiv"
+                >
+                    <Suspense fallback={<LinearProgress />}>
+                        <FbEditor
+                            // every diagram starts with its own view
+                            key={this.state.selected}
+                            code={this.scripts[this.state.selected].source || ''}
+                            socket={this.props.socket}
+                            theme={this.props.theme}
+                            themeName={this.props.themeName}
+                            themeType={this.state.themeType}
+                            onChange={newValue => this.onChange({ script: newValue })}
+                        />
+                    </Suspense>
                 </Box>
             );
         }
@@ -2678,18 +2745,25 @@ class Editor extends React.Component<EditorProps, EditorState> {
             this.state.visible
         ) {
             return (
-                <Tour
+                <Suspense
                     key="tour"
-                    steps={steps}
-                    isOpen={this.state.isTourOpen}
-                    onRequestClose={() => {
-                        this.setState({ isTourOpen: false });
-                        window.localStorage.setItem('tour', 'true');
-                        void this.props.socket.setState('javascript.0.variables.rulesTour', { val: true, ack: true });
-                    }}
-                    // getCurrentStep={tourStep => this.setTourStep(tourStep)}
-                    goToStep={this.state.tourStep}
-                />
+                    fallback={null}
+                >
+                    <Tour
+                        steps={steps}
+                        isOpen={this.state.isTourOpen}
+                        onRequestClose={() => {
+                            this.setState({ isTourOpen: false });
+                            window.localStorage.setItem('tour', 'true');
+                            void this.props.socket.setState('javascript.0.variables.rulesTour', {
+                                val: true,
+                                ack: true,
+                            });
+                        }}
+                        // getCurrentStep={tourStep => this.setTourStep(tourStep)}
+                        goToStep={this.state.tourStep}
+                    />
+                </Suspense>
             );
         }
         return null;
@@ -2751,6 +2825,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                 const newState = {
                     blockly: this.scripts[this.state.selected].engineType === 'Blockly',
                     rules: this.scripts[this.state.selected].engineType === 'Rules',
+                    fbd: isFbd(this.scripts[this.state.selected]),
                     showCompiledCode: false,
                     debugEnabled: this.scripts[this.state.selected].debug,
                     verboseEnabled: this.scripts[this.state.selected].verbose,
@@ -2800,6 +2875,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             this.getAskAboutDebug(),
             this.getBlocklyEditor(),
             this.getRulesEditor(),
+            this.getFbdEditor(),
             this.getDebug(),
             this.getConfirmDialog(),
             this.getScriptConflictDialog(),

@@ -121,17 +121,8 @@ function patch() {
             code,
             `<script type="text/javascript" onerror="setTimeout(function(){window.location.reload()}, 5000)" src="./../../lib/js/socket.io.js"></script>`,
         );
-        // add the monaco script at the end
-        if (
-            !code.includes(
-                `<script type="text/javascript" src="vs/loader.js"></script><script type="text/javascript" src="vs/configure.js"></script>`,
-            )
-        ) {
-            code = code.replace(
-                /<\/body>\n?<\/html>/,
-                `    <script type="text/javascript" src="vs/loader.js"></script><script type="text/javascript" src="vs/configure.js"></script>\n    </body>\n</html>`,
-            );
-        }
+        // Monaco (vs/loader.js, vs/configure.js) is not added here: the editor loads it on first use,
+        // see src-editor/src/Components/loadMonaco.ts
 
         writeFileSync(`${__dirname}/admin/tab.html`, code);
     }

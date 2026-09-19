@@ -568,5 +568,9 @@
     "Show conditions": "Show conditions",
     "Hide empty conditions": "Hide empty conditions",
     "Documentation": "Documentation",
-    "Contents": "Contents"
+    "Contents": "Contents",
+    "Cannot load the code editor": "Cannot load the code editor",
+    "Cannot load the blocks": "Cannot load the blocks",
+    "fbd_title": "Function block diagram",
+    "fbd_description": "Blocks like in a PLC (CFC): timers, flip-flops, comparisons. For logic that runs all the time."
 }

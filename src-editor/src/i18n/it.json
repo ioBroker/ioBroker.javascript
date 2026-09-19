@@ -560,5 +560,9 @@
     "Show conditions": "Mostra le condizioni",
     "Hide empty conditions": "Nascondi le condizioni vuote",
     "Documentation": "Documentazione",
-    "Contents": "Indice"
+    "Contents": "Indice",
+    "Cannot load the code editor": "Impossibile caricare l'editor di codice",
+    "Cannot load the blocks": "Impossibile caricare i blocchi",
+    "fbd_title": "Diagramma a blocchi funzionali",
+    "fbd_description": "Blocchi come in un PLC (CFC): timer, flip-flop, confronti. Per logiche sempre in esecuzione."
 }

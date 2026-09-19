@@ -7,12 +7,13 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url)),
+            '@fb-core': fileURLToPath(new URL('../src/lib/fb/index.ts', import.meta.url)),
         },
     },
     server: {
         fs: {
             // The documentation test reads `docs/en/javascript.md`, which is outside this package.
-            allow: ['.', '../docs'],
+            allow: ['.', '../docs', '../src/lib/fb'],
         },
     },
     test: {

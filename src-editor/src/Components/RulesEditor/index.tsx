@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 
-import { Button } from '@mui/material';
+import { Button, LinearProgress } from '@mui/material';
 import { AutoFixHigh as IconWizard } from '@mui/icons-material';
 
 import { I18n, type IobTheme, type ThemeName, type ThemeType } from '@iobroker/gui-components';
@@ -58,7 +58,8 @@ const RulesEditor = ({
     newRuleId,
     onNewRuleHandled,
 }: RulesEditorProps): React.JSX.Element | null => {
-    const { blocks, socket, setOnUpdate, setOnDebugMessage, setEnableSimulation } = useContext(ContextWrapperCreate);
+    const { blocks, loadBlocks, socket, setOnUpdate, setOnDebugMessage, setEnableSimulation } =
+        useContext(ContextWrapperCreate);
     const [allBlocks, setAllBlocks] = useState<(typeof GenericBlock<any>)[]>([]);
     const [userRules, setUserRules] = useState(code2json(code));
     const [importExport, setImportExport] = useState('');
@@ -151,6 +152,8 @@ const RulesEditor = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    useEffect(() => loadBlocks(), [loadBlocks]);
+
     useEffect(() => {
         setEnableSimulation(!changed && running);
     }, [changed, running, setEnableSimulation]);
@@ -215,8 +218,11 @@ const RulesEditor = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ref.current?.clientWidth || 0]);
 
-    if (!blocks || !socket) {
+    if (!socket) {
         return null;
+    }
+    if (!blocks) {
+        return <LinearProgress />;
     }
 
     // a rule the user has not started yet - the wizard is the friendlier way in than an empty band

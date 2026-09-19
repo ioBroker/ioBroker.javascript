@@ -560,5 +560,9 @@
     "Show conditions": "Afficher les conditions",
     "Hide empty conditions": "Masquer les conditions vides",
     "Documentation": "Documentation",
-    "Contents": "Sommaire"
+    "Contents": "Sommaire",
+    "Cannot load the code editor": "Impossible de charger l'éditeur de code",
+    "Cannot load the blocks": "Impossible de charger les blocs",
+    "fbd_title": "Diagramme de blocs fonctionnels",
+    "fbd_description": "Des blocs comme dans un automate (CFC) : temporisations, bascules, comparaisons. Pour une logique qui tourne en permanence."
 }

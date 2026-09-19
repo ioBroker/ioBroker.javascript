@@ -1,6 +1,6 @@
 import type { AstroEvent } from '../../src/lib/consts';
 
-export type ScriptType = 'Javascript/js' | 'TypeScript/ts' | 'Blockly' | 'Rules';
+export type ScriptType = 'Javascript/js' | 'TypeScript/ts' | 'Blockly' | 'Rules' | 'FBD';
 
 export interface JavaScriptAdapterConfig {
     latitude: number;

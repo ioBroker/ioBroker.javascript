@@ -14,6 +14,7 @@ import {
 } from 'node:fs';
 import { join, normalize, dirname } from 'node:path';
 import type { ScriptType } from '../types';
+import { isFbdSource } from './fb/graph';
 import { escapeRegExp } from './tools';
 
 const MODE_0777 = 511;
@@ -215,6 +216,9 @@ export class Mirror {
     static detectType(fileName: string, data: string): ScriptType {
         if (fileName.endsWith('.ts')) {
             return 'TypeScript/ts';
+        }
+        if (isFbdSource(data)) {
+            return 'FBD';
         }
         return Mirror.isBlockly(data) ? 'Blockly' : Mirror.isRules(data) ? 'Rules' : 'Javascript/js';
     }

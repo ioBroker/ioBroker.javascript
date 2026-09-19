@@ -3663,7 +3663,9 @@ class JavaScript extends Adapter {
             if (
                 obj.common.engineType.toLowerCase().startsWith('javascript') ||
                 obj.common.engineType === 'Blockly' ||
-                obj.common.engineType === 'Rules'
+                obj.common.engineType === 'Rules' ||
+                // function block diagram: generated JavaScript, like Blockly and Rules (not known to @iobroker/types yet)
+                (obj.common.engineType as ScriptType) === 'FBD'
             ) {
                 // Javascript
                 this.log.info(`${name}: start JavaScript (${obj.common.engineType})`);

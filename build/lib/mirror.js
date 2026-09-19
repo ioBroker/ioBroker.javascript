@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Mirror = void 0;
 const node_fs_1 = require("node:fs");
 const node_path_1 = require("node:path");
+const graph_1 = require("./fb/graph");
 const tools_1 = require("./tools");
 const MODE_0777 = 511;
 class Mirror {
@@ -171,6 +172,9 @@ class Mirror {
     static detectType(fileName, data) {
         if (fileName.endsWith('.ts')) {
             return 'TypeScript/ts';
+        }
+        if ((0, graph_1.isFbdSource)(data)) {
+            return 'FBD';
         }
         return Mirror.isBlockly(data) ? 'Blockly' : Mirror.isRules(data) ? 'Rules' : 'Javascript/js';
     }

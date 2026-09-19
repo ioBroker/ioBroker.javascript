@@ -558,5 +558,9 @@
     "Export error": "导出错误",
     "without condition": "without condition",
     "Show conditions": "Show conditions",
-    "Hide empty conditions": "Hide empty conditions"
+    "Hide empty conditions": "Hide empty conditions",
+    "Cannot load the code editor": "无法加载代码编辑器",
+    "Cannot load the blocks": "无法加载积木块",
+    "fbd_title": "功能块图",
+    "fbd_description": "像 PLC (CFC) 一样的功能块：定时器、触发器、比较。适用于持续运行的逻辑。"
 }

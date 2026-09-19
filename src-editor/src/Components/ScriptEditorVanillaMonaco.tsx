@@ -1,7 +1,17 @@
 import React from 'react';
 import type * as monacoEditor from 'monaco-editor';
 
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Fab, IconButton, Snackbar } from '@mui/material';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Fab,
+    IconButton,
+    LinearProgress,
+    Snackbar,
+} from '@mui/material';
 
 import { MdGTranslate as IconNoCheck, MdClose as Close } from 'react-icons/md';
 
@@ -10,6 +20,7 @@ import type { DebuggerLocation, SetBreakpointParameterType } from './Debugger/ty
 import type { EditorAiActionRequest } from '../AiChat/AiChatTypes';
 import { findSymbolAtLine } from '../AiChat/aiCodeLensProvider';
 import { areAiHelpersEnabled, onAiHelpersEnabledChanged } from '../AiChat/aiHelpersEnabled';
+import { getMonaco, loadMonaco } from './loadMonaco';
 
 function isIdOfGlobalScript(id: string): boolean {
     return /^script\.js\.global\./.test(id);
@@ -87,7 +98,7 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
 
     private editor: monacoEditor.editor.IStandaloneCodeEditor | null = null;
 
-    private monaco: typeof monacoEditor | null = (window as any).monaco as typeof monacoEditor | null;
+    private monaco: typeof monacoEditor | null = getMonaco();
 
     /** In Monaco 0.55+ loaded via AMD, the typescript API lives at "languages.typescript" (not top-level typescript) */
     private get monacoTS(): typeof monacoEditor.typescript | undefined {
@@ -100,7 +111,7 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
 
     private runningInstancesStr: string;
 
-    private monacoCounter: number = 0;
+    private unmounted = false;
 
     private location: DebuggerLocation | undefined;
 
@@ -149,25 +160,6 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         this.monacoDiv = React.createRef<HTMLDivElement>();
     }
 
-    waitForMonaco(cb: () => void): void {
-        let monacoLoaded = !!this.monacoTS?.typescriptDefaults?.getCompilerOptions;
-        if (!monacoLoaded || !this.props.runningInstances) {
-            this.monaco = (window as any).monaco as typeof monacoEditor | null;
-            monacoLoaded = !!this.monacoTS?.typescriptDefaults?.getCompilerOptions;
-            this.monacoCounter++;
-            if (!monacoLoaded && this.monacoCounter < 20) {
-                console.log('wait for monaco loaded');
-                setTimeout(() => this.waitForMonaco(cb), 200);
-                return;
-            }
-            if (this.monacoCounter >= 20) {
-                console.error('Cannot load monaco!');
-            }
-        } else if (cb) {
-            cb();
-        }
-    }
-
     loadTypings(runningInstances?: Record<string, boolean>): void {
         if (!this.editor) {
             return;
@@ -210,18 +202,32 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         void this.getDiagnostics;
         void this.getDocumentSymbols;
 
-        let monacoLoaded = !!this.monacoTS?.typescriptDefaults?.getCompilerOptions;
-        if (!monacoLoaded || !this.props.runningInstances) {
-            this.monaco = (window as any).monaco as typeof monacoEditor | null;
-            monacoLoaded = !!this.monacoTS?.typescriptDefaults?.getCompilerOptions;
-            if (!monacoLoaded) {
-                console.log('wait for monaco loaded...');
-                this.waitForMonaco(() => this.componentDidMount());
-
-                return;
-            }
+        if (this.monaco) {
+            this.initEditor();
+            return;
         }
-        if (!this.editor && monacoLoaded && this.monaco) {
+
+        loadMonaco()
+            .then(monaco => {
+                if (!this.unmounted) {
+                    this.monaco = monaco;
+                    // render() shows the container of the editor only now, so it has to exist first
+                    this.forceUpdate(() => this.initEditor());
+                }
+            })
+            .catch((error: unknown) => {
+                console.error(`Cannot load the code editor: ${error as Error}`);
+                if (!this.unmounted) {
+                    this.setState({
+                        showError: { title: I18n.t('Cannot load the code editor'), message: String(error) },
+                    });
+                }
+            });
+    }
+
+    /** Creates the Monaco instance. Runs once Monaco is loaded and the container is rendered. */
+    initEditor(): void {
+        if (!this.editor && this.monacoTS?.typescriptDefaults && this.monaco) {
             console.log('Init editor');
             this.props.onRegisterSelect?.((): string | undefined => {
                 if (this.editor) {
@@ -234,19 +240,19 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
             });
             // For some reason, we have to get the original compiler options
             // and assign new properties one by one
-            const compilerOptions = this.monacoTS!.typescriptDefaults.getCompilerOptions();
+            const compilerOptions = this.monacoTS.typescriptDefaults.getCompilerOptions();
             // compilerOptions.target = this.monacoTS!.ScriptTarget.ES2020;
             compilerOptions.allowJs = true;
             compilerOptions.checkJs = this.props.checkJs !== false;
             compilerOptions.noLib = true;
             compilerOptions.lib = [];
             compilerOptions.useUnknownInCatchVariables = false;
-            compilerOptions.moduleResolution = this.monacoTS!.ModuleResolutionKind.NodeJs;
-            compilerOptions.target = this.monacoTS!.ScriptTarget.ESNext;
-            compilerOptions.module = this.monacoTS!.ModuleKind.ESNext;
+            compilerOptions.moduleResolution = this.monacoTS.ModuleResolutionKind.NodeJs;
+            compilerOptions.target = this.monacoTS.ScriptTarget.ESNext;
+            compilerOptions.module = this.monacoTS.ModuleKind.ESNext;
             compilerOptions.allowNonTsExtensions = true;
 
-            this.monacoTS!.typescriptDefaults.setCompilerOptions(compilerOptions);
+            this.monacoTS.typescriptDefaults.setCompilerOptions(compilerOptions);
 
             this.setTypeCheck(false);
 
@@ -500,6 +506,7 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
     }
 
     componentWillUnmount(): void {
+        this.unmounted = true;
         this.contentChangeDisposable?.dispose();
         this.contentChangeDisposable = null;
         this.mouseDownDisposable?.dispose();
@@ -1337,8 +1344,10 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         }
 
         // if the code not yet changed, update the new code
-        if (
-            this.editor &&
+        if (!this.editor) {
+            // Monaco is still loading: the editor starts with the code that is current by then
+            this.originalCode = nextProps.code || '';
+        } else if (
             !nextProps.changed &&
             (nextProps.code !== this.originalCode || nextProps.code !== this.editor.getValue())
         ) {
@@ -1491,11 +1500,8 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
 
     render(): React.JSX.Element | null {
         if (!this.monacoTS?.typescriptDefaults || !this.props.runningInstances) {
-            setTimeout(() => {
-                this.monaco = (window as any).monaco as typeof monacoEditor | null;
-                this.forceUpdate();
-            }, 200);
-            return null;
+            // Monaco is loaded with the first script that needs it
+            return this.state.showError ? this.renderErrorDialog() : <LinearProgress />;
         }
 
         if (this.props.triggerPrettier !== this.triggerPrettier) {

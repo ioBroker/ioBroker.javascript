@@ -568,5 +568,9 @@
     "Show conditions": "Bedingungen anzeigen",
     "Hide empty conditions": "Leere Bedingungen ausblenden",
     "Documentation": "Dokumentation",
-    "Contents": "Inhalt"
+    "Contents": "Inhalt",
+    "Cannot load the code editor": "Der Code-Editor kann nicht geladen werden",
+    "Cannot load the blocks": "Die Bausteine können nicht geladen werden",
+    "fbd_title": "Funktionsplan",
+    "fbd_description": "Bausteine wie in einer SPS (CFC): Timer, Flipflops, Vergleiche. Für dauerhaft laufende Logik."
 }

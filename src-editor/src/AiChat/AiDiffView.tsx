@@ -4,6 +4,8 @@ import { Check, Close } from '@mui/icons-material';
 import { I18n, type ThemeType } from '@iobroker/gui-components';
 import type * as monacoEditor from 'monaco-editor';
 
+import { loadMonaco } from '../Components/loadMonaco';
+
 interface AiDiffViewProps {
     originalCode: string;
     modifiedCode: string;
@@ -26,38 +28,49 @@ const AiDiffView: React.FC<AiDiffViewProps> = ({
     const modifiedModelRef = useRef<monacoEditor.editor.ITextModel | null>(null);
 
     useEffect(() => {
-        const monaco = (window as any).monaco as typeof monacoEditor | undefined;
-        if (!monaco || !containerRef.current) {
-            return;
-        }
+        let dispose: (() => void) | null = null;
+        let cancelled = false;
 
-        const diffEditor = monaco.editor.createDiffEditor(containerRef.current, {
-            readOnly: false,
-            originalEditable: false,
-            renderSideBySide: true,
-            automaticLayout: true,
-            theme: themeType === 'dark' ? 'vs-dark' : 'vs',
-            scrollBeyondLastLine: false,
-            minimap: { enabled: false },
-        });
+        loadMonaco()
+            .then(monaco => {
+                if (cancelled || !containerRef.current) {
+                    return;
+                }
 
-        const originalModel = monaco.editor.createModel(originalCode, language);
-        const modifiedModel = monaco.editor.createModel(modifiedCode, language);
-        modifiedModelRef.current = modifiedModel;
+                const diffEditor = monaco.editor.createDiffEditor(containerRef.current, {
+                    readOnly: false,
+                    originalEditable: false,
+                    renderSideBySide: true,
+                    automaticLayout: true,
+                    theme: themeType === 'dark' ? 'vs-dark' : 'vs',
+                    scrollBeyondLastLine: false,
+                    minimap: { enabled: false },
+                });
 
-        diffEditor.setModel({
-            original: originalModel,
-            modified: modifiedModel,
-        });
+                const originalModel = monaco.editor.createModel(originalCode, language);
+                const modifiedModel = monaco.editor.createModel(modifiedCode, language);
+                modifiedModelRef.current = modifiedModel;
 
-        diffEditorRef.current = diffEditor;
+                diffEditor.setModel({
+                    original: originalModel,
+                    modified: modifiedModel,
+                });
+
+                diffEditorRef.current = diffEditor;
+
+                dispose = () => {
+                    diffEditor.dispose();
+                    originalModel.dispose();
+                    modifiedModel.dispose();
+                    diffEditorRef.current = null;
+                    modifiedModelRef.current = null;
+                };
+            })
+            .catch((error: unknown) => console.error(`Cannot load the code editor: ${error as Error}`));
 
         return () => {
-            diffEditor.dispose();
-            originalModel.dispose();
-            modifiedModel.dispose();
-            diffEditorRef.current = null;
-            modifiedModelRef.current = null;
+            cancelled = true;
+            dispose?.();
         };
     }, [originalCode, modifiedCode, language, themeType]);
 

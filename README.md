@@ -18,6 +18,8 @@ Executes JavaScript, TypeScript Scripts.
 - 🇺🇸 [Upgrade guide](docs/en/upgrade-guide.md)
 - 🇩🇪 [Funktionsdokumentation](docs/de/javascript.md)
 - 🇩🇪 [Benutzung](docs/de/usage.md)
+- 🇺🇸 [Function block diagrams](docs/en/fbd.md)
+- 🇩🇪 [Funktionspläne](docs/de/fbd.md)
 - Blockly
   - 🇺🇸 Here you can find the description of [blockly](docs/en/blockly.md). 
   - 🇩🇪 Hier kann man die Beschreibung von [Blockly](docs/de/blockly.md) finden. 
@@ -28,6 +30,10 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) The code editor (Monaco), Blockly and the Rules blocks are loaded only when a script of that kind is opened, so the editor starts faster
+* (@GermanBluefox) Added function block diagrams (FBD, in the style of CFC): timers, flip-flops, edges, comparison and arithmetic, wired to ioBroker states. See [the description](docs/en/fbd.md)
+
 ### 10.2.5 (2026-09-17)
 * (@GermanBluefox) Added the functions help dialog in editor
 

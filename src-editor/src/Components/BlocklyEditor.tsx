@@ -1,9 +1,15 @@
 import React from 'react';
 
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, LinearProgress, TextField } from '@mui/material';
 import { Cancel as IconCancel, Check as IconOk } from '@mui/icons-material';
 
-import { I18n, Message as DialogMessage, type IobTheme, type ThemeType } from '@iobroker/gui-components';
+import {
+    type AdminConnection,
+    I18n,
+    Message as DialogMessage,
+    type IobTheme,
+    type ThemeType,
+} from '@iobroker/gui-components';
 
 import DialogError from '../Dialogs/Error';
 import DialogExport from '../Dialogs/Export';
@@ -21,6 +27,8 @@ import { getBlocklyTheme } from './blocklyTheme';
 
 let languageBlocklyLoaded = false;
 let languageOwnLoaded = false;
+let blocksLoading: Promise<void> | null = null;
+let blocksLoaded = false;
 let toolboxText: string | null = null;
 const scriptsLoaded: string[] = [];
 
@@ -46,6 +54,7 @@ function searchXml(root: Element, text: string, _id?: string, _result?: string[]
 }
 
 interface BlocklyEditorProps {
+    socket: AdminConnection;
     command: '' | 'check' | 'export' | 'import';
     onChange: (code: string) => void;
     searchText: string;
@@ -56,6 +65,7 @@ interface BlocklyEditorProps {
 }
 
 interface BlocklyEditorState {
+    blocksLoaded: boolean;
     languageOwnLoaded: boolean;
     languageBlocklyLoaded: boolean;
     changed: boolean;
@@ -97,6 +107,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         super(props);
 
         this.state = {
+            blocksLoaded,
             languageOwnLoaded,
             languageBlocklyLoaded,
             changed: false,
@@ -117,11 +128,41 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
 
         this.lastSearch = this.props.searchText || '';
         this.blinkBlock = null;
+    }
 
-        initBlockly();
-        BlocklyEditor.Blockly.dialog.setPrompt(this.onShowNameDialog);
+    componentDidMount(): void {
+        BlocklyEditor.loadBlocks(this.props.socket)
+            .then(() => {
+                initBlockly();
+                BlocklyEditor.Blockly.dialog.setPrompt(this.onShowNameDialog);
+                this.setState({ blocksLoaded });
+                this.loadLanguages();
+            })
+            .catch((error: unknown) =>
+                this.setState({ error: `${I18n.t('Cannot load the blocks')}: ${error as Error}` }),
+            );
+    }
 
-        this.loadLanguages();
+    /**
+     * Loads the ioBroker blocks and the blocks of all adapters with `common.blockly`.
+     *
+     * Blockly is loaded only when a Blockly script is opened, and so are the blocks: nothing else
+     * needs them. Safe to call more than once; a failed attempt is forgotten, so the next call
+     * tries again.
+     */
+    static loadBlocks(socket: AdminConnection): Promise<void> {
+        blocksLoading ||= socket
+            .getObjectViewSystem('adapter', 'system.adapter.', 'system.adapter.\u9999')
+            .then(adapters => new Promise<void>(resolve => BlocklyEditor.loadCustomBlockly(adapters, resolve)))
+            .then(() => {
+                blocksLoaded = true;
+            })
+            .catch((error: unknown) => {
+                blocksLoading = null;
+                throw error;
+            });
+
+        return blocksLoading;
     }
 
     onShowNameDialog = (promptText: string, defaultText: string, callback: (p1: string | null) => void): void => {
@@ -1160,7 +1201,7 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
     }
 
     render(): (React.JSX.Element | null)[] | null {
-        if (this.state.languageBlocklyLoaded && this.state.languageOwnLoaded) {
+        if (this.state.blocksLoaded && this.state.languageBlocklyLoaded && this.state.languageOwnLoaded) {
             this.didUpdate = setTimeout(() => {
                 this.didUpdate = null;
                 void this.componentDidUpdate();
@@ -1189,7 +1230,8 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
             ];
         }
 
-        return null;
+        // the blocks and the translations are loaded with the first Blockly script
+        return [<LinearProgress key="progress" />, this.renderErrorDialog()];
     }
 }
 

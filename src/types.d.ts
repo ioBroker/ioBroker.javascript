@@ -129,7 +129,7 @@ export type JavascriptTimer = {
     scriptName: string;
 };
 
-export type ScriptType = 'TypeScript/ts' | 'Blockly' | 'Rules' | 'Javascript/js';
+export type ScriptType = 'TypeScript/ts' | 'Blockly' | 'Rules' | 'FBD' | 'Javascript/js';
 
 export type TimeRule = {
     time: string | { hour: number; minute: number };

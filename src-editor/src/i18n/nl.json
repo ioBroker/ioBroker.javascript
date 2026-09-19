@@ -560,5 +560,9 @@
     "Show conditions": "Voorwaarden tonen",
     "Hide empty conditions": "Lege voorwaarden verbergen",
     "Documentation": "Documentatie",
-    "Contents": "Inhoud"
+    "Contents": "Inhoud",
+    "Cannot load the code editor": "Kan de code-editor niet laden",
+    "Cannot load the blocks": "Kan de blokken niet laden",
+    "fbd_title": "Functieblokdiagram",
+    "fbd_description": "Blokken zoals in een PLC (CFC): timers, flipflops, vergelijkingen. Voor logica die continu draait."
 }

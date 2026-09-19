@@ -56,6 +56,7 @@ import ImgJS from './assets/js.svg';
 import ImgBlockly from './assets/blockly.svg';
 import ImgTypeScript from './assets/typescript.svg';
 import ImgRules from './assets/rules.svg';
+import ImgFbd from './assets/fbd.svg';
 
 import DialogRename from './Dialogs/Rename';
 import DialogDelete from './Dialogs/Delete';
@@ -251,6 +252,7 @@ const images: Record<ScriptType | 'def', string> = {
     'Javascript/js': ImgJS,
     def: ImgJS,
     Rules: ImgRules,
+    FBD: ImgFbd,
     'TypeScript/ts': ImgTypeScript,
 };
 
@@ -2132,6 +2134,24 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
                     src={images.Rules || images.def}
                     onClick={() => {
                         const typeFilter = this.state.typeFilter === 'Rules' ? '' : 'Rules';
+                        window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
+                        this.setState({ typeFilter });
+                    }}
+                />
+            </Box>,
+            <Box
+                key="filterFbd"
+                sx={styles.footerButtons}
+            >
+                <img
+                    alt="FBD"
+                    style={{
+                        opacity: this.state.typeFilter === 'FBD' ? 1 : 0.3,
+                        background: this.state.typeFilter === 'FBD' ? 'gray' : 'inherit',
+                    }}
+                    src={images.FBD}
+                    onClick={() => {
+                        const typeFilter = this.state.typeFilter === 'FBD' ? '' : 'FBD';
                         window.localStorage && window.localStorage.setItem('SideMenu.typeFilter', typeFilter);
                         this.setState({ typeFilter });
                     }}

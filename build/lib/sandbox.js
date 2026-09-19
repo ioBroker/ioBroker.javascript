@@ -45,6 +45,8 @@ const tools_1 = require("./tools");
 const constsMod = __importStar(require("./consts"));
 const wordsMod = __importStar(require("./words"));
 const eventObjMod = __importStar(require("./eventObj"));
+const fbRuntime = __importStar(require("./fb/runtime"));
+const types_1 = require("./fb/types");
 const patternCompareFunctions_1 = require("./patternCompareFunctions");
 const SCRIPT_CODE_MARKER = 'script.js.';
 /**
@@ -676,6 +678,10 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
             }
             if (mods[md]) {
                 return mods[md];
+            }
+            // the blocks of the code generated from a function block diagram come with the adapter
+            if (md === types_1.FB_RUNTIME_MODULE) {
+                return fbRuntime;
             }
             let error;
             try {

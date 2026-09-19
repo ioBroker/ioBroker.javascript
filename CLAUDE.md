@@ -84,6 +84,7 @@ Key supporting modules in `src/lib/`:
 | `mirror.ts` | Bidirectional sync between ioBroker DB scripts and filesystem |
 | `patternCompareFunctions.ts` | Pattern matching for state subscriptions |
 | `eventObj.ts` | Event object creation for subscription callbacks |
+| `fb/` | Function block diagrams (FBD): model, block library, checks and code generator (fb-core, also used by `src-editor` as `@fb-core`), and `runtime.ts` (fb-runtime, what the generated code gets from `require('@iobroker/fb-runtime')`) |
 
 ### Script Execution Flow
 
@@ -96,7 +97,7 @@ Key supporting modules in `src/lib/`:
 
 ### Frontend (`src-editor/`)
 
-React SPA with Monaco editor, Blockly visual editor, Rules editor, debugger UI, and AI chat panel. Communicates with the backend adapter via ioBroker admin WebSocket connection. Uses Module Federation for dynamic loading.
+React SPA with Monaco editor, Blockly visual editor, Rules editor, function block diagram editor (`src/FbEditor`, React Flow), debugger UI, and AI chat panel. Monaco, Blockly, the Rules blocks and the FBD editor are loaded only when a script of that kind is opened. Communicates with the backend adapter via ioBroker admin WebSocket connection. Uses Module Federation for dynamic loading.
 
 ### Frontend (`src-admin/`)
 
