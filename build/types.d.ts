@@ -8,6 +8,8 @@ import type { EventObj } from './lib/eventObj';
 import type { PatternEventCompareFunction } from './lib/patternCompareFunctions';
 import type { AstroEvent } from './lib/consts';
 import type { Secrets } from './lib/secrets';
+import type { FbDebugCommand, FbDebugStatus } from './lib/fb/types';
+import type { FbDebugSettings } from './lib/fb/runtime';
 
 /** ECMAScript version the user scripts are compiled for */
 export type TsTarget = 'es2018' | 'es2019' | 'es2020' | 'es2021' | 'es2022' | 'es2023' | 'es2024' | 'es2025' | 'esnext';
@@ -814,12 +816,9 @@ export interface JavascriptContext {
     /** Function block diagrams shown online in an editor: until when, and which viewer asked last */
     fbdWatch: Map<string, { until: number; viewer: number; paths?: Map<string, number> }>;
     /** The runtimes of the running diagrams take the commands of the online view here, by script */
-    fbdDebug: Map<
-        string,
-        (command: import('./lib/fb/types').FbDebugCommand) => import('./lib/fb/types').FbDebugStatus
-    >;
+    fbdDebug: Map<string, (command: FbDebugCommand) => FbDebugStatus>;
     /** Forced values and breakpoints of the online view, kept while a diagram starts again */
-    fbdDebugSettings: Map<string, import('./lib/fb/runtime').FbDebugSettings>;
+    fbdDebugSettings: Map<string, FbDebugSettings>;
     language: ioBroker.Languages;
     getAbsoluteDefaultDataDir: () => string;
     logError: (scriptName: string, msg: string, e: Error, offs?: number) => void;
