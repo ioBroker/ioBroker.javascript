@@ -1,42 +1,85 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 244" width="500" height="244">
     <title>Function block diagram</title>
-    <rect width="500" height="244" fill="#eceff1"/>
-    <g fill="#cfd8dc">
-        <circle cx="20" cy="20" r="2"/><circle cx="60" cy="20" r="2"/><circle cx="100" cy="20" r="2"/>
-        <circle cx="400" cy="224" r="2"/><circle cx="440" cy="224" r="2"/><circle cx="480" cy="224" r="2"/>
+    <!-- The canvas of the editor: dark, with the dot grid -->
+    <defs>
+        <pattern id="fbdGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <circle cx="1" cy="1" r="1" fill="#1c2331"/>
+        </pattern>
+    </defs>
+    <rect width="500" height="244" fill="#121720"/>
+    <rect width="500" height="244" fill="url(#fbdGrid)"/>
+
+    <!-- links, in the green of a BOOL signal -->
+    <g fill="none" stroke="#22c55e" stroke-width="3" stroke-linecap="round">
+        <path d="M144 106C172 106 178 136 206 136"/>
+        <path d="M144 208C172 208 178 154 206 154"/>
+        <path d="M310 136H366"/>
+        <path d="M482 136H500"/>
     </g>
-    <g font-family="monospace" font-size="13" fill="#212121">
-        <!-- links -->
-        <g fill="none" stroke-width="3">
-            <path d="M134 78h40v52h24" stroke="#43a047"/>
-            <path d="M134 168h40v-24h24" stroke="#43a047"/>
-            <path d="M292 130h50" stroke="#43a047"/>
-            <path d="M430 130h40" stroke="#43a047"/>
+
+    <g font-family="system-ui, -apple-system, Segoe UI, sans-serif" fill="#e4e8ef">
+        <!-- STATE_IN "motion" -->
+        <g>
+            <rect x="24" y="38" width="120" height="78" rx="9" fill="#1a202b" stroke="#3b82f6" stroke-width="1.5"/>
+            <path d="M24 47a9 9 0 0 1 9-9h102a9 9 0 0 1 9 9v11H24z" fill="#243d68"/>
+            <text x="34" y="53" font-size="11.5" font-weight="600">motion</text>
+            <text x="34" y="78" font-size="13.5" font-weight="700" fill="#3b82f6">STATE_IN</text>
+            <text x="34" y="95" font-size="9.5" font-family="monospace" fill="#8b94a7">alias.0.motion</text>
+            <text x="134" y="110" font-size="10" font-family="monospace" fill="#cbd5e1" text-anchor="end">Q</text>
         </g>
-        <!-- inputs -->
-        <rect x="30" y="56" width="104" height="44" fill="#fff" stroke="#757575"/>
-        <rect x="30" y="56" width="104" height="4" fill="#3f51b5"/>
-        <text x="82" y="76" text-anchor="middle" font-weight="bold" fill="#3f51b5">STATE_IN</text>
-        <text x="82" y="92" text-anchor="middle" font-size="10" fill="#757575">motion</text>
-        <rect x="30" y="146" width="104" height="44" fill="#fff" stroke="#757575"/>
-        <rect x="30" y="146" width="104" height="4" fill="#3f51b5"/>
-        <text x="82" y="166" text-anchor="middle" font-weight="bold" fill="#3f51b5">STATE_IN</text>
-        <text x="82" y="182" text-anchor="middle" font-size="10" fill="#757575">dark</text>
+        <!-- STATE_IN "dark" -->
+        <g>
+            <rect x="24" y="140" width="120" height="78" rx="9" fill="#1a202b" stroke="#3b82f6" stroke-width="1.5"/>
+            <path d="M24 149a9 9 0 0 1 9-9h102a9 9 0 0 1 9 9v11H24z" fill="#243d68"/>
+            <text x="34" y="155" font-size="11.5" font-weight="600">dark</text>
+            <text x="34" y="180" font-size="13.5" font-weight="700" fill="#3b82f6">STATE_IN</text>
+            <text x="34" y="197" font-size="9.5" font-family="monospace" fill="#8b94a7">alias.0.dark</text>
+            <text x="134" y="212" font-size="10" font-family="monospace" fill="#cbd5e1" text-anchor="end">Q</text>
+        </g>
         <!-- AND -->
-        <rect x="198" y="94" width="94" height="60" fill="#fff" stroke="#757575"/>
-        <rect x="198" y="94" width="94" height="4" fill="#43a047"/>
-        <text x="245" y="114" text-anchor="middle" font-weight="bold" fill="#43a047">AND</text>
-        <text x="204" y="134" font-size="10">IN1</text>
-        <text x="204" y="148" font-size="10">IN2</text>
-        <text x="286" y="134" font-size="10" text-anchor="end">OUT</text>
+        <g>
+            <rect x="206" y="82" width="104" height="84" rx="9" fill="#1a202b" stroke="#22c55e" stroke-width="1.5"/>
+            <path d="M206 91a9 9 0 0 1 9-9h86a9 9 0 0 1 9 9v11h-104z" fill="#1c513a"/>
+            <text x="216" y="97" font-size="11.5" font-weight="600">both</text>
+            <text x="216" y="122" font-size="13.5" font-weight="700" fill="#22c55e">AND</text>
+            <g font-size="10" font-family="monospace" fill="#cbd5e1">
+                <text x="216" y="140">IN1</text>
+                <text x="216" y="158">IN2</text>
+                <text x="300" y="140" text-anchor="end">OUT</text>
+            </g>
+        </g>
         <!-- TON -->
-        <text x="386" y="86" text-anchor="middle" font-size="11">delay</text>
-        <rect x="342" y="94" width="88" height="60" fill="#fff" stroke="#757575"/>
-        <rect x="342" y="94" width="88" height="4" fill="#fb8c00"/>
-        <text x="386" y="114" text-anchor="middle" font-weight="bold" fill="#fb8c00">TON</text>
-        <text x="348" y="134" font-size="10">IN</text>
-        <text x="348" y="148" font-size="10">PT</text>
-        <text x="424" y="134" font-size="10" text-anchor="end">Q</text>
-        <text x="322" y="148" font-size="10" text-anchor="end" fill="#757575">2s</text>
+        <g>
+            <rect x="366" y="82" width="116" height="84" rx="9" fill="#1a202b" stroke="#8b5cf6" stroke-width="1.5"/>
+            <path d="M366 91a9 9 0 0 1 9-9h98a9 9 0 0 1 9 9v11h-116z" fill="#3c3268"/>
+            <text x="376" y="97" font-size="11.5" font-weight="600">delay</text>
+            <text x="376" y="122" font-size="13.5" font-weight="700" fill="#8b5cf6">TON</text>
+            <g font-size="10" font-family="monospace" fill="#cbd5e1">
+                <text x="376" y="140">IN</text>
+                <text x="376" y="158">PT</text>
+                <text x="472" y="140" text-anchor="end">Q</text>
+                <text x="472" y="158" text-anchor="end">ET</text>
+            </g>
+            <!-- the time right in the block, as the editor shows a value that is not connected -->
+            <rect x="396" y="147" width="32" height="15" rx="5" fill="#11161f" stroke="#283042"/>
+            <text x="412" y="158" font-size="9.5" font-family="monospace" fill="#e4e8ef" text-anchor="middle">2s</text>
+        </g>
+    </g>
+
+    <!-- the pins: BOOL green, TIME orange -->
+    <g stroke="#1a202b" stroke-width="2">
+        <g fill="#22c55e">
+            <circle cx="144" cy="106" r="5"/>
+            <circle cx="144" cy="208" r="5"/>
+            <circle cx="206" cy="136" r="5"/>
+            <circle cx="206" cy="154" r="5"/>
+            <circle cx="310" cy="136" r="5"/>
+            <circle cx="366" cy="136" r="5"/>
+            <circle cx="482" cy="136" r="5"/>
+        </g>
+        <g fill="#f59e0b">
+            <circle cx="366" cy="154" r="5"/>
+            <circle cx="482" cy="154" r="5"/>
+        </g>
     </g>
 </svg>
