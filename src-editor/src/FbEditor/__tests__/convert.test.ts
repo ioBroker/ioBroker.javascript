@@ -41,4 +41,20 @@ describe('FbEditor: graph and React Flow', () => {
         expect(nodes[0].type).toBe('fbComment');
         expect(nodes[0].zIndex).toBe(-1);
     });
+
+    it('keeps connection marks, and a link that is no mark any more has nothing left of it', () => {
+        const graph = sampleGraph();
+        graph.links[0] = { ...graph.links[0], mark: true, label: 'motion' };
+        const { nodes, edges } = graphToFlow(graph);
+        expect(edges[0].data).toEqual({ mark: true, label: 'motion' });
+        expect(flowToGraph(nodes, edges, graph.cycle)).toEqual(graph);
+
+        // switched off in the properties: no `mark: false` stays behind
+        edges[0] = { ...edges[0], data: { ...edges[0].data, mark: false, label: undefined } };
+        expect(flowToGraph(nodes, edges, graph.cycle).links[0]).toEqual({
+            id: 'l1',
+            from: graph.links[0].from,
+            to: graph.links[0].to,
+        });
+    });
 });

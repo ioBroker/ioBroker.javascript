@@ -7,8 +7,10 @@ import {
     getOutputs,
     isCompatible,
 } from './graph';
+import { checkJsCode, jsCode, jsParameters } from './js';
 import { getBlockDef } from './library';
-import type { FbBlock, FbBlockDef, FbGraph, FbIssue, FbLink } from './types';
+import type { FbBlock, FbBlockDef, FbGraph, FbIssue, FbLink, FbUserBlock } from './types';
+import { FB_USER_TYPE_PATTERN } from './user';
 
 export interface FbAnalysis {
     issues: FbIssue[];
@@ -87,16 +89,63 @@ function buildEdges(ids: string[], links: FbLink[], skip?: (link: FbLink) => boo
     return edges;
 }
 
+export interface FbAnalyzeOptions {
+    /** The user blocks the diagram may use - by default its own copies */
+    userBlocks?: Record<string, FbUserBlock>;
+    /** The diagram is a block: FB_IN and FB_OUT make its pins, states are not reachable */
+    isBlock?: boolean;
+    /** The user blocks being checked further up, against a block that contains itself */
+    visiting?: Set<string>;
+    /** Results of user blocks checked already */
+    cache?: Map<string, FbAnalysis>;
+}
+
+/** A pin name becomes a property of the instance next to `run()` */
+const PIN_NAME = /^[A-Za-z_][A-Za-z0-9_]*$/;
+const RESERVED_PINS = ['run', 'self', 'constructor', 'prototype', '__proto__'];
+
+export function formatIssue(issue: FbIssue): string {
+    let index = 0;
+    return issue.message.replace(/%s/g, () => issue.args?.[index++] ?? '');
+}
+
+/** Checks a user block once per analysis; its errors become one error of the instance */
+function checkUserBlock(user: FbUserBlock, options: Required<FbAnalyzeOptions>): string | null {
+    if (options.visiting.has(user.type)) {
+        return 'The block %s contains itself';
+    }
+    let analysis = options.cache.get(user.type);
+    if (!analysis) {
+        options.visiting.add(user.type);
+        analysis = analyzeGraph(user.graph, { ...options, isBlock: true });
+        options.visiting.delete(user.type);
+        options.cache.set(user.type, analysis);
+    }
+    return analysis.issues.some(issue => issue.severity === 'error') ? 'The block %s has errors: %s' : null;
+}
+
 /**
  * Checks a diagram and works out the execution order.
  *
  * The order follows the data flow. A loop is only allowed when it runs through a block with a
- * state (a timer, a flip-flop, ...): the link that leads back reads what that block put out in the
- * previous cycle, as in any SPS. A loop without such a block has no solution and is an error.
+ * state (a timer, a flip-flop, a user block, ...): the link that leads back reads what that block
+ * put out in the previous cycle, as in any SPS. A loop without such a block has no solution and is
+ * an error.
  */
-export function analyzeGraph(graph: FbGraph): FbAnalysis {
+export function analyzeGraph(graph: FbGraph, analyzeOptions?: FbAnalyzeOptions): FbAnalysis {
+    const options: Required<FbAnalyzeOptions> = {
+        userBlocks: analyzeOptions?.userBlocks || graph.userBlocks || {},
+        isBlock: analyzeOptions?.isBlock ?? !!graph.block,
+        visiting: analyzeOptions?.visiting || new Set(graph.block ? [graph.block.type] : []),
+        cache: analyzeOptions?.cache || new Map(),
+    };
     const issues: FbIssue[] = [];
     const nodes = new Map<string, Node>();
+
+    if (graph.block && !FB_USER_TYPE_PATTERN.test(graph.block.type)) {
+        issues.push({ severity: 'error', message: 'Invalid block type %s', args: [graph.block.type] });
+    }
+    const pins = new Set<string>();
 
     for (const block of graph.blocks) {
         if (!FB_ID_PATTERN.test(block.id || '')) {
@@ -107,7 +156,7 @@ export function analyzeGraph(graph: FbGraph): FbAnalysis {
             issues.push({ severity: 'error', message: 'Duplicate block ID %s', args: [block.id], blockId: block.id });
             continue;
         }
-        const def = getBlockDef(block.type);
+        const def = getBlockDef(block.type, options.userBlocks);
         if (!def) {
             issues.push({ severity: 'error', message: 'Unknown block type %s', args: [block.type], blockId: block.id });
             continue;
@@ -115,12 +164,65 @@ export function analyzeGraph(graph: FbGraph): FbAnalysis {
         nodes.set(block.id, { block, def });
 
         for (const param of def.params || []) {
-            const value = block.params?.[param.id];
+            const value = block.params?.[param.id] ?? param.default;
             if (param.required && (value === undefined || value === null || value === '')) {
                 issues.push({
                     severity: 'error',
                     message: 'Parameter "%s" is not set',
                     args: [param.id],
+                    blockId: block.id,
+                });
+            }
+        }
+
+        if (def.category === 'interface') {
+            if (!options.isBlock) {
+                issues.push({
+                    severity: 'error',
+                    message: 'Inputs and outputs of a block only work in the diagram of a block',
+                    blockId: block.id,
+                });
+            }
+            const pin = String(block.params?.pin ?? '');
+            if (pin && (!PIN_NAME.test(pin) || RESERVED_PINS.includes(pin))) {
+                issues.push({ severity: 'error', message: 'Invalid pin name %s', args: [pin], blockId: block.id });
+            } else if (pin && pins.has(pin)) {
+                issues.push({
+                    severity: 'error',
+                    message: 'The pin name %s is used twice',
+                    args: [pin],
+                    blockId: block.id,
+                });
+            }
+            pins.add(pin);
+        } else if (options.isBlock && (block.type === 'STATE_IN' || block.type === 'STATE_OUT')) {
+            issues.push({
+                severity: 'error',
+                message: 'A block cannot read or write states - give it inputs and outputs instead',
+                blockId: block.id,
+            });
+        }
+
+        if (def.user) {
+            const problem = checkUserBlock(def.user, options);
+            if (problem) {
+                const inner = options.cache.get(def.user.type)?.issues.find(issue => issue.severity === 'error');
+                issues.push({
+                    severity: 'error',
+                    message: problem,
+                    args: inner ? [def.user.name, formatIssue(inner)] : [def.user.name],
+                    blockId: block.id,
+                });
+            }
+        }
+
+        if (block.type === 'JS') {
+            const problem = checkJsCode(jsCode(block, def), jsParameters(block, def));
+            if (problem) {
+                issues.push({
+                    severity: 'error',
+                    message: 'The code has an error: %s',
+                    args: [problem],
                     blockId: block.id,
                 });
             }
@@ -232,7 +334,8 @@ export function analyzeGraph(graph: FbGraph): FbAnalysis {
         FB_CYCLE_MIN_MS,
         Math.min(FB_CYCLE_MAX_MS, Math.round(Number(graph.cycle.ms) || FB_CYCLE_DEFAULT_MS)),
     );
-    if (mode === 'event' && timeDependent) {
+    // the mode of a block is the one of the diagram it is used in
+    if (mode === 'event' && timeDependent && !options.isBlock) {
         issues.push({
             severity: 'warning',
             message: 'Timers need the cyclic mode, in the event mode they only run when an input changes',

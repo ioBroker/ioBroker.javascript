@@ -84,7 +84,7 @@ Key supporting modules in `src/lib/`:
 | `mirror.ts` | Bidirectional sync between ioBroker DB scripts and filesystem |
 | `patternCompareFunctions.ts` | Pattern matching for state subscriptions |
 | `eventObj.ts` | Event object creation for subscription callbacks |
-| `fb/` | Function block diagrams (FBD): model, block library, checks and code generator (fb-core, also used by `src-editor` as `@fb-core`), and `runtime.ts` (fb-runtime, what the generated code gets from `require('@iobroker/fb-runtime')`) |
+| `fb/` | Function block diagrams (FBD): model, block library, user blocks (`user.ts`: diagrams that are blocks, embedded as versioned copies), checks, automatic layout (`layout.ts`) and code generator (fb-core, also used by `src-editor` as `@fb-core`), and `runtime.ts` (fb-runtime, what the generated code gets from `require('@iobroker/fb-runtime')`; also takes the debug commands of the online view - message `fbdDebug`) |
 
 ### Script Execution Flow
 

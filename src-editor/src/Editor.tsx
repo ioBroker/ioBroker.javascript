@@ -94,6 +94,7 @@ import { decryptText, encryptText } from './Components/crypto';
 import { loadFbEditor } from './FbEditor/preload';
 
 import type BlocklyEditorImport from './Components/BlocklyEditor';
+import type { FbEditorApi } from './FbEditor';
 import type ScriptEditorVanillaMonacoImport from './Components/ScriptEditorVanillaMonaco';
 
 const BlocklyEditor = React.lazy(() => import('./Components/BlocklyEditor'));
@@ -271,6 +272,8 @@ interface EditorProps {
     onChange: (id: string, common: ioBroker.ScriptCommon) => void;
     onSelectedChange: (selected: string, editing: string[]) => void;
     onRestart?: (id: string) => void;
+    /** Opens another script, like the diagram of a block */
+    onOpen?: (id: string) => void;
     debugMode: boolean;
     visible: boolean;
     onMenuOpened?: (opened: boolean) => void;
@@ -379,6 +382,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
     private confirmCallback: null | ((result: boolean) => void) = null;
 
     private blocklyEditorRef = React.createRef<BlocklyEditorType>();
+    private fbdEditorRef = React.createRef<FbEditorApi>();
     private scriptEditorRef = React.createRef<ScriptEditorType>();
 
     private lastKnownTs: Record<string, number> = {};
@@ -1602,13 +1606,15 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             {I18n.t('Cancel')}
                         </Button>
                     ) : null}
-                    {!this.state.showCompiledCode && !this.state.rules && !this.state.fbd ? (
+                    {!this.state.showCompiledCode && !this.state.rules ? (
                         <IconButton
                             key="undo"
                             title={I18n.t('Undo')}
                             style={styles.toolbarButtons}
                             onClick={() => {
-                                if (this.state.blockly) {
+                                if (this.state.fbd) {
+                                    this.fbdEditorRef.current?.undo();
+                                } else if (this.state.blockly) {
                                     const workspace = (this.blocklyEditorRef.current as any)?.blocklyWorkspace;
                                     workspace?.undo(false);
                                 } else {
@@ -1620,13 +1626,15 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             <IconUndo />
                         </IconButton>
                     ) : null}
-                    {!this.state.showCompiledCode && !this.state.rules && !this.state.fbd ? (
+                    {!this.state.showCompiledCode && !this.state.rules ? (
                         <IconButton
                             key="redo"
                             title={I18n.t('Redo')}
                             style={styles.toolbarButtons}
                             onClick={() => {
-                                if (this.state.blockly) {
+                                if (this.state.fbd) {
+                                    this.fbdEditorRef.current?.redo();
+                                } else if (this.state.blockly) {
                                     const workspace = (this.blocklyEditorRef.current as any)?.blocklyWorkspace;
                                     workspace?.undo(true);
                                 } else {
@@ -2313,6 +2321,8 @@ class Editor extends React.Component<EditorProps, EditorState> {
             this.state.visible
         ) {
             this.scripts[this.state.selected] ||= this.getScriptFromObject(this.state.selected)!;
+            const script = this.scripts[this.state.selected];
+            const running = !!script.enabled && !!this.state.runningInstances[script.engine];
 
             return (
                 <Box
@@ -2321,9 +2331,18 @@ class Editor extends React.Component<EditorProps, EditorState> {
                 >
                     <Suspense fallback={<LinearProgress />}>
                         <FbEditor
+                            ref={this.fbdEditorRef}
                             // every diagram starts with its own view
                             key={this.state.selected}
-                            code={this.scripts[this.state.selected].source || ''}
+                            code={script.source || ''}
+                            scriptId={this.state.selected}
+                            instance={(script.engine || '').replace(/^system\.adapter\./, '')}
+                            running={running}
+                            changed={!!this.state.changed[this.state.selected]}
+                            scriptName={script.name}
+                            scripts={this.props.objects}
+                            scriptsHash={this.props.scriptsHash}
+                            onOpenScript={this.props.onOpen}
                             socket={this.props.socket}
                             theme={this.props.theme}
                             themeName={this.props.themeName}

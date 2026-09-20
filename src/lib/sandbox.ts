@@ -182,6 +182,8 @@ export function sandBox(
     const timers = context.timers;
     const enums = context.enums;
     const debugMode = context.debugMode;
+    /** fb-runtime as this script gets it - see `require()` */
+    let fbModule: fbRuntime.FbModule | null = null;
 
     // eslint-disable-next-line prefer-const
     let sandbox: SandboxType;
@@ -742,9 +744,47 @@ export function sandBox(
                 return mods[md];
             }
 
-            // the blocks of the code generated from a function block diagram come with the adapter
+            // The blocks of the code generated from a function block diagram come with the adapter.
+            // The script gets its own copy, which reports to the online view while an editor watches.
             if (md === FB_RUNTIME_MODULE) {
-                return fbRuntime;
+                fbModule ||= fbRuntime.forScript({
+                    watched: (): number => {
+                        const watch = context.fbdWatch.get(name);
+                        if (watch && watch.until < Date.now()) {
+                            // the editor window went away without a word
+                            context.fbdWatch.delete(name);
+                            return 0;
+                        }
+                        return watch?.viewer || 0;
+                    },
+                    paths: (): string[] => {
+                        const paths = context.fbdWatch.get(name)?.paths;
+                        if (!paths) {
+                            return [];
+                        }
+                        const now = Date.now();
+                        for (const [path, until] of paths) {
+                            if (until < now) {
+                                paths.delete(path);
+                            }
+                        }
+                        return [...paths.keys()];
+                    },
+                    publish: (snapshot: fbRuntime.FbSnapshot): void =>
+                        void adapter.setState('debug.fbd', JSON.stringify({ script: name, ...snapshot }), true),
+                    listen: handler => {
+                        context.fbdDebug.set(name, handler);
+                        return (): void => {
+                            if (context.fbdDebug.get(name) === handler) {
+                                context.fbdDebug.delete(name);
+                            }
+                        };
+                    },
+                    keep: settings =>
+                        settings ? context.fbdDebugSettings.set(name, settings) : context.fbdDebugSettings.delete(name),
+                    restore: () => context.fbdDebugSettings.get(name),
+                });
+                return fbModule;
             }
 
             let error: Error | undefined;

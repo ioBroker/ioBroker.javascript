@@ -4,7 +4,10 @@ import {
     FB_RUNTIME_VERSION,
     type FbBlock,
     type FbBlockDef,
+    type FbBlockInfo,
     type FbGraph,
+    type FbLink,
+    type FbUserBlock,
     type FbPinType,
     type FbSignalType,
     type FbValue,
@@ -29,6 +32,7 @@ export interface FbPin {
     type: FbSignalType | 'ANY';
     param?: boolean;
     default?: FbValue;
+    clock?: boolean;
 }
 
 export function createGraph(): FbGraph {
@@ -56,8 +60,11 @@ export function getInputCount(block: FbBlock, def: FbBlockDef): number {
     if (!def.extensible) {
         return def.inputs.length;
     }
-    const count = Number(block.params?.inputs) || def.extensible.min;
-    return Math.max(def.extensible.min, Math.min(def.extensible.max, Math.round(count)));
+    const count = Number(block.params?.inputs);
+    return Math.max(
+        def.extensible.min,
+        Math.min(def.extensible.max, Math.round(Number.isFinite(count) ? count : def.extensible.min)),
+    );
 }
 
 export function getInputs(block: FbBlock, def = getBlockDef(block.type)): FbPin[] {
@@ -74,17 +81,38 @@ export function getInputs(block: FbBlock, def = getBlockDef(block.type)): FbPin[
     return inputs;
 }
 
+/** Number of outputs of a block with a variable number of them */
+export function getOutputCount(block: FbBlock, def: FbBlockDef): number {
+    if (!def.extensibleOutputs) {
+        return def.outputs.length;
+    }
+    const { min, max } = def.extensibleOutputs;
+    const count = Number(block.params?.outputs);
+    return Math.max(min, Math.min(max, Math.round(Number.isFinite(count) ? count : min)));
+}
+
 export function getOutputs(block: FbBlock, def = getBlockDef(block.type)): FbPin[] {
-    return def ? def.outputs.map(pin => ({ ...pin, type: resolvePinType(block, pin.type, def) })) : [];
+    if (!def) {
+        return [];
+    }
+    const outputs: FbPin[] = def.outputs.map(pin => ({ ...pin, type: resolvePinType(block, pin.type, def) }));
+    if (def.extensibleOutputs) {
+        const { prefix, type } = def.extensibleOutputs;
+        for (let i = 1; i <= getOutputCount(block, def); i++) {
+            outputs.push({ id: `${prefix}${i}`, type: resolvePinType(block, type, def) });
+        }
+    }
+    return outputs;
 }
 
 /**
  * Whether an output of type `from` may drive an input of type `to`.
  *
- * Only widening happens by itself (INT to REAL); everything else needs a block that converts.
+ * Only widening happens by itself (INT to REAL); everything else needs a block that converts. An
+ * output of the type ANY - of a JS block, whose code decides - goes anywhere.
  */
 export function isCompatible(from: FbSignalType | 'ANY', to: FbSignalType | 'ANY'): boolean {
-    return to === 'ANY' || from === to || (from === 'INT' && to === 'REAL');
+    return to === 'ANY' || from === 'ANY' || from === to || (from === 'INT' && to === 'REAL');
 }
 
 /** A new ID that is not in `used`: `<prefix><n>` */
@@ -102,15 +130,19 @@ export function createId(prefix: string, used: Iterable<string>): string {
     return `${prefix}${max + 1}`;
 }
 
-/** A new block of a type, with the parameters at their defaults */
+/**
+ * A new block of a type, with the parameters at their defaults. A user block must be in
+ * `graph.userBlocks` already.
+ */
 export function createBlock(type: string, pos: [number, number], graph: FbGraph): FbBlock {
-    const def = getBlockDef(type);
+    const def = getBlockDef(type, graph.userBlocks);
     const id = createId(
         'b',
         graph.blocks.map(block => block.id),
     );
+    // a user block is named after its name, not after `@userFb/...`
     const name = createId(
-        `${type}_`,
+        `${def?.user ? def.user.name.trim().replace(/\s+/g, '_') : type}_`,
         graph.blocks.map(block => block.name),
     );
     const block: FbBlock = { id, type, name, pos };
@@ -121,7 +153,10 @@ export function createBlock(type: string, pos: [number, number], graph: FbGraph)
         }
     });
     if (def?.extensible) {
-        params.inputs = def.extensible.min;
+        params.inputs = def.extensible.count ?? def.extensible.min;
+    }
+    if (def?.extensibleOutputs) {
+        params.outputs = def.extensibleOutputs.count ?? def.extensibleOutputs.min;
     }
     if (Object.keys(params).length) {
         block.params = params;
@@ -153,9 +188,49 @@ export function normalizeGraph(data: Partial<FbGraph> | null | undefined): FbGra
         }
     });
     graph.links = Array.isArray(data.links)
-        ? data.links.filter(link => link && Array.isArray(link.from) && Array.isArray(link.to))
+        ? data.links
+              .filter(link => link && Array.isArray(link.from) && Array.isArray(link.to))
+              .map(link => {
+                  const clean: FbLink = { id: link.id, from: link.from, to: link.to };
+                  if (link.mark === true) {
+                      clean.mark = true;
+                  }
+                  if (typeof link.label === 'string' && link.label.trim()) {
+                      clean.label = link.label.trim();
+                  }
+                  return clean;
+              })
         : [];
     graph.comments = Array.isArray(data.comments) ? data.comments.filter(comment => comment?.id) : [];
+
+    const info = (value: Partial<FbBlockInfo> | undefined): FbBlockInfo | null =>
+        value && typeof value.type === 'string' && typeof value.name === 'string'
+            ? {
+                  type: value.type,
+                  name: value.name,
+                  version: typeof value.version === 'number' ? value.version : 1,
+                  ...(typeof value.description === 'string' ? { description: value.description } : {}),
+              }
+            : null;
+
+    const block = info(data.block);
+    if (block) {
+        graph.block = block;
+    }
+    if (data.userBlocks && typeof data.userBlocks === 'object') {
+        const userBlocks: Record<string, FbUserBlock> = {};
+        for (const [type, user] of Object.entries(data.userBlocks)) {
+            const userInfo = info(user);
+            if (userInfo && userInfo.type === type && user.graph) {
+                // the copies carry neither a block info nor copies of their own
+                const { block: _block, userBlocks: _inner, ...inner } = normalizeGraph(user.graph);
+                userBlocks[type] = { ...userInfo, graph: inner };
+            }
+        }
+        if (Object.keys(userBlocks).length) {
+            graph.userBlocks = userBlocks;
+        }
+    }
     return graph;
 }
 

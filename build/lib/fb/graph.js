@@ -5,6 +5,7 @@ exports.createGraph = createGraph;
 exports.resolvePinType = resolvePinType;
 exports.getInputCount = getInputCount;
 exports.getInputs = getInputs;
+exports.getOutputCount = getOutputCount;
 exports.getOutputs = getOutputs;
 exports.isCompatible = isCompatible;
 exports.createId = createId;
@@ -46,8 +47,8 @@ function getInputCount(block, def) {
     if (!def.extensible) {
         return def.inputs.length;
     }
-    const count = Number(block.params?.inputs) || def.extensible.min;
-    return Math.max(def.extensible.min, Math.min(def.extensible.max, Math.round(count)));
+    const count = Number(block.params?.inputs);
+    return Math.max(def.extensible.min, Math.min(def.extensible.max, Math.round(Number.isFinite(count) ? count : def.extensible.min)));
 }
 function getInputs(block, def = (0, library_1.getBlockDef)(block.type)) {
     if (!def) {
@@ -62,16 +63,36 @@ function getInputs(block, def = (0, library_1.getBlockDef)(block.type)) {
     }
     return inputs;
 }
+/** Number of outputs of a block with a variable number of them */
+function getOutputCount(block, def) {
+    if (!def.extensibleOutputs) {
+        return def.outputs.length;
+    }
+    const { min, max } = def.extensibleOutputs;
+    const count = Number(block.params?.outputs);
+    return Math.max(min, Math.min(max, Math.round(Number.isFinite(count) ? count : min)));
+}
 function getOutputs(block, def = (0, library_1.getBlockDef)(block.type)) {
-    return def ? def.outputs.map(pin => ({ ...pin, type: resolvePinType(block, pin.type, def) })) : [];
+    if (!def) {
+        return [];
+    }
+    const outputs = def.outputs.map(pin => ({ ...pin, type: resolvePinType(block, pin.type, def) }));
+    if (def.extensibleOutputs) {
+        const { prefix, type } = def.extensibleOutputs;
+        for (let i = 1; i <= getOutputCount(block, def); i++) {
+            outputs.push({ id: `${prefix}${i}`, type: resolvePinType(block, type, def) });
+        }
+    }
+    return outputs;
 }
 /**
  * Whether an output of type `from` may drive an input of type `to`.
  *
- * Only widening happens by itself (INT to REAL); everything else needs a block that converts.
+ * Only widening happens by itself (INT to REAL); everything else needs a block that converts. An
+ * output of the type ANY - of a JS block, whose code decides - goes anywhere.
  */
 function isCompatible(from, to) {
-    return to === 'ANY' || from === to || (from === 'INT' && to === 'REAL');
+    return to === 'ANY' || from === 'ANY' || from === to || (from === 'INT' && to === 'REAL');
 }
 /** A new ID that is not in `used`: `<prefix><n>` */
 function createId(prefix, used) {
@@ -87,11 +108,15 @@ function createId(prefix, used) {
     }
     return `${prefix}${max + 1}`;
 }
-/** A new block of a type, with the parameters at their defaults */
+/**
+ * A new block of a type, with the parameters at their defaults. A user block must be in
+ * `graph.userBlocks` already.
+ */
 function createBlock(type, pos, graph) {
-    const def = (0, library_1.getBlockDef)(type);
+    const def = (0, library_1.getBlockDef)(type, graph.userBlocks);
     const id = createId('b', graph.blocks.map(block => block.id));
-    const name = createId(`${type}_`, graph.blocks.map(block => block.name));
+    // a user block is named after its name, not after `@userFb/...`
+    const name = createId(`${def?.user ? def.user.name.trim().replace(/\s+/g, '_') : type}_`, graph.blocks.map(block => block.name));
     const block = { id, type, name, pos };
     const params = {};
     def?.params?.forEach(param => {
@@ -100,7 +125,10 @@ function createBlock(type, pos, graph) {
         }
     });
     if (def?.extensible) {
-        params.inputs = def.extensible.min;
+        params.inputs = def.extensible.count ?? def.extensible.min;
+    }
+    if (def?.extensibleOutputs) {
+        params.outputs = def.extensibleOutputs.count ?? def.extensibleOutputs.min;
     }
     if (Object.keys(params).length) {
         block.params = params;
@@ -131,9 +159,46 @@ function normalizeGraph(data) {
         }
     });
     graph.links = Array.isArray(data.links)
-        ? data.links.filter(link => link && Array.isArray(link.from) && Array.isArray(link.to))
+        ? data.links
+            .filter(link => link && Array.isArray(link.from) && Array.isArray(link.to))
+            .map(link => {
+            const clean = { id: link.id, from: link.from, to: link.to };
+            if (link.mark === true) {
+                clean.mark = true;
+            }
+            if (typeof link.label === 'string' && link.label.trim()) {
+                clean.label = link.label.trim();
+            }
+            return clean;
+        })
         : [];
     graph.comments = Array.isArray(data.comments) ? data.comments.filter(comment => comment?.id) : [];
+    const info = (value) => value && typeof value.type === 'string' && typeof value.name === 'string'
+        ? {
+            type: value.type,
+            name: value.name,
+            version: typeof value.version === 'number' ? value.version : 1,
+            ...(typeof value.description === 'string' ? { description: value.description } : {}),
+        }
+        : null;
+    const block = info(data.block);
+    if (block) {
+        graph.block = block;
+    }
+    if (data.userBlocks && typeof data.userBlocks === 'object') {
+        const userBlocks = {};
+        for (const [type, user] of Object.entries(data.userBlocks)) {
+            const userInfo = info(user);
+            if (userInfo && userInfo.type === type && user.graph) {
+                // the copies carry neither a block info nor copies of their own
+                const { block: _block, userBlocks: _inner, ...inner } = normalizeGraph(user.graph);
+                userBlocks[type] = { ...userInfo, graph: inner };
+            }
+        }
+        if (Object.keys(userBlocks).length) {
+            graph.userBlocks = userBlocks;
+        }
+    }
     return graph;
 }
 /**

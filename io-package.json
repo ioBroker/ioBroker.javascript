@@ -907,6 +907,30 @@
         "write": false
       },
       "native": {}
+    },
+    {
+      "_id": "debug.fbd",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Values of a function block diagram for the online view",
+          "de": "Werte eines Funktionsplans für die Onlineansicht",
+          "ru": "Значения функциональной блок-схемы для онлайн-просмотра",
+          "pt": "Valores de um diagrama de blocos funcionais para a vista online",
+          "nl": "Waarden van een functieblokdiagram voor de online weergave",
+          "fr": "Valeurs d'un diagramme de blocs fonctionnels pour la vue en ligne",
+          "it": "Valori di un diagramma a blocchi funzionali per la vista online",
+          "es": "Valores de un diagrama de bloques de funciones para la vista en línea",
+          "pl": "Wartości diagramu bloków funkcyjnych dla widoku online",
+          "uk": "Значення функціональної блок-схеми для онлайн-перегляду",
+          "zh-cn": "功能块图在线视图的数值"
+        },
+        "type": "string",
+        "role": "json",
+        "read": true,
+        "write": false
+      },
+      "native": {}
     }
   ]
 }

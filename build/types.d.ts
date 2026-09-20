@@ -811,6 +811,15 @@ export interface JavascriptContext {
     prepareStateObject: (id: string, state: ioBroker.SettableState | null) => ioBroker.State;
     debugMode: string | undefined;
     rulesOpened: string | null; // opened rules
+    /** Function block diagrams shown online in an editor: until when, and which viewer asked last */
+    fbdWatch: Map<string, { until: number; viewer: number; paths?: Map<string, number> }>;
+    /** The runtimes of the running diagrams take the commands of the online view here, by script */
+    fbdDebug: Map<
+        string,
+        (command: import('./lib/fb/types').FbDebugCommand) => import('./lib/fb/types').FbDebugStatus
+    >;
+    /** Forced values and breakpoints of the online view, kept while a diagram starts again */
+    fbdDebugSettings: Map<string, import('./lib/fb/runtime').FbDebugSettings>;
     language: ioBroker.Languages;
     getAbsoluteDefaultDataDir: () => string;
     logError: (scriptName: string, msg: string, e: Error, offs?: number) => void;

@@ -241,6 +241,8 @@ const TS_MEMORY_RELEASE_DELAY_MS = 60_000;
  * gone and the type definitions and compilers are given back.
  */
 const EDITOR_ONLINE_TIMEOUT_MS = 30_000;
+/** An editor showing a function block diagram online asks every 10 s; after this, it is gone */
+const FBD_WATCH_TIMEOUT_MS = 30_000;
 /** How often it is checked whether the editor has gone away */
 const EDITOR_CHECK_INTERVAL_MS = 10_000;
 // compiler instance for global JS declarations. Built on the first compilation only - see LazyTsServer
@@ -368,6 +370,8 @@ class JavaScript extends adapter_core_1.Adapter {
     typingPackageFiles = [];
     /** Until when a script editor counts as open. Refreshed by every `editorPing` */
     editorOnlineUntil = 0;
+    /** Counts the editors that started to show a function block diagram online - see `fbdWatch` */
+    fbdViewers = 0;
     /** Checks regularly whether the editor is gone and the type definitions can be unloaded */
     editorCheckInterval = null;
     /** Set once the user has been told that TypeScript is compiled without type definitions */
@@ -502,6 +506,9 @@ class JavaScript extends adapter_core_1.Adapter {
             scheduler: null,
             timerId: 0,
             rulesOpened: null, // opened rules
+            fbdWatch: new Map(),
+            fbdDebug: new Map(),
+            fbdDebugSettings: new Map(),
             language: this.language || 'en',
             updateLogSubscriptions: this.updateLogSubscriptions.bind(this),
             convertBackStringifiedValues: this.convertBackStringifiedValues.bind(this),
@@ -1197,6 +1204,62 @@ class JavaScript extends adapter_core_1.Adapter {
             case 'rulesOn': {
                 this.context.rulesOpened = obj.message;
                 console.log(`Enable messaging for ${this.context.rulesOpened}`);
+                break;
+            }
+            case 'fbdWatch': {
+                // An editor shows a function block diagram online. While it keeps asking, the runtime
+                // of the script sends snapshots to `debug.fbd`; a window that just goes away is
+                // forgotten after FBD_WATCH_TIMEOUT_MS. `full`: a new viewer, who needs everything once.
+                // `path`: the instance of a user block whose inside the editor shows, like `b3/b7`.
+                const { script, watch, full, path } = (obj.message || {});
+                if (typeof script === 'string') {
+                    if (watch) {
+                        const current = this.context.fbdWatch.get(script);
+                        const until = Date.now() + FBD_WATCH_TIMEOUT_MS;
+                        // several editors may look into several instances
+                        const paths = current?.paths || new Map();
+                        if (typeof path === 'string' && path) {
+                            paths.set(path, until);
+                        }
+                        this.context.fbdWatch.set(script, {
+                            until,
+                            viewer: !current || full ? ++this.fbdViewers : current.viewer,
+                            paths,
+                        });
+                    }
+                    else {
+                        this.context.fbdWatch.delete(script);
+                    }
+                }
+                if (obj.callback) {
+                    this.sendTo(obj.from, obj.command, { ok: true }, obj.callback);
+                }
+                break;
+            }
+            case 'fbdDebug': {
+                // The online view forces values, sets breakpoints or steps through a diagram. The
+                // runtime of the script does it and answers with how it stands now.
+                const { script, ...command } = (obj.message || {});
+                const handler = typeof script === 'string' ? this.context.fbdDebug.get(script) : undefined;
+                let result;
+                if (!handler) {
+                    result = { error: 'The diagram does not run' };
+                }
+                else if (!this.context.fbdWatch.has(script)) {
+                    // everything the online view sets ends with it
+                    result = { error: 'The diagram is not shown online' };
+                }
+                else {
+                    try {
+                        result = { status: handler(command) };
+                    }
+                    catch (error) {
+                        result = { error: error.message };
+                    }
+                }
+                if (obj.callback) {
+                    this.sendTo(obj.from, obj.command, result, obj.callback);
+                }
                 break;
             }
             case 'rulesOff': {

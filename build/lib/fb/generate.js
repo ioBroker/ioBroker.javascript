@@ -1,57 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseTime = parseTime;
-exports.formatTime = formatTime;
 exports.toLiteral = toLiteral;
 exports.generateSource = generateSource;
 const analyze_1 = require("./analyze");
 const graph_1 = require("./graph");
 const library_1 = require("./library");
 const types_1 = require("./types");
-const TIME_UNITS = { ms: 1, s: 1000, m: 60000, h: 3600000, d: 86400000 };
-/**
- * A time in ms. Takes a number of ms, or a text like `2s`, `1m30s`, `500ms` or `T#2s` (IEC).
- * Returns `null` if the text is not a time.
- */
-function parseTime(value) {
-    if (typeof value === 'number') {
-        return Number.isFinite(value) && value >= 0 ? Math.round(value) : null;
-    }
-    if (typeof value !== 'string') {
-        return null;
-    }
-    let text = value.trim().toLowerCase().replace(/_/g, '');
-    if (text.startsWith('t#') || text.startsWith('time#')) {
-        text = text.substring(text.indexOf('#') + 1);
-    }
-    if (!text) {
-        return null;
-    }
-    if (/^\d+(\.\d+)?$/.test(text)) {
-        return Math.round(Number(text));
-    }
-    const parts = text.match(/(\d+(?:\.\d+)?)(ms|s|m|h|d)/g);
-    if (!parts || parts.join('') !== text) {
-        return null;
-    }
-    return Math.round(parts.reduce((sum, part) => {
-        const [, number, unit] = part.match(/(\d+(?:\.\d+)?)(ms|s|m|h|d)/);
-        return sum + Number(number) * TIME_UNITS[unit];
-    }, 0));
-}
-/** A time for people: `1500` gives `1.5s` */
-function formatTime(ms) {
-    if (!ms) {
-        return '0ms';
-    }
-    for (const unit of ['d', 'h', 'm', 's']) {
-        const value = ms / TIME_UNITS[unit];
-        if (value >= 1 && Number.isInteger(Math.round(value * 1000) / 1000)) {
-            return `${Math.round(value * 1000) / 1000}${unit}`;
-        }
-    }
-    return ms >= 1000 ? `${Math.round(ms / 100) / 10}s` : `${ms}ms`;
-}
+const js_1 = require("./js");
+const time_1 = require("./time");
+const user_1 = require("./user");
 /** A value as a JavaScript literal of the given type */
 function toLiteral(value, type) {
     switch (type) {
@@ -64,7 +21,7 @@ function toLiteral(value, type) {
             return String(Number.isFinite(number) ? number : 0);
         }
         case 'TIME':
-            return String(parseTime(value) ?? 0);
+            return String((0, time_1.parseTime)(value) ?? 0);
         case 'STRING':
             return JSON.stringify(value === null || value === undefined ? '' : String(value));
         default:
@@ -84,6 +41,24 @@ function toLiteral(value, type) {
             return JSON.stringify(value);
     }
 }
+/** The functions of the script sandbox the runtime gets */
+const SANDBOX_FUNCTIONS = [
+    'getStateAsync',
+    'setState',
+    'on',
+    'onStop',
+    'setInterval',
+    'clearInterval',
+    'setTimeout',
+    'clearTimeout',
+    'log',
+    'schedule',
+    'getAstroDate',
+    'sendTo',
+    'registerNotification',
+];
+/** Parameters that are texts, whatever they look like */
+const TEXT_PARAMS = ['OID', 'ENUM', 'NAME', 'INSTANCE', 'CRON', 'CODE'];
 function initialValue(type) {
     return type === 'BOOL' ? 'false' : type === 'STRING' ? "''" : '0';
 }
@@ -120,12 +95,36 @@ class BlockWriter {
             throw new Error(`Block type ${this.def.type} has no parameter "${id}"`);
         }
         const value = this.block.params?.[id] ?? def.default;
-        if (def.type === 'OID' || def.type === 'ENUM') {
+        const type = def.type;
+        if (typeof type === 'string' && TEXT_PARAMS.includes(type)) {
             return JSON.stringify(value === undefined ? '' : String(value));
         }
-        return toLiteral(value, (0, graph_1.resolvePinType)(this.block, def.type, this.def));
+        return toLiteral(value, (0, graph_1.resolvePinType)(this.block, type, this.def));
+    }
+    /** An instance of a user block: its inputs in, one run, its outputs out - all on one line */
+    userLine() {
+        const instance = `I.${this.block.id}`;
+        return [
+            ...this.inputs.map(pin => `${instance}.${pin.id} = ${this.input(pin)};`),
+            `${instance}.run(dt, firstScan);`,
+            ...this.outputs.map(pin => `${signal(this.block.id, pin.id)} = ${instance}.${pin.id};`),
+        ].join(' ');
+    }
+    /** A JS block: the function gets the inputs, its outputs keep what it did not give */
+    jsLine() {
+        const instance = `I.${this.block.id}`;
+        return [
+            `${instance}.run([${this.inputs.map(pin => this.input(pin)).join(', ')}], dt, firstScan);`,
+            ...this.outputs.map((pin, i) => `${signal(this.block.id, pin.id)} = ${instance}.out[${i}];`),
+        ].join(' ');
     }
     line() {
+        if (this.def.user) {
+            return `${this.userLine()} /*#fb:${this.block.id}*/`;
+        }
+        if (this.def.type === 'JS') {
+            return `${this.jsLine()} /*#fb:${this.block.id}*/`;
+        }
         const code = this.def.code.replace(/\{([A-Za-z_][A-Za-z0-9_]*)\*:([^}]*)\}|\{(\$?)([A-Za-z_][A-Za-z0-9_]*)\}/g, (_match, prefix, separator, dollar, name) => {
             if (prefix) {
                 return this.inputs
@@ -152,32 +151,126 @@ class BlockWriter {
         return `${code} /*#fb:${this.block.id}*/`;
     }
 }
-function formatIssue(issue) {
-    let index = 0;
-    return issue.message.replace(/%s/g, () => issue.args?.[index++] ?? '');
+/** The code of the blocks of a diagram - of the diagram itself, or of a user block */
+function writeBlocks(graph, analysis, userBlocks) {
+    const drivers = new Map();
+    analysis.links.forEach(link => drivers.set(`${link.to[0]}.${link.to[1]}`, signal(link.from[0], link.from[1])));
+    const code = {
+        blocks: graph.blocks
+            .filter(block => analysis.order[block.id] !== undefined)
+            .sort((a, b) => analysis.order[a.id] - analysis.order[b.id]),
+        instances: [],
+        signals: [],
+        body: [],
+        inputs: new Set(),
+        outputs: new Set(),
+    };
+    for (const block of code.blocks) {
+        const def = (0, library_1.getBlockDef)(block.type, userBlocks);
+        if (def.user) {
+            code.instances.push(`${block.id}: ${(0, user_1.factoryName)(def.type)}(), /*#fb:${block.id}*/`);
+        }
+        else if (def.type === 'JS') {
+            // The code as it is, not indented - that would change a text over several lines. Its
+            // syntax was checked on its own, so it cannot close the function early.
+            code.instances.push(`${block.id}: fb.JS(function (${(0, js_1.jsParameters)(block, def).join(', ')}) { /*#fb:${block.id}*/\n${(0, js_1.jsCode)(block, def)}`, `}, ${(0, graph_1.getOutputs)(block, def).length}),`);
+        }
+        else if (def.stateful) {
+            code.instances.push(`${block.id}: fb.${def.type}(), /*#fb:${block.id}*/`);
+        }
+        (0, graph_1.getOutputs)(block, def).forEach(pin => code.signals.push(`'${block.id}.${pin.id}': ${initialValue(pin.type)},`));
+        code.body.push(new BlockWriter(block, def, drivers).line());
+        if (block.type === 'STATE_IN') {
+            code.inputs.add(String(block.params?.oid));
+        }
+        else if (block.type === 'STATE_OUT') {
+            code.outputs.add(String(block.params?.oid));
+        }
+    }
+    return code;
+}
+function indent(lines, depth) {
+    const spaces = ' '.repeat(depth * 4);
+    return lines.map(line => `${spaces}${line}`);
+}
+/** `const name = { ... };`, one entry per line; `depth` 1 is the top level */
+function objectLiteral(name, entries, depth) {
+    const lines = entries.length ? [`const ${name} = {`, ...indent(entries, 1), '};'] : [`const ${name} = {};`];
+    return indent(lines, depth - 1);
+}
+/**
+ * The factory of a user block: every call makes an instance with a state of its own. The inputs and
+ * outputs are properties of the instance; `run()` is one cycle of the diagram of the block.
+ */
+function writeFactory(user, userBlocks) {
+    const analysis = (0, analyze_1.analyzeGraph)(user.graph, { userBlocks, isBlock: true });
+    const code = writeBlocks(user.graph, analysis, userBlocks);
+    const def = (0, library_1.getBlockDef)(user.type, userBlocks);
+    // the pins of a user block always have a signal type of their own
+    const pins = [
+        ...def.inputs.map(pin => `${pin.id}: ${toLiteral(pin.default, pin.type)}`),
+        ...def.outputs.map(pin => `${pin.id}: ${initialValue(pin.type)}`),
+    ];
+    return [
+        `// user block ${JSON.stringify(user.name)} (${user.type}), version ${user.version}`,
+        `function ${(0, user_1.factoryName)(user.type)}() {`,
+        `    const self = { ${pins.join(', ')} };`,
+        ...objectLiteral('I', code.instances, 2),
+        ...objectLiteral('S', code.signals, 2),
+        // `$` is no part of a pin name, so these never meet a pin
+        '    // for the online view: the inside of the instance',
+        '    self.$I = I;',
+        '    self.$S = S;',
+        '    self.run = function (dt, firstScan) {',
+        ...indent(code.body, 2),
+        '    };',
+        '    return self;',
+        '}',
+        '',
+    ];
 }
 /**
  * Turns a diagram into the source of a script.
  *
- * The code keeps no copy of the blocks: the runtime module implements them, so a fix there
- * reaches every diagram without generating it again. The marks `/*#fb:<id>*\/` lead from a line of
- * the code back to its block.
+ * The code keeps no copy of the library blocks: the runtime module implements them, so a fix there
+ * reaches every diagram without generating it again. User blocks become factory functions in the
+ * code - made of the copies the diagram carries, so a diagram keeps the version it copied. The marks
+ * `/*#fb:<id>*\/` lead from a line of the code back to its block.
  *
  * A diagram with errors is stored as well, so no work is lost - but its code only reports the
- * errors instead of running.
+ * errors instead of running. The diagram of a user block does not run on its own.
  */
 function generateSource(input) {
     const analysis = (0, analyze_1.analyzeGraph)(input);
+    // only the copies of the blocks that are used are kept
+    const used = (0, user_1.usedUserBlocks)(input, input.userBlocks);
+    const userBlocks = {};
+    used.forEach(type => (userBlocks[type] = input.userBlocks[type]));
     const graph = {
         ...input,
         format: types_1.FB_FORMAT,
         runtime: types_1.FB_RUNTIME_VERSION,
         blocks: input.blocks.map(block => analysis.order[block.id] !== undefined ? { ...block, order: analysis.order[block.id] } : block),
     };
+    if (used.length) {
+        graph.userBlocks = userBlocks;
+    }
+    else {
+        delete graph.userBlocks;
+    }
     const header = `/*#fb format:${types_1.FB_FORMAT} runtime:${types_1.FB_RUNTIME_VERSION}*/`;
+    if (graph.block) {
+        const lines = [
+            header,
+            `// The diagram of the block ${JSON.stringify(graph.block.name)} (${graph.block.type}), version ${graph.block.version}.`,
+            '// It does not run on its own: the diagrams that use it carry a copy of it.',
+            (0, graph_1.serializeGraph)(graph),
+        ];
+        return { source: lines.join('\n'), graph, analysis };
+    }
     const errors = analysis.issues.filter(issue => issue.severity === 'error');
     if (errors.length) {
-        const list = errors.map(formatIssue);
+        const list = errors.map(analyze_1.formatIssue);
         const lines = [
             header,
             '// This function block diagram has errors and is not executed:',
@@ -187,46 +280,45 @@ function generateSource(input) {
         ];
         return { source: lines.join('\n'), graph, analysis };
     }
-    const drivers = new Map();
-    analysis.links.forEach(link => drivers.set(`${link.to[0]}.${link.to[1]}`, signal(link.from[0], link.from[1])));
-    const blocks = graph.blocks
-        .filter(block => analysis.order[block.id] !== undefined)
-        .sort((a, b) => analysis.order[a.id] - analysis.order[b.id]);
-    const instances = [];
-    const signals = [];
-    const body = [];
-    const inputs = new Set();
-    const outputs = new Set();
-    for (const block of blocks) {
-        const def = (0, library_1.getBlockDef)(block.type);
-        if (def.stateful) {
-            instances.push(`    ${block.id}: fb.${def.type}(), /*#fb:${block.id}*/`);
-        }
-        (0, graph_1.getOutputs)(block, def).forEach(pin => signals.push(`    '${block.id}.${pin.id}': ${initialValue(pin.type)},`));
-        body.push(`    ${new BlockWriter(block, def, drivers).line()}`);
-        if (block.type === 'STATE_IN') {
-            inputs.add(String(block.params?.oid));
-        }
-        else if (block.type === 'STATE_OUT') {
-            outputs.add(String(block.params?.oid));
-        }
-    }
-    const lines = [
+    const code = writeBlocks(graph, analysis, userBlocks);
+    const top = [
         header,
         '// Generated from a function block diagram - changes made here are overwritten by the editor',
         `const fb = require('${types_1.FB_RUNTIME_MODULE}');`,
-        `const rt = fb.runtime({ getStateAsync, setState, on, onStop, setInterval, clearInterval, setTimeout, clearTimeout, log }, '${types_1.FB_RUNTIME_VERSION}');`,
+        `const rt = fb.runtime({ ${SANDBOX_FUNCTIONS.join(', ')} }, '${types_1.FB_RUNTIME_VERSION}');`,
         '',
+        ...used.flatMap(type => writeFactory(userBlocks[type], userBlocks)),
         '// the blocks that keep a state from one cycle to the next',
-        instances.length ? `const I = {\n${instances.join('\n')}\n};` : 'const I = {};',
+        ...objectLiteral('I', code.instances, 1),
         '// signals `<block>.<pin>`: they keep their value too, so a link leading back reads the previous cycle',
-        signals.length ? `const S = {\n${signals.join('\n')}\n};` : 'const S = {};',
+        ...objectLiteral('S', code.signals, 1),
+        '// breakpoints of the online view: the cycle stops in front of a block whose entry is set',
+        'const B = [];',
         '',
-        'function cycle(dt, firstScan) {',
-        ...body,
+        '// one cycle, from block `at` on - after a stop the runtime goes on there, `go` passes that breakpoint',
+        'function cycle(dt, firstScan, at = 0, go = -1) {',
+        '    switch (at) {',
+    ]
+        .join('\n')
+        .split('\n');
+    // With these, the runtime finds the block of an error: one line per block, in this order
+    const bodyLine = top.length + 1;
+    const options = {
+        mode: analysis.mode,
+        ms: analysis.ms,
+        inputs: [...code.inputs],
+        outputs: [...code.outputs],
+        lines: { start: bodyLine + code.body.length + 4, body: bodyLine },
+        blocks: code.blocks.map(block => block.id),
+    };
+    const lines = [
+        ...top,
+        ...indent(code.body.map((line, i) => `case ${i}: if (B[${i}] && go !== ${i}) return ${i}; ${line}`), 2),
+        '    }',
+        '    return -1;',
         '}',
         '',
-        `rt.start(cycle, ${JSON.stringify({ mode: analysis.mode, ms: analysis.ms, inputs: [...inputs], outputs: [...outputs] })});`,
+        `rt.start(cycle, ${JSON.stringify(options)}, S, B, I);`,
         (0, graph_1.serializeGraph)(graph),
     ];
     return { source: lines.join('\n'), graph, analysis };

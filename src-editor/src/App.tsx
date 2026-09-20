@@ -1291,6 +1291,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                         }
                     }}
                     onRestart={id => this.socket.extendObject(id, { common: { enabled: true } })}
+                    onOpen={id => this.onSelect(id)}
                     selected={
                         this.state.selected && this.scripts[this.state.selected]?.type === 'script'
                             ? this.state.selected
