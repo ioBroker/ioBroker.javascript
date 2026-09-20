@@ -33,7 +33,6 @@ Executes JavaScript, TypeScript Scripts.
 ### **WORK IN PROGRESS**
 * (@GermanBluefox) The code editor (Monaco), Blockly and the Rules blocks are loaded only when a script of that kind is opened, so the editor starts faster
 * (@GermanBluefox) Added function block diagrams (FBD, in the style of CFC): timers, counters, flip-flops, edges, comparison, arithmetic, conversions, control, calendar (cron, sun events), log and messages, and a block with own JavaScript - wired to ioBroker states. See [the description](docs/en/fbd.md)
-* (@GermanBluefox) The dialog for a new script shows all kinds of script side by side in one row, with the same tile height and a link to the documentation of each
 
 ### 10.2.5 (2026-09-17)
 * (@GermanBluefox) Added the functions help dialog in editor
