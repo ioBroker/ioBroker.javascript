@@ -472,6 +472,13 @@ class JavaScript extends adapter_core_1.Adapter {
                 }
             }
         }
+        if (debugMode) {
+            // This process was started by the inspector (see `debugStart`) with `--debug`, so the whole log goes
+            // through the pipes of that process. If it is gone, writing to them fails with EPIPE, and an unhandled
+            // EPIPE would end the debugged process with an uncaught exception (#2382)
+            process.stdout.on('error', () => { });
+            process.stderr.on('error', () => { });
+        }
         this.context = {
             mods: this.mods,
             objects: this.objects,
@@ -821,7 +828,9 @@ class JavaScript extends adapter_core_1.Adapter {
     }
     async onUnload(callback) {
         try {
-            await this.debugStop();
+            // Do not wait for it: the inspector needs a moment to stop the debugged process, and it does that by
+            // itself as soon as the connection to this process is gone. The shutdown must not be delayed by it.
+            void this.debugStop();
             this.stopTimeSchedules();
             if (this.setStateCountCheckInterval) {
                 clearInterval(this.setStateCountCheckInterval);
@@ -3553,10 +3562,12 @@ class JavaScript extends adapter_core_1.Adapter {
     async debugStop() {
         if (this.debugState.child) {
             this.debugSendToInspector({ cmd: 'end' });
+            // The inspector stops the debugged process first and ends itself only then, because that process writes
+            // its log through its pipes (#2382). Kill it only if it does not manage that in time.
             this.debugState.endTimeout = setTimeout(() => {
                 this.debugState.endTimeout = null;
-                this.debugState.child?.kill('SIGTERM');
-            }, 500);
+                this.debugState.child?.kill('SIGKILL');
+            }, 5_000);
             this.debugState.promiseOnEnd ||= Promise.resolve(0);
         }
         else {

@@ -1478,8 +1478,12 @@ class Editor extends React.Component<EditorProps, EditorState> {
         if (this.state.askAboutDebug) {
             return (
                 <DialogConfirm
-                    onClose={() => {
-                        this.setState({ askAboutDebug: false }, () => this.props.onDebugModeChange(true));
+                    onClose={isYes => {
+                        this.setState({ askAboutDebug: false }, () => {
+                            if (isYes) {
+                                this.props.onDebugModeChange(true);
+                            }
+                        });
                     }}
                     ok={I18n.t('Yes')}
                     cancel={I18n.t('Cancel')}

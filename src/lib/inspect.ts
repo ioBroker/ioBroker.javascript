@@ -151,6 +151,26 @@ let inspector: NodeInspector | undefined;
 let scriptToDebug = '';
 /** Main file of the debugged adapter */
 let instanceToDebug = '';
+/** The inspector is on its way out, so every further request to end it is ignored */
+let ending = false;
+
+/**
+ * End this process, but stop the debugged process first and give it the time to shut down.
+ * Its output goes through the pipes of this process, so they must stay open till it is gone (see `stopChild`).
+ */
+async function endInspector(exitCode: number): Promise<void> {
+    if (ending) {
+        return;
+    }
+    ending = true;
+    try {
+        await inspector?.stopChild();
+    } catch (e) {
+        debuglog(`Cannot stop the debugged process: ${e as Error}`);
+    }
+    // Give the last messages to the host the chance to leave
+    setTimeout(() => process.exit(exitCode), 200);
+}
 
 function sendToHost(data: CommandToHost): void {
     if (data.cmd === 'error') {
@@ -335,12 +355,43 @@ class NodeInspector {
         ]);
     }
 
+    /** Kill the debugged process without waiting for it. Only for the exit handler, where nothing can be awaited */
     killChild(): void {
         this.client.reset();
         if (this.child) {
             this.child.kill();
             this.child = null;
         }
+    }
+
+    /**
+     * Stop the debugged process and wait till it is really gone.
+     *
+     * The debugged process is started with `--debug`, so it writes its whole log to the stdout of this process, and it
+     * logs while it is shutting down. If this process would end first, these pipes would be closed under it and every
+     * further log line would fail with `EPIPE` - which the adapter reports as an uncaught exception and dies (#2382).
+     */
+    async stopChild(timeoutMs = 3_000): Promise<void> {
+        this.client.reset();
+        const child = this.child;
+        this.child = null;
+        if (!child || child.exitCode !== null || child.signalCode !== null) {
+            return;
+        }
+        await new Promise<void>(resolve => {
+            const timeout = setTimeout(() => {
+                // It does not want to end - take the hard way
+                child.kill('SIGKILL');
+                resolve();
+            }, timeoutMs);
+
+            child.once('exit', () => {
+                clearTimeout(timeout);
+                resolve();
+            });
+
+            child.kill();
+        });
     }
 
     private finish(reason: string): void {
@@ -350,8 +401,7 @@ class NodeInspector {
         this.finished = true;
         debuglog(reason);
         sendToHost({ cmd: 'finished', text: reason });
-        this.killChild();
-        setTimeout(() => process.exit(0), 200);
+        void endInspector(0);
     }
 
     private childPrint(text: string, isError?: boolean): void {
@@ -589,8 +639,7 @@ function startDebugging(data: DebugCommand): void {
                 ? e.message
                 : `Internal error in inspector: ${e instanceof Error ? e.stack : errorToString(e)}`,
         );
-        inspector?.killChild();
-        setTimeout(() => process.exit(1), 200);
+        void endInspector(1);
     });
 }
 
@@ -602,7 +651,8 @@ async function processCommand(data: DebugCommand): Promise<void> {
         return;
     }
     if (data.cmd === 'end') {
-        process.exit(0);
+        await endInspector(0);
+        return;
     }
     if (!inspector) {
         reportError(`Cannot process "${data.cmd}": the debugger is not started`);
@@ -783,15 +833,25 @@ process.on('message', (message: unknown): void => {
     processCommand(command).catch(e => reportError(`Cannot process "${command?.cmd}"`, e));
 });
 
+// A closed pipe of the own output (the host can be gone already) must not end the inspector with an EPIPE
+process.stdout.on('error', () => {});
+process.stderr.on('error', () => {});
+
 // Handle all possible exits and never leave the debugged process behind
 process.on('exit', () => inspector?.killChild());
-process.on('disconnect', () => process.exit(0));
-process.once('SIGTERM', () => process.exit(0));
-process.once('SIGHUP', () => process.exit(0));
-process.on('uncaughtException', (e: Error) => {
+process.on('disconnect', () => void endInspector(0));
+process.once('SIGTERM', () => void endInspector(0));
+process.once('SIGHUP', () => void endInspector(0));
+process.on('uncaughtException', (e: NodeJS.ErrnoException) => {
+    // The connection to the debugged process is reset as soon as it ends (node-inspect's client does not listen for
+    // that), and while the inspector is on its way out, there is nothing worth reporting anymore
+    if (ending || e?.code === 'ECONNRESET' || e?.code === 'EPIPE') {
+        debuglog(`Ignored error in the inspector: ${e?.stack || e?.message}`);
+        void endInspector(0);
+        return;
+    }
     reportError(`Internal error in inspector: ${e.stack || e.message}`);
-    inspector?.killChild();
-    process.exit(1);
+    void endInspector(1);
 });
 
 sendToHost({ cmd: 'ready' });
