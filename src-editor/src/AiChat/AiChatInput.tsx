@@ -111,14 +111,19 @@ const AiChatInput: React.FC<AiChatInputProps> = ({
             description: I18n.t(m.descriptionKey),
         }));
         if (allScripts) {
-            for (const script of allScripts) {
+            const scriptOptions = allScripts.map(script => {
                 const shortName = script.id.replace(/^script\.js\./, '').replace(/\./g, '/');
-                options.push({
+                return {
                     id: `@${shortName}`,
                     label: `@${shortName}`,
                     description: `${script.name} [${script.enabled ? 'active' : 'inactive'}]`,
-                });
-            }
+                };
+            });
+            // Sorted by the full path, so the folders stay grouped and the scripts inside a folder are in
+            // alphabetical order instead of whatever order the object DB happened to deliver them in.
+            // The special mentions keep their curated order at the top.
+            scriptOptions.sort((a, b) => a.label.localeCompare(b.label, undefined, { numeric: true }));
+            options.push(...scriptOptions);
         }
         return options;
     }, [allScripts]);

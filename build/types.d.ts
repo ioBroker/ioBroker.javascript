@@ -55,6 +55,12 @@ export interface JavaScriptAdapterConfig {
      * at all and the endpoint decides - which is what a reasoning model behind a proxy wants.
      */
     aiReasoningEffort?: '' | 'none' | 'minimal' | 'low' | 'medium' | 'high';
+    /**
+     * Upper bound for the answer of an Anthropic model, in tokens. Anthropic requires the field, so
+     * unlike the other providers it cannot be left to the endpoint. 8192 fits every model Anthropic
+     * currently offers; the newer ones go far beyond that, which is why this is a setting.
+     */
+    aiMaxTokens?: number;
     claudeKey: string;
     geminiKey: string;
     deepseekKey: string;

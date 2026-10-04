@@ -113,5 +113,7 @@
     "API keys": "API keys",
     "Type definitions": "Type definitions",
     "Load type definitions": "Load type definitions",
-    "loadTypings help": "Type definitions of Node.js, ioBroker and the configured libraries. They are read only when they are actually needed - to compile a TypeScript script or to answer the built-in editor - because they add about 90 MB to the compiler. Switching them off keeps them from ever being read: the editor loses its autocompletion and TypeScript scripts no longer compile. Plain JavaScript, including the declarations of global JavaScripts, is unaffected."
+    "loadTypings help": "Type definitions of Node.js, ioBroker and the configured libraries. They are read only when they are actually needed - to compile a TypeScript script or to answer the built-in editor - because they add about 90 MB to the compiler. Switching them off keeps them from ever being read: the editor loses its autocompletion and TypeScript scripts no longer compile. Plain JavaScript, including the declarations of global JavaScripts, is unaffected.",
+    "Maximum answer length": "Maximum answer length",
+    "Maximum answer length help": "Only for Anthropic, which requires the limit. A longer script is cut off mid-line when the limit is reached. Older models reject values above 8192."
 }

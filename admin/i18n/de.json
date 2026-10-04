@@ -113,5 +113,7 @@
     "API keys": "API-Schlüssel",
     "Type definitions": "Typdefinitionen",
     "Load type definitions": "Typdefinitionen laden",
-    "loadTypings help": "Typdefinitionen von Node.js, ioBroker und den konfigurierten Bibliotheken. Sie werden nur gelesen, wenn sie wirklich gebraucht werden - zum Kompilieren eines TypeScript-Skripts oder für den eingebauten Editor - denn sie kosten den Compiler etwa 90 MB. Ausgeschaltet werden sie nie gelesen: Der Editor verliert seine Autovervollständigung und TypeScript-Skripte lassen sich nicht mehr kompilieren. Reines JavaScript, auch die Deklarationen globaler JavaScripts, ist nicht betroffen."
+    "loadTypings help": "Typdefinitionen von Node.js, ioBroker und den konfigurierten Bibliotheken. Sie werden nur gelesen, wenn sie wirklich gebraucht werden - zum Kompilieren eines TypeScript-Skripts oder für den eingebauten Editor - denn sie kosten den Compiler etwa 90 MB. Ausgeschaltet werden sie nie gelesen: Der Editor verliert seine Autovervollständigung und TypeScript-Skripte lassen sich nicht mehr kompilieren. Reines JavaScript, auch die Deklarationen globaler JavaScripts, ist nicht betroffen.",
+    "Maximum answer length": "Maximale Antwortlänge",
+    "Maximum answer length help": "Nur für Anthropic, das die Angabe verlangt. Längere Skripte werden beim Erreichen des Limits mitten in der Zeile abgeschnitten. Ältere Modelle lehnen Werte über 8192 ab."
 }

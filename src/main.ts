@@ -63,6 +63,9 @@ import {
     resolveTestCredentials,
     listAvailableProviders,
     getProviderCredentialId,
+    extractAiResponseInfo,
+    describeEmptyAiResponse,
+    resolveMaxTokens,
 } from './lib/aiProviderResolver';
 import {
     translateToolsToAnthropic,
@@ -143,6 +146,11 @@ const forbiddenMirrorLocations: string[] = [
 
 const packageJson: Record<string, any> = JSON.parse(readFileSync(`${__dirname}/../package.json`).toString());
 const SCRIPT_CODE_MARKER = 'script.js.';
+/**
+ * Instance-message type the script editor subscribes to, and under which finished AI answers are
+ * pushed back to it. Shared verbatim with `src-editor/src/AiChat/AiChatService.ts`.
+ */
+const AI_PUSH_MESSAGE_TYPE = 'aiChatAnswer';
 
 let webstormDebug: string | undefined;
 
@@ -448,6 +456,13 @@ class JavaScript extends Adapter {
      * subscriptions set up in `subscribeAiCredentials`.
      */
     private readonly aiCredentialCache: Map<string, string> = new Map();
+    /**
+     * Editor sessions waiting for pushed AI answers: the session token the editor invented when it
+     * subscribed, mapped to the client id the messaging controller gave us. A `chatCompletion`
+     * message carries the token, which is how a request is matched back to the browser tab that
+     * sent it - the message itself has no socket id.
+     */
+    private readonly aiUiClients: Map<string, string> = new Map();
     /** Unsubscribe callbacks for the AI credential subscriptions (manager mode). */
     private aiCredentialUnsubscribers: (() => Promise<void>)[] = [];
 
@@ -500,6 +515,17 @@ class JavaScript extends Adapter {
             ...options,
             name: 'javascript', // adapter name
             useFormatDate: true,
+            /*
+             * The script editor subscribes here so that a finished AI answer can be *pushed* to it.
+             * An AI request regularly runs longer than 30 s, and `@iobroker/ws` answers every socket
+             * callback with the string "timeout" after exactly that (socket.io.js: `Date.now() + 30_000`,
+             * not configurable). The answer then arrived in a dead callback and the chat stayed empty
+             * with nothing in any log. So the editor gets an immediate acknowledgement and the result
+             * later as an instance message.
+             */
+            uiClientSubscribe: (info: { clientId: string; message: ioBroker.Message }) =>
+                this.onUiClientSubscribe(info),
+            uiClientUnsubscribe: (info: { clientId: string }) => this.onUiClientUnsubscribe(info),
             /**
              * If the JS-Controller catches an unhandled error, this will be called,
              * so we have a chance to handle it ourselves.
@@ -1057,6 +1083,89 @@ class JavaScript extends Adapter {
         await this.main();
     }
 
+    /**
+     * A script editor registers itself for pushed AI answers.
+     *
+     * The editor sends a token it made up; we remember which messaging-controller client it belongs
+     * to. Only our own message type is accepted - anything else is some other UI asking for
+     * something we do not serve.
+     *
+     * @param info client id and the subscribe message, as the messaging controller hands it over
+     * @param info.clientId the id to address this client with later
+     * @param info.message the subscribe message, carrying the type and the editor's session token
+     */
+    private onUiClientSubscribe(info: { clientId: string; message: ioBroker.Message }): {
+        accepted: boolean;
+        error?: string;
+    } {
+        const message = info.message?.message as { type?: string; data?: { sessionToken?: string } } | undefined;
+        if (message?.type !== AI_PUSH_MESSAGE_TYPE) {
+            return { accepted: false, error: `Unknown subscription type "${message?.type || ''}"` };
+        }
+        const token = (message.data?.sessionToken || '').trim();
+        if (!token) {
+            return { accepted: false, error: 'No session token provided' };
+        }
+        this.aiUiClients.set(token, info.clientId);
+        this.log.debug(`AI editor session subscribed for pushed answers (${this.aiUiClients.size} open)`);
+        return { accepted: true };
+    }
+
+    /**
+     * A script editor went away - drop every token that pointed at it.
+     *
+     * @param info the client the messaging controller is retiring
+     * @param info.clientId the id that is going away
+     */
+    private onUiClientUnsubscribe(info: { clientId: string }): void {
+        for (const [token, clientId] of this.aiUiClients) {
+            if (clientId === info.clientId) {
+                this.aiUiClients.delete(token);
+            }
+        }
+        this.log.debug(`AI editor session unsubscribed (${this.aiUiClients.size} open)`);
+    }
+
+    /**
+     * Build the function that delivers the answer of one `chatCompletion` request.
+     *
+     * If the editor registered for pushed answers and named itself in the message, the answer goes
+     * out as an instance message and the socket callback is acknowledged right away. Everything
+     * else - an older editor, the inline completion, a script calling us - keeps the plain
+     * request/response behaviour.
+     *
+     * @param obj the incoming sendTo message
+     */
+    private buildAiResponder(obj: ioBroker.Message): (payload: Record<string, unknown>) => void {
+        const token = (obj.message?.uiSession || '').toString().trim();
+        const requestId = (obj.message?.requestId || '').toString().trim();
+        const clientId = token ? this.aiUiClients.get(token) : undefined;
+
+        if (!clientId || !requestId) {
+            return payload => this.sendTo(obj.from, obj.command, payload, obj.callback);
+        }
+
+        // Release the socket callback immediately - it has 30 s to live, the request has more.
+        this.sendTo(obj.from, obj.command, { accepted: true, requestId }, obj.callback);
+        let sent = false;
+        return payload => {
+            if (sent) {
+                return;
+            }
+            sent = true;
+            this.sendToUI({
+                clientId,
+                data: { type: AI_PUSH_MESSAGE_TYPE, requestId, ...payload },
+            }).catch(e => {
+                // The tab was closed, or the admin dropped the subscription in the meantime.
+                this.aiUiClients.delete(token);
+                this.log.warn(
+                    `Cannot deliver the AI answer to the editor: ${e instanceof Error ? e.message : String(e)}`,
+                );
+            });
+        };
+    }
+
     /** Read and decrypt a single AI credential's key from the central store; returns '' (and logs) on error. */
     private async readAiCredentialKey(id: string): Promise<string> {
         if (!Credentials?.getCredentials) {
@@ -1592,14 +1701,29 @@ class JavaScript extends Adapter {
                 // credentials manager — they never leave the adapter (frontend only sends `provider`).
                 void (async () => {
                     if (!obj.callback) {
+                        this.log.warn(
+                            `chatCompletion from ${obj.from} came without a callback - nobody can receive the answer`,
+                        );
                         return;
                     }
                     const chatModel = (obj.message?.model || '').trim();
                     const messages = obj.message?.messages;
                     const tools = obj.message?.tools;
                     const provider = (obj.message?.provider || 'openai').trim();
+                    // One line per request, so an empty chat panel can be told apart from a request
+                    // that never arrived here. Without it the log stays silent either way.
+                    this.log.debug(
+                        `chatCompletion from ${obj.from}: ${provider}/${chatModel}, ${
+                            Array.isArray(messages) ? messages.length : 0
+                        } messages, ${Array.isArray(tools) ? tools.length : 0} tools`,
+                    );
+                    // Answers go through this from here on: either straight back through the socket
+                    // callback, or - for an editor that registered for it - pushed as an instance
+                    // message once the endpoint is done. See `buildAiResponder`.
+                    const respond = this.buildAiResponder(obj);
                     // How long the caller is willing to wait - see `resolveRequestTimeout`
                     const requestTimeout = resolveRequestTimeout(obj.message?.timeout);
+                    const maxTokens = resolveMaxTokens(this.config.aiMaxTokens);
                     const { apiKey, baseUrl } = await this.resolveAiCredentials(provider, {
                         messageBaseUrl: obj.message?.baseUrl,
                     });
@@ -1608,11 +1732,11 @@ class JavaScript extends Adapter {
                         !apiKey &&
                         (provider === 'anthropic' || provider === 'gemini' || provider === 'deepseek' || !baseUrl)
                     ) {
-                        this.sendTo(obj.from, obj.command, { error: 'No API key provided' }, obj.callback);
+                        respond({ error: 'No API key provided' });
                         return;
                     }
                     if (!chatModel || !messages) {
-                        this.sendTo(obj.from, obj.command, { error: 'Model and messages are required' }, obj.callback);
+                        respond({ error: 'Model and messages are required' });
                         return;
                     }
 
@@ -1632,7 +1756,15 @@ class JavaScript extends Adapter {
                         const anthropicTools = tools?.length ? translateToolsToAnthropic(tools) : [];
                         bodyObj = {
                             model: chatModel,
-                            max_tokens: 8192,
+                            /*
+                             * Anthropic requires `max_tokens`, so unlike the other providers it
+                             * cannot be left to the endpoint. 8192 is the default because it is
+                             * what every Anthropic model accepts - the older small ones cap out
+                             * below that and answer 400 to anything higher. The newer models write
+                             * far longer answers than that, and a script that runs into the limit
+                             * is simply cut off mid-line, so the value is a setting.
+                             */
+                            max_tokens: maxTokens,
                             stream: false,
                             ...(systemText ? { system: systemText } : {}),
                             messages: anthropicMessages,
@@ -1677,7 +1809,7 @@ class JavaScript extends Adapter {
 
                     const resolved = resolveRequestModule(url);
                     if (!resolved) {
-                        this.sendTo(obj.from, obj.command, { error: `Invalid API URL: ${url}` }, obj.callback);
+                        respond({ error: `Invalid API URL: ${url}` });
                         return;
                     }
                     const { module: requestModule, isHttps } = resolved;
@@ -1711,32 +1843,40 @@ class JavaScript extends Adapter {
                                                 content = message?.content || '';
                                                 tool_calls = message?.tool_calls;
                                             }
-                                            if (!content && !(tool_calls as unknown[] | undefined)?.length) {
-                                                this.sendTo(
-                                                    obj.from,
-                                                    obj.command,
-                                                    { error: 'Empty response from API' },
-                                                    obj.callback,
-                                                );
+                                            // How the endpoint says it finished. Passed on in both
+                                            // cases, so the editor can tell a truncated answer from
+                                            // a complete one instead of just showing what arrived.
+                                            const info = extractAiResponseInfo(parsed);
+                                            // `.trim()`, because a whitespace-only answer is just as
+                                            // empty to the user but used to slip past this check and
+                                            // arrive in the editor as a blank chat bubble with no
+                                            // reason attached - the stop reason below is the whole point.
+                                            if (!content.trim() && !(tool_calls as unknown[] | undefined)?.length) {
+                                                const error = describeEmptyAiResponse(info, data);
+                                                this.log.warn(`chatCompletion (${provider}/${chatModel}): ${error}`);
+                                                respond({ error, ...info });
                                             } else {
-                                                this.sendTo(
-                                                    obj.from,
-                                                    obj.command,
-                                                    {
-                                                        success: true,
-                                                        content,
-                                                        ...(tool_calls ? { tool_calls } : {}),
-                                                    },
-                                                    obj.callback,
+                                                this.log.debug(
+                                                    `chatCompletion (${provider}/${chatModel}): answered with ${
+                                                        content.length
+                                                    } characters, ${
+                                                        (tool_calls as unknown[] | undefined)?.length || 0
+                                                    } tool calls, stop reason ${info.finishReason || '-'}`,
                                                 );
+                                                respond({
+                                                    success: true,
+                                                    content,
+                                                    ...(tool_calls ? { tool_calls } : {}),
+                                                    ...info,
+                                                });
                                             }
-                                        } catch {
-                                            this.sendTo(
-                                                obj.from,
-                                                obj.command,
-                                                { error: 'Invalid JSON response from API' },
-                                                obj.callback,
+                                        } catch (e) {
+                                            this.log.warn(
+                                                `chatCompletion (${provider}/${chatModel}): cannot read the answer of ${url}: ${
+                                                    e instanceof Error ? e.message : String(e)
+                                                }. Response: ${data.substring(0, 200)}`,
                                             );
+                                            respond({ error: 'Invalid JSON response from API' });
                                         }
                                     } else {
                                         let detail = '';
@@ -1746,47 +1886,35 @@ class JavaScript extends Adapter {
                                         } catch {
                                             detail = data.substring(0, 200);
                                         }
-                                        this.sendTo(
-                                            obj.from,
-                                            obj.command,
-                                            {
-                                                error: `${detail || httpStatusText(res.statusCode || 0)} (${res.statusCode})`,
-                                            },
-                                            obj.callback,
-                                        );
+                                        const error = `${detail || httpStatusText(res.statusCode || 0)} (${res.statusCode})`;
+                                        this.log.warn(`chatCompletion (${provider}/${chatModel}): ${error}`);
+                                        respond({ error });
                                     }
                                 });
                             },
                         );
 
                         req.on('error', (err: Error) => {
-                            this.sendTo(
-                                obj.from,
-                                obj.command,
-                                { error: `Connection failed: ${err.message}` },
-                                obj.callback,
+                            this.log.warn(
+                                `chatCompletion (${provider}/${chatModel}): cannot reach ${url}: ${err.message}`,
                             );
+                            respond({ error: `Connection failed: ${err.message}` });
                         });
 
                         req.on('timeout', () => {
                             req.destroy();
-                            this.sendTo(
-                                obj.from,
-                                obj.command,
-                                { error: `Connection timeout (${Math.round(requestTimeout / 1000)}s)` },
-                                obj.callback,
-                            );
+                            const error = `Connection timeout (${Math.round(requestTimeout / 1000)}s)`;
+                            this.log.warn(`chatCompletion (${provider}/${chatModel}): ${url} - ${error}`);
+                            respond({ error });
                         });
 
                         req.write(bodyBuffer);
                         req.end();
                     } catch (error) {
-                        this.sendTo(
-                            obj.from,
-                            obj.command,
-                            { error: `Connection failed: ${(error as Error).toString()}` },
-                            obj.callback,
+                        this.log.warn(
+                            `chatCompletion (${provider}/${chatModel}): ${url} - ${(error as Error).toString()}`,
                         );
+                        respond({ error: `Connection failed: ${(error as Error).toString()}` });
                     }
                 })();
                 break;

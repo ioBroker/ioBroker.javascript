@@ -16,6 +16,7 @@ import {
     FieldTextInput,
     Msg,
     Procedures,
+    Variables,
     icons,
     utils,
     type Block,
@@ -345,11 +346,18 @@ export function install(): void {
                      * Blockly 13 dropped `Workspace.getVariable` in favour of the variable map. The
                      * call threw on the *first* parameter, and since the name had already been pushed
                      * the block was left holding exactly one - however many the dialog contained
-                     * (#2368). The model is pushed even when it is null, so that `mutationToDom`,
-                     * which walks the models and indexes `paramIds_` with them, stays aligned with
-                     * `arguments_`.
+                     * (#2368).
+                     *
+                     * Create the variable when it is missing instead of looking it up, which is what
+                     * `domToMutation` of the standard block does as well. A plain lookup returns null
+                     * for a parameter whose variable was never created - the mutator's own flyout
+                     * skips that step - and a null model is poison: `updateParams_`, the `onchange`
+                     * of every call block and above all `mutationToDom` read `.getName()` off it, so
+                     * the script could no longer be serialized and therefore no longer be saved.
                      */
-                    this.argumentVarModels_.push(this.workspace.getVariableMap().getVariable(varName, ''));
+                    this.argumentVarModels_.push(
+                        Variables.getOrCreateVariablePackage(this.workspace, null, varName, ''),
+                    );
                     this.paramIds_.push(paramBlock.id);
                     paramBlock = paramBlock.nextConnection && paramBlock.nextConnection.targetBlock();
                 }

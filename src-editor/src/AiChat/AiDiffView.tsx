@@ -1,10 +1,9 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { Box, Button, Toolbar, Typography } from '@mui/material';
 import { Check, Close } from '@mui/icons-material';
 import { I18n, type ThemeType } from '@iobroker/gui-components';
-import type * as monacoEditor from 'monaco-editor';
 
-import { loadMonaco } from '../Components/loadMonaco';
+import MonacoDiff, { type MonacoDiffHandle } from '../Components/MonacoDiff';
 
 interface AiDiffViewProps {
     originalCode: string;
@@ -23,61 +22,11 @@ const AiDiffView: React.FC<AiDiffViewProps> = ({
     onAccept,
     onReject,
 }) => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const diffEditorRef = useRef<monacoEditor.editor.IDiffEditor | null>(null);
-    const modifiedModelRef = useRef<monacoEditor.editor.ITextModel | null>(null);
-
-    useEffect(() => {
-        let dispose: (() => void) | null = null;
-        let cancelled = false;
-
-        loadMonaco()
-            .then(monaco => {
-                if (cancelled || !containerRef.current) {
-                    return;
-                }
-
-                const diffEditor = monaco.editor.createDiffEditor(containerRef.current, {
-                    readOnly: false,
-                    originalEditable: false,
-                    renderSideBySide: true,
-                    automaticLayout: true,
-                    theme: themeType === 'dark' ? 'vs-dark' : 'vs',
-                    scrollBeyondLastLine: false,
-                    minimap: { enabled: false },
-                });
-
-                const originalModel = monaco.editor.createModel(originalCode, language);
-                const modifiedModel = monaco.editor.createModel(modifiedCode, language);
-                modifiedModelRef.current = modifiedModel;
-
-                diffEditor.setModel({
-                    original: originalModel,
-                    modified: modifiedModel,
-                });
-
-                diffEditorRef.current = diffEditor;
-
-                dispose = () => {
-                    diffEditor.dispose();
-                    originalModel.dispose();
-                    modifiedModel.dispose();
-                    diffEditorRef.current = null;
-                    modifiedModelRef.current = null;
-                };
-            })
-            .catch((error: unknown) => console.error(`Cannot load the code editor: ${error as Error}`));
-
-        return () => {
-            cancelled = true;
-            dispose?.();
-        };
-    }, [originalCode, modifiedCode, language, themeType]);
+    const diffRef = useRef<MonacoDiffHandle>(null);
 
     const handleAccept = useCallback(() => {
-        // Get the current modified content (user may have edited it)
-        const currentModified = modifiedModelRef.current?.getValue() || modifiedCode;
-        onAccept(currentModified);
+        // Take the current modified content, the user may have edited the suggestion
+        onAccept(diffRef.current?.getModifiedValue() ?? modifiedCode);
     }, [modifiedCode, onAccept]);
 
     return (
@@ -118,10 +67,15 @@ const AiDiffView: React.FC<AiDiffViewProps> = ({
                     {I18n.t('Reject')}
                 </Button>
             </Toolbar>
-            <Box
-                ref={containerRef}
-                sx={{ flex: 1, overflow: 'hidden' }}
-            />
+            <Box sx={{ flex: 1, overflow: 'hidden' }}>
+                <MonacoDiff
+                    ref={diffRef}
+                    originalCode={originalCode}
+                    modifiedCode={modifiedCode}
+                    language={language}
+                    themeType={themeType}
+                />
+            </Box>
         </Box>
     );
 };

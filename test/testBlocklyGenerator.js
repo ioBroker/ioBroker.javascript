@@ -223,6 +223,83 @@ describe('Blockly code generation', function () {
         );
     });
 
+    describe('custom function parameters', () => {
+        /**
+         * Builds a custom "JavaScript function" and adds parameters through the mutator, the way a
+         * user does it - not by loading finished XML.
+         *
+         * @param {string} defType the definition block to build
+         * @param {string[]} argNames the parameter names
+         * @param {boolean} rename whether the parameter field is edited (which is what creates the
+         *   variable); leaving it alone is what a dragged-in parameter with its default name does
+         */
+        function composeWithParams(defType, argNames, rename) {
+            const Blockly = env.Blockly;
+            const ws = new Blockly.Workspace();
+            env.window.scripts = { blocklyWorkspace: ws };
+            const def = ws.newBlock(defType);
+            def.setFieldValue('myFunc', 'NAME');
+
+            const miniOptions = new Blockly.Options({});
+            miniOptions.parentWorkspace = ws;
+            const mini = new Blockly.Workspace(miniOptions);
+            const container = mini.newBlock('procedures_mutatorcontainer');
+            let connection = container.getInput('STACK').connection;
+            for (const name of argNames) {
+                const arg = mini.newBlock('procedures_mutatorarg');
+                if (rename) {
+                    arg.setFieldValue(name, 'NAME');
+                }
+                connection.connect(arg.previousConnection);
+                connection = arg.nextConnection;
+            }
+            def.compose(container);
+            return { ws, mini, def };
+        }
+
+        for (const defType of ['procedures_defcustomnoreturn', 'procedures_defcustomreturn']) {
+            it(`${defType}: every parameter gets a variable, named or not`, () => {
+                // A parameter left at its default name has no variable yet - the validator of the
+                // mutator argument skips creating one while the block sits in the mutator's flyout.
+                // A null model used to reach `argumentVarModels_` and then threw in `updateParams_`,
+                // in the `onchange` of every call block and in `mutationToDom`, which is what makes
+                // a script unsavable.
+                const { ws, mini, def } = composeWithParams(defType, ['x', 'y'], false);
+                try {
+                    assert.deepEqual([...def.arguments_], ['x', 'x'], 'both parameters keep the default name');
+                    assert.ok(
+                        [...def.getVarModels()].every(model => model),
+                        'a parameter without a variable left a null model behind',
+                    );
+                    assert.deepEqual(
+                        [...def.getVarModels()].map(model => model.getName()),
+                        [...def.arguments_],
+                        'the variable models must match the argument names, or Blockly builds a second definition',
+                    );
+                    // This is the call that used to kill saving
+                    assert.ok(def.mutationToDom(), 'the block must be serializable');
+                } finally {
+                    ws.dispose();
+                    mini.dispose();
+                }
+            });
+
+            it(`${defType}: a named parameter keeps its variable`, () => {
+                const { ws, mini, def } = composeWithParams(defType, ['first', 'second'], true);
+                try {
+                    assert.deepEqual([...def.arguments_], ['first', 'second']);
+                    assert.deepEqual(
+                        [...def.getVarModels()].map(model => model.getName()),
+                        ['first', 'second'],
+                    );
+                } finally {
+                    ws.dispose();
+                    mini.dispose();
+                }
+            });
+        }
+    });
+
     describe('matches the committed snapshot', () => {
         // One test per source file, so a failure names the file that has to be looked at
         for (const group of EXPECTED_GROUPS) {

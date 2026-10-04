@@ -8,6 +8,11 @@ const {
     listAvailableProviders,
     resolveRequestTimeout,
     MAX_AI_REQUEST_TIMEOUT_MS,
+    extractAiResponseInfo,
+    describeEmptyAiResponse,
+    resolveMaxTokens,
+    DEFAULT_AI_MAX_TOKENS,
+    MAX_AI_MAX_TOKENS,
 } = require('../build/lib/aiProviderResolver');
 
 describe('Test AI Provider Resolver', function () {
@@ -422,6 +427,79 @@ describe('Test AI Provider Resolver', function () {
         it('reads a zero the way Node does - as no timeout - and caps it at the ceiling', function () {
             assert.equal(resolveRequestTimeout(0), MAX_AI_REQUEST_TIMEOUT_MS);
             assert.equal(resolveRequestTimeout(-5000), MAX_AI_REQUEST_TIMEOUT_MS);
+        });
+    });
+    describe('extractAiResponseInfo', function () {
+        it("reads Anthropic's stop_reason and token counts", function () {
+            const info = extractAiResponseInfo({
+                stop_reason: 'max_tokens',
+                usage: { input_tokens: 1200, output_tokens: 64000 },
+            });
+            assert.equal(info.finishReason, 'max_tokens');
+            assert.deepEqual(info.usage, { input: 1200, output: 64000 });
+        });
+
+        it('reads the OpenAI-compatible finish_reason and token counts', function () {
+            const info = extractAiResponseInfo({
+                choices: [{ finish_reason: 'length' }],
+                usage: { prompt_tokens: 10, completion_tokens: 20 },
+            });
+            assert.equal(info.finishReason, 'length');
+            assert.deepEqual(info.usage, { input: 10, output: 20 });
+        });
+
+        it('stays empty when the endpoint reports nothing', function () {
+            assert.deepEqual(extractAiResponseInfo({}), {});
+            assert.deepEqual(extractAiResponseInfo(null), {});
+            assert.deepEqual(extractAiResponseInfo(undefined), {});
+        });
+    });
+
+    describe('describeEmptyAiResponse', function () {
+        it('names the output budget as the reason, not a broken key', function () {
+            const msg = describeEmptyAiResponse({ finishReason: 'max_tokens', usage: { input: 5, output: 8000 } });
+            assert.ok(msg.includes('output budget'), msg);
+            assert.ok(msg.includes('stop reason: max_tokens'), msg);
+            assert.ok(msg.includes('tokens in/out: 5/8000'), msg);
+        });
+
+        it('says when the endpoint filtered the answer', function () {
+            assert.ok(describeEmptyAiResponse({ finishReason: 'content_filter' }).includes('filtered'));
+        });
+
+        it('says when a tool call could not be read', function () {
+            assert.ok(describeEmptyAiResponse({ finishReason: 'tool_use' }).includes('tool'));
+        });
+
+        it('repeats an unknown stop reason verbatim', function () {
+            assert.ok(describeEmptyAiResponse({ finishReason: 'whatever' }).includes('whatever'));
+        });
+
+        it('falls back to the raw body when the endpoint said nothing at all', function () {
+            const msg = describeEmptyAiResponse({}, '{"choices":[]}');
+            assert.ok(msg.includes('{"choices":[]}'), msg);
+        });
+
+        it('does not dump the raw body when there is a stop reason to show', function () {
+            assert.ok(!describeEmptyAiResponse({ finishReason: 'max_tokens' }, '{"a":1}').includes('{"a":1}'));
+        });
+    });
+    describe('resolveMaxTokens', function () {
+        it('falls back to the default Anthropic accepts everywhere', function () {
+            assert.equal(resolveMaxTokens(undefined), DEFAULT_AI_MAX_TOKENS);
+            assert.equal(resolveMaxTokens(''), DEFAULT_AI_MAX_TOKENS);
+            assert.equal(resolveMaxTokens(0), DEFAULT_AI_MAX_TOKENS);
+            assert.equal(resolveMaxTokens(-1), DEFAULT_AI_MAX_TOKENS);
+        });
+
+        it('takes the configured budget', function () {
+            assert.equal(resolveMaxTokens(32000), 32000);
+            assert.equal(resolveMaxTokens('32000'), 32000);
+        });
+
+        it('keeps the value in a range every model can live with', function () {
+            assert.equal(resolveMaxTokens(10), 1024);
+            assert.equal(resolveMaxTokens(999999), MAX_AI_MAX_TOKENS);
         });
     });
 });

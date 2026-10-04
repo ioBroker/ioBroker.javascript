@@ -572,5 +572,21 @@
     "Cannot load the code editor": "Cannot load the code editor",
     "Cannot load the blocks": "Cannot load the blocks",
     "fbd_title": "Function block diagram",
-    "fbd_description": "Blocks like in a PLC (CFC): timers, flip-flops, comparisons. For logic that runs all the time."
+    "fbd_description": "Blocks like in a PLC (CFC): timers, flip-flops, comparisons. For logic that runs all the time.",
+    "Stop reason": "Stop reason",
+    "Tokens in/out": "Tokens in/out",
+    "The model answered with reasoning only, no result": "The model answered with reasoning only, no result",
+    "The model used up its output budget before writing an answer. Try a shorter question or less context.": "The model used up its output budget before writing an answer. Try a shorter question or less context.",
+    "The model returned an empty answer": "The model returned an empty answer",
+    "No final answer after %s tool rounds": "No final answer after %s tool rounds",
+    "The javascript adapter did not answer this request. Check the adapter log.": "The javascript adapter did not answer this request. Check the adapter log.",
+    "Reply": "Reply",
+    "No answer within": "No answer within",
+    "The answer is incomplete: the model hit its output limit. Raise \"Maximum answer length\" in the adapter settings, or ask for a smaller part.": "The answer is incomplete: the model hit its output limit. Raise \"Maximum answer length\" in the adapter settings, or ask for a smaller part.",
+    "Diff": "Diff",
+    "Show the changes against the saved version": "Show the changes against the saved version",
+    "Changes against the saved version": "Changes against the saved version",
+    "Use the whole width": "Use the whole width",
+    "Restore the split view": "Restore the split view",
+    "Request is running...": "Request is running..."
 }

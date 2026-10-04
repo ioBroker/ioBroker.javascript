@@ -10,12 +10,15 @@
  * These functions are extracted so they can be unit-tested in isolation.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MAX_AI_REQUEST_TIMEOUT_MS = exports.PROVIDER_CREDENTIAL_ID_FIELD = exports.PROVIDER_KEY_FIELD = void 0;
+exports.MAX_AI_MAX_TOKENS = exports.DEFAULT_AI_MAX_TOKENS = exports.MAX_AI_REQUEST_TIMEOUT_MS = exports.PROVIDER_CREDENTIAL_ID_FIELD = exports.PROVIDER_KEY_FIELD = void 0;
 exports.getProviderCredentialId = getProviderCredentialId;
 exports.resolveProviderCredentials = resolveProviderCredentials;
 exports.resolveRequestTimeout = resolveRequestTimeout;
 exports.resolveTestCredentials = resolveTestCredentials;
 exports.listAvailableProviders = listAvailableProviders;
+exports.extractAiResponseInfo = extractAiResponseInfo;
+exports.describeEmptyAiResponse = describeEmptyAiResponse;
+exports.resolveMaxTokens = resolveMaxTokens;
 /** Maps each provider to the adapter-config field holding its API key. */
 exports.PROVIDER_KEY_FIELD = {
     openai: 'gptKey',
@@ -136,5 +139,102 @@ function listAvailableProviders(config) {
         providers.push({ provider: 'custom', baseUrl: cfg.gptBaseUrl });
     }
     return providers;
+}
+function toCount(value) {
+    return typeof value === 'number' && isFinite(value) ? value : undefined;
+}
+/**
+ * Pull the "why did it stop" fields out of a chat-completion response.
+ *
+ * Anthropic and the OpenAI-compatible endpoints spell both the reason and the token counts
+ * differently. The adapter normalizes them and passes them on to the editor, so an answer that
+ * was cut off or filtered can say so instead of arriving as an empty chat bubble.
+ */
+function extractAiResponseInfo(parsed) {
+    const info = {};
+    const reason = parsed?.stop_reason ?? parsed?.choices?.[0]?.finish_reason;
+    if (typeof reason === 'string' && reason) {
+        info.finishReason = reason;
+    }
+    const input = toCount(parsed?.usage?.input_tokens ?? parsed?.usage?.prompt_tokens);
+    const output = toCount(parsed?.usage?.output_tokens ?? parsed?.usage?.completion_tokens);
+    if (input !== undefined || output !== undefined) {
+        info.usage = {
+            ...(input !== undefined ? { input } : {}),
+            ...(output !== undefined ? { output } : {}),
+        };
+    }
+    return info;
+}
+/**
+ * Why a 200 OK answer carried neither text nor a tool call.
+ *
+ * "Empty response from API" is true but useless - it sends the user looking for a broken key
+ * when the usual cause is a model that spent its whole output budget on reasoning tokens. The
+ * endpoint nearly always says why it stopped, so repeat that, and append a slice of the raw
+ * body for the cases where it does not.
+ *
+ * @param info the normalized stop reason and token counts
+ * @param rawBody the response body as it came off the wire
+ */
+function describeEmptyAiResponse(info, rawBody) {
+    let why;
+    switch (info.finishReason) {
+        case 'max_tokens':
+        case 'length':
+            why = 'the model used up its output budget before writing an answer';
+            break;
+        case 'content_filter':
+        case 'refusal':
+            why = 'the endpoint filtered the answer away';
+            break;
+        case 'tool_use':
+        case 'tool_calls':
+            why = 'the model wanted to call a tool, but the answer carried no readable tool call';
+            break;
+        default:
+            why = info.finishReason ? `the endpoint stopped with "${info.finishReason}"` : '';
+            break;
+    }
+    const details = [];
+    if (info.finishReason) {
+        details.push(`stop reason: ${info.finishReason}`);
+    }
+    if (info.usage?.input !== undefined || info.usage?.output !== undefined) {
+        details.push(`tokens in/out: ${info.usage?.input ?? '?'}/${info.usage?.output ?? '?'}`);
+    }
+    let message = 'The API answered without any content';
+    if (why) {
+        message += ` - ${why}`;
+    }
+    if (details.length) {
+        message += ` (${details.join(', ')})`;
+    }
+    // Only worth showing when the endpoint told us nothing usable at all
+    if (!info.finishReason && rawBody) {
+        message += `. Response: ${rawBody.substring(0, 200)}`;
+    }
+    return message;
+}
+/** What Anthropic gets as `max_tokens` when the setting is empty or unusable */
+exports.DEFAULT_AI_MAX_TOKENS = 8192;
+/** Highest `max_tokens` the setting may ask for - beyond this every current model answers 400 */
+exports.MAX_AI_MAX_TOKENS = 200_000;
+/**
+ * The output budget for an Anthropic request.
+ *
+ * Anthropic insists on `max_tokens`, so there is no "let the endpoint decide". Too small and a
+ * generated script is cut off mid-line; too large and the model rejects the request outright, so
+ * the configured value is clamped into a range every model can live with.
+ *
+ * @param configured the value from the adapter settings
+ */
+function resolveMaxTokens(configured) {
+    const requested = parseInt(configured, 10);
+    if (isNaN(requested) || requested <= 0) {
+        return exports.DEFAULT_AI_MAX_TOKENS;
+    }
+    // 1024 is the floor: below that not even a short answer with its reasoning fits
+    return Math.min(Math.max(requested, 1024), exports.MAX_AI_MAX_TOKENS);
 }
 //# sourceMappingURL=aiProviderResolver.js.map

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useMemo } from 'react';
 import { Box, IconButton, Tooltip, CircularProgress, Typography, Alert } from '@mui/material';
-import { Close, AddComment, Refresh } from '@mui/icons-material';
+import { Close, AddComment, Refresh, Fullscreen, FullscreenExit } from '@mui/icons-material';
 import { I18n, type AdminConnection, type ThemeType } from '@iobroker/gui-components';
 
 import type { ScriptInfo, AiScriptLanguage, EditorApi, EditorAiActionRequest, ChatSourceRange } from './AiChatTypes';
@@ -35,6 +35,10 @@ interface AiChatPanelProps {
     onApplyCode?: (code: string) => void;
     /** Currently selected script id (used to populate ChatSourceRange.scriptId). */
     currentScriptId?: string;
+    /** The panel currently fills the whole editor area */
+    maximized?: boolean;
+    /** Switch between the split view and the full editor area. No handler, no button. */
+    onToggleMaximized?: () => void;
     onClose: () => void;
 }
 
@@ -54,6 +58,8 @@ const AiChatPanel: React.FC<AiChatPanelProps> = ({
     onShowDiff,
     onApplyCode,
     currentScriptId,
+    maximized,
+    onToggleMaximized,
     onClose,
 }) => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -173,7 +179,7 @@ const AiChatPanel: React.FC<AiChatPanelProps> = ({
                     {I18n.t('AI Chat')}
                 </Typography>
 
-                {modelsLoading && <CircularProgress size={16} />}
+                {(modelsLoading || isLoading) && <CircularProgress size={16} />}
 
                 <Tooltip title={I18n.t('New chat')}>
                     <IconButton
@@ -183,6 +189,21 @@ const AiChatPanel: React.FC<AiChatPanelProps> = ({
                         <AddComment sx={{ fontSize: 18 }} />
                     </IconButton>
                 </Tooltip>
+
+                {onToggleMaximized ? (
+                    <Tooltip title={maximized ? I18n.t('Restore the split view') : I18n.t('Use the whole width')}>
+                        <IconButton
+                            size="small"
+                            onClick={onToggleMaximized}
+                        >
+                            {maximized ? (
+                                <FullscreenExit sx={{ fontSize: 18 }} />
+                            ) : (
+                                <Fullscreen sx={{ fontSize: 18 }} />
+                            )}
+                        </IconButton>
+                    </Tooltip>
+                ) : null}
 
                 <Tooltip title={I18n.t('Close')}>
                     <IconButton
@@ -283,14 +304,22 @@ const AiChatPanel: React.FC<AiChatPanelProps> = ({
                         />
                     ))}
 
-                {isLoading && messages[messages.length - 1]?.content === '' && (
+                {/*
+                 * Shown for as long as the request runs, not only while the bubble is still empty.
+                 * The agent writes its tool progress into that bubble, and the spinner used to
+                 * disappear at the first tool call - leaving a chat that looked finished while the
+                 * model was still working.
+                 */}
+                {isLoading && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 2, py: 1 }}>
                         <CircularProgress size={16} />
                         <Typography
                             variant="caption"
                             color="text.secondary"
                         >
-                            {I18n.t('Thinking...')}
+                            {messages[messages.length - 1]?.content
+                                ? I18n.t('Request is running...')
+                                : I18n.t('Thinking...')}
                         </Typography>
                     </Box>
                 )}

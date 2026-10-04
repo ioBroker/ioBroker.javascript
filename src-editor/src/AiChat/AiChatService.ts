@@ -319,21 +319,142 @@ export async function loadModels(
 }
 
 // ─── Chat Completion (non-streaming) ────────────────────────────
+/*
+ * Why this does not simply wait for the sendTo callback:
+ *
+ * `@iobroker/ws` answers every socket callback with the string "timeout" after 30 seconds
+ * (socket.io.js: `callbacks.push({ ..., ts: Date.now() + 30_000 })`, hard-coded, no option).
+ * An AI request with a real conversation and the tool definitions regularly needs longer, so the
+ * answer used to land in a callback that no longer existed: an empty chat bubble, no error, and
+ * nothing in any log because the adapter had done its job.
+ *
+ * So the editor subscribes to an instance message and the adapter pushes the finished answer
+ * there. The sendTo callback only carries the immediate acknowledgement, well inside the 30 s.
+ * An adapter that does not know this protocol answers the old way and is handled unchanged.
+ */
+
+/** Instance-message type for pushed AI answers. Shared verbatim with `src/main.ts`. */
+const AI_PUSH_MESSAGE_TYPE = 'aiChatAnswer';
+
+/** How long to wait for a pushed answer before giving up, if the caller names no budget */
+const DEFAULT_AI_TIMEOUT_MS = 600_000;
+
+interface AiPushChannel {
+    /** The token this editor session announced to the adapter */
+    sessionToken: string;
+    /** Requests that are out, by their id */
+    pending: Map<string, (result: ChatCompletionResponse) => void>;
+}
+
+let pushChannel: AiPushChannel | null = null;
+/** Guards against two requests subscribing at the same time */
+let pushChannelPromise: Promise<AiPushChannel | null> | null = null;
+let requestCounter = 0;
+
+/** Drop the channel so the next request subscribes again (after a reconnect, or a failed push). */
+export function resetAiPushChannel(): void {
+    pushChannel = null;
+    pushChannelPromise = null;
+}
+
+/**
+ * Subscribe this editor session for pushed AI answers, once.
+ *
+ * Returns `null` when the adapter does not accept the subscription - an older version, for
+ * instance. The caller then falls back to the plain request/response round trip.
+ *
+ * @param socket the admin connection
+ * @param instanceId the javascript instance to talk to
+ */
+async function ensureAiPushChannel(socket: AdminConnection, instanceId: string): Promise<AiPushChannel | null> {
+    if (pushChannel) {
+        return pushChannel;
+    }
+    pushChannelPromise ||= (async (): Promise<AiPushChannel | null> => {
+        const channel: AiPushChannel = {
+            sessionToken: `ai-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 10)}`,
+            pending: new Map(),
+        };
+        try {
+            const result = await socket.subscribeOnInstance(
+                instanceId,
+                AI_PUSH_MESSAGE_TYPE,
+                { sessionToken: channel.sessionToken },
+                (data: unknown) => {
+                    const answer = data as (ChatCompletionResponse & { requestId?: string }) | undefined;
+                    if (!answer?.requestId) {
+                        return;
+                    }
+                    const resolve = channel.pending.get(answer.requestId);
+                    if (resolve) {
+                        channel.pending.delete(answer.requestId);
+                        resolve(answer);
+                    }
+                },
+            );
+            if (!result?.accepted) {
+                return null;
+            }
+            // A reconnect gives the socket a new id, which makes the adapter's handler for this
+            // session dead. Without this the next request would wait out its full budget before
+            // anyone noticed; dropping the channel makes it subscribe again instead.
+            socket.registerConnectionHandler(function onConnectionChange(connected: boolean): void {
+                if (!connected) {
+                    socket.unregisterConnectionHandler(onConnectionChange);
+                    resetAiPushChannel();
+                }
+            });
+            pushChannel = channel;
+            return channel;
+        } catch (e) {
+            console.warn('[AiChat] cannot subscribe for pushed answers, falling back to the callback', e);
+            return null;
+        } finally {
+            pushChannelPromise = null;
+        }
+    })();
+    return pushChannelPromise;
+}
+
 // apiKey is resolved server-side based on provider; never sent from the frontend.
 export async function sendChatCompletion(
     socket: AdminConnection,
     instanceId: string,
     request: ChatCompletionRequest,
 ): Promise<ChatCompletionResponse> {
-    const result: ChatCompletionResponse = await socket.sendTo(instanceId, 'chatCompletion', {
-        timeout: request.timeout || 600000,
+    const timeout = request.timeout || DEFAULT_AI_TIMEOUT_MS;
+    const channel = await ensureAiPushChannel(socket, instanceId);
+    const requestId = channel ? `req-${++requestCounter}-${Date.now().toString(36)}` : '';
+
+    const result: ChatCompletionResponse & { accepted?: boolean } = await socket.sendTo(instanceId, 'chatCompletion', {
+        timeout,
         model: request.model,
         provider: request.provider,
         messages: request.messages,
         ...(request.baseUrl ? { baseUrl: request.baseUrl } : {}),
         ...(request.tools?.length ? { tools: request.tools } : {}),
+        ...(channel ? { uiSession: channel.sessionToken, requestId } : {}),
     });
-    return result;
+
+    // Old adapter, or one that did not take the push route: it already answered in full.
+    if (!channel || !result?.accepted) {
+        return result;
+    }
+
+    return new Promise<ChatCompletionResponse>(resolve => {
+        const timer = setTimeout(() => {
+            channel.pending.delete(requestId);
+            // The adapter accepted the request and then never pushed - most likely it was
+            // restarted. Subscribing again on the next try is the cheapest recovery.
+            resetAiPushChannel();
+            resolve({ error: `${I18n.t('No answer within')} ${Math.round(timeout / 1000)}s` });
+        }, timeout);
+
+        channel.pending.set(requestId, answer => {
+            clearTimeout(timer);
+            resolve(answer);
+        });
+    });
 }
 
 // ─── Device Detection ────────────────────────────────────────────
@@ -781,4 +902,65 @@ export function stripThinkingArtifacts(content: string): string {
     cleaned = cleaned.replace(/<\|im_start\|>[\s\S]*?<\|im_end\|>/g, '');
     cleaned = cleaned.replace(/<\|im_start\|>[\s\S]*/g, '');
     return cleaned.trim();
+}
+
+/**
+ * Whether the endpoint stopped because it ran out of output budget rather than because it was done.
+ *
+ * Anthropic says `max_tokens`, the OpenAI-compatible ones say `length`. In both cases the answer
+ * ends mid-word and is worthless as code, so it must not look like a finished reply.
+ *
+ * @param result the response as the adapter passed it on
+ */
+export function isTruncatedAnswer(result: ChatCompletionResponse): boolean {
+    return result.finishReason === 'max_tokens' || result.finishReason === 'length';
+}
+
+/**
+ * What to put in the chat bubble when the request went through but there is nothing to show.
+ *
+ * An empty bubble is the worst possible answer: it looks exactly like an adapter that silently
+ * did nothing, and leaves the user with no idea whether the key, the model or the request was
+ * at fault. The endpoint almost always reports why it stopped, so say that out loud - and if the
+ * model did send something that only got lost while cleaning up the reasoning artifacts, keep it.
+ *
+ * @param result the response as the adapter passed it on
+ */
+export function describeMissingAnswer(result: ChatCompletionResponse): string {
+    const raw = (result.content || '').trim();
+    const details: string[] = [];
+    if (result.finishReason) {
+        details.push(`${I18n.t('Stop reason')}: ${result.finishReason}`);
+    }
+    if (result.usage?.input !== undefined || result.usage?.output !== undefined) {
+        details.push(`${I18n.t('Tokens in/out')}: ${result.usage?.input ?? '?'}/${result.usage?.output ?? '?'}`);
+    }
+    const suffix = details.length ? ` (${details.join(', ')})` : '';
+
+    // The model wrote only reasoning - show it rather than swallowing the whole answer
+    if (raw) {
+        return `⚠️ ${I18n.t('The model answered with reasoning only, no result')}${suffix}\n\n${raw}`;
+    }
+    if (result.finishReason === 'max_tokens' || result.finishReason === 'length') {
+        return `⚠️ ${I18n.t('The model used up its output budget before writing an answer. Try a shorter question or less context.')}${suffix}`;
+    }
+    // Not even the `success` flag came back: this never reached the endpoint, so blaming the
+    // model would send the user looking for the wrong fault. Usually an adapter that is too
+    // old to answer this command, or one that was restarted while the request was in flight.
+    // The reply itself goes into the bubble - whatever came back instead of an answer is the
+    // one piece of evidence that identifies the cause, and nobody should need the console for it.
+    if (result.success !== true) {
+        let reply: string;
+        try {
+            // A plain string is what the socket answers on a permission error, and that is
+            // worth seeing verbatim; anything else is serialized, circular references included.
+            reply = typeof result === 'string' ? result : JSON.stringify(result);
+        } catch {
+            reply = Object.prototype.toString.call(result);
+        }
+        return `⚠️ ${I18n.t('The javascript adapter did not answer this request. Check the adapter log.')}\n\n\`${I18n.t(
+            'Reply',
+        )}: ${reply.substring(0, 300)}\``;
+    }
+    return `⚠️ ${I18n.t('The model returned an empty answer')}${suffix}`;
 }

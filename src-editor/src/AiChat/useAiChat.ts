@@ -22,6 +22,8 @@ import {
     getSystemPromptDocs,
     getUserLanguageName,
     stripThinkingArtifacts,
+    describeMissingAnswer,
+    isTruncatedAnswer,
     getCodeModeSystemPrompt,
     getBlocklyCodeModeSystemPrompt,
     clearCaches,
@@ -447,7 +449,7 @@ ${docsRef.current}`;
                     return;
                 }
 
-                const planText = stripThinkingArtifacts(planResult.content || '');
+                const planText = stripThinkingArtifacts(planResult.content || '') || describeMissingAnswer(planResult);
 
                 // Show the plan
                 setMessages(prev => {
@@ -492,7 +494,7 @@ ${docsRef.current}`;
                     return;
                 }
 
-                const codeText = stripThinkingArtifacts(codeResult.content || '');
+                const codeText = stripThinkingArtifacts(codeResult.content || '') || describeMissingAnswer(codeResult);
 
                 // Show the code
                 setMessages(prev => {
@@ -641,6 +643,10 @@ ${docsRef.current}`;
 
             try {
                 const currentMessages = [...conversationMessages];
+                // Whether the loop produced something the user can see - an answer or an error.
+                // Without this a model that keeps asking for tools runs out of rounds and leaves
+                // the last tool-progress line standing, as if it had simply stopped mid-thought.
+                let answered = false;
 
                 for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
                     const result = await sendChatCompletion(socket, instanceId, {
@@ -664,7 +670,8 @@ ${docsRef.current}`;
                                 setError(fallback.error);
                                 setMessages(prev => prev.slice(0, -1));
                             } else {
-                                const cleanContent = stripThinkingArtifacts(fallback.content || '');
+                                const cleanContent =
+                                    stripThinkingArtifacts(fallback.content || '') || describeMissingAnswer(fallback);
                                 setMessages(prev => {
                                     const updated = [...prev];
                                     const last = updated[updated.length - 1];
@@ -674,10 +681,12 @@ ${docsRef.current}`;
                                     return updated;
                                 });
                             }
+                            answered = true;
                             break;
                         }
                         setError(result.error);
                         setMessages(prev => prev.slice(0, -1));
+                        answered = true;
                         break;
                     }
 
@@ -708,7 +717,31 @@ ${docsRef.current}`;
 
                     // No tool calls = final answer
                     if (!toolCalls || toolCalls.length === 0) {
-                        const cleanContent = stripThinkingArtifacts(result.content || '');
+                        let cleanContent = stripThinkingArtifacts(result.content || '');
+                        if (cleanContent && isTruncatedAnswer(result)) {
+                            // The answer simply stops mid-sentence. Without this note it looks
+                            // like the model finished, and the half-written script gets copied
+                            // into the editor as if it were complete.
+                            cleanContent += `\n\n⚠️ ${I18n.t(
+                                'The answer is incomplete: the model hit its output limit. Raise "Maximum answer length" in the adapter settings, or ask for a smaller part.',
+                            )}`;
+                        }
+                        if (!cleanContent) {
+                            // Nothing to render. Never leave the bubble blank - that is
+                            // indistinguishable from an adapter that did nothing at all.
+                            cleanContent = describeMissingAnswer(result);
+                            // The whole reply, not a selection of fields: when the answer is
+                            // empty the interesting part is usually what is NOT in it, and a
+                            // user asked for support can just paste this one line.
+                            console.warn('[AiChat] no usable content in the answer', {
+                                instanceId,
+                                model,
+                                provider,
+                                round,
+                                rawLength: (result.content || '').length,
+                                result,
+                            });
+                        }
                         setMessages(prev => {
                             const updated = [...prev];
                             const last = updated[updated.length - 1];
@@ -717,6 +750,7 @@ ${docsRef.current}`;
                             }
                             return updated;
                         });
+                        answered = true;
                         break;
                     }
 
@@ -776,6 +810,22 @@ ${docsRef.current}`;
                             content: toolResult,
                         });
                     }
+                }
+
+                if (!answered) {
+                    const note = I18n.t('No final answer after %s tool rounds', MAX_TOOL_ROUNDS.toString());
+                    setError(note);
+                    setMessages(prev => {
+                        const updated = [...prev];
+                        const last = updated[updated.length - 1];
+                        if (last?.role === 'assistant') {
+                            updated[updated.length - 1] = {
+                                ...last,
+                                content: `${last.content ? `${last.content}\n\n` : ''}⚠️ ${note}`,
+                            };
+                        }
+                        return updated;
+                    });
                 }
             } catch (err) {
                 setError(String(err));

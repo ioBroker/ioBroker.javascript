@@ -753,6 +753,17 @@
                     "sm": 3,
                     "showProcess": true
                 },
+                "aiMaxTokens": {
+                    "newLine": true,
+                    "type": "number",
+                    "label": "Maximum answer length",
+                    "help": "Maximum answer length help",
+                    "min": 1024,
+                    "max": 200000,
+                    "default": 8192,
+                    "xs": 12,
+                    "sm": 5
+                },
                 "aiReasoningEffort": {
                     "newLine": true,
                     "type": "select",

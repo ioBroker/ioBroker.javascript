@@ -32,6 +32,7 @@ import { red, green } from '@mui/material/colors';
 
 import {
     MdSave as IconSave,
+    MdCompareArrows as IconDiff,
     MdCancel as IconCancel,
     MdClose as IconClose,
     MdRefresh as IconRestart,
@@ -107,6 +108,7 @@ const DialogScriptEditor = React.lazy(() => import('./Dialogs/ScriptEditor'));
 const DialogDocumentation = React.lazy(() => import('./Dialogs/Documentation'));
 const AiChatPanel = React.lazy(() => import('./AiChat/AiChatPanel'));
 const AiDiffView = React.lazy(() => import('./AiChat/AiDiffView'));
+const DialogDiff = React.lazy(() => import('./Dialogs/Diff'));
 // the tour of the Rules editor
 const Tour = React.lazy(() => import('reactour'));
 const FbEditor = React.lazy(loadFbEditor);
@@ -309,6 +311,8 @@ interface EditorState {
     showCompiledCode: boolean;
     showSelectId: boolean;
     showCron: boolean;
+    /** Diff of the selected script against the version in the objects DB */
+    showDiff: boolean;
     showScript: boolean;
     showAstro: boolean;
     /** The API documentation is open; `word` is the identifier that was under the cursor */
@@ -337,6 +341,8 @@ interface EditorState {
     oidShowIcon: boolean;
     triggerPrettier: number;
     aiChatOpen: boolean;
+    /** The AI chat uses the whole editor area instead of sharing it with the editor */
+    aiChatMaximized: boolean;
     aiDiffView: { original: string; modified: string } | null;
     aiActionRequest: EditorAiActionRequest | null;
     inlineAskHandler: ((question: string, code: string) => Promise<string>) | null;
@@ -434,6 +440,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             menuOpened: !!this.props.menuOpened,
             menuTabsOpened: false,
             aiChatOpen: window.localStorage.getItem('Editor.aiChatOpen') === 'true',
+            aiChatMaximized: window.localStorage.getItem('Editor.aiChatMaximized') === 'true',
             aiDiffView: null,
             aiActionRequest: null,
             inlineAskHandler: null,
@@ -450,6 +457,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             showDoc: null,
             showCompiledCode: false,
             showCron: false,
+            showDiff: false,
             showDebugMenu: false,
             showScript: false,
             showSelectId: false,
@@ -1586,6 +1594,24 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             {I18n.t('Save')}
                         </Button>
                     ) : null}
+                    {/*
+                     * Text scripts only. For Blockly, Rules and FBD the stored source is generated
+                     * code with the model appended as one long comment line, so a textual diff says
+                     * nothing about what the user actually changed in the editor.
+                     */}
+                    {changed && !this.state.blockly && !this.state.rules && !this.state.fbd ? (
+                        <Button
+                            color="grey"
+                            key="diff"
+                            variant="contained"
+                            style={styles.textButton}
+                            title={I18n.t('Show the changes against the saved version')}
+                            onClick={() => this.setState({ showDiff: true })}
+                            endIcon={<IconDiff />}
+                        >
+                            {I18n.t('Diff')}
+                        </Button>
+                    ) : null}
                     {changedAll > 1 || (changedAll === 1 && !changed) ? (
                         <Button
                             color="grey"
@@ -2080,113 +2106,91 @@ class Editor extends React.Component<EditorProps, EditorState> {
             }
 
             if (this.state.aiChatOpen) {
-                const savedSizes = window.localStorage.getItem('Editor.aiChatSizes');
-                let initialSizes = [70, 30];
-                try {
-                    if (savedSizes) {
-                        initialSizes = JSON.parse(savedSizes);
-                    }
-                } catch {
-                    /* ignore corrupt localStorage */
-                }
+                const chat = (
+                    <Suspense fallback={<Connecting />}>
+                        <AiChatPanel
+                            socket={this.props.socket}
+                            runningInstances={this.state.runningInstances}
+                            themeType={this.state.themeType}
+                            currentCode={this.scripts[this.state.selected]?.source || ''}
+                            currentLanguage={currentLanguage}
+                            selectedCode={this.getSelect?.() || ''}
+                            allScripts={this.getScriptInfos()}
+                            editorApi={this.getEditorApi()}
+                            aiActionRequest={this.state.aiActionRequest}
+                            onAiActionConsumed={() => this.setState({ aiActionRequest: null })}
+                            onRegisterInlineAsk={handler => this.setState({ inlineAskHandler: handler })}
+                            currentScriptId={this.state.selected}
+                            onInsertCode={code => this.setState({ insert: code })}
+                            onShowDiff={(modifiedCode, sourceRange) => {
+                                const scriptId = this.state.selected;
+                                const scriptSource = this.scripts[scriptId]?.source || '';
+                                const editorRef = this.scriptEditorRef.current;
 
-                return (
-                    <Box
-                        sx={styles.editorDiv}
-                        key="scriptEditorDiv"
-                    >
-                        <ReactSplit
-                            direction={SplitDirection.Horizontal}
-                            initialSizes={initialSizes}
-                            minWidths={[200, 250]}
-                            gutterClassName={this.state.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
-                            onResizeFinished={(_pairIdx: number, newSizes: number[]) => {
-                                window.localStorage.setItem('Editor.aiChatSizes', JSON.stringify(newSizes));
+                                const showInline = (
+                                    range: {
+                                        startLine: number;
+                                        startColumn: number;
+                                        endLine: number;
+                                        endColumn: number;
+                                    },
+                                    originalText: string,
+                                ): void => {
+                                    editorRef?.showInlineDiff({
+                                        range,
+                                        originalText,
+                                        modifiedText: modifiedCode,
+                                        onAccepted: () => {
+                                            const newSrc = editorRef?.getEditorContent?.() || scriptSource;
+                                            this.onChange({ script: newSrc });
+                                        },
+                                    });
+                                };
+
+                                // Path 1 — explicit range captured at question time (best case).
+                                if (sourceRange && sourceRange.range && sourceRange.scriptId === scriptId) {
+                                    showInline(sourceRange.range, sourceRange.originalText);
+                                    return;
+                                }
+
+                                // Path 2 — VS-Code-style: scan the current script to locate
+                                // where the AI block belongs (by function/class name, else
+                                // by line-similarity). Covers legacy messages and free-form
+                                // asks without selection.
+                                try {
+                                    const match = findBestTarget(modifiedCode, scriptSource);
+                                    if (match) {
+                                        const lines = scriptSource.split('\n');
+                                        const originalText = lines
+                                            .slice(match.range.startLine - 1, match.range.endLine)
+                                            .join('\n');
+                                        showInline(match.range, originalText);
+                                        return;
+                                    }
+                                } catch {
+                                    /* fall through to legacy modal */
+                                }
+
+                                // Path 3 — nothing fit: keep the old modal for insertions
+                                // and genuinely new code blocks.
+                                this.setState({
+                                    aiDiffView: {
+                                        original: scriptSource,
+                                        modified: modifiedCode,
+                                    },
+                                });
                             }}
-                        >
-                            {editor}
-                            <Suspense fallback={<Connecting />}>
-                                <AiChatPanel
-                                    socket={this.props.socket}
-                                    runningInstances={this.state.runningInstances}
-                                    themeType={this.state.themeType}
-                                    currentCode={this.scripts[this.state.selected]?.source || ''}
-                                    currentLanguage={currentLanguage}
-                                    selectedCode={this.getSelect?.() || ''}
-                                    allScripts={this.getScriptInfos()}
-                                    editorApi={this.getEditorApi()}
-                                    aiActionRequest={this.state.aiActionRequest}
-                                    onAiActionConsumed={() => this.setState({ aiActionRequest: null })}
-                                    onRegisterInlineAsk={handler => this.setState({ inlineAskHandler: handler })}
-                                    currentScriptId={this.state.selected}
-                                    onInsertCode={code => this.setState({ insert: code })}
-                                    onShowDiff={(modifiedCode, sourceRange) => {
-                                        const scriptId = this.state.selected;
-                                        const scriptSource = this.scripts[scriptId]?.source || '';
-                                        const editorRef = this.scriptEditorRef.current;
-
-                                        const showInline = (
-                                            range: {
-                                                startLine: number;
-                                                startColumn: number;
-                                                endLine: number;
-                                                endColumn: number;
-                                            },
-                                            originalText: string,
-                                        ): void => {
-                                            editorRef?.showInlineDiff({
-                                                range,
-                                                originalText,
-                                                modifiedText: modifiedCode,
-                                                onAccepted: () => {
-                                                    const newSrc = editorRef?.getEditorContent?.() || scriptSource;
-                                                    this.onChange({ script: newSrc });
-                                                },
-                                            });
-                                        };
-
-                                        // Path 1 — explicit range captured at question time (best case).
-                                        if (sourceRange && sourceRange.range && sourceRange.scriptId === scriptId) {
-                                            showInline(sourceRange.range, sourceRange.originalText);
-                                            return;
-                                        }
-
-                                        // Path 2 — VS-Code-style: scan the current script to locate
-                                        // where the AI block belongs (by function/class name, else
-                                        // by line-similarity). Covers legacy messages and free-form
-                                        // asks without selection.
-                                        try {
-                                            const match = findBestTarget(modifiedCode, scriptSource);
-                                            if (match) {
-                                                const lines = scriptSource.split('\n');
-                                                const originalText = lines
-                                                    .slice(match.range.startLine - 1, match.range.endLine)
-                                                    .join('\n');
-                                                showInline(match.range, originalText);
-                                                return;
-                                            }
-                                        } catch {
-                                            /* fall through to legacy modal */
-                                        }
-
-                                        // Path 3 — nothing fit: keep the old modal for insertions
-                                        // and genuinely new code blocks.
-                                        this.setState({
-                                            aiDiffView: {
-                                                original: scriptSource,
-                                                modified: modifiedCode,
-                                            },
-                                        });
-                                    }}
-                                    onClose={() => {
-                                        window.localStorage.setItem('Editor.aiChatOpen', 'false');
-                                        this.setState({ aiChatOpen: false });
-                                    }}
-                                />
-                            </Suspense>
-                        </ReactSplit>
-                    </Box>
+                            maximized={this.state.aiChatMaximized}
+                            onToggleMaximized={this.toggleAiChatMaximized}
+                            onClose={() => {
+                                window.localStorage.setItem('Editor.aiChatOpen', 'false');
+                                this.setState({ aiChatOpen: false });
+                            }}
+                        />
+                    </Suspense>
                 );
+
+                return this.renderWithAiChat(editor, chat, 'Editor.aiChatSizes', 'scriptEditorDiv');
             }
 
             return (
@@ -2231,75 +2235,53 @@ class Editor extends React.Component<EditorProps, EditorState> {
             );
 
             if (this.state.aiChatOpen) {
-                const savedSizes = window.localStorage.getItem('Editor.aiBlocklyChatSizes');
-                let initialSizes = [70, 30];
-                try {
-                    if (savedSizes) {
-                        initialSizes = JSON.parse(savedSizes);
-                    }
-                } catch {
-                    /* ignore corrupt localStorage */
-                }
-
-                return (
-                    <Box
-                        sx={styles.editorDiv}
-                        key="blocklyEditorDiv"
-                    >
-                        <ReactSplit
-                            direction={SplitDirection.Horizontal}
-                            initialSizes={initialSizes}
-                            minWidths={[200, 250]}
-                            gutterClassName={this.state.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
-                            onResizeFinished={(_pairIdx: number, newSizes: number[]) => {
-                                window.localStorage.setItem('Editor.aiBlocklyChatSizes', JSON.stringify(newSizes));
+                const chat = (
+                    <Suspense fallback={<Connecting />}>
+                        <AiChatPanel
+                            socket={this.props.socket}
+                            runningInstances={this.state.runningInstances}
+                            themeType={this.state.themeType}
+                            currentCode={(() => {
+                                const ref = this.blocklyEditorRef.current;
+                                let jsCode = '';
+                                let xml = '';
+                                try {
+                                    jsCode = ref?.blocklyCode2JSCode(true) || '';
+                                } catch {
+                                    /* ignore */
+                                }
+                                try {
+                                    xml = ref?.getWorkspaceXml() || '';
+                                } catch {
+                                    /* ignore */
+                                }
+                                return `${jsCode}\n%%BLOCKLY_XML%%\n${xml}`;
+                            })()}
+                            currentLanguage="blockly"
+                            allScripts={this.getScriptInfos()}
+                            onInsertCode={xml => {
+                                const ref = this.blocklyEditorRef.current;
+                                if (ref) {
+                                    ref.appendBlocksFromXml(xml);
+                                }
                             }}
-                        >
-                            {blocklyEditor}
-                            <Suspense fallback={<Connecting />}>
-                                <AiChatPanel
-                                    socket={this.props.socket}
-                                    runningInstances={this.state.runningInstances}
-                                    themeType={this.state.themeType}
-                                    currentCode={(() => {
-                                        const ref = this.blocklyEditorRef.current;
-                                        let jsCode = '';
-                                        let xml = '';
-                                        try {
-                                            jsCode = ref?.blocklyCode2JSCode(true) || '';
-                                        } catch {
-                                            /* ignore */
-                                        }
-                                        try {
-                                            xml = ref?.getWorkspaceXml() || '';
-                                        } catch {
-                                            /* ignore */
-                                        }
-                                        return `${jsCode}\n%%BLOCKLY_XML%%\n${xml}`;
-                                    })()}
-                                    currentLanguage="blockly"
-                                    allScripts={this.getScriptInfos()}
-                                    onInsertCode={xml => {
-                                        const ref = this.blocklyEditorRef.current;
-                                        if (ref) {
-                                            ref.appendBlocksFromXml(xml);
-                                        }
-                                    }}
-                                    onApplyCode={xml => {
-                                        const ref = this.blocklyEditorRef.current;
-                                        if (ref) {
-                                            ref.applyAiBlocks(xml);
-                                        }
-                                    }}
-                                    onClose={() => {
-                                        window.localStorage.setItem('Editor.aiChatOpen', 'false');
-                                        this.setState({ aiChatOpen: false });
-                                    }}
-                                />
-                            </Suspense>
-                        </ReactSplit>
-                    </Box>
+                            onApplyCode={xml => {
+                                const ref = this.blocklyEditorRef.current;
+                                if (ref) {
+                                    ref.applyAiBlocks(xml);
+                                }
+                            }}
+                            maximized={this.state.aiChatMaximized}
+                            onToggleMaximized={this.toggleAiChatMaximized}
+                            onClose={() => {
+                                window.localStorage.setItem('Editor.aiChatOpen', 'false');
+                                this.setState({ aiChatOpen: false });
+                            }}
+                        />
+                    </Suspense>
                 );
+
+                return this.renderWithAiChat(blocklyEditor, chat, 'Editor.aiBlocklyChatSizes', 'blocklyEditorDiv');
             }
 
             return (
@@ -2678,6 +2660,154 @@ class Editor extends React.Component<EditorProps, EditorState> {
         return null;
     }
 
+    /** Switch the AI chat between sharing the area with the editor and using all of it */
+    toggleAiChatMaximized = (): void => {
+        const aiChatMaximized = !this.state.aiChatMaximized;
+        window.localStorage.setItem('Editor.aiChatMaximized', String(aiChatMaximized));
+        this.setState({ aiChatMaximized });
+    };
+
+    /** The element wrapping each AI-chat splitter, so its live column widths can be read back */
+    private splitContainers: Record<string, HTMLDivElement | null> = {};
+    /** One array per splitter, reused across renders - see `getSplitSizes` */
+    private splitSizes: Record<string, number[]> = {};
+
+    /**
+     * The column widths to hand the AI-chat splitter.
+     *
+     * `@devbookhq/splitter` re-applies `initialSizes` from an effect whose dependencies include
+     * both `children` and `initialSizes`, and in a class render both are new objects on *every*
+     * re-render. So any unrelated update - a log line arriving, a dialog opening - pushed the
+     * gutter back to the stored width, and when that happened while the user was dragging, the
+     * drag was simply lost.
+     *
+     * The array is therefore created once per splitter and refilled with the widths the panes
+     * actually have, which the splitter writes as `calc(<percent>% - <gutter>px)`. Re-applying it
+     * is then a no-op instead of a jump - during a drag as well, because the live DOM is ahead of
+     * the stored value.
+     *
+     * @param sizesKey localStorage key under which this splitter remembers its widths
+     */
+    private getSplitSizes(sizesKey: string): number[] {
+        let sizes = this.splitSizes[sizesKey];
+        if (!sizes) {
+            sizes = [70, 30];
+            try {
+                const saved = window.localStorage.getItem(sizesKey);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed) && parsed.length === 2 && parsed.every(n => typeof n === 'number')) {
+                        sizes = parsed;
+                    }
+                }
+            } catch {
+                /* ignore corrupt localStorage */
+            }
+            this.splitSizes[sizesKey] = sizes;
+        }
+
+        const container = this.splitContainers[sizesKey];
+        if (container) {
+            const live: number[] = [];
+            for (const pane of Array.from(container.querySelectorAll<HTMLElement>(':scope > div > div'))) {
+                const match = /calc\(([\d.]+)%/.exec(pane.style.width || '');
+                if (match) {
+                    live.push(parseFloat(match[1]));
+                }
+            }
+            if (live.length === sizes.length) {
+                sizes.splice(0, sizes.length, ...live);
+            }
+        }
+        return sizes;
+    }
+
+    /**
+     * Put the editor and the AI chat side by side, or give the chat the whole area.
+     *
+     * Maximizing drops the splitter, which remounts the chat panel - harmless, because it restores
+     * its conversation from the localStorage it writes to anyway, the same way it already does when
+     * the panel is closed and opened again.
+     *
+     * @param editor the editor pane
+     * @param chat the chat pane, built by the caller because its props differ per editor type
+     * @param sizesKey localStorage key under which the splitter remembers the column widths
+     * @param boxKey React key of the surrounding box
+     */
+    private renderWithAiChat(
+        editor: React.JSX.Element,
+        chat: React.JSX.Element,
+        sizesKey: string,
+        boxKey: string,
+    ): React.JSX.Element {
+        if (this.state.aiChatMaximized) {
+            return (
+                <Box
+                    sx={styles.editorDiv}
+                    key={boxKey}
+                >
+                    {chat}
+                </Box>
+            );
+        }
+
+        const initialSizes = this.getSplitSizes(sizesKey);
+
+        return (
+            <Box
+                sx={styles.editorDiv}
+                key={boxKey}
+                ref={(el: HTMLDivElement | null) => {
+                    this.splitContainers[sizesKey] = el;
+                }}
+            >
+                <ReactSplit
+                    direction={SplitDirection.Horizontal}
+                    initialSizes={initialSizes}
+                    minWidths={[200, 250]}
+                    gutterClassName={this.state.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
+                    onResizeFinished={(_pairIdx: number, newSizes: number[]) => {
+                        window.localStorage.setItem(sizesKey, JSON.stringify(newSizes));
+                        // In place, so the array the splitter was given keeps its identity
+                        initialSizes.splice(0, initialSizes.length, ...newSizes);
+                    }}
+                >
+                    {editor}
+                    {chat}
+                </ReactSplit>
+            </Box>
+        );
+    }
+
+    getDiffDialog(): React.JSX.Element | null {
+        if (!this.state.showDiff || !this.state.selected) {
+            return null;
+        }
+        const id = this.state.selected;
+        const saved = this.getScriptFromObject(id);
+        const current = this.scripts[id];
+        // Nothing to compare against - the object vanished while the dialog was being opened
+        if (!saved || !current) {
+            return null;
+        }
+        return (
+            <Suspense
+                key="diff"
+                fallback={<Connecting />}
+            >
+                <DialogDiff
+                    savedCode={saved.source || ''}
+                    currentCode={current.source || ''}
+                    language={current.engineType === 'TypeScript/ts' ? 'typescript' : 'javascript'}
+                    themeType={this.props.themeType}
+                    name={id.replace(/^script\.js\./, '')}
+                    onSave={() => this.onSave()}
+                    onClose={() => this.setState({ showDiff: false })}
+                />
+            </Suspense>
+        );
+    }
+
     getDocumentationDialog(): React.JSX.Element | null {
         if (this.state.showDoc) {
             return (
@@ -2906,6 +3036,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             this.getCronDialog(),
             this.getEditorDialog(),
             this.getAstroDialog(),
+            this.getDiffDialog(),
             this.getDocumentationDialog(),
             this.getDebugMenu(),
             this.getToast(),

@@ -113,5 +113,7 @@
     "API keys": "Chiavi API",
     "Type definitions": "Definizioni di tipo",
     "Load type definitions": "Carica le definizioni di tipo",
-    "loadTypings help": "Definizioni di tipo di Node.js, ioBroker e delle librerie configurate. Vengono lette solo quando servono davvero - per compilare uno script TypeScript o per l'editor integrato - perché costano al compilatore circa 90 MB. Disattivate non vengono mai lette: l'editor perde il completamento automatico e gli script TypeScript non si compilano più. Il JavaScript puro, comprese le dichiarazioni dei JavaScript globali, non è interessato."
+    "loadTypings help": "Definizioni di tipo di Node.js, ioBroker e delle librerie configurate. Vengono lette solo quando servono davvero - per compilare uno script TypeScript o per l'editor integrato - perché costano al compilatore circa 90 MB. Disattivate non vengono mai lette: l'editor perde il completamento automatico e gli script TypeScript non si compilano più. Il JavaScript puro, comprese le dichiarazioni dei JavaScript globali, non è interessato.",
+    "Maximum answer length": "Maximum answer length",
+    "Maximum answer length help": "Only for Anthropic, which requires the limit. A longer script is cut off mid-line when the limit is reached. Older models reject values above 8192."
 }

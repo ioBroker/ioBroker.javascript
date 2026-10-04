@@ -113,5 +113,7 @@
     "API keys": "API-ключі",
     "Type definitions": "Визначення типів",
     "Load type definitions": "Завантажувати визначення типів",
-    "loadTypings help": "Визначення типів Node.js, ioBroker і налаштованих бібліотек. Вони читаються лише тоді, коли справді потрібні - для компіляції TypeScript-скрипта або для вбудованого редактора, - бо додають компілятору близько 90 МБ. Вимкнені, вони не читаються ніколи: редактор втрачає автодоповнення, а TypeScript-скрипти більше не компілюються. Чистий JavaScript, зокрема декларації глобальних JavaScript, не зачіпається."
+    "loadTypings help": "Визначення типів Node.js, ioBroker і налаштованих бібліотек. Вони читаються лише тоді, коли справді потрібні - для компіляції TypeScript-скрипта або для вбудованого редактора, - бо додають компілятору близько 90 МБ. Вимкнені, вони не читаються ніколи: редактор втрачає автодоповнення, а TypeScript-скрипти більше не компілюються. Чистий JavaScript, зокрема декларації глобальних JavaScript, не зачіпається.",
+    "Maximum answer length": "Maximum answer length",
+    "Maximum answer length help": "Only for Anthropic, which requires the limit. A longer script is cut off mid-line when the limit is reached. Older models reject values above 8192."
 }

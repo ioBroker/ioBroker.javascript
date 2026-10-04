@@ -140,6 +140,10 @@ export interface ChatCompletionResponse {
     content?: string;
     error?: string;
     tool_calls?: ToolCall[];
+    /** Anthropic's `stop_reason` or the OpenAI-compatible `finish_reason`, normalized by the adapter */
+    finishReason?: string;
+    /** Token counts, as far as the endpoint reports them */
+    usage?: { input?: number; output?: number };
 }
 
 /** A selection/range in the Monaco editor (1-based line/column, matches Monaco's convention). */

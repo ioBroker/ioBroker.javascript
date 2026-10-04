@@ -113,5 +113,7 @@
     "API keys": "API 密钥",
     "Type definitions": "类型定义",
     "Load type definitions": "加载类型定义",
-    "loadTypings help": "Node.js、ioBroker 和已配置库的类型定义。它们只在真正需要时才读取——编译 TypeScript 脚本或响应内置编辑器——因为它们会让编译器多占用约 90 MB。关闭后将永远不会读取：编辑器失去自动补全，TypeScript 脚本无法再编译。纯 JavaScript（包括全局 JavaScript 的声明）不受影响。"
+    "loadTypings help": "Node.js、ioBroker 和已配置库的类型定义。它们只在真正需要时才读取——编译 TypeScript 脚本或响应内置编辑器——因为它们会让编译器多占用约 90 MB。关闭后将永远不会读取：编辑器失去自动补全，TypeScript 脚本无法再编译。纯 JavaScript（包括全局 JavaScript 的声明）不受影响。",
+    "Maximum answer length": "Maximum answer length",
+    "Maximum answer length help": "Only for Anthropic, which requires the limit. A longer script is cut off mid-line when the limit is reached. Older models reject values above 8192."
 }
