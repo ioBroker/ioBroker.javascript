@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2024 bluefox <dogafox@gmail.com>,
+ * Copyright (c) 2014-2026 bluefox <dogafox@gmail.com>,
  *
  * Copyright (c) 2014      hobbyquaker
  */
@@ -1812,7 +1812,19 @@ class JavaScript extends Adapter {
                         !apiKey &&
                         (provider === 'anthropic' || provider === 'gemini' || provider === 'deepseek' || !baseUrl)
                     ) {
-                        this.sendTo(obj.from, obj.command, { error: 'No API key provided' }, obj.callback);
+                        // Say which of the two setups came up empty - "No API key provided" sent the user
+                        // looking for a key field that `manager` mode does not even show.
+                        const mode = obj.message?.credentialType || this.config.credentialType || 'manual';
+                        let error = 'No API key provided';
+                        if (mode === 'manager') {
+                            const id = (
+                                obj.message?.credentialId || getProviderCredentialId(this.config, provider)
+                            ).trim();
+                            error = id
+                                ? `Credential "${id}" contains no API key`
+                                : `No credential selected for "${provider}"`;
+                        }
+                        this.sendTo(obj.from, obj.command, { error }, obj.callback);
                         return;
                     }
 

@@ -33,6 +33,7 @@ Executes JavaScript, TypeScript Scripts.
 ### **WORK IN PROGRESS**
 * (@GermanBluefox) The question before a debug session ("The script will be stopped and must be activated manually after debugging") started the debugging even when it was answered with "Cancel" (#2382)
 * (@GermanBluefox) Stopping a debug session could end the debugged process with "uncaught exception: write EPIPE": the inspector process exited at once, although the process it debugs writes its whole log through its pipes and was still shutting down. The inspector now stops that process first and waits till it is really gone, a broken pipe cannot end a debugged script anymore, and the reset of the connection to the debugged process is not reported as an internal error of the inspector (#2382)
+* (@GermanBluefox) Fixing the test of the API keys
 
 ### 10.3.0 (2026-09-20)
 * (@GermanBluefox) The code editor (Monaco), Blockly and the Rules blocks are loaded only when a script of that kind is opened, so the editor starts faster
