@@ -532,7 +532,16 @@ export class Mirror {
                         this.dbList[id].ts = ts;
                         this.log.debug(`Update script ${id} in DB`);
                         this.dbList[id].from = this.from;
-                        void this.adapter.setForeignObject(id, this.dbList[id] as ioBroker.Object);
+                        /*
+                         * Only the source. Writing the whole cached object would carry everything
+                         * else in it back into the database as well, and a file says nothing about
+                         * whether its script is enabled or which instance runs it (#2396). Together
+                         * with the cache being kept in step above this holds even when the object
+                         * changes while a write is on its way.
+                         */
+                        void this.adapter.extendForeignObject(id, {
+                            common: { source },
+                        } as Partial<ioBroker.ScriptObject>);
                     } else {
                         this.dbList[id].ts = ts;
                     }
@@ -610,26 +619,20 @@ export class Mirror {
                 }
             }
         } else if (obj.type === 'script' && id.startsWith('script.js.')) {
-            if (this.dbList[id]) {
-                // File changed
-                if (this.dbList[id].common.source !== obj.common.source) {
-                    this.dbList[id] = obj;
-                    this.log.debug(`Update ${file} on disk`);
-                    this.diskList[id] = { ts: 0, source: obj.common.source, name: file };
-                    this._writeFile(id);
-                } else if (!this.diskList[id] || this.diskList[id].source !== obj.common.source) {
-                    this.log.debug(`Update ${file} on disk`);
-                    this.diskList[id] = { ts: 0, source: obj.common.source, name: file };
-                    this._writeFile(id);
-                }
-            } else {
-                // new script
-                this.dbList[id] = obj;
-                if (!this.diskList[id] || this.diskList[id].source !== obj.common.source) {
-                    this.log.debug(`Create ${file} on disk`);
-                    this.diskList[id] = { ts: 0, source: obj.common.source, name: file };
-                    this._writeFile(id);
-                }
+            const known = this.dbList[id];
+            /*
+             * The cache follows *every* change of the object, not only one that touched the source.
+             * It used to be refreshed only on a changed source, so enabling a script in the admin or
+             * moving it to another instance left a stale copy here - and the next change of the file
+             * on disk wrote that copy back, which silently disabled the script again and pulled it
+             * back to its old instance (#2396).
+             */
+            this.dbList[id] = obj;
+            const sourceChanged = !known || known.common.source !== obj.common.source;
+            if (sourceChanged || !this.diskList[id] || this.diskList[id].source !== obj.common.source) {
+                this.log.debug(`${known ? 'Update' : 'Create'} ${file} on disk`);
+                this.diskList[id] = { ts: 0, source: obj.common.source, name: file };
+                this._writeFile(id);
             }
             this.dbList[id].ts = Date.now();
         }

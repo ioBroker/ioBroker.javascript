@@ -67,37 +67,6 @@
                     "sm": 12,
                     "md": 6
                 },
-                "enableSecrets": {
-                    "newLine": true,
-                    "type": "checkbox",
-                    "default": true,
-                    "label": "Allow scripts to read the credentials",
-                    "help": "The credentials of the central storage are available in the scripts, e.g. SECRETS.CameraPassword.key",
-                    "xs": 12,
-                    "sm": 12,
-                    "md": 6
-                },
-                "_secretsHeader": {
-                    "newLine": true,
-                    "type": "header",
-                    "text": "Available credentials",
-                    "size": 5,
-                    "xs": 12,
-                    "sm": 12,
-                    "md": 12
-                },
-                "_secrets": {
-                    "newLine": true,
-                    "type": "custom",
-                    "i18n": true,
-                    "url": "custom/customComponents.js",
-                    "name": "ConfigCustomJavascriptSet/Components/Secrets",
-                    "guiApi": 2,
-                    "xs": 12,
-                    "sm": 12,
-                    "md": 12,
-                    "lg": 12
-                },
                 "subscribe": {
                     "type": "checkbox",
                     "label": "Do not subscribe all states on start",
@@ -215,15 +184,42 @@
                     "label": "target",
                     "help": "target help",
                     "options": [
-                        { "label": "ES2018", "value": "es2018" },
-                        { "label": "ES2019", "value": "es2019" },
-                        { "label": "ES2020", "value": "es2020" },
-                        { "label": "ES2021", "value": "es2021" },
-                        { "label": "ES2022", "value": "es2022" },
-                        { "label": "ES2023", "value": "es2023" },
-                        { "label": "ES2024", "value": "es2024" },
-                        { "label": "ES2025", "value": "es2025" },
-                        { "label": "ESNext", "value": "esnext" }
+                        {
+                            "label": "ES2018",
+                            "value": "es2018"
+                        },
+                        {
+                            "label": "ES2019",
+                            "value": "es2019"
+                        },
+                        {
+                            "label": "ES2020",
+                            "value": "es2020"
+                        },
+                        {
+                            "label": "ES2021",
+                            "value": "es2021"
+                        },
+                        {
+                            "label": "ES2022",
+                            "value": "es2022"
+                        },
+                        {
+                            "label": "ES2023",
+                            "value": "es2023"
+                        },
+                        {
+                            "label": "ES2024",
+                            "value": "es2024"
+                        },
+                        {
+                            "label": "ES2025",
+                            "value": "es2025"
+                        },
+                        {
+                            "label": "ESNext",
+                            "value": "esnext"
+                        }
                     ],
                     "default": "es2022",
                     "xs": 12,
@@ -334,9 +330,18 @@
                     "type": "select",
                     "label": "noImplicitAny",
                     "options": [
-                        { "label": "Follow strict", "value": "" },
-                        { "label": "Enabled", "value": "true" },
-                        { "label": "Disabled", "value": "false" }
+                        {
+                            "label": "Follow strict",
+                            "value": ""
+                        },
+                        {
+                            "label": "Enabled",
+                            "value": "true"
+                        },
+                        {
+                            "label": "Disabled",
+                            "value": "false"
+                        }
                     ],
                     "default": "",
                     "xs": 12,
@@ -347,9 +352,18 @@
                     "type": "select",
                     "label": "strictNullChecks",
                     "options": [
-                        { "label": "Follow strict", "value": "" },
-                        { "label": "Enabled", "value": "true" },
-                        { "label": "Disabled", "value": "false" }
+                        {
+                            "label": "Follow strict",
+                            "value": ""
+                        },
+                        {
+                            "label": "Enabled",
+                            "value": "true"
+                        },
+                        {
+                            "label": "Disabled",
+                            "value": "false"
+                        }
                     ],
                     "default": "",
                     "xs": 12,
@@ -360,9 +374,18 @@
                     "type": "select",
                     "label": "strictFunctionTypes",
                     "options": [
-                        { "label": "Follow strict", "value": "" },
-                        { "label": "Enabled", "value": "true" },
-                        { "label": "Disabled", "value": "false" }
+                        {
+                            "label": "Follow strict",
+                            "value": ""
+                        },
+                        {
+                            "label": "Enabled",
+                            "value": "true"
+                        },
+                        {
+                            "label": "Disabled",
+                            "value": "false"
+                        }
                     ],
                     "default": "",
                     "xs": 12,
@@ -374,9 +397,18 @@
                     "type": "select",
                     "label": "strictBindCallApply",
                     "options": [
-                        { "label": "Follow strict", "value": "" },
-                        { "label": "Enabled", "value": "true" },
-                        { "label": "Disabled", "value": "false" }
+                        {
+                            "label": "Follow strict",
+                            "value": ""
+                        },
+                        {
+                            "label": "Enabled",
+                            "value": "true"
+                        },
+                        {
+                            "label": "Disabled",
+                            "value": "false"
+                        }
                     ],
                     "default": "",
                     "xs": 12,
@@ -387,9 +419,18 @@
                     "type": "select",
                     "label": "strictPropertyInitialization",
                     "options": [
-                        { "label": "Follow strict", "value": "" },
-                        { "label": "Enabled", "value": "true" },
-                        { "label": "Disabled", "value": "false" }
+                        {
+                            "label": "Follow strict",
+                            "value": ""
+                        },
+                        {
+                            "label": "Enabled",
+                            "value": "true"
+                        },
+                        {
+                            "label": "Disabled",
+                            "value": "false"
+                        }
                     ],
                     "default": "",
                     "xs": 12,
@@ -400,9 +441,18 @@
                     "type": "select",
                     "label": "strictBuiltinIteratorReturn",
                     "options": [
-                        { "label": "Follow strict", "value": "" },
-                        { "label": "Enabled", "value": "true" },
-                        { "label": "Disabled", "value": "false" }
+                        {
+                            "label": "Follow strict",
+                            "value": ""
+                        },
+                        {
+                            "label": "Enabled",
+                            "value": "true"
+                        },
+                        {
+                            "label": "Disabled",
+                            "value": "false"
+                        }
                     ],
                     "default": "",
                     "xs": 12,
@@ -414,9 +464,18 @@
                     "type": "select",
                     "label": "noImplicitThis",
                     "options": [
-                        { "label": "Follow strict", "value": "" },
-                        { "label": "Enabled", "value": "true" },
-                        { "label": "Disabled", "value": "false" }
+                        {
+                            "label": "Follow strict",
+                            "value": ""
+                        },
+                        {
+                            "label": "Enabled",
+                            "value": "true"
+                        },
+                        {
+                            "label": "Disabled",
+                            "value": "false"
+                        }
                     ],
                     "default": "",
                     "xs": 12,
@@ -427,9 +486,18 @@
                     "type": "select",
                     "label": "alwaysStrict",
                     "options": [
-                        { "label": "Follow strict", "value": "" },
-                        { "label": "Enabled", "value": "true" },
-                        { "label": "Disabled", "value": "false" }
+                        {
+                            "label": "Follow strict",
+                            "value": ""
+                        },
+                        {
+                            "label": "Enabled",
+                            "value": "true"
+                        },
+                        {
+                            "label": "Disabled",
+                            "value": "false"
+                        }
                     ],
                     "default": "",
                     "xs": 12,
@@ -441,9 +509,18 @@
                     "label": "useUnknownInCatchVariables",
                     "help": "useUnknownInCatchVariables help",
                     "options": [
-                        { "label": "Follow strict", "value": "" },
-                        { "label": "Enabled", "value": "true" },
-                        { "label": "Disabled", "value": "false" }
+                        {
+                            "label": "Follow strict",
+                            "value": ""
+                        },
+                        {
+                            "label": "Enabled",
+                            "value": "true"
+                        },
+                        {
+                            "label": "Disabled",
+                            "value": "false"
+                        }
                     ],
                     "default": "false",
                     "xs": 12,
@@ -522,9 +599,18 @@
                     "type": "select",
                     "label": "allowUnreachableCode",
                     "options": [
-                        { "label": "Warning", "value": "" },
-                        { "label": "Allowed", "value": "true" },
-                        { "label": "Error", "value": "false" }
+                        {
+                            "label": "Warning",
+                            "value": ""
+                        },
+                        {
+                            "label": "Allowed",
+                            "value": "true"
+                        },
+                        {
+                            "label": "Error",
+                            "value": "false"
+                        }
                     ],
                     "default": "",
                     "xs": 12,
@@ -535,9 +621,18 @@
                     "type": "select",
                     "label": "allowUnusedLabels",
                     "options": [
-                        { "label": "Warning", "value": "" },
-                        { "label": "Allowed", "value": "true" },
-                        { "label": "Error", "value": "false" }
+                        {
+                            "label": "Warning",
+                            "value": ""
+                        },
+                        {
+                            "label": "Allowed",
+                            "value": "true"
+                        },
+                        {
+                            "label": "Error",
+                            "value": "false"
+                        }
                     ],
                     "default": "",
                     "xs": 12,
@@ -583,8 +678,14 @@
                     "newLine": true,
                     "type": "select",
                     "options": [
-                        { "label": "System credentials", "value": "manager" },
-                        { "label": "Manual", "value": "manual" }
+                        {
+                            "label": "System credentials",
+                            "value": "manager"
+                        },
+                        {
+                            "label": "Manual",
+                            "value": "manual"
+                        }
                     ],
                     "label": "Credentials type",
                     "default": "manual",
@@ -770,15 +871,91 @@
                     "label": "Reasoning effort",
                     "help": "Only for OpenAI-compatible endpoints. Leave on \"Endpoint default\" unless the endpoint needs to be told.",
                     "options": [
-                        { "value": "", "label": "Endpoint default" },
-                        { "value": "none", "label": "Off (local models)" },
-                        { "value": "minimal", "label": "Minimal" },
-                        { "value": "low", "label": "Low" },
-                        { "value": "medium", "label": "Medium" },
-                        { "value": "high", "label": "High" }
+                        {
+                            "value": "",
+                            "label": "Endpoint default"
+                        },
+                        {
+                            "value": "none",
+                            "label": "Off (local models)"
+                        },
+                        {
+                            "value": "minimal",
+                            "label": "Minimal"
+                        },
+                        {
+                            "value": "low",
+                            "label": "Low"
+                        },
+                        {
+                            "value": "medium",
+                            "label": "Medium"
+                        },
+                        {
+                            "value": "high",
+                            "label": "High"
+                        }
                     ],
                     "xs": 12,
                     "sm": 5
+                }
+            }
+        },
+        "_credentials": {
+            "type": "panel",
+            "label": "Credentials",
+            "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik0yMSAxMGgtOC4zNUMxMS44MyA3LjY3IDkuNjEgNiA3IDZjLTMuMzEgMC02IDIuNjktNiA2czIuNjkgNiA2IDZjMi42MSAwIDQuODMtMS42NyA1LjY1LTRIMTNsMiAyIDItMiAyIDIgNC00LjA1TDIxIDEwek03IDE1Yy0xLjY1IDAtMy0xLjM1LTMtM3MxLjM1LTMgMy0zIDMgMS4zNSAzIDMtMS4zNSAzLTMgM3oiLz48L3N2Zz4=",
+            "items": {
+                "enableSecrets": {
+                    "type": "checkbox",
+                    "default": true,
+                    "label": "Allow scripts to read the credentials",
+                    "help": "The credentials of the central storage are available in the scripts, e.g. SECRETS.CameraPassword.key",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6
+                },
+                "_secrets": {
+                    "newLine": true,
+                    "type": "custom",
+                    "i18n": true,
+                    "url": "custom/customComponents.js",
+                    "name": "ConfigCustomJavascriptSet/Components/Secrets",
+                    "guiApi": 2,
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12
+                }
+            }
+        },
+        "_history": {
+            "type": "panel",
+            "label": "Script history",
+            "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJjdXJyZW50Q29sb3IiPjxwYXRoIGQ9Ik0xMyAzYy00Ljk3IDAtOSA0LjAzLTkgOUgxbDMuODkgMy44OS4wNy4xNEw5IDEySDZjMC0zLjg3IDMuMTMtNyA3LTdzNyAzLjEzIDcgNy0zLjEzIDctNyA3Yy0xLjkzIDAtMy42OC0uNzktNC45NC0yLjA2bC0xLjQyIDEuNDJDOC4yNyAxOS45OSAxMC41MSAyMSAxMyAyMWM0Ljk3IDAgOS00LjAzIDktOXMtNC4wMy05LTktOXptLTEgNXY1bDQuMjggMi41NC43Mi0xLjIxLTMuNS0yLjA4VjhIMTJ6Ii8+PC9zdmc+",
+            "items": {
+                "historyVersions": {
+                    "type": "number",
+                    "label": "Saved versions per script",
+                    "help": "Saved versions per script help",
+                    "min": 0,
+                    "max": 200,
+                    "default": 30,
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6
+                },
+                "_historyUsage": {
+                    "newLine": true,
+                    "type": "custom",
+                    "i18n": true,
+                    "url": "custom/customComponents.js",
+                    "name": "ConfigCustomJavascriptSet/Components/History",
+                    "guiApi": 2,
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12
                 }
             }
         }

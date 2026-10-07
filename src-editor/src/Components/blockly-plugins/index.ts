@@ -65,6 +65,8 @@ export interface BlocklyType {
         domToText: (dom: Node) => string;
         blockToDom: (block: BlockType, opt_noId?: boolean) => Element | DocumentFragment;
         domToPrettyText: (dom: Node) => string;
+        /** Removes everything connected below the block from its serialized form */
+        deleteNext: (blockDom: Element) => void;
         domToWorkspace: (xml: Element, workspace: WorkspaceSvg) => string[];
         appendDomToWorkspace: (xml: Element, workspace: WorkspaceSvg) => string[];
     };

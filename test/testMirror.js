@@ -1,6 +1,7 @@
 const os = require('node:os');
 const path = require('node:path');
 const fs = require('node:fs');
+const assert = require('node:assert').strict;
 const Mirror = require('../build/lib/mirror');
 
 /**
@@ -196,6 +197,153 @@ describe('Mirror', () => {
      * and everything after the folder stayed unsynchronized. Names that stayed valid - `a|b`,
      * `[ab]` - silently matched the wrong scripts instead (#2239).
      */
+    describe('A changed file keeps enabled and engine (#2396)', () => {
+        /** Mirror logs its progress at every level - without this the run is unreadable */
+        const silentLog = () => ({
+            log: () => {},
+            silly: () => {},
+            debug: () => {},
+            info: () => {},
+            warn: () => {},
+            error: () => {},
+        });
+
+        /**
+         * A script as it is in the database.
+         *
+         * @param id full id of the script
+         * @param source its source
+         * @param extra the fields the file says nothing about
+         */
+        const script = (id, source, extra = {}) => ({
+            _id: id,
+            type: 'script',
+            common: {
+                name: id.split('.').pop(),
+                source,
+                engineType: 'Javascript/js',
+                engine: 'system.adapter.javascript.0',
+                enabled: false,
+                ...extra,
+            },
+            native: {},
+        });
+
+        /** Everything a `Mirror` touches here, plus what it wrote */
+        function adapterStub() {
+            const written = {};
+            const extended = {};
+            return {
+                written,
+                extended,
+                namespace: 'javascript.0',
+                getObjectView: (design, _search, _params, cb) =>
+                    cb(null, { rows: [] }),
+                getForeignObject: (_id, cb) => cb(null, null),
+                getForeignState: (_id, cb) => cb(null, { val: 0 }),
+                setForeignObject: (id, obj, cb) => {
+                    written[id] = obj;
+                    cb && cb(null);
+                },
+                extendForeignObject: (id, obj, cb) => {
+                    extended[id] = obj;
+                    cb && cb(null);
+                },
+                setForeignState: (_id, _val, _ack, cb) => cb && cb(null),
+            };
+        }
+
+        let root = null;
+        let mirrors = [];
+
+        beforeEach(() => {
+            root = fs.mkdtempSync(path.join(os.tmpdir(), 'mirror-test-2396-'));
+            mirrors = [];
+        });
+
+        afterEach(() => {
+            for (const mirror of mirrors) {
+                Object.values(mirror.watchedFolder || {}).forEach(watcher => watcher.close());
+            }
+            fs.rmSync(root, { recursive: true, force: true });
+        });
+
+        function createMirror() {
+            const adapter = adapterStub();
+            const mirror = new (Mirror.Mirror || Mirror)({ diskRoot: root, adapter, log: silentLog() });
+            mirrors.push(mirror);
+            return { mirror, adapter };
+        }
+
+        const ID = 'script.js.common.Test';
+
+        it('keeps the cache in step when only enabled or engine changed', () => {
+            const { mirror } = createMirror();
+            mirror.ready = true;
+            mirror.dbList = { [ID]: script(ID, 'log(1);') };
+            mirror.diskList = {};
+
+            // The admin enables the script and moves it to another instance - the source is untouched
+            mirror.onObjectChange(
+                ID,
+                script(ID, 'log(1);', { enabled: true, engine: 'system.adapter.javascript.2' }),
+            );
+
+            assert.equal(mirror.dbList[ID].common.enabled, true, 'the cache must follow "enabled"');
+            assert.equal(
+                mirror.dbList[ID].common.engine,
+                'system.adapter.javascript.2',
+                'the cache must follow "engine"',
+            );
+        });
+
+        it('writes only the source back when the file changed', () => {
+            const { mirror, adapter } = createMirror();
+            mirror.ready = true;
+            mirror.dbList = { [ID]: script(ID, 'log(1);', { enabled: true, engine: 'system.adapter.javascript.2' }) };
+            mirror.diskList = {};
+
+            const file = path.join(root, 'common', 'Test.js');
+            fs.mkdirSync(path.dirname(file), { recursive: true });
+            fs.writeFileSync(file, 'log(2);');
+
+            mirror.onFileChange('change', file);
+
+            assert.ok(!adapter.written[ID], 'the whole object must not be written back');
+            assert.deepEqual(
+                adapter.extended[ID],
+                { common: { source: 'log(2);' } },
+                'only the source belongs in that write',
+            );
+        });
+
+        it('a stale cache can no longer disable a script or move it back', () => {
+            const { mirror, adapter } = createMirror();
+            mirror.ready = true;
+            // what the mirror read at start: disabled, on instance 0
+            mirror.dbList = { [ID]: script(ID, 'log(1);') };
+            mirror.diskList = {};
+
+            // the admin enables it and moves it, without touching the source
+            mirror.onObjectChange(
+                ID,
+                script(ID, 'log(1);', { enabled: true, engine: 'system.adapter.javascript.2' }),
+            );
+
+            // now the file changes, as a "git pull" into the mirror directory does it
+            const file = path.join(root, 'common', 'Test.js');
+            fs.mkdirSync(path.dirname(file), { recursive: true });
+            fs.writeFileSync(file, '// a comment\nlog(1);');
+            mirror.onFileChange('change', file);
+
+            // Neither through the write itself ...
+            assert.ok(!adapter.written[ID], 'no full object write');
+            // ... nor in the cache the next write would use
+            assert.equal(mirror.dbList[ID].common.enabled, true);
+            assert.equal(mirror.dbList[ID].common.engine, 'system.adapter.javascript.2');
+        });
+    });
+
     describe('Folder names with RegExp metacharacters', () => {
         /**
          * Every metacharacter, including the ones Windows does not allow in a file name. These are

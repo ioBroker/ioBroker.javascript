@@ -21,6 +21,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.translateToolsToAnthropic = translateToolsToAnthropic;
 exports.translateMessagesToAnthropic = translateMessagesToAnthropic;
 exports.translateAnthropicResponseToOpenAI = translateAnthropicResponseToOpenAI;
+exports.describeAnthropicContent = describeAnthropicContent;
 /** Translate OpenAI function-tool definitions to Anthropic tool definitions. */
 function translateToolsToAnthropic(tools) {
     if (!Array.isArray(tools)) {
@@ -171,5 +172,41 @@ function translateAnthropicResponseToOpenAI(response) {
         result.tool_calls = toolCalls;
     }
     return result;
+}
+/**
+ * Name the content blocks an answer consists of, for the log.
+ *
+ * When the translation above comes back empty although the endpoint reported a normal end and a
+ * few hundred output tokens, the whole question is *what* it sent instead - a `thinking` block, a
+ * block type that did not exist when this was written, an empty text. Without this the log can
+ * only say "no content", which is the one thing already known.
+ *
+ * @param response the parsed answer of the Anthropic API
+ */
+function describeAnthropicContent(response) {
+    if (!response) {
+        return 'no response';
+    }
+    if (!Array.isArray(response.content)) {
+        return `content is ${typeof response.content}`;
+    }
+    if (!response.content.length) {
+        return 'no content blocks';
+    }
+    return response.content
+        .map(block => {
+        if (!block || typeof block !== 'object') {
+            return typeof block;
+        }
+        const type = block.type;
+        const name = typeof type === 'string' ? type : 'untyped';
+        // An empty text block is a different problem from a block nobody reads
+        if (name === 'text') {
+            const text = block.text;
+            return typeof text === 'string' ? `text(${text.length} chars)` : `text(${typeof text})`;
+        }
+        return name;
+    })
+        .join(', ');
 }
 //# sourceMappingURL=anthropicAdapter.js.map

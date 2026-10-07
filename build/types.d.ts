@@ -61,6 +61,11 @@ export interface JavaScriptAdapterConfig {
      * currently offers; the newer ones go far beyond that, which is why this is a setting.
      */
     aiMaxTokens?: number;
+    /**
+     * How many saved versions of a script to keep in the file area of the instance.
+     * `0` switches the history off.
+     */
+    historyVersions?: number;
     claudeKey: string;
     geminiKey: string;
     deepseekKey: string;

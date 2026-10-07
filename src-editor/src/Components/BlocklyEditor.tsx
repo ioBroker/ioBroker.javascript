@@ -88,6 +88,26 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
     private blockly: HTMLElement | null = null;
     private blocklyWorkspace: WorkspaceSvg | null = null;
     private originalCode: string;
+    /**
+     * What was selected when the last click outside the workspace started.
+     *
+     * A click on a toolbar button moves the focus out of the workspace, and Blockly deselects with
+     * the focus - so by the time the command arrives, `getSelected()` is null and "export" wrote
+     * the whole script instead of the one marked block (#2397). `pointerdown` in the capture phase
+     * runs before the focus moves, which is the last moment the selection can still be read.
+     */
+    private lastSelectedBlockId: string | null = null;
+
+    /** Registered on the document, so it also sees clicks that never reach this component */
+    private readonly onPointerDownOutside = (event: Event): void => {
+        const injectionDiv = this.blocklyWorkspace?.getInjectionDiv();
+        if (injectionDiv && event.target instanceof Node && injectionDiv.contains(event.target)) {
+            // Inside the workspace Blockly keeps the selection itself
+            return;
+        }
+        const selected = BlocklyEditor.Blockly.getSelected() as { id?: string } | null;
+        this.lastSelectedBlockId = selected?.id || null;
+    };
     private someSelected: string[] | null = null;
     private changeTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -697,13 +717,21 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         }
         let exportText: string;
         try {
-            const selectedBlocks: BlockSvg | null = BlocklyEditor.Blockly.getSelected() as BlockSvg | null;
+            // `getSelected()` is already null when the click on the toolbar got us here, so fall
+            // back to the block that was selected last - see the change listener (#2397)
+            const selectedBlocks: BlockSvg | null =
+                (BlocklyEditor.Blockly.getSelected() as BlockSvg | null) ||
+                (this.lastSelectedBlockId ? this.blocklyWorkspace.getBlockById(this.lastSelectedBlockId) : null);
             if (selectedBlocks) {
                 const xmlBlock: Element = BlocklyEditor.Blockly.Xml.blockToDom(selectedBlocks) as Element;
-                // @1ts-expect-error fix later. TODO!!!!
-                // if (BlocklyEditor.Blockly.dragMode_ !== BlocklyEditor.Blockly.DRAG_FREE) {
-                //    BlocklyEditor.Blockly.Xml.deleteNext(xmlBlock);
-                // }
+                /*
+                 * `blockToDom` takes everything connected below the block with it, so exporting a
+                 * block out of a stack wrote the whole rest of that stack as well (#2397). This
+                 * call used to be guarded by `Blockly.dragMode_ !== Blockly.DRAG_FREE` and was
+                 * commented out when neither of those survived the Blockly upgrade - for an export
+                 * from the toolbar the answer is simply always: only the marked block.
+                 */
+                BlocklyEditor.Blockly.Xml.deleteNext(xmlBlock);
                 // Encode start position in XML.
                 const xy = selectedBlocks.getRelativeToSurfaceXY();
                 xmlBlock.setAttribute('x', (selectedBlocks.RTL ? -xy.x : xy.x).toString());
@@ -880,6 +908,8 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         const toolboxXml = BlocklyEditor.Blockly.utils.xml.textToDom(toolboxText);
 
         // https://developers.google.com/blockly/reference/js/blockly.blocklyoptions_interface.md
+        document.addEventListener('pointerdown', this.onPointerDownOutside, true);
+
         this.blocklyWorkspace = BlocklyEditor.Blockly.inject(this.blockly, {
             renderer: 'thrasos',
             theme: getBlocklyTheme(this.props.theme),
@@ -998,6 +1028,8 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         void this.appendBlocksFromXml;
         void this.applyAiBlocks;
         void this.getWorkspaceXml;
+
+        document.removeEventListener('pointerdown', this.onPointerDownOutside, true);
 
         if (!this.blocklyWorkspace) {
             return;

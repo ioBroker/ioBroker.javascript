@@ -115,5 +115,15 @@
     "Load type definitions": "Typedefinities laden",
     "loadTypings help": "Typedefinities van Node.js, ioBroker en de geconfigureerde bibliotheken. Ze worden alleen gelezen wanneer ze echt nodig zijn - om een TypeScript-script te compileren of voor de ingebouwde editor - omdat ze de compiler ongeveer 90 MB kosten. Uitgeschakeld worden ze nooit gelezen: de editor verliest zijn automatische aanvulling en TypeScript-scripts compileren niet meer. Gewoon JavaScript, ook de declaraties van globale JavaScripts, blijft ongemoeid.",
     "Maximum answer length": "Maximum answer length",
-    "Maximum answer length help": "Only for Anthropic, which requires the limit. A longer script is cut off mid-line when the limit is reached. Older models reject values above 8192."
+    "Maximum answer length help": "Only for Anthropic, which requires the limit. A longer script is cut off mid-line when the limit is reached. Older models reject values above 8192.",
+    "Saved versions per script": "Saved versions per script",
+    "Saved versions per script help": "The editor can list, compare and restore them. 0 switches the history off. The very first version of a script is always kept.",
+    "Script history": "Script history",
+    "Delete histories of deleted scripts": "Delete histories of deleted scripts",
+    "The saved versions of scripts that no longer exist are removed. This cannot be undone.": "The saved versions of scripts that no longer exist are removed. This cannot be undone.",
+    "Delete": "Delete",
+    "Cancel": "Cancel",
+    "Credentials": "Credentials",
+    "Delete all stored versions": "Delete all stored versions",
+    "The history of every script is removed, including the scripts that still exist. The scripts themselves are not touched. This cannot be undone.": "The history of every script is removed, including the scripts that still exist. The scripts themselves are not touched. This cannot be undone."
 }

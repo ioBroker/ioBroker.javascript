@@ -588,5 +588,15 @@
     "Changes against the saved version": "Änderungen gegenüber der gespeicherten Fassung",
     "Use the whole width": "Ganze Breite nutzen",
     "Restore the split view": "Geteilte Ansicht wiederherstellen",
-    "Request is running...": "Anfrage läuft ..."
+    "Request is running...": "Anfrage läuft ...",
+    "Script history": "Skript-Historie",
+    "Show the saved versions of this script": "Gespeicherte Versionen dieses Skripts anzeigen",
+    "No versions stored yet. They are written from the next save on.": "Noch keine Versionen gespeichert. Sie entstehen ab dem nächsten Speichern.",
+    "This script is protected, its versions are stored encrypted.": "Dieses Skript ist geschützt, seine Versionen werden verschlüsselt gespeichert.",
+    "Left: the selected version. Right: the editor.": "Links die gewählte Version, rechts der Editor.",
+    "Take over into the editor": "In den Editor übernehmen",
+    "lines": "Zeilen",
+    "Delete this version": "Diese Version löschen",
+    "Delete the whole history": "Ganze Historie löschen",
+    "These scripts are not saved:": "Diese Skripte sind nicht gespeichert:"
 }

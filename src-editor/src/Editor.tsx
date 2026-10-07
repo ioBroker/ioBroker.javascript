@@ -33,6 +33,7 @@ import { red, green } from '@mui/material/colors';
 import {
     MdSave as IconSave,
     MdCompareArrows as IconDiff,
+    MdHistory as IconHistory,
     MdCancel as IconCancel,
     MdClose as IconClose,
     MdRefresh as IconRestart,
@@ -109,11 +110,13 @@ const DialogDocumentation = React.lazy(() => import('./Dialogs/Documentation'));
 const AiChatPanel = React.lazy(() => import('./AiChat/AiChatPanel'));
 const AiDiffView = React.lazy(() => import('./AiChat/AiDiffView'));
 const DialogDiff = React.lazy(() => import('./Dialogs/Diff'));
+const DialogHistory = React.lazy(() => import('./Dialogs/History'));
 // the tour of the Rules editor
 const Tour = React.lazy(() => import('reactour'));
 const FbEditor = React.lazy(loadFbEditor);
 
 import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
+import { SplitSizes } from './Components/splitSizes';
 import { getAllScripts } from './AiChat/AiScriptAnalyzer';
 import { findBestTarget } from './AiChat/findAiBlockTarget';
 import type { ScriptInfo, EditorAiActionRequest, EditorApi } from './AiChat/AiChatTypes';
@@ -313,6 +316,8 @@ interface EditorState {
     showCron: boolean;
     /** Diff of the selected script against the version in the objects DB */
     showDiff: boolean;
+    /** The list of saved versions of the selected script */
+    showHistory: boolean;
     showScript: boolean;
     showAstro: boolean;
     /** The API documentation is open; `word` is the identifier that was under the cursor */
@@ -458,6 +463,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             showCompiledCode: false,
             showCron: false,
             showDiff: false,
+            showHistory: false,
             showDebugMenu: false,
             showScript: false,
             showSelectId: false,
@@ -793,14 +799,17 @@ class Editor extends React.Component<EditorProps, EditorState> {
             // remove non-existing scripts
             const editing: string[] = [...this.state.editing];
             for (let i = editing.length - 1; i >= 0; i--) {
-                if (!this.objects[editing[i]]) {
+                // Read the id *before* the splice: afterwards `editing[i]` is its successor, and
+                // the "changed" flag was cleared for the wrong script while the one that had just
+                // disappeared kept its own - which left "Save all" offering a script that was not
+                // there anymore, for the rest of the session
+                const goneId = editing[i];
+                if (!this.objects[goneId]) {
                     _changed = true;
                     editing.splice(i, 1);
-                    if (this.state.changed[editing[i]] !== undefined) {
+                    if (this.state.changed[goneId] !== undefined) {
                         newState.changed ||= { ...this.state.changed };
-                        if (newState.changed) {
-                            delete newState.changed[editing[i]];
-                        }
+                        delete newState.changed[goneId];
                     }
                 }
             }
@@ -955,7 +964,10 @@ class Editor extends React.Component<EditorProps, EditorState> {
     onSaveAll(): void {
         const changed: Record<string, boolean> = { ...this.state.changed };
         Object.keys(changed).forEach(id => {
-            if (changed[id]) {
+            if (!this.scripts[id] || !this.props.objects[id]) {
+                // The script is gone; its flag would otherwise keep "Save all" alive forever
+                delete changed[id];
+            } else if (changed[id]) {
                 changed[id] = false;
                 const common: ioBroker.ScriptCommon = JSON.parse(JSON.stringify(this.scripts[id]));
                 if (this.props.password && this.props.objects[id].native?.protected) {
@@ -1529,7 +1541,16 @@ class Editor extends React.Component<EditorProps, EditorState> {
         const isScriptRunning = !!(this.state.selected && this.scripts[this.state.selected]?.enabled);
 
         if (this.state.selected) {
-            const changedAll = Object.keys(this.state.changed).filter(id => this.state.changed[id]).length;
+            /*
+             * Not simply the flags: one of them can be left behind - a script deleted elsewhere, a
+             * change taken back by hand - and then "Save all" stands there although everything is
+             * saved, and would hand `onSaveAll` a script that no longer exists. So this asks what
+             * is really different from the stored object right now.
+             */
+            const changedIds = Object.keys(this.state.changed).filter(
+                id => this.state.changed[id] && this.isScriptChanged(id),
+            );
+            const changedAll = changedIds.length;
             const changed = this.state.changed[this.state.selected];
             return (
                 <Toolbar
@@ -1612,12 +1633,27 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             {I18n.t('Diff')}
                         </Button>
                     ) : null}
+                    {!this.state.blockly && !this.state.rules && !this.state.fbd && this.state.selected ? (
+                        <IconButton
+                            key="history"
+                            title={I18n.t('Show the saved versions of this script')}
+                            style={styles.toolbarButtons}
+                            onClick={() => this.setState({ showHistory: true })}
+                            size="medium"
+                        >
+                            <IconHistory />
+                        </IconButton>
+                    ) : null}
                     {changedAll > 1 || (changedAll === 1 && !changed) ? (
                         <Button
                             color="grey"
                             key="saveall"
                             variant="contained"
                             style={styles.textButton}
+                            title={[
+                                I18n.t('These scripts are not saved:'),
+                                ...changedIds.map(id => id.replace(/^script\.js\./, '')),
+                            ].join('\n')}
                             onClick={() => this.onSaveAll()}
                             endIcon={<IconSave />}
                         >
@@ -2095,6 +2131,10 @@ class Editor extends React.Component<EditorProps, EditorState> {
                                 language={currentLanguage}
                                 themeType={this.state.themeType}
                                 onAccept={code => {
+                                    // Same as the history: the editor only takes a new `code`
+                                    // property while the script is unchanged, so an accepted
+                                    // suggestion has to be written into it
+                                    this.scriptEditorRef.current?.setEditorContent(code);
                                     this.onChange({ script: code });
                                     this.setState({ aiDiffView: null });
                                 }}
@@ -2667,60 +2707,8 @@ class Editor extends React.Component<EditorProps, EditorState> {
         this.setState({ aiChatMaximized });
     };
 
-    /** The element wrapping each AI-chat splitter, so its live column widths can be read back */
-    private splitContainers: Record<string, HTMLDivElement | null> = {};
-    /** One array per splitter, reused across renders - see `getSplitSizes` */
-    private splitSizes: Record<string, number[]> = {};
-
-    /**
-     * The column widths to hand the AI-chat splitter.
-     *
-     * `@devbookhq/splitter` re-applies `initialSizes` from an effect whose dependencies include
-     * both `children` and `initialSizes`, and in a class render both are new objects on *every*
-     * re-render. So any unrelated update - a log line arriving, a dialog opening - pushed the
-     * gutter back to the stored width, and when that happened while the user was dragging, the
-     * drag was simply lost.
-     *
-     * The array is therefore created once per splitter and refilled with the widths the panes
-     * actually have, which the splitter writes as `calc(<percent>% - <gutter>px)`. Re-applying it
-     * is then a no-op instead of a jump - during a drag as well, because the live DOM is ahead of
-     * the stored value.
-     *
-     * @param sizesKey localStorage key under which this splitter remembers its widths
-     */
-    private getSplitSizes(sizesKey: string): number[] {
-        let sizes = this.splitSizes[sizesKey];
-        if (!sizes) {
-            sizes = [70, 30];
-            try {
-                const saved = window.localStorage.getItem(sizesKey);
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    if (Array.isArray(parsed) && parsed.length === 2 && parsed.every(n => typeof n === 'number')) {
-                        sizes = parsed;
-                    }
-                }
-            } catch {
-                /* ignore corrupt localStorage */
-            }
-            this.splitSizes[sizesKey] = sizes;
-        }
-
-        const container = this.splitContainers[sizesKey];
-        if (container) {
-            const live: number[] = [];
-            for (const pane of Array.from(container.querySelectorAll<HTMLElement>(':scope > div > div'))) {
-                const match = /calc\(([\d.]+)%/.exec(pane.style.width || '');
-                if (match) {
-                    live.push(parseFloat(match[1]));
-                }
-            }
-            if (live.length === sizes.length) {
-                sizes.splice(0, sizes.length, ...live);
-            }
-        }
-        return sizes;
-    }
+    /** One per AI-chat splitter - see `SplitSizes` for why the sizes cannot simply be re-read */
+    private readonly splitSizes: Record<string, SplitSizes> = {};
 
     /**
      * Put the editor and the AI chat side by side, or give the chat the whole area.
@@ -2751,25 +2739,33 @@ class Editor extends React.Component<EditorProps, EditorState> {
             );
         }
 
-        const initialSizes = this.getSplitSizes(sizesKey);
+        let saved = [70, 30];
+        try {
+            const stored = window.localStorage.getItem(sizesKey);
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed) && parsed.length === 2 && parsed.every(n => typeof n === 'number')) {
+                    saved = parsed;
+                }
+            }
+        } catch {
+            /* ignore corrupt localStorage */
+        }
+        const split = (this.splitSizes[sizesKey] ||= new SplitSizes(sizesKey.replace(/\W/g, '')));
 
         return (
             <Box
                 sx={styles.editorDiv}
                 key={boxKey}
-                ref={(el: HTMLDivElement | null) => {
-                    this.splitContainers[sizesKey] = el;
-                }}
             >
                 <ReactSplit
                     direction={SplitDirection.Horizontal}
-                    initialSizes={initialSizes}
+                    initialSizes={split.current(saved)}
                     minWidths={[200, 250]}
-                    gutterClassName={this.state.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
+                    gutterClassName={split.gutterClassName(this.state.themeType)}
                     onResizeFinished={(_pairIdx: number, newSizes: number[]) => {
                         window.localStorage.setItem(sizesKey, JSON.stringify(newSizes));
-                        // In place, so the array the splitter was given keeps its identity
-                        initialSizes.splice(0, initialSizes.length, ...newSizes);
+                        split.update(newSizes);
                     }}
                 >
                     {editor}
@@ -2803,6 +2799,40 @@ class Editor extends React.Component<EditorProps, EditorState> {
                     name={id.replace(/^script\.js\./, '')}
                     onSave={() => this.onSave()}
                     onClose={() => this.setState({ showDiff: false })}
+                />
+            </Suspense>
+        );
+    }
+
+    getHistoryDialog(): React.JSX.Element | null {
+        if (!this.state.showHistory || !this.state.selected) {
+            return null;
+        }
+        const id = this.state.selected;
+        const current = this.scripts[id];
+        const instanceId = Object.keys(this.state.runningInstances).find(i => this.state.runningInstances[i]);
+        if (!current || !instanceId) {
+            return null;
+        }
+        return (
+            <Suspense
+                key="history"
+                fallback={<Connecting />}
+            >
+                <DialogHistory
+                    socket={this.props.socket}
+                    instanceId={instanceId}
+                    scriptId={id}
+                    currentCode={current.source || ''}
+                    language={current.engineType === 'TypeScript/ts' ? 'typescript' : 'javascript'}
+                    themeType={this.props.themeType}
+                    onRestore={source => {
+                        // Through the editor, because it refuses a new `code` property once the
+                        // script counts as changed - and restoring makes it changed
+                        this.scriptEditorRef.current?.setEditorContent(source);
+                        this.onChange({ script: source });
+                    }}
+                    onClose={() => this.setState({ showHistory: false })}
                 />
             </Suspense>
         );
@@ -3037,6 +3067,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             this.getEditorDialog(),
             this.getAstroDialog(),
             this.getDiffDialog(),
+            this.getHistoryDialog(),
             this.getDocumentationDialog(),
             this.getDebugMenu(),
             this.getToast(),

@@ -115,5 +115,15 @@
     "Load type definitions": "Charger les définitions de types",
     "loadTypings help": "Définitions de types de Node.js, d'ioBroker et des bibliothèques configurées. Elles ne sont lues que lorsqu'elles sont réellement nécessaires - pour compiler un script TypeScript ou pour l'éditeur intégré - car elles coûtent environ 90 Mo au compilateur. Désactivées, elles ne sont jamais lues : l'éditeur perd son autocomplétion et les scripts TypeScript ne compilent plus. Le JavaScript simple, y compris les déclarations des JavaScripts globaux, n'est pas concerné.",
     "Maximum answer length": "Maximum answer length",
-    "Maximum answer length help": "Only for Anthropic, which requires the limit. A longer script is cut off mid-line when the limit is reached. Older models reject values above 8192."
+    "Maximum answer length help": "Only for Anthropic, which requires the limit. A longer script is cut off mid-line when the limit is reached. Older models reject values above 8192.",
+    "Saved versions per script": "Saved versions per script",
+    "Saved versions per script help": "The editor can list, compare and restore them. 0 switches the history off. The very first version of a script is always kept.",
+    "Script history": "Script history",
+    "Delete histories of deleted scripts": "Delete histories of deleted scripts",
+    "The saved versions of scripts that no longer exist are removed. This cannot be undone.": "The saved versions of scripts that no longer exist are removed. This cannot be undone.",
+    "Delete": "Delete",
+    "Cancel": "Cancel",
+    "Credentials": "Credentials",
+    "Delete all stored versions": "Delete all stored versions",
+    "The history of every script is removed, including the scripts that still exist. The scripts themselves are not touched. This cannot be undone.": "The history of every script is removed, including the scripts that still exist. The scripts themselves are not touched. This cannot be undone."
 }

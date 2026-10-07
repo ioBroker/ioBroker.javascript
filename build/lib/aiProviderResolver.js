@@ -13,6 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MAX_AI_MAX_TOKENS = exports.DEFAULT_AI_MAX_TOKENS = exports.MAX_AI_REQUEST_TIMEOUT_MS = exports.PROVIDER_CREDENTIAL_ID_FIELD = exports.PROVIDER_KEY_FIELD = void 0;
 exports.getProviderCredentialId = getProviderCredentialId;
 exports.resolveProviderCredentials = resolveProviderCredentials;
+exports.resolveTestEndpoint = resolveTestEndpoint;
 exports.resolveRequestTimeout = resolveRequestTimeout;
 exports.resolveTestCredentials = resolveTestCredentials;
 exports.listAvailableProviders = listAvailableProviders;
@@ -49,33 +50,51 @@ function getProviderCredentialId(config, provider) {
 }
 /**
  * Resolve API key and base URL for a provider from adapter config.
- * Optional `messageBaseUrl` takes precedence over the stored `gptBaseUrl`
- * (used by the settings-dialog Test button where the user's form value
- * should win over the persisted value).
+ *
+ * Both come from the configuration and from nowhere else - above all not from the message that asked
+ * for them. The key that is resolved here travels with the request as its authorisation, so a caller
+ * who could name the address could have this instance carry the key to one of their own. An address
+ * out of a message used to win over the stored one, which was the comfortable way to put a proxy in
+ * front of OpenAI; a proxy belongs in the configuration now, entered once by whoever may configure
+ * this instance. The test button of the settings dialog is the one exception - see
+ * {@link resolveTestEndpoint}.
+ *
+ * The stored `gptBaseUrl` belongs to the `custom` provider and to no other. `openai` used to inherit
+ * it, which sent every request meant for api.openai.com - and the OpenAI key with it - to whatever
+ * host the custom endpoint pointed at (#2369).
  */
-function resolveProviderCredentials(config, provider, messageBaseUrl) {
+function resolveProviderCredentials(config, provider) {
     const cfg = config || {};
     const keyField = exports.PROVIDER_KEY_FIELD[provider];
     const apiKey = keyField ? (cfg[keyField] || '').toString().trim() : '';
-    /*
-     * The stored `gptBaseUrl` belongs to the `custom` provider and to no other. `openai` used to
-     * inherit it, which sent every request meant for api.openai.com - and the OpenAI key with it -
-     * to whatever host the custom endpoint pointed at, with no way to opt out: an empty
-     * `messageBaseUrl` counts as "not provided" and fell back to the stored value again (#2369).
-     *
-     * `openai` still honours an *explicit* `messageBaseUrl`, which is the escape hatch for a proxy
-     * in front of OpenAI, but it no longer inherits the custom endpoint of another provider.
-     */
-    let baseUrl = '';
-    if (provider === 'custom') {
-        // An empty/whitespace messageBaseUrl counts as "not provided" and falls back to the stored
-        // value, so the frontend can safely send `baseUrl: ''` without losing the configured URL.
-        baseUrl = (messageBaseUrl || cfg.gptBaseUrl || '').toString().trim();
-    }
-    else if (provider === 'openai') {
-        baseUrl = (messageBaseUrl || '').toString().trim();
-    }
+    const baseUrl = provider === 'custom' ? (cfg.gptBaseUrl || '').toString().trim() : '';
     return { apiKey, baseUrl };
+}
+/**
+ * The address the Test button of the settings dialog may try.
+ *
+ * The dialog tests what stands in the form rather than what was saved, because the first thing
+ * anybody does is type a key and press it. The one thing it must not do is make this instance carry a
+ * secret of its own to an address that came with the message, so an address out of the form counts
+ * only together with a key out of the form: one's own key to one's own endpoint gives nothing away.
+ * As soon as the key comes from this system - from the configuration or from the credential store -
+ * the address comes from there too. And only the OpenAI-compatible provider has an address to try;
+ * the form has no field for one anywhere else.
+ *
+ * @param config the adapter configuration
+ * @param provider the provider that is being tested
+ * @param form what the Test button sent
+ * @param form.apiKey the key that stands in the form, if any
+ * @param form.baseUrl the address that stands in the form, if any
+ */
+function resolveTestEndpoint(config, provider, form) {
+    const stored = resolveProviderCredentials(config, provider).baseUrl;
+    const formKey = (form.apiKey || '').toString().trim();
+    const formUrl = (form.baseUrl || '').toString().trim();
+    if (provider !== 'custom' || !formKey || !formUrl) {
+        return stored;
+    }
+    return formUrl;
 }
 /** Ceiling for an AI request, and the budget when the caller names none */
 exports.MAX_AI_REQUEST_TIMEOUT_MS = 600_000;
@@ -102,11 +121,12 @@ function resolveRequestTimeout(messageTimeout) {
  * (settings-dialog form value), use it; otherwise fall back to the stored key.
  */
 function resolveTestCredentials(config, provider, messageApiKey, messageBaseUrl) {
-    const fallback = resolveProviderCredentials(config, provider, messageBaseUrl);
+    const fallback = resolveProviderCredentials(config, provider);
     const explicitKey = (messageApiKey || '').toString().trim();
     return {
         apiKey: explicitKey || fallback.apiKey,
-        baseUrl: fallback.baseUrl,
+        // only together with a key of the form, and only for the endpoint of one's own
+        baseUrl: resolveTestEndpoint(config, provider, { apiKey: explicitKey, baseUrl: messageBaseUrl }),
     };
 }
 /**

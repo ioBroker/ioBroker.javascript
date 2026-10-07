@@ -68,9 +68,26 @@ import {
     resolveMaxTokens,
 } from './lib/aiProviderResolver';
 import {
+    addVersion,
+    describeSource,
+    indexPath,
+    isWorthStoring,
+    parseIndex,
+    resolveHistoryVersions,
+    versionPath,
+    fileToString,
+    decodeFolderName,
+    formatBytes,
+    sumIndex,
+    trimIndex,
+    HISTORY_ROOT,
+    type ScriptVersion,
+} from './lib/scriptHistory';
+import {
     translateToolsToAnthropic,
     translateMessagesToAnthropic,
     translateAnthropicResponseToOpenAI,
+    describeAnthropicContent,
 } from './lib/anthropicAdapter';
 import { createEventObject, type EventObj } from './lib/eventObj';
 import { type AstroEventName, Scheduler } from './lib/scheduler';
@@ -680,6 +697,239 @@ class JavaScript extends Adapter {
         this.tsServer = new LazyTsServer(tsCompilerOptions, this.tsLog, TS_MEMORY_RELEASE_DELAY_MS);
     }
 
+    /**
+     * Make sure the instance has a file area, which is where the script history lives.
+     *
+     * The adapter's own namespace needs a `meta` object before anything can be written under it.
+     * Deliberately not `javascript.admin`: that is the UI's file area and every
+     * `iobroker upload javascript` wipes it.
+     */
+    private async ensureHistoryStorage(): Promise<void> {
+        try {
+            await this.setForeignObjectNotExistsAsync(this.namespace, {
+                type: 'meta',
+                common: {
+                    name: 'javascript files',
+                    type: 'meta.user',
+                },
+                native: {},
+            });
+        } catch (e) {
+            this.log.warn(
+                `Cannot create the file storage of the instance: ${e instanceof Error ? e.message : String(e)}`,
+            );
+        }
+    }
+
+    /**
+     * Keep the saved source of a script, so it can be looked at and brought back later.
+     *
+     * Hooked into the object change and not into the editor on purpose: this way a change from the
+     * mirror directory, from the object browser, from another script or from the AI is kept just
+     * the same as one typed into the editor.
+     *
+     * @param id id of the script
+     * @param obj the script as it is now
+     * @param formerObj the script as it was before this change, if it existed
+     */
+    private async storeScriptVersion(
+        id: string,
+        obj: ioBroker.ScriptObject,
+        formerObj: ioBroker.ScriptObject | undefined,
+    ): Promise<void> {
+        const keep = resolveHistoryVersions(this.config.historyVersions);
+        if (!keep) {
+            return;
+        }
+        // Only the instance that runs the script writes its history, otherwise two instances
+        // store every version twice
+        if (obj.common?.engine !== `system.adapter.${this.namespace}`) {
+            return;
+        }
+        const source = obj.common.source;
+        if (!isWorthStoring(formerObj?.common?.source, source)) {
+            return;
+        }
+
+        try {
+            const ts = typeof obj.ts === 'number' && obj.ts ? obj.ts : Date.now();
+            const entry: ScriptVersion = {
+                ts,
+                ...(obj.from ? { from: obj.from } : {}),
+                ...(obj.user ? { user: obj.user } : {}),
+                // The source of a protected script is encrypted in the object and is kept that
+                // way - the history must not be the place where it lies around in plain text
+                ...describeSource(source, !!(obj.native as { protected?: boolean })?.protected),
+            };
+
+            await this.writeFileAsync(this.namespace, versionPath(id, ts), source);
+
+            const raw = await this.readFileAsync(this.namespace, indexPath(id)).catch(() => null);
+            const current = parseIndex(fileToString(raw));
+            const { index, obsolete } = addVersion(current, entry, keep);
+            await this.writeFileAsync(this.namespace, indexPath(id), JSON.stringify(index));
+
+            for (const old of obsolete) {
+                await this.delFileAsync(this.namespace, versionPath(id, old)).catch(() => {
+                    /* a version that is already gone is one we do not have to delete */
+                });
+            }
+            this.log.debug(`Script history: stored version ${ts} of ${id} (${index.length} kept)`);
+        } catch (e) {
+            // A history is a convenience; it must never get in the way of saving a script
+            this.log.warn(`Cannot store the version of ${id}: ${e instanceof Error ? e.message : String(e)}`);
+        }
+    }
+
+    /**
+     * The stored versions of a script, newest first, without their sources.
+     *
+     * @param id id of the script
+     */
+    private async readScriptVersions(id: string): Promise<ScriptVersion[]> {
+        try {
+            const raw = await this.readFileAsync(this.namespace, indexPath(id));
+            return parseIndex(fileToString(raw));
+        } catch {
+            // No history yet - not an error, just nothing to show
+            return [];
+        }
+    }
+
+    /** What every stored history occupies, biggest first - read from the indexes, never from the sources */
+    private async collectHistoryUsage(): Promise<{
+        rows: { id: string; exists: boolean; versions: number; bytes: number }[];
+        total: { scripts: number; versions: number; bytes: number };
+    }> {
+        const rows: { id: string; exists: boolean; versions: number; bytes: number }[] = [];
+        let folders: { file: string }[] = [];
+        try {
+            folders = await this.readDirAsync(this.namespace, HISTORY_ROOT);
+        } catch {
+            // Nothing stored yet
+        }
+        for (const folder of folders) {
+            const id = decodeFolderName(folder.file);
+            const index = await this.readScriptVersions(id);
+            if (!index.length) {
+                continue;
+            }
+            const { versions, bytes } = sumIndex(index);
+            rows.push({ id, exists: !!this.objects[id], versions, bytes });
+        }
+        rows.sort((a, b) => b.bytes - a.bytes);
+        return {
+            rows,
+            total: {
+                scripts: rows.length,
+                versions: rows.reduce((sum, r) => sum + r.versions, 0),
+                bytes: rows.reduce((sum, r) => sum + r.bytes, 0),
+            },
+        };
+    }
+
+    /**
+     * Remove stored versions.
+     *
+     * @param options what to remove
+     * @param options.id the script whose versions are meant
+     * @param options.ts one single version of that script; without it the whole history goes
+     * @param options.orphans every history whose script no longer exists
+     * @param options.all every stored version there is - the scripts themselves stay untouched
+     */
+    private async deleteHistory(options: { id?: string; ts?: number; orphans?: boolean; all?: boolean }): Promise<{
+        deleted: number;
+        bytes: number;
+    }> {
+        let deleted = 0;
+        let bytes = 0;
+
+        /**
+         * Delete versions of one script and write the remaining index back.
+         *
+         * @param id the script
+         * @param keep the versions that stay; an empty list removes the index as well
+         * @param drop the versions to remove
+         */
+        const apply = async (id: string, keep: ScriptVersion[], drop: ScriptVersion[]): Promise<void> => {
+            for (const version of drop) {
+                bytes += version.size || 0;
+                deleted++;
+                await this.delFileAsync(this.namespace, versionPath(id, version.ts)).catch(() => {
+                    /* a version that is already gone is one we do not have to delete */
+                });
+            }
+            if (keep.length) {
+                await this.writeFileAsync(this.namespace, indexPath(id), JSON.stringify(keep));
+            } else {
+                await this.delFileAsync(this.namespace, indexPath(id)).catch(() => {
+                    /* already gone */
+                });
+            }
+        };
+
+        if (options.orphans || options.all) {
+            const { rows } = await this.collectHistoryUsage();
+            // `all` takes everything, `orphans` only what has no script behind it anymore
+            for (const row of options.all ? rows : rows.filter(r => !r.exists)) {
+                await apply(row.id, [], await this.readScriptVersions(row.id));
+            }
+        } else if (options.id) {
+            const index = await this.readScriptVersions(options.id);
+            if (options.ts) {
+                await apply(
+                    options.id,
+                    index.filter(v => v.ts !== options.ts),
+                    index.filter(v => v.ts === options.ts),
+                );
+            } else {
+                await apply(options.id, [], index);
+            }
+        }
+        this.log.debug(`Script history: removed ${deleted} versions (${formatBytes(bytes)})`);
+        return { deleted, bytes };
+    }
+
+    /**
+     * Cut every history down to the configured number of versions.
+     *
+     * Without this a smaller limit would only take effect script by script, on the next save of
+     * each - and setting it to zero would never free anything at all.
+     */
+    private async trimAllHistories(): Promise<void> {
+        const keep = resolveHistoryVersions(this.config.historyVersions);
+        let folders: { file: string }[] = [];
+        try {
+            folders = await this.readDirAsync(this.namespace, HISTORY_ROOT);
+        } catch {
+            return;
+        }
+        for (const folder of folders) {
+            const id = decodeFolderName(folder.file);
+            const index = await this.readScriptVersions(id);
+            if (!index.length) {
+                continue;
+            }
+            const { index: kept, obsolete } = trimIndex(index, keep);
+            if (!obsolete.length) {
+                continue;
+            }
+            for (const ts of obsolete) {
+                await this.delFileAsync(this.namespace, versionPath(id, ts)).catch(() => {
+                    /* already gone */
+                });
+            }
+            if (kept.length) {
+                await this.writeFileAsync(this.namespace, indexPath(id), JSON.stringify(kept));
+            } else {
+                await this.delFileAsync(this.namespace, indexPath(id)).catch(() => {
+                    /* already gone */
+                });
+            }
+            this.log.debug(`Script history: trimmed ${id} to ${kept.length} versions`);
+        }
+    }
+
     async onObjectChange(id: string, obj?: ioBroker.Object | null): Promise<void> {
         // Check if we should ignore this change (once!) because we just updated the compiled sources
         if (this.ignoreObjectChange.has(id)) {
@@ -776,6 +1026,11 @@ class JavaScript extends Adapter {
                     this.log.error(`Error in callback: ${err.toString()}`);
                 }
             }
+        }
+
+        // Keep the saved source before the branches below decide what else to do with it
+        if (obj?.type === 'script') {
+            await this.storeScriptVersion(id, obj, formerObj as ioBroker.ScriptObject | undefined);
         }
 
         // handle Script object updates
@@ -1176,6 +1431,15 @@ class JavaScript extends Adapter {
         }
         try {
             const cred = await Credentials.getCredentials<Credentials.KeyCredentials>(this, id);
+            /*
+             * Only an entry that was stored as an AI credential. The store holds the secrets of the
+             * whole system - a database password, the login of a camera - and nothing but this check
+             * keeps a request for "the key of this provider" from reaching one of them.
+             */
+            if (cred?.type !== 'ai') {
+                this.log.warn(`Cannot read AI credential "${id}": it is not an AI credential`);
+                return '';
+            }
             return (cred?.values?.key || '').trim();
         } catch (e) {
             this.log.warn(`Cannot read AI credential "${id}": ${e instanceof Error ? e.message : String(e)}`);
@@ -1195,7 +1459,40 @@ class JavaScript extends Adapter {
      * The settings-dialog Test button may pass form values that are not saved yet
      * (`messageApiKey` / `messageCredentialId` / `credentialType`); those win over the stored config.
      */
-    private async resolveAiCredentials(
+    private async resolveAiCredentials(provider: string): Promise<{ apiKey: string; baseUrl: string }> {
+        const mode = this.config.credentialType || 'manual';
+        if (mode === 'manager') {
+            // The base URL is not a secret and is resolved the same way in both modes.
+            const { baseUrl } = resolveProviderCredentials(this.config, provider);
+            const id = getProviderCredentialId(this.config, provider).trim();
+            if (!id) {
+                return { apiKey: '', baseUrl };
+            }
+            // Prefer the cached value kept fresh by the credential subscription.
+            const cached = this.aiCredentialCache.get(id);
+            const apiKey = cached !== undefined ? cached : await this.readAiCredentialKey(id);
+            return { apiKey, baseUrl };
+        }
+        return resolveProviderCredentials(this.config, provider);
+    }
+
+    /**
+     * Endpoint and key for the Test button of the settings dialog.
+     *
+     * The dialog tries what stands in the form - a key that was typed but not saved, a credential that
+     * was chosen but not saved, an endpoint that was entered but not saved. What the form may decide is
+     * limited by `resolveTestEndpoint`: a secret of this system is never carried to an address that
+     * came with the message. A chat request takes none of this and reads the configuration instead -
+     * see `resolveAiCredentials`.
+     *
+     * @param provider the provider that is being tested
+     * @param opts what the Test button sent
+     * @param opts.messageBaseUrl the address that stands in the form
+     * @param opts.messageApiKey the key that stands in the form
+     * @param opts.messageCredentialId the entry of the credential store that the form names
+     * @param opts.credentialType where the form says the keys are kept
+     */
+    private async resolveAiTestCredentials(
         provider: string,
         opts: {
             messageBaseUrl?: string;
@@ -1206,13 +1503,12 @@ class JavaScript extends Adapter {
     ): Promise<{ apiKey: string; baseUrl: string }> {
         const mode = opts.credentialType || this.config.credentialType || 'manual';
         if (mode === 'manager') {
-            // The base URL is not a secret and is resolved the same way in both modes.
-            const { baseUrl } = resolveProviderCredentials(this.config, provider, opts.messageBaseUrl);
+            // A key out of the store is a secret of this system, so the address is the stored one
+            const { baseUrl } = resolveProviderCredentials(this.config, provider);
             const id = (opts.messageCredentialId || getProviderCredentialId(this.config, provider)).trim();
             if (!id) {
                 return { apiKey: '', baseUrl };
             }
-            // Prefer the cached value kept fresh by the credential subscription.
             const cached = this.aiCredentialCache.get(id);
             const apiKey = cached !== undefined ? cached : await this.readAiCredentialKey(id);
             return { apiKey, baseUrl };
@@ -1221,7 +1517,39 @@ class JavaScript extends Adapter {
         if (opts.messageApiKey !== undefined) {
             return resolveTestCredentials(this.config, provider, opts.messageApiKey, opts.messageBaseUrl);
         }
-        return resolveProviderCredentials(this.config, provider, opts.messageBaseUrl);
+        return resolveProviderCredentials(this.config, provider);
+    }
+
+    /**
+     * Whether the user a message was sent on behalf of may have code executed here.
+     *
+     * `obj.user` arrives with js-controller 7.2.5 and newer: a socket server such as `admin` or `web`
+     * puts the authenticated user of the connection there, and a socket client cannot set it itself.
+     * Where it is missing - an older controller, a script, an adapter that names nobody - nothing is
+     * checked and everything stays as it was.
+     *
+     * The right asked for is the one `cmdExec` is checked against: running a script here is running
+     * code on this host, whatever the ACL of the single objects it then touches says.
+     *
+     * @param obj the incoming message
+     */
+    private async mayExecuteFor(obj: ioBroker.Message): Promise<string | null> {
+        // `user` is not in the older `@iobroker/types` this adapter builds against
+        const user = (obj as { user?: string }).user;
+        if (!user) {
+            return null;
+        }
+        try {
+            const permissions = await this.calculatePermissionsAsync(user, {
+                cmdExec: { type: 'other', operation: 'execute' },
+            } as const);
+            if (permissions?.other?.execute) {
+                return null;
+            }
+            return `User "${user}" has no permission to execute scripts`;
+        } catch (e) {
+            return `Cannot check the permissions of "${user}": ${e instanceof Error ? e.message : String(e)}`;
+        }
     }
 
     /**
@@ -1680,6 +2008,108 @@ class JavaScript extends Adapter {
                 break;
             }
 
+            case 'getScriptVersions': {
+                // The stored versions of one script, without their sources - the list must stay
+                // cheap, a history of 30 Blockly versions is megabytes
+                void (async () => {
+                    if (!obj.callback) {
+                        return;
+                    }
+                    const scriptId = (obj.message?.id || '').toString();
+                    if (!scriptId) {
+                        this.sendTo(obj.from, obj.command, { error: 'No script ID provided' }, obj.callback);
+                        return;
+                    }
+                    const versions = await this.readScriptVersions(scriptId);
+                    this.sendTo(obj.from, obj.command, { versions }, obj.callback);
+                })();
+                break;
+            }
+
+            case 'getScriptVersion': {
+                // The source of one stored version, fetched when it is actually looked at
+                void (async () => {
+                    if (!obj.callback) {
+                        return;
+                    }
+                    const scriptId = (obj.message?.id || '').toString();
+                    const ts = parseInt(obj.message?.ts as string, 10);
+                    if (!scriptId || isNaN(ts)) {
+                        this.sendTo(obj.from, obj.command, { error: 'No script ID or timestamp' }, obj.callback);
+                        return;
+                    }
+                    try {
+                        const raw = await this.readFileAsync(this.namespace, versionPath(scriptId, ts));
+                        const source = fileToString(raw);
+                        this.sendTo(obj.from, obj.command, { source }, obj.callback);
+                    } catch (e) {
+                        this.sendTo(
+                            obj.from,
+                            obj.command,
+                            { error: `Cannot read the version: ${e instanceof Error ? e.message : String(e)}` },
+                            obj.callback,
+                        );
+                    }
+                })();
+                break;
+            }
+
+            case 'getHistoryUsage': {
+                // Read by the overview in the adapter settings (`textSendTo` with container html)
+                void (async () => {
+                    if (!obj.callback) {
+                        return;
+                    }
+                    try {
+                        this.sendTo(obj.from, obj.command, await this.collectHistoryUsage(), obj.callback);
+                    } catch (e) {
+                        this.sendTo(
+                            obj.from,
+                            obj.command,
+                            { error: `Cannot read the history: ${e instanceof Error ? e.message : String(e)}` },
+                            obj.callback,
+                        );
+                    }
+                })();
+                break;
+            }
+
+            case 'deleteHistory': {
+                // One version, the history of one script, or every history without a script
+                void (async () => {
+                    if (!obj.callback) {
+                        return;
+                    }
+                    const scriptId = (obj.message?.id || '').toString();
+                    const orphans = !!obj.message?.orphans;
+                    // Wiping every history is a deliberate request, never the default of a
+                    // message that forgot to say what it meant
+                    const all = !!obj.message?.all;
+                    if (!scriptId && !orphans && !all) {
+                        this.sendTo(obj.from, obj.command, { error: 'No script ID provided' }, obj.callback);
+                        return;
+                    }
+                    try {
+                        const ts = parseInt(obj.message?.ts as string, 10);
+                        const result = await this.deleteHistory({
+                            ...(scriptId ? { id: scriptId } : {}),
+                            ...(isNaN(ts) ? {} : { ts }),
+                            ...(orphans ? { orphans: true } : {}),
+                            ...(all ? { all: true } : {}),
+                        });
+                        this.sendTo(obj.from, obj.command, result, obj.callback);
+                    } catch (e) {
+                        this.sendTo(
+                            obj.from,
+                            obj.command,
+                            { error: `Cannot delete: ${e instanceof Error ? e.message : String(e)}` },
+                            obj.callback,
+                        );
+                    }
+                })();
+                break;
+            }
+
             case 'getIoBrokerDataDir': {
                 if (obj.callback) {
                     this.sendTo(
@@ -1724,9 +2154,8 @@ class JavaScript extends Adapter {
                     // How long the caller is willing to wait - see `resolveRequestTimeout`
                     const requestTimeout = resolveRequestTimeout(obj.message?.timeout);
                     const maxTokens = resolveMaxTokens(this.config.aiMaxTokens);
-                    const { apiKey, baseUrl } = await this.resolveAiCredentials(provider, {
-                        messageBaseUrl: obj.message?.baseUrl,
-                    });
+                    // Endpoint and key come from the configuration; a request cannot name either
+                    const { apiKey, baseUrl } = await this.resolveAiCredentials(provider);
                     // Anthropic, Gemini, and DeepSeek always require an API key; OpenAI-compatible allows empty key with custom base URL
                     if (
                         !apiKey &&
@@ -1853,7 +2282,17 @@ class JavaScript extends Adapter {
                                             // reason attached - the stop reason below is the whole point.
                                             if (!content.trim() && !(tool_calls as unknown[] | undefined)?.length) {
                                                 const error = describeEmptyAiResponse(info, data);
-                                                this.log.warn(`chatCompletion (${provider}/${chatModel}): ${error}`);
+                                                // What arrived instead of an answer. Without this the
+                                                // log only repeats what is already known - that there
+                                                // is nothing - instead of naming the blocks that came
+                                                const shape =
+                                                    provider === 'anthropic'
+                                                        ? describeAnthropicContent(parsed)
+                                                        : `choices: ${parsed.choices?.length ?? 0}, content: ${typeof parsed
+                                                              .choices?.[0]?.message?.content}`;
+                                                this.log.warn(
+                                                    `chatCompletion (${provider}/${chatModel}): ${error}. Answer contained: ${shape}`,
+                                                );
                                                 respond({ error, ...info });
                                             } else {
                                                 this.log.debug(
@@ -1929,7 +2368,7 @@ class JavaScript extends Adapter {
                         return;
                     }
                     const provider = (obj.message?.provider || 'openai').trim();
-                    const { apiKey, baseUrl } = await this.resolveAiCredentials(provider, {
+                    const { apiKey, baseUrl } = await this.resolveAiTestCredentials(provider, {
                         messageApiKey: obj.message?.apiKey,
                         messageBaseUrl: obj.message?.baseUrl,
                         messageCredentialId: obj.message?.credentialId,
@@ -2156,7 +2595,17 @@ class JavaScript extends Adapter {
 
             case 'execute': {
                 if (obj.callback) {
-                    void this.executeScript(obj.message)
+                    /*
+                     * This runs code on this host with the whole ioBroker API behind it. Anybody who
+                     * may send a message here could ask for it, and the message never said on whose
+                     * behalf - so there was nothing to check it against. Where the controller names
+                     * the user (js-controller 7.2.5 and newer), that user needs the right a command on
+                     * the host needs; where it does not, nothing changes.
+                     */
+                    void this.mayExecuteFor(obj)
+                        .then(async error =>
+                            error ? { ok: false, error, logs: [], output: '' } : await this.executeScript(obj.message),
+                        )
                         .then(result => this.sendTo(obj.from, obj.command, result, obj.callback))
                         .catch(err =>
                             this.sendTo(
@@ -2245,6 +2694,10 @@ class JavaScript extends Adapter {
     }
 
     async main(): Promise<void> {
+        await this.ensureHistoryStorage();
+        // Makes a changed limit take effect at once instead of script by script
+        await this.trimAllHistories();
+
         // Patch the font as it sometimes is wrong
         if (!this.context.debugMode) {
             if (await this.patchFont()) {

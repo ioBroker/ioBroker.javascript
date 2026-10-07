@@ -194,6 +194,7 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         void this.showInlineDiff;
         void this.getEditorSelection;
         void this.getEditorContent;
+        void this.setEditorContent;
         void this.getCursorPosition;
         void this.getWordAtCursor;
         void this.highlightLineRange;
@@ -1037,6 +1038,31 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
     /** Full editor content. */
     getEditorContent(): string {
         return this.editor?.getModel()?.getValue() ?? '';
+    }
+
+    /**
+     * Replace the whole content.
+     *
+     * The `code` property is only taken over while the script is unchanged (see
+     * `UNSAFE_componentWillReceiveProps`), so that an update from outside cannot wipe out what the
+     * user is typing. Putting a version from the history or an accepted AI suggestion into the
+     * editor therefore has to go through here. `executeEdits` and not `setValue`, because that is
+     * the documented way to change a model without throwing its undo history away - whether Ctrl+Z
+     * really takes the whole replacement back in one step is not verified, so the way back from an
+     * unwanted restore is "Cancel", not undo.
+     *
+     * @param code the new content
+     */
+    setEditorContent(code: string): void {
+        const model = this.editor?.getModel();
+        if (!this.editor || !model) {
+            return;
+        }
+        this.editor.pushUndoStop();
+        this.editor.executeEdits('iobroker-set-content', [
+            { range: model.getFullModelRange(), text: code, forceMoveMarkers: true },
+        ]);
+        this.editor.pushUndoStop();
     }
 
     /** The identifier that is selected or that the cursor is in or right behind, e.g. `setState`. */

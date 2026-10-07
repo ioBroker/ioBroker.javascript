@@ -5,6 +5,7 @@ const {
     getProviderCredentialId,
     resolveProviderCredentials,
     resolveTestCredentials,
+    resolveTestEndpoint,
     listAvailableProviders,
     resolveRequestTimeout,
     MAX_AI_REQUEST_TIMEOUT_MS,
@@ -152,24 +153,24 @@ describe('Test AI Provider Resolver', function () {
             assert.equal(res.baseUrl, 'http://localhost:11434/v1');
         });
 
-        it('messageBaseUrl takes precedence over the stored gptBaseUrl for custom', function () {
+        it('keeps the stored endpoint even where a message names one', function () {
+            // the key travels with the request, so the address is not the caller's to choose
             const res = resolveProviderCredentials(fullConfig, 'custom', 'http://override:8080/v1');
-            assert.equal(res.baseUrl, 'http://override:8080/v1');
+            assert.equal(res.baseUrl, 'http://localhost:11434/v1');
         });
 
-        it('openai still honours an explicit messageBaseUrl (a proxy in front of OpenAI)', function () {
+        it('never sends openai anywhere but to its own service', function () {
+            // this used to be the escape hatch for a proxy in front of OpenAI - and at the same time
+            // the way to have the stored OpenAI key carried to an address of somebody's choosing
             const res = resolveProviderCredentials(fullConfig, 'openai', 'http://override:8080/v1');
-            assert.equal(res.baseUrl, 'http://override:8080/v1');
-        });
-
-        it('messageBaseUrl is ignored for anthropic/gemini/deepseek', function () {
-            const res = resolveProviderCredentials(fullConfig, 'anthropic', 'http://override:8080/v1');
+            assert.equal(res.apiKey, 'sk-openai-abc');
             assert.equal(res.baseUrl, '');
         });
 
-        it('messageBaseUrl=empty-string falls back to stored gptBaseUrl', function () {
-            const res = resolveProviderCredentials(fullConfig, 'custom', '');
-            assert.equal(res.baseUrl, 'http://localhost:11434/v1');
+        it('names no address for anthropic/gemini/deepseek', function () {
+            ['anthropic', 'gemini', 'deepseek'].forEach(provider =>
+                assert.equal(resolveProviderCredentials(fullConfig, provider).baseUrl, '', provider),
+            );
         });
     });
 
@@ -213,16 +214,49 @@ describe('Test AI Provider Resolver', function () {
             assert.equal(res.apiKey, 'stored-openai');
         });
 
-        it('baseUrl is resolved the same way as in resolveProviderCredentials', function () {
-            const res = resolveTestCredentials(config, 'openai', 'form-key', 'http://form-url:9999/v1');
+        it('tries the endpoint of the form, with a key of the form and only for custom', function () {
+            const res = resolveTestCredentials(config, 'custom', 'form-key', 'http://form-url:9999/v1');
             assert.equal(res.baseUrl, 'http://form-url:9999/v1');
 
-            const res2 = resolveTestCredentials(config, 'custom', 'form-key');
-            assert.equal(res2.baseUrl, 'http://stored:1234/v1');
+            // openai has no endpoint to try: the form has no field for one, and the stored one
+            // belongs to the custom provider (#2369)
+            const res2 = resolveTestCredentials(config, 'openai', 'form-key', 'http://form-url:9999/v1');
+            assert.equal(res2.baseUrl, '');
 
-            // and openai does not pick up the stored custom endpoint (#2369)
-            const res3 = resolveTestCredentials(config, 'openai', 'form-key');
-            assert.equal(res3.baseUrl, '');
+            const res3 = resolveTestCredentials(config, 'custom', 'form-key');
+            assert.equal(res3.baseUrl, 'http://stored:1234/v1');
+        });
+
+        it('keeps the stored endpoint as soon as the key comes from this system', function () {
+            // no key in the form: the key would be the stored one, so the address is the stored one
+            const res = resolveTestCredentials(config, 'custom', '', 'http://form-url:9999/v1');
+            assert.equal(res.apiKey, 'stored-custom');
+            assert.equal(res.baseUrl, 'http://stored:1234/v1');
+        });
+    });
+
+    describe('resolveTestEndpoint', function () {
+        const config = { gptBaseUrl: 'http://stored:1234/v1' };
+
+        it('takes the address of the form together with a key of the form', function () {
+            const url = resolveTestEndpoint(config, 'custom', { apiKey: 'typed', baseUrl: 'http://form:9/v1' });
+            assert.equal(url, 'http://form:9/v1');
+        });
+
+        it('ignores the address of the form without a key of the form', function () {
+            assert.equal(resolveTestEndpoint(config, 'custom', { baseUrl: 'http://form:9/v1' }), 'http://stored:1234/v1');
+            assert.equal(
+                resolveTestEndpoint(config, 'custom', { apiKey: '   ', baseUrl: 'http://form:9/v1' }),
+                'http://stored:1234/v1',
+            );
+        });
+
+        it('ignores an address for a provider that has none to try', function () {
+            assert.equal(resolveTestEndpoint(config, 'openai', { apiKey: 'typed', baseUrl: 'http://form:9/v1' }), '');
+        });
+
+        it('falls back to the stored endpoint when the form brought none', function () {
+            assert.equal(resolveTestEndpoint(config, 'custom', { apiKey: 'typed' }), 'http://stored:1234/v1');
         });
     });
 
@@ -381,7 +415,7 @@ describe('Test AI Provider Resolver', function () {
         it('cannot be talked back into the old behaviour by an empty baseUrl', function () {
             // An empty messageBaseUrl means "not provided" - it used to fall back to the stored
             // custom URL, so no caller could reach api.openai.com at all
-            const res = resolveProviderCredentials({ gptKey: 'sk', gptBaseUrl: 'http://custom/v1' }, 'openai', '');
+            const res = resolveProviderCredentials({ gptKey: 'sk', gptBaseUrl: 'http://custom/v1' }, 'openai');
             assert.equal(res.baseUrl, '');
         });
 

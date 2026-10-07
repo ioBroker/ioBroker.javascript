@@ -588,5 +588,15 @@
     "Changes against the saved version": "Changes against the saved version",
     "Use the whole width": "Use the whole width",
     "Restore the split view": "Restore the split view",
-    "Request is running...": "Request is running..."
+    "Request is running...": "Request is running...",
+    "Script history": "Script history",
+    "Show the saved versions of this script": "Show the saved versions of this script",
+    "No versions stored yet. They are written from the next save on.": "No versions stored yet. They are written from the next save on.",
+    "This script is protected, its versions are stored encrypted.": "This script is protected, its versions are stored encrypted.",
+    "Left: the selected version. Right: the editor.": "Left: the selected version. Right: the editor.",
+    "Take over into the editor": "Take over into the editor",
+    "lines": "lines",
+    "Delete this version": "Delete this version",
+    "Delete the whole history": "Delete the whole history",
+    "These scripts are not saved:": "These scripts are not saved:"
 }

@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
 
+import { SplitSizes } from '../splitSizes';
+
 import { Tabs, Tab, Toolbar, LinearProgress, IconButton, Badge, Box } from '@mui/material';
 
 import {
@@ -149,6 +151,8 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
     private scripts: Record<string, string> = {};
 
     private mainScriptId: string | null = null;
+    /** Code against the tool panel - see `SplitSizes` */
+    private readonly toolSplit = new SplitSizes('tools');
 
     constructor(props: DebuggerProps) {
         super(props);
@@ -967,13 +971,14 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
                 <div style={styles.splitter}>
                     <ReactSplit
                         direction={SplitDirection.Vertical}
-                        initialSizes={this.state.toolSizes}
+                        initialSizes={this.toolSplit.current(this.state.toolSizes)}
                         minHeights={[100, 100]}
                         onResizeFinished={(_gutterIdx, toolSizes) => {
+                            this.toolSplit.update(toolSizes);
                             this.setState({ toolSizes });
                             window.localStorage.setItem('JS.toolSizes', JSON.stringify(toolSizes));
                         }}
-                        gutterClassName={this.props.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
+                        gutterClassName={this.toolSplit.gutterClassName(this.props.themeType)}
                     >
                         <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>{this.renderCode()}</div>
                         <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>{this.renderTools()}</div>

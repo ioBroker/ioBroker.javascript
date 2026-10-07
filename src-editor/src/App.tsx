@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
+import { SplitSizes } from './Components/splitSizes';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { Box, CssBaseline } from '@mui/material';
 
@@ -218,6 +219,10 @@ export default class App extends GenericApp<AppProps, AppState> {
     private confirmCallback: null | ((result: boolean) => void) = null;
     private changedScripts: { [id: string]: boolean } = {};
     private javascriptPassword: string = '';
+    /** Editor against log - see `SplitSizes` for why the sizes are kept outside the state */
+    private readonly logSplit = new SplitSizes('log');
+    /** Script tree against editor */
+    private readonly menuSplit = new SplitSizes('menu');
 
     constructor(props: AppProps) {
         super(props, {
@@ -1345,15 +1350,16 @@ export default class App extends GenericApp<AppProps, AppState> {
             content = (
                 <ReactSplit
                     direction={this.state.logHorzLayout ? SplitDirection.Horizontal : SplitDirection.Vertical}
-                    initialSizes={this.state.logSizes}
+                    initialSizes={this.logSplit.current(this.state.logSizes)}
                     minWidths={[500, 100]}
                     minHeights={[150, 50]}
                     onResizeStarted={() => this.setState({ resizing: true })}
                     onResizeFinished={(_gutterIdx, logSizes) => {
+                        this.logSplit.update(logSizes);
                         this.setState({ logSizes: logSizes as [number, number], resizing: false });
                         window.localStorage.setItem('JS.logSizes', JSON.stringify(logSizes));
                     }}
-                    gutterClassName={this.state.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
+                    gutterClassName={this.logSplit.gutterClassName(this.state.themeType)}
                 >
                     {this.renderEditor()}
                     <Log
@@ -1439,13 +1445,14 @@ export default class App extends GenericApp<AppProps, AppState> {
             context = (
                 <ReactSplit
                     direction={SplitDirection.Horizontal}
-                    initialSizes={this.state.splitSizes}
+                    initialSizes={this.menuSplit.current(this.state.splitSizes)}
                     minWidths={[270, 400]}
                     onResizeFinished={(_gutterIdx, splitSizes): void => {
+                        this.menuSplit.update(splitSizes);
                         this.setState({ splitSizes: splitSizes as [number, number] });
                         window.localStorage.setItem('JS.splitSizes', JSON.stringify(splitSizes));
                     }}
-                    gutterClassName={this.state.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
+                    gutterClassName={this.menuSplit.gutterClassName(this.state.themeType)}
                 >
                     <div
                         style={styles.mainDiv}

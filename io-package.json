@@ -186,7 +186,7 @@
     },
     "dependencies": [
       {
-        "js-controller": ">=7.2.2"
+        "js-controller": ">=7.2.5"
       }
     ],
     "globalDependencies": [
@@ -549,6 +549,7 @@
     "gptBaseUrlKey": "",
     "aiReasoningEffort": "",
     "aiMaxTokens": 8192,
+    "historyVersions": 30,
     "aiEditorHelpers": true,
     "claudeKey": "",
     "geminiKey": "",

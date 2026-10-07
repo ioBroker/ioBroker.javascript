@@ -1,6 +1,8 @@
 import React from 'react';
 
 import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
+
+import { SplitSizes } from '../splitSizes';
 import ReactJson from 'react-json-view';
 
 import { ListItemButton, ListItemText, Input, InputAdornment, IconButton, List, Box } from '@mui/material';
@@ -216,6 +218,8 @@ class Stack extends React.Component<StackProps, StackState> {
     private readonly editRef: React.RefObject<HTMLInputElement | null>;
 
     private scopeValue: boolean | undefined | number | string | null = null;
+    /** Call frames against scopes - see `SplitSizes` */
+    private readonly framesSplit = new SplitSizes('frames');
 
     constructor(props: StackProps) {
         super(props);
@@ -645,13 +649,14 @@ class Stack extends React.Component<StackProps, StackState> {
         return (
             <ReactSplit
                 direction={SplitDirection.Horizontal}
-                initialSizes={this.state.framesSizes}
+                initialSizes={this.framesSplit.current(this.state.framesSizes)}
                 minWidths={[100, 200]}
                 onResizeFinished={(_gutterIdx, framesSizes) => {
+                    this.framesSplit.update(framesSizes);
                     this.setState({ framesSizes });
                     window.localStorage.setItem('JS.framesSizes', JSON.stringify(framesSizes));
                 }}
-                gutterClassName={this.props.themeType === 'dark' ? 'Dark visGutter' : 'Light visGutter'}
+                gutterClassName={this.framesSplit.gutterClassName(this.props.themeType)}
             >
                 <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>
                     <List style={styles.listRoot}>
