@@ -1,0 +1,4 @@
+# npm owns these files - reformatting them only produces diff noise, and the lock file is generated.
+# Without a slash the pattern matches at every level, so src-editor and src-admin are covered too.
+package.json
+package-lock.json
