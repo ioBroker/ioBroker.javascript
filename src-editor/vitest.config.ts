@@ -8,11 +8,6 @@ export default defineConfig({
         alias: [
             { find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) },
             { find: '@fb-core', replacement: fileURLToPath(new URL('../src/lib/fb/index.ts', import.meta.url)) },
-            // ai-gui 0.0.2 names only `module`, which a bundler reads and vitest does not; 0.0.3 has `exports`
-            {
-                find: /^@iobroker\/ai-gui$/,
-                replacement: fileURLToPath(new URL('./node_modules/@iobroker/ai-gui/build/index.js', import.meta.url)),
-            },
         ],
     },
     server: {

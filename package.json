@@ -1,6 +1,6 @@
 {
     "name": "iobroker.javascript",
-    "version": "10.3.0",
+    "version": "10.4.0",
     "description": "Rules Engine for ioBroker",
     "author": "bluefox <dogafox@gmail.com>",
     "contributors": [
@@ -42,7 +42,7 @@
     },
     "dependencies": {
         "@iobroker/adapter-core": "^3.4.3",
-        "@iobroker/ai-core": "^0.0.1",
+        "@iobroker/ai-core": "^0.0.3",
         "@iobroker/types": "^7.2.4",
         "@types/node": "^22.20.5",
         "axios": "^1.20.0",

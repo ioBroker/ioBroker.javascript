@@ -47,6 +47,5 @@ export const JS_AI_ALIASES = {
  * @param config the configuration of the instance (`this.config`)
  */
 export function jsAiSettings(config: object): AiSettings {
-    // ai-core 0.0.1 wants a Record; the cast can go with 0.0.2, which takes any object
-    return readAiSettings(config as Record<string, unknown>, JS_AI_FIELDS);
+    return readAiSettings(config, JS_AI_FIELDS);
 }

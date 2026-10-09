@@ -48,7 +48,6 @@ exports.JS_AI_ALIASES = {
  * @param config the configuration of the instance (`this.config`)
  */
 function jsAiSettings(config) {
-    // ai-core 0.0.1 wants a Record; the cast can go with 0.0.2, which takes any object
     return (0, ai_core_1.readAiSettings)(config, exports.JS_AI_FIELDS);
 }
 //# sourceMappingURL=ai.js.map
