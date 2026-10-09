@@ -581,7 +581,6 @@
     "No final answer after %s tool rounds": "Keine endgültige Antwort nach %s Werkzeug-Runden",
     "The javascript adapter did not answer this request. Check the adapter log.": "Der javascript-Adapter hat auf diese Anfrage nicht geantwortet. Bitte das Adapter-Log prüfen.",
     "Reply": "Antwort",
-    "No answer within": "Keine Antwort innerhalb von",
     "The answer is incomplete: the model hit its output limit. Raise \"Maximum answer length\" in the adapter settings, or ask for a smaller part.": "Die Antwort ist unvollständig: Das Modell hat sein Ausgabe-Limit erreicht. Erhöhe \"Maximale Antwortlänge\" in den Adapter-Einstellungen oder frage einen kleineren Teil ab.",
     "Diff": "Diff",
     "Show the changes against the saved version": "Änderungen gegenüber der gespeicherten Fassung anzeigen",

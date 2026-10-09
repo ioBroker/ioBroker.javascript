@@ -80,9 +80,9 @@ const words_1 = require("./lib/words");
 const sandbox_1 = require("./lib/sandbox");
 const nodeModulesManagement_1 = require("./lib/nodeModulesManagement");
 const secrets_1 = require("./lib/secrets");
-const aiProviderResolver_1 = require("./lib/aiProviderResolver");
+const ai_core_1 = require("@iobroker/ai-core");
+const ai_1 = require("./lib/ai");
 const scriptHistory_1 = require("./lib/scriptHistory");
-const anthropicAdapter_1 = require("./lib/anthropicAdapter");
 const eventObj_1 = require("./lib/eventObj");
 const scheduler_1 = require("./lib/scheduler");
 const typescriptSettings_1 = require("./lib/typescriptSettings");
@@ -108,11 +108,6 @@ const forbiddenMirrorLocations = [
 ];
 const packageJson = JSON.parse((0, node_fs_1.readFileSync)(`${__dirname}/../package.json`).toString());
 const SCRIPT_CODE_MARKER = 'script.js.';
-/**
- * Instance-message type the script editor subscribes to, and under which finished AI answers are
- * pushed back to it. Shared verbatim with `src-editor/src/AiChat/AiChatService.ts`.
- */
-const AI_PUSH_MESSAGE_TYPE = 'aiChatAnswer';
 let webstormDebug;
 const isCI = !!process.env.CI;
 // ambient declarations for typescript
@@ -257,33 +252,6 @@ const jsDeclarationServer = new lazyTsServer_1.LazyTsServer(typescriptSettings_1
  * Stores the IDs of script objects whose change should be ignored because
  * the compiled source was just updated
  */
-const HTTP_STATUS_TEXTS = {
-    400: 'Bad Request',
-    401: 'Unauthorized',
-    403: 'Forbidden',
-    404: 'Not Found',
-    429: 'Too Many Requests / Rate Limit',
-    500: 'Internal Server Error',
-    502: 'Bad Gateway',
-    503: 'Service Unavailable',
-};
-function httpStatusText(code) {
-    return HTTP_STATUS_TEXTS[code] ?? `Error ${code}`;
-}
-/**
- * Resolves the correct http/https module based on the URL string.
- * Returns null if the URL is invalid.
- */
-function resolveRequestModule(url) {
-    try {
-        const { protocol } = new URL(url);
-        const isHttps = protocol === 'https:';
-        return { module: isHttps ? https : http, isHttps };
-    }
-    catch {
-        return null;
-    }
-}
 class JavaScript extends adapter_core_1.Adapter {
     context;
     errorLogFunction = {
@@ -346,21 +314,11 @@ class JavaScript extends adapter_core_1.Adapter {
     mirror;
     stopCounters = {};
     setStateCountCheckInterval = null;
-    /**
-     * Decrypted AI API keys cached from the central credential store (manager mode),
-     * keyed by credential ID (e.g. `system.credentials.anthropic`). Kept fresh by the
-     * subscriptions set up in `subscribeAiCredentials`.
-     */
-    aiCredentialCache = new Map();
-    /**
-     * Editor sessions waiting for pushed AI answers: the session token the editor invented when it
-     * subscribed, mapped to the client id the messaging controller gave us. A `chatCompletion`
-     * message carries the token, which is how a request is matched back to the browser tab that
-     * sent it - the message itself has no socket id.
-     */
-    aiUiClients = new Map();
-    /** Unsubscribe callbacks for the AI credential subscriptions (manager mode). */
-    aiCredentialUnsubscribers = [];
+    /** Providers, keys and the push of long answers for the AI of the script editor */
+    ai = new ai_core_1.AiBackend(this, {
+        getSettings: () => (0, ai_1.jsAiSettings)(this.config),
+        aliases: ai_1.JS_AI_ALIASES,
+    });
     /**
      * Decrypted credentials of the central ioBroker credential store (`system.credentials.*`),
      * exposed to the scripts as the global `SECRETS` object. Kept up to date by `onObjectChange`.
@@ -412,8 +370,8 @@ class JavaScript extends adapter_core_1.Adapter {
              * with nothing in any log. So the editor gets an immediate acknowledgement and the result
              * later as an instance message.
              */
-            uiClientSubscribe: (info) => this.onUiClientSubscribe(info),
-            uiClientUnsubscribe: (info) => this.onUiClientUnsubscribe(info),
+            uiClientSubscribe: (info) => this.ai.onUiClientSubscribe(info) ?? { accepted: false, error: 'Unknown subscription type' },
+            uiClientUnsubscribe: (info) => this.ai.onUiClientUnsubscribe(info),
             /**
              * If the JS-Controller catches an unhandled error, this will be called,
              * so we have a chance to handle it ourselves.
@@ -1077,7 +1035,7 @@ class JavaScript extends adapter_core_1.Adapter {
                 clearInterval(this.setStateCountCheckInterval);
                 this.setStateCountCheckInterval = null;
             }
-            await this.unsubscribeAiCredentials();
+            await this.ai.stop();
             this.secretsManager.destroy();
             if (this.editorCheckInterval) {
                 clearInterval(this.editorCheckInterval);
@@ -1135,166 +1093,6 @@ class JavaScript extends adapter_core_1.Adapter {
         await this.main();
     }
     /**
-     * A script editor registers itself for pushed AI answers.
-     *
-     * The editor sends a token it made up; we remember which messaging-controller client it belongs
-     * to. Only our own message type is accepted - anything else is some other UI asking for
-     * something we do not serve.
-     *
-     * @param info client id and the subscribe message, as the messaging controller hands it over
-     * @param info.clientId the id to address this client with later
-     * @param info.message the subscribe message, carrying the type and the editor's session token
-     */
-    onUiClientSubscribe(info) {
-        const message = info.message?.message;
-        if (message?.type !== AI_PUSH_MESSAGE_TYPE) {
-            return { accepted: false, error: `Unknown subscription type "${message?.type || ''}"` };
-        }
-        const token = (message.data?.sessionToken || '').trim();
-        if (!token) {
-            return { accepted: false, error: 'No session token provided' };
-        }
-        this.aiUiClients.set(token, info.clientId);
-        this.log.debug(`AI editor session subscribed for pushed answers (${this.aiUiClients.size} open)`);
-        return { accepted: true };
-    }
-    /**
-     * A script editor went away - drop every token that pointed at it.
-     *
-     * @param info the client the messaging controller is retiring
-     * @param info.clientId the id that is going away
-     */
-    onUiClientUnsubscribe(info) {
-        for (const [token, clientId] of this.aiUiClients) {
-            if (clientId === info.clientId) {
-                this.aiUiClients.delete(token);
-            }
-        }
-        this.log.debug(`AI editor session unsubscribed (${this.aiUiClients.size} open)`);
-    }
-    /**
-     * Build the function that delivers the answer of one `chatCompletion` request.
-     *
-     * If the editor registered for pushed answers and named itself in the message, the answer goes
-     * out as an instance message and the socket callback is acknowledged right away. Everything
-     * else - an older editor, the inline completion, a script calling us - keeps the plain
-     * request/response behaviour.
-     *
-     * @param obj the incoming sendTo message
-     */
-    buildAiResponder(obj) {
-        const token = (obj.message?.uiSession || '').toString().trim();
-        const requestId = (obj.message?.requestId || '').toString().trim();
-        const clientId = token ? this.aiUiClients.get(token) : undefined;
-        if (!clientId || !requestId) {
-            return payload => this.sendTo(obj.from, obj.command, payload, obj.callback);
-        }
-        // Release the socket callback immediately - it has 30 s to live, the request has more.
-        this.sendTo(obj.from, obj.command, { accepted: true, requestId }, obj.callback);
-        let sent = false;
-        return payload => {
-            if (sent) {
-                return;
-            }
-            sent = true;
-            this.sendToUI({
-                clientId,
-                data: { type: AI_PUSH_MESSAGE_TYPE, requestId, ...payload },
-            }).catch(e => {
-                // The tab was closed, or the admin dropped the subscription in the meantime.
-                this.aiUiClients.delete(token);
-                this.log.warn(`Cannot deliver the AI answer to the editor: ${e instanceof Error ? e.message : String(e)}`);
-            });
-        };
-    }
-    /** Read and decrypt a single AI credential's key from the central store; returns '' (and logs) on error. */
-    async readAiCredentialKey(id) {
-        if (!adapter_core_1.Credentials?.getCredentials) {
-            this.log.warn(`Cannot read AI credential "${id}": Credentials API is only with 7.2 js-controller available`);
-            return '';
-        }
-        try {
-            const cred = await adapter_core_1.Credentials.getCredentials(this, id);
-            /*
-             * Only an entry that was stored as an AI credential. The store holds the secrets of the
-             * whole system - a database password, the login of a camera - and nothing but this check
-             * keeps a request for "the key of this provider" from reaching one of them.
-             */
-            if (cred?.type !== 'ai') {
-                this.log.warn(`Cannot read AI credential "${id}": it is not an AI credential`);
-                return '';
-            }
-            return (cred?.values?.key || '').trim();
-        }
-        catch (e) {
-            this.log.warn(`Cannot read AI credential "${id}": ${e instanceof Error ? e.message : String(e)}`);
-            return '';
-        }
-    }
-    /**
-     * Resolve the API key (and base URL) for an AI provider.
-     *
-     * In `manual` mode the key comes from the encryptedNative adapter config.
-     * In `manager` mode the config only stores the ID of a credential in the central
-     * ioBroker credential store (`system.credentials.*`); the actual key is taken from the
-     * `aiCredentialCache` (kept fresh by `subscribeAiCredentials`) or, for credentials we are
-     * not subscribed to (e.g. a not-yet-saved selection in the settings dialog), read directly.
-     *
-     * The settings-dialog Test button may pass form values that are not saved yet
-     * (`messageApiKey` / `messageCredentialId` / `credentialType`); those win over the stored config.
-     */
-    async resolveAiCredentials(provider) {
-        const mode = this.config.credentialType || 'manual';
-        if (mode === 'manager') {
-            // The base URL is not a secret and is resolved the same way in both modes.
-            const { baseUrl } = (0, aiProviderResolver_1.resolveProviderCredentials)(this.config, provider);
-            const id = (0, aiProviderResolver_1.getProviderCredentialId)(this.config, provider).trim();
-            if (!id) {
-                return { apiKey: '', baseUrl };
-            }
-            // Prefer the cached value kept fresh by the credential subscription.
-            const cached = this.aiCredentialCache.get(id);
-            const apiKey = cached !== undefined ? cached : await this.readAiCredentialKey(id);
-            return { apiKey, baseUrl };
-        }
-        return (0, aiProviderResolver_1.resolveProviderCredentials)(this.config, provider);
-    }
-    /**
-     * Endpoint and key for the Test button of the settings dialog.
-     *
-     * The dialog tries what stands in the form - a key that was typed but not saved, a credential that
-     * was chosen but not saved, an endpoint that was entered but not saved. What the form may decide is
-     * limited by `resolveTestEndpoint`: a secret of this system is never carried to an address that
-     * came with the message. A chat request takes none of this and reads the configuration instead -
-     * see `resolveAiCredentials`.
-     *
-     * @param provider the provider that is being tested
-     * @param opts what the Test button sent
-     * @param opts.messageBaseUrl the address that stands in the form
-     * @param opts.messageApiKey the key that stands in the form
-     * @param opts.messageCredentialId the entry of the credential store that the form names
-     * @param opts.credentialType where the form says the keys are kept
-     */
-    async resolveAiTestCredentials(provider, opts = {}) {
-        const mode = opts.credentialType || this.config.credentialType || 'manual';
-        if (mode === 'manager') {
-            // A key out of the store is a secret of this system, so the address is the stored one
-            const { baseUrl } = (0, aiProviderResolver_1.resolveProviderCredentials)(this.config, provider);
-            const id = (opts.messageCredentialId || (0, aiProviderResolver_1.getProviderCredentialId)(this.config, provider)).trim();
-            if (!id) {
-                return { apiKey: '', baseUrl };
-            }
-            const cached = this.aiCredentialCache.get(id);
-            const apiKey = cached !== undefined ? cached : await this.readAiCredentialKey(id);
-            return { apiKey, baseUrl };
-        }
-        // Manual mode. The Test button sends the current form key (maybe empty) — let it win.
-        if (opts.messageApiKey !== undefined) {
-            return (0, aiProviderResolver_1.resolveTestCredentials)(this.config, provider, opts.messageApiKey, opts.messageBaseUrl);
-        }
-        return (0, aiProviderResolver_1.resolveProviderCredentials)(this.config, provider);
-    }
-    /**
      * Whether the user a message was sent on behalf of may have code executed here.
      *
      * `obj.user` arrives with js-controller 7.2.5 and newer: a socket server such as `admin` or `web`
@@ -1340,81 +1138,19 @@ class JavaScript extends adapter_core_1.Adapter {
         if (!(this.config.gptBaseUrl || '').trim()) {
             return;
         }
-        const manager = this.config.credentialType === 'manager';
-        const custom = manager
-            ? (0, aiProviderResolver_1.getProviderCredentialId)(this.config, 'custom')
-            : (this.config.gptBaseUrlKey || '').trim();
-        const openai = manager ? (0, aiProviderResolver_1.getProviderCredentialId)(this.config, 'openai') : (this.config.gptKey || '').trim();
-        if (!custom && openai) {
+        const settings = (0, ai_1.jsAiSettings)(this.config);
+        const of = settings.credentialType === 'manager' ? settings.credentialIds : settings.keys;
+        if (!of.custom && of.openai) {
             this.log.warn(`A custom AI endpoint ("${this.config.gptBaseUrl}") is configured, but its own API key is empty. ` +
                 `Requests to it are no longer signed with the OpenAI key - move the key of that endpoint into ` +
                 `the "Custom API key" field of the adapter settings.`);
         }
     }
-    /**
-     * In `manager` mode, subscribe to all configured AI credentials so that edits made in the
-     * admin credential manager (Settings → Credentials) are picked up live, without restarting
-     * the adapter (the `system.credentials.*` objects are global, not part of the instance config).
-     * The decrypted keys are cached and kept fresh by the subscription handlers.
-     */
-    async subscribeAiCredentials() {
-        // Always start from a clean state (idempotent — also used to re-subscribe).
-        await this.unsubscribeAiCredentials();
-        if (this.config.credentialType !== 'manager') {
-            return;
-        }
-        if (!adapter_core_1.Credentials?.subscribeCredentials) {
-            this.log.warn(`Cannot subscribe AI credential: Credentials API is only with 7.2 js-controller available`);
-            return;
-        }
-        // Collect the distinct credential IDs configured across all AI providers.
-        const ids = new Set();
-        for (const provider of ['openai', 'anthropic', 'gemini', 'deepseek', 'custom']) {
-            const id = (0, aiProviderResolver_1.getProviderCredentialId)(this.config, provider);
-            if (id) {
-                ids.add(id);
-            }
-        }
-        for (const id of ids) {
-            try {
-                const unsubscribe = await adapter_core_1.Credentials.subscribeCredentials(this, id, (changedId, cred) => {
-                    if (cred) {
-                        this.aiCredentialCache.set(changedId, (cred.values?.key || '').trim());
-                        this.log.debug(`AI credential "${changedId}" updated`);
-                    }
-                    else {
-                        // The credential was deleted
-                        this.aiCredentialCache.delete(changedId);
-                        this.log.debug(`AI credential "${changedId}" was deleted`);
-                    }
-                });
-                this.aiCredentialUnsubscribers.push(unsubscribe);
-                // Prime the cache with the current value (the handler may only fire on later changes).
-                this.aiCredentialCache.set(id, await this.readAiCredentialKey(id));
-            }
-            catch (e) {
-                this.log.warn(`Cannot subscribe to AI credential "${id}": ${e instanceof Error ? e.message : String(e)}`);
-            }
-        }
-        if (this.aiCredentialUnsubscribers.length) {
-            this.log.debug(`Subscribed to ${this.aiCredentialUnsubscribers.length} AI credential(s)`);
-        }
-    }
-    /** Tear down all AI credential subscriptions and clear the cache. */
-    async unsubscribeAiCredentials() {
-        const unsubscribers = this.aiCredentialUnsubscribers;
-        this.aiCredentialUnsubscribers = [];
-        this.aiCredentialCache.clear();
-        for (const unsubscribe of unsubscribers) {
-            try {
-                await unsubscribe();
-            }
-            catch (e) {
-                this.log.warn(`Cannot unsubscribe from AI credential: ${e instanceof Error ? e.message : String(e)}`);
-            }
-        }
-    }
     onMessage(obj) {
+        // the AI commands, also under the names the editor used before `ai-core`
+        if (this.ai.handleMessage(obj)) {
+            return;
+        }
         switch (obj?.command) {
             // process messageTo commands
             case 'toScript':
@@ -1758,341 +1494,6 @@ class JavaScript extends adapter_core_1.Adapter {
                 }
                 break;
             }
-            case 'chatCompletion': {
-                // Proxy chat completion requests to an OpenAI-compatible API endpoint.
-                // API keys are resolved server-side from the encryptedNative config or the central
-                // credentials manager — they never leave the adapter (frontend only sends `provider`).
-                void (async () => {
-                    if (!obj.callback) {
-                        this.log.warn(`chatCompletion from ${obj.from} came without a callback - nobody can receive the answer`);
-                        return;
-                    }
-                    const chatModel = (obj.message?.model || '').trim();
-                    const messages = obj.message?.messages;
-                    const tools = obj.message?.tools;
-                    const provider = (obj.message?.provider || 'openai').trim();
-                    // One line per request, so an empty chat panel can be told apart from a request
-                    // that never arrived here. Without it the log stays silent either way.
-                    this.log.debug(`chatCompletion from ${obj.from}: ${provider}/${chatModel}, ${Array.isArray(messages) ? messages.length : 0} messages, ${Array.isArray(tools) ? tools.length : 0} tools`);
-                    // Answers go through this from here on: either straight back through the socket
-                    // callback, or - for an editor that registered for it - pushed as an instance
-                    // message once the endpoint is done. See `buildAiResponder`.
-                    const respond = this.buildAiResponder(obj);
-                    // How long the caller is willing to wait - see `resolveRequestTimeout`
-                    const requestTimeout = (0, aiProviderResolver_1.resolveRequestTimeout)(obj.message?.timeout);
-                    const maxTokens = (0, aiProviderResolver_1.resolveMaxTokens)(this.config.aiMaxTokens);
-                    // Endpoint and key come from the configuration; a request cannot name either
-                    const { apiKey, baseUrl } = await this.resolveAiCredentials(provider);
-                    // Anthropic, Gemini, and DeepSeek always require an API key; OpenAI-compatible allows empty key with custom base URL
-                    if (!apiKey &&
-                        (provider === 'anthropic' || provider === 'gemini' || provider === 'deepseek' || !baseUrl)) {
-                        respond({ error: 'No API key provided' });
-                        return;
-                    }
-                    if (!chatModel || !messages) {
-                        respond({ error: 'Model and messages are required' });
-                        return;
-                    }
-                    let url;
-                    const chatHeaders = {
-                        'Content-Type': 'application/json',
-                    };
-                    let bodyObj;
-                    if (provider === 'anthropic') {
-                        url = 'https://api.anthropic.com/v1/messages';
-                        chatHeaders['x-api-key'] = apiKey;
-                        chatHeaders['anthropic-version'] = '2023-06-01';
-                        // Translate OpenAI-format messages/tools into Anthropic's content-block format.
-                        const { system: systemText, messages: anthropicMessages } = (0, anthropicAdapter_1.translateMessagesToAnthropic)(messages);
-                        const anthropicTools = tools?.length ? (0, anthropicAdapter_1.translateToolsToAnthropic)(tools) : [];
-                        bodyObj = {
-                            model: chatModel,
-                            /*
-                             * Anthropic requires `max_tokens`, so unlike the other providers it
-                             * cannot be left to the endpoint. 8192 is the default because it is
-                             * what every Anthropic model accepts - the older small ones cap out
-                             * below that and answer 400 to anything higher. The newer models write
-                             * far longer answers than that, and a script that runs into the limit
-                             * is simply cut off mid-line, so the value is a setting.
-                             */
-                            max_tokens: maxTokens,
-                            stream: false,
-                            ...(systemText ? { system: systemText } : {}),
-                            messages: anthropicMessages,
-                            ...(anthropicTools.length ? { tools: anthropicTools } : {}),
-                        };
-                    }
-                    else if (provider === 'gemini') {
-                        url = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
-                        if (apiKey) {
-                            chatHeaders.Authorization = `Bearer ${apiKey}`;
-                        }
-                        bodyObj = { model: chatModel, messages, stream: false, ...(tools?.length ? { tools } : {}) };
-                    }
-                    else if (provider === 'deepseek') {
-                        url = 'https://api.deepseek.com/chat/completions';
-                        chatHeaders.Authorization = `Bearer ${apiKey}`;
-                        bodyObj = { model: chatModel, messages, stream: false, ...(tools?.length ? { tools } : {}) };
-                    }
-                    else {
-                        url = `${baseUrl || 'https://api.openai.com/v1'}/chat/completions`;
-                        if (apiKey) {
-                            chatHeaders.Authorization = `Bearer ${apiKey}`;
-                        }
-                        bodyObj = {
-                            model: chatModel,
-                            messages,
-                            stream: false,
-                            ...(tools?.length ? { tools } : {}),
-                            /*
-                             * `reasoning_effort` used to be pinned to `none` for every custom base URL,
-                             * to save context and time on a local model. Behind a proxy that fronts a
-                             * subscription, the same setting turns off the reasoning the model is being
-                             * used for, or is rejected outright. It is a setting now, and the default is
-                             * to leave the parameter out and let the endpoint decide.
-                             */
-                            ...(this.config.aiReasoningEffort
-                                ? { reasoning_effort: this.config.aiReasoningEffort }
-                                : {}),
-                        };
-                    }
-                    const body = JSON.stringify(bodyObj);
-                    const bodyBuffer = Buffer.from(body, 'utf8');
-                    chatHeaders['Content-Length'] = bodyBuffer.length;
-                    const resolved = resolveRequestModule(url);
-                    if (!resolved) {
-                        respond({ error: `Invalid API URL: ${url}` });
-                        return;
-                    }
-                    const { module: requestModule, isHttps } = resolved;
-                    try {
-                        const req = requestModule.request(url, {
-                            method: 'POST',
-                            headers: chatHeaders,
-                            timeout: requestTimeout,
-                            ...(isHttps && this.config.allowSelfSignedCerts ? { rejectUnauthorized: false } : {}),
-                        }, res => {
-                            let data = '';
-                            res.on('data', (chunk) => {
-                                data += chunk.toString();
-                            });
-                            res.on('end', () => {
-                                if (res.statusCode === 200) {
-                                    try {
-                                        const parsed = JSON.parse(data);
-                                        let content;
-                                        let tool_calls;
-                                        if (provider === 'anthropic') {
-                                            const translated = (0, anthropicAdapter_1.translateAnthropicResponseToOpenAI)(parsed);
-                                            content = translated.content;
-                                            tool_calls = translated.tool_calls;
-                                        }
-                                        else {
-                                            const message = parsed.choices?.[0]?.message;
-                                            content = message?.content || '';
-                                            tool_calls = message?.tool_calls;
-                                        }
-                                        // How the endpoint says it finished. Passed on in both
-                                        // cases, so the editor can tell a truncated answer from
-                                        // a complete one instead of just showing what arrived.
-                                        const info = (0, aiProviderResolver_1.extractAiResponseInfo)(parsed);
-                                        // `.trim()`, because a whitespace-only answer is just as
-                                        // empty to the user but used to slip past this check and
-                                        // arrive in the editor as a blank chat bubble with no
-                                        // reason attached - the stop reason below is the whole point.
-                                        if (!content.trim() && !tool_calls?.length) {
-                                            const error = (0, aiProviderResolver_1.describeEmptyAiResponse)(info, data);
-                                            // What arrived instead of an answer. Without this the
-                                            // log only repeats what is already known - that there
-                                            // is nothing - instead of naming the blocks that came
-                                            const shape = provider === 'anthropic'
-                                                ? (0, anthropicAdapter_1.describeAnthropicContent)(parsed)
-                                                : `choices: ${parsed.choices?.length ?? 0}, content: ${typeof parsed
-                                                    .choices?.[0]?.message?.content}`;
-                                            this.log.warn(`chatCompletion (${provider}/${chatModel}): ${error}. Answer contained: ${shape}`);
-                                            respond({ error, ...info });
-                                        }
-                                        else {
-                                            this.log.debug(`chatCompletion (${provider}/${chatModel}): answered with ${content.length} characters, ${tool_calls?.length || 0} tool calls, stop reason ${info.finishReason || '-'}`);
-                                            respond({
-                                                success: true,
-                                                content,
-                                                ...(tool_calls ? { tool_calls } : {}),
-                                                ...info,
-                                            });
-                                        }
-                                    }
-                                    catch (e) {
-                                        this.log.warn(`chatCompletion (${provider}/${chatModel}): cannot read the answer of ${url}: ${e instanceof Error ? e.message : String(e)}. Response: ${data.substring(0, 200)}`);
-                                        respond({ error: 'Invalid JSON response from API' });
-                                    }
-                                }
-                                else {
-                                    let detail = '';
-                                    try {
-                                        const errParsed = JSON.parse(data);
-                                        detail = errParsed.error?.message || data.substring(0, 200);
-                                    }
-                                    catch {
-                                        detail = data.substring(0, 200);
-                                    }
-                                    const error = `${detail || httpStatusText(res.statusCode || 0)} (${res.statusCode})`;
-                                    this.log.warn(`chatCompletion (${provider}/${chatModel}): ${error}`);
-                                    respond({ error });
-                                }
-                            });
-                        });
-                        req.on('error', (err) => {
-                            this.log.warn(`chatCompletion (${provider}/${chatModel}): cannot reach ${url}: ${err.message}`);
-                            respond({ error: `Connection failed: ${err.message}` });
-                        });
-                        req.on('timeout', () => {
-                            req.destroy();
-                            const error = `Connection timeout (${Math.round(requestTimeout / 1000)}s)`;
-                            this.log.warn(`chatCompletion (${provider}/${chatModel}): ${url} - ${error}`);
-                            respond({ error });
-                        });
-                        req.write(bodyBuffer);
-                        req.end();
-                    }
-                    catch (error) {
-                        this.log.warn(`chatCompletion (${provider}/${chatModel}): ${url} - ${error.toString()}`);
-                        respond({ error: `Connection failed: ${error.toString()}` });
-                    }
-                })();
-                break;
-            }
-            case 'testApiConnection': {
-                // Test connection to an OpenAI-compatible API endpoint.
-                // The settings-dialog Test button sends the current form value as `apiKey`
-                // (so users can test before saving); otherwise we fall back to the stored key.
-                void (async () => {
-                    if (!obj.callback) {
-                        return;
-                    }
-                    const provider = (obj.message?.provider || 'openai').trim();
-                    const { apiKey, baseUrl } = await this.resolveAiTestCredentials(provider, {
-                        messageApiKey: obj.message?.apiKey,
-                        messageBaseUrl: obj.message?.baseUrl,
-                        messageCredentialId: obj.message?.credentialId,
-                        credentialType: obj.message?.credentialType,
-                    });
-                    // Anthropic, Gemini, and DeepSeek always require an API key; OpenAI-compatible allows empty key with custom base URL
-                    if (!apiKey &&
-                        (provider === 'anthropic' || provider === 'gemini' || provider === 'deepseek' || !baseUrl)) {
-                        // Say which of the two setups came up empty - "No API key provided" sent the user
-                        // looking for a key field that `manager` mode does not even show.
-                        const mode = obj.message?.credentialType || this.config.credentialType || 'manual';
-                        let error = 'No API key provided';
-                        if (mode === 'manager') {
-                            const id = (obj.message?.credentialId || (0, aiProviderResolver_1.getProviderCredentialId)(this.config, provider)).trim();
-                            error = id
-                                ? `Credential "${id}" contains no API key`
-                                : `No credential selected for "${provider}"`;
-                        }
-                        this.sendTo(obj.from, obj.command, { error }, obj.callback);
-                        return;
-                    }
-                    let url;
-                    const testHeaders = {
-                        'Content-Type': 'application/json',
-                    };
-                    if (provider === 'anthropic') {
-                        url = 'https://api.anthropic.com/v1/models';
-                        testHeaders['x-api-key'] = apiKey;
-                        testHeaders['anthropic-version'] = '2023-06-01';
-                    }
-                    else if (provider === 'gemini') {
-                        url = 'https://generativelanguage.googleapis.com/v1beta/openai/models';
-                        if (apiKey) {
-                            testHeaders.Authorization = `Bearer ${apiKey}`;
-                        }
-                    }
-                    else if (provider === 'deepseek') {
-                        url = 'https://api.deepseek.com/models';
-                        testHeaders.Authorization = `Bearer ${apiKey}`;
-                    }
-                    else {
-                        url = `${baseUrl || 'https://api.openai.com/v1'}/models`;
-                        if (apiKey) {
-                            testHeaders.Authorization = `Bearer ${apiKey}`;
-                        }
-                    }
-                    const resolved = resolveRequestModule(url);
-                    if (!resolved) {
-                        this.sendTo(obj.from, obj.command, { error: `Invalid API URL: ${url}` }, obj.callback);
-                        return;
-                    }
-                    const { module: requestModule, isHttps } = resolved;
-                    try {
-                        const req = requestModule.request(url, {
-                            method: 'GET',
-                            headers: testHeaders,
-                            timeout: 10000,
-                            ...(isHttps && this.config.allowSelfSignedCerts ? { rejectUnauthorized: false } : {}),
-                        }, res => {
-                            let data = '';
-                            res.on('data', (chunk) => {
-                                data += chunk.toString();
-                            });
-                            res.on('end', () => {
-                                if (res.statusCode === 200) {
-                                    try {
-                                        const parsed = JSON.parse(data);
-                                        const models = (parsed.data || [])
-                                            .map((m) => m.id.startsWith('models/') ? m.id.substring(7) : m.id)
-                                            .sort();
-                                        this.sendTo(obj.from, obj.command, { success: true, models, count: models.length }, obj.callback);
-                                    }
-                                    catch {
-                                        this.sendTo(obj.from, obj.command, { error: 'Invalid JSON response from API' }, obj.callback);
-                                    }
-                                }
-                                else if (res.statusCode === 401) {
-                                    this.sendTo(obj.from, obj.command, { error: 'Invalid API key (401)' }, obj.callback);
-                                }
-                                else if (res.statusCode === 403) {
-                                    this.sendTo(obj.from, obj.command, { error: 'Access denied (403)' }, obj.callback);
-                                }
-                                else {
-                                    // Include response body for debugging
-                                    let detail = '';
-                                    try {
-                                        const errParsed = JSON.parse(data);
-                                        detail = errParsed.error?.message || data.substring(0, 200);
-                                    }
-                                    catch {
-                                        detail = data.substring(0, 200);
-                                    }
-                                    this.sendTo(obj.from, obj.command, {
-                                        error: `${detail || httpStatusText(res.statusCode || 0)} (${res.statusCode})`,
-                                    }, obj.callback);
-                                }
-                            });
-                        });
-                        req.on('error', (err) => {
-                            this.sendTo(obj.from, obj.command, { error: `Connection failed: ${err.message}` }, obj.callback);
-                        });
-                        req.on('timeout', () => {
-                            req.destroy();
-                            this.sendTo(obj.from, obj.command, { error: 'Connection timeout (10s)' }, obj.callback);
-                        });
-                        req.end();
-                    }
-                    catch (error) {
-                        this.sendTo(obj.from, obj.command, { error: `Connection failed: ${error.toString()}` }, obj.callback);
-                    }
-                })();
-                break;
-            }
-            case 'getAvailableAiProviders': {
-                // Reports which AI providers have stored credentials (keys never leave the backend).
-                if (obj.callback) {
-                    const providers = (0, aiProviderResolver_1.listAvailableProviders)(this.config);
-                    this.sendTo(obj.from, obj.command, { providers }, obj.callback);
-                }
-                break;
-            }
             case 'getSecrets': {
                 // Reports which credentials exist and which fields they have, so the instance
                 // settings and the Blockly editor can show the available `SECRETS.<name>.<field>`
@@ -2312,9 +1713,9 @@ class JavaScript extends adapter_core_1.Adapter {
         // Store allowSelfSignedCerts on the context, so sandbox HTTP functions can use it
         // without setting the global process.env.NODE_TLS_REJECT_UNAUTHORIZED (which affects all adapters in compact mode)
         this.context.allowSelfSignedCerts = this.config.allowSelfSignedCerts;
-        // In `manager` credential mode, subscribe to the configured AI credentials so changes in the
-        // central credential store are picked up live (the keys are cached for the AI sendTo handlers).
-        await this.subscribeAiCredentials();
+        // In `manager` credential mode the configured AI credentials are subscribed, so a change in the
+        // central credential store counts without a restart
+        await this.ai.start();
         this.warnAboutMisplacedCustomAiKey();
         // Read the central credential store, so the scripts can use `SECRETS.<name>.<field>`.
         // Later changes are picked up in `onObjectChange`.

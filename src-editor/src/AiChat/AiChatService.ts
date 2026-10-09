@@ -1,6 +1,8 @@
 import type { CSSProperties } from 'react';
 import ChannelDetector, { type DetectOptions, Types, type PatternControl } from '@iobroker/type-detector';
 import { I18n, type AdminConnection } from '@iobroker/gui-components';
+import { AiClient, type OpenAIMessage, type OpenAITool } from '@iobroker/ai-gui';
+import { isChatModel, isTruncatedAnswer, stripThinkingArtifacts } from '@iobroker/ai-core/build/shared/models';
 
 import type {
     ApiConfig,
@@ -40,21 +42,40 @@ const LANGUAGES: Record<string, string> = {
 };
 
 // ─── Caches ─────────────────────────────────────────────────────
+/** The way to the adapter, see `aiClientFor` */
+let aiClient: AiClient | null = null;
 let apiConfigCache: ApiConfig | null = null;
 let devicesCache: DeviceObject[] | null = null;
 let docsTextCache: string | null = null;
 let allObjectsCache: Record<string, ioBroker.Object> | null = null;
 
 export function clearCaches(): void {
+    aiClient = null;
     apiConfigCache = null;
     devicesCache = null;
     docsTextCache = null;
     allObjectsCache = null;
 }
 
-// ─── API Config ─────────────────────────────────────────────────
-// Keys are stored as encryptedNative/protectedNative — frontend never sees them.
-// The backend reports which providers have credentials via `getAvailableAiProviders`.
+// ─── The way to the adapter ─────────────────────────────────────
+/*
+ * Keys are stored as encryptedNative/protectedNative - the frontend never sees them. Providers,
+ * models and answers come through `AiClient` of `@iobroker/ai-gui`, which also waits for answers
+ * that take longer than the 30 s of a socket callback (the adapter pushes them).
+ */
+/**
+ * The client for one instance of this adapter; a new one when the socket or the instance changed
+ *
+ * @param socket the admin connection
+ * @param instanceId the javascript instance to talk to
+ */
+export function aiClientFor(socket: AdminConnection, instanceId: string): AiClient {
+    if (!aiClient || aiClient.socket !== socket || aiClient.instance !== instanceId) {
+        aiClient = new AiClient(socket, instanceId);
+    }
+    return aiClient;
+}
+
 export async function getApiConfig(
     socket: AdminConnection,
     runningInstances: Record<string, unknown>,
@@ -66,13 +87,9 @@ export async function getApiConfig(
     if (!instanceId) {
         return null;
     }
-    const result: { providers?: { provider: AiProviderName; baseUrl?: string }[] } = await socket.sendTo(
-        instanceId,
-        'getAvailableAiProviders',
-        {},
-    );
-    const providers = (result?.providers || []).map(p => p.provider);
-    const customEntry = (result?.providers || []).find(p => p.provider === 'custom');
+    const result = (await aiClientFor(socket, instanceId).getProviders()) || [];
+    const providers = result.map(p => p.provider);
+    const customEntry = result.find(p => p.provider === 'custom');
     if (!providers.length) {
         return null;
     }
@@ -81,127 +98,7 @@ export async function getApiConfig(
 }
 
 // ─── Model Loading ──────────────────────────────────────────────
-// Substring keywords for models that cannot be used for chat completion.
-// Grouped by category; matched via case-insensitive substring.
-const NON_CHAT_KEYWORDS: string[] = [
-    // Embeddings (vector models, no text generation)
-    'embedding',
-    'text-embedding',
-    'textembedding',
-    'embeddinggemma', // Ollama: Google's Embedding-Gemma
-    'embed-',
-    '-embed',
-    'bge-',
-    'mxbai-embed',
-    'nomic-embed',
-    'arctic-embed',
-    'snowflake-arctic-embed',
-    'all-minilm',
-    'multilingual-e5',
-    'jina-embed',
-    'voyage-',
-    'gecko',
-    'paraphrase-multilingual', // Ollama: sentence-paraphrase embedding
-
-    // Image generation / editing
-    'dall-e',
-    'gpt-image',
-    'image-edit',
-    '-image-preview', // gemini-3-pro-image-preview, gemini-3.1-flash-image-preview
-    '-image-latest',
-    'flash-image', // gemini-2.5-flash-image
-    'nano-banana', // Google's image editor (Gemini internal name for Imagen variants)
-    'stable-diffusion',
-    'sdxl',
-    'midjourney',
-    'flux-',
-    'imagen',
-
-    // Video generation
-    'sora',
-    'veo-',
-    'cogvideo',
-    'runway-',
-    'lumiere',
-
-    // Music generation
-    'lyria', // Google Lyria music model
-
-    // Audio, speech, realtime (TTS, STT, voice pipelines)
-    'whisper',
-    'tts-',
-    '-tts', // gemini-2.5-flash-preview-tts, gemini-2.5-pro-preview-tts
-    'speech-',
-    'audio-preview',
-    'mini-tts',
-    'mini-transcribe',
-    '-transcribe', // gpt-4o-transcribe, gpt-4o-transcribe-diarize
-    'native-audio', // gemini-2.5-flash-native-audio-latest
-    'flash-live', // gemini-3.1-flash-live-preview (realtime voice pipeline)
-    'gpt-audio', // gpt-audio, gpt-audio-1.5, gpt-audio-mini
-    'realtime',
-    'bark-',
-    'xtts',
-    'voicebox',
-
-    // Moderation / safety classifiers
-    'moderation',
-    'omni-moderation',
-    'llama-guard',
-    'shieldgemma',
-    'prompt-guard',
-    '-guardian', // granite3-guardian
-    'safeguard', // gpt-oss-safeguard
-
-    // Rerankers
-    'rerank',
-    'reranker',
-
-    // Legacy OpenAI GPT-3-era completion models (no chat/tool calling)
-    'babbage-',
-    'davinci-',
-    'curie-',
-    'text-ada-',
-    'text-davinci',
-    'text-curie',
-    'text-babbage',
-    'instructgpt',
-    'code-davinci',
-    'code-cushman',
-    '-turbo-instruct', // gpt-3.5-turbo-instruct, gpt-3.5-turbo-instruct-0914
-
-    // Web search / browsing-only endpoints
-    '-search-preview', // gpt-4o-search-preview, gpt-4o-mini-search-preview
-    '-search-api', // gpt-5-search-api
-
-    // Search / similarity endpoints (legacy)
-    'code-search',
-    'text-search',
-    'similarity-',
-
-    // Specialty / non-conversational
-    'computer-use-preview', // OpenAI: action loop, not general chat
-    'deep-research', // deep-research-pro-preview (long-running research agent, not general chat)
-    'robotics', // gemini-robotics-er-* (robotics embodied reasoning)
-    'aqa', // Gemini attributed question answering
-    // Ollama single-task models
-    'reader-lm', // HTML → Markdown converter
-    '-nsql', // duckdb-nsql and similar text-to-SQL-only models
-    'minicheck', // bespoke-minicheck (fact-checking classifier)
-];
-
-export function isChatModel(name: string): boolean {
-    const lower = name.toLowerCase();
-    // Reject obvious non-textual models and Anthropic's deprecated Claude 2.x line.
-    if (NON_CHAT_KEYWORDS.some(kw => lower.includes(kw))) {
-        return false;
-    }
-    // Anthropic: filter deprecated families that can't be reached by most users
-    if (lower.startsWith('claude-1') || lower.startsWith('claude-instant')) {
-        return false;
-    }
-    return true;
-}
+export { isChatModel };
 
 export interface LoadModelsResult {
     models: string[];
@@ -260,27 +157,21 @@ export async function loadModels(
     /** What each provider answered, collected first and assigned afterwards - see below */
     const offered: Partial<Record<AiProviderName, string[]>> = {};
 
+    const client = aiClientFor(socket, instanceId);
     const queries: Promise<void>[] = [];
 
     const testProvider = (provider: AiProviderName, displayName?: string): void => {
         queries.push(
-            socket
-                .sendTo(instanceId, 'testApiConnection', {
-                    // `custom` stays `custom`: the backend picks the credentials by this name, and
-                    // rewriting it to `openai` made it read the OpenAI key for the custom endpoint (#2369)
-                    provider,
-                    // apiKey/baseUrl intentionally omitted — backend resolves from this.config
-                })
-                .then((result: { models?: string[]; error?: string }) => {
-                    if (result.models) {
-                        offered[provider] = result.models;
-                    } else if (result.error) {
-                        errors.push(`${displayName || provider}: ${result.error}`);
-                    }
-                })
-                .catch((err: unknown) => {
-                    errors.push(`${displayName || provider}: ${String(err)}`);
-                }),
+            // `custom` stays `custom`: the backend picks the credentials by this name, and rewriting
+            // it to `openai` made it read the OpenAI key for the custom endpoint (#2369).
+            // The answer holds only chat models; key and address the backend takes from its config
+            client.getModels(provider).then(result => {
+                if (result.error) {
+                    errors.push(`${displayName || provider}: ${result.error}`);
+                } else {
+                    offered[provider] = result.models;
+                }
+            }),
         );
     };
 
@@ -306,7 +197,7 @@ export async function loadModels(
      */
     for (const provider of config.providers) {
         for (const m of offered[provider] || []) {
-            if (!isChatModel(m) || providerMap[m]) {
+            if (providerMap[m]) {
                 continue;
             }
             allModels.push(m);
@@ -319,101 +210,9 @@ export async function loadModels(
 }
 
 // ─── Chat Completion (non-streaming) ────────────────────────────
-/*
- * Why this does not simply wait for the sendTo callback:
- *
- * `@iobroker/ws` answers every socket callback with the string "timeout" after 30 seconds
- * (socket.io.js: `callbacks.push({ ..., ts: Date.now() + 30_000 })`, hard-coded, no option).
- * An AI request with a real conversation and the tool definitions regularly needs longer, so the
- * answer used to land in a callback that no longer existed: an empty chat bubble, no error, and
- * nothing in any log because the adapter had done its job.
- *
- * So the editor subscribes to an instance message and the adapter pushes the finished answer
- * there. The sendTo callback only carries the immediate acknowledgement, well inside the 30 s.
- * An adapter that does not know this protocol answers the old way and is handled unchanged.
- */
-
-/** Instance-message type for pushed AI answers. Shared verbatim with `src/main.ts`. */
-const AI_PUSH_MESSAGE_TYPE = 'aiChatAnswer';
-
-/** How long to wait for a pushed answer before giving up, if the caller names no budget */
-const DEFAULT_AI_TIMEOUT_MS = 600_000;
-
-interface AiPushChannel {
-    /** The token this editor session announced to the adapter */
-    sessionToken: string;
-    /** Requests that are out, by their id */
-    pending: Map<string, (result: ChatCompletionResponse) => void>;
-}
-
-let pushChannel: AiPushChannel | null = null;
-/** Guards against two requests subscribing at the same time */
-let pushChannelPromise: Promise<AiPushChannel | null> | null = null;
-let requestCounter = 0;
-
-/** Drop the channel so the next request subscribes again (after a reconnect, or a failed push). */
+/** Drop the push channel so the next request subscribes again (after a reconnect, or a failed push). */
 export function resetAiPushChannel(): void {
-    pushChannel = null;
-    pushChannelPromise = null;
-}
-
-/**
- * Subscribe this editor session for pushed AI answers, once.
- *
- * Returns `null` when the adapter does not accept the subscription - an older version, for
- * instance. The caller then falls back to the plain request/response round trip.
- *
- * @param socket the admin connection
- * @param instanceId the javascript instance to talk to
- */
-async function ensureAiPushChannel(socket: AdminConnection, instanceId: string): Promise<AiPushChannel | null> {
-    if (pushChannel) {
-        return pushChannel;
-    }
-    pushChannelPromise ||= (async (): Promise<AiPushChannel | null> => {
-        const channel: AiPushChannel = {
-            sessionToken: `ai-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 10)}`,
-            pending: new Map(),
-        };
-        try {
-            const result = await socket.subscribeOnInstance(
-                instanceId,
-                AI_PUSH_MESSAGE_TYPE,
-                { sessionToken: channel.sessionToken },
-                (data: unknown) => {
-                    const answer = data as (ChatCompletionResponse & { requestId?: string }) | undefined;
-                    if (!answer?.requestId) {
-                        return;
-                    }
-                    const resolve = channel.pending.get(answer.requestId);
-                    if (resolve) {
-                        channel.pending.delete(answer.requestId);
-                        resolve(answer);
-                    }
-                },
-            );
-            if (!result?.accepted) {
-                return null;
-            }
-            // A reconnect gives the socket a new id, which makes the adapter's handler for this
-            // session dead. Without this the next request would wait out its full budget before
-            // anyone noticed; dropping the channel makes it subscribe again instead.
-            socket.registerConnectionHandler(function onConnectionChange(connected: boolean): void {
-                if (!connected) {
-                    socket.unregisterConnectionHandler(onConnectionChange);
-                    resetAiPushChannel();
-                }
-            });
-            pushChannel = channel;
-            return channel;
-        } catch (e) {
-            console.warn('[AiChat] cannot subscribe for pushed answers, falling back to the callback', e);
-            return null;
-        } finally {
-            pushChannelPromise = null;
-        }
-    })();
-    return pushChannelPromise;
+    aiClient?.resetPushChannel();
 }
 
 // apiKey is resolved server-side based on provider; never sent from the frontend.
@@ -422,39 +221,14 @@ export async function sendChatCompletion(
     instanceId: string,
     request: ChatCompletionRequest,
 ): Promise<ChatCompletionResponse> {
-    const timeout = request.timeout || DEFAULT_AI_TIMEOUT_MS;
-    const channel = await ensureAiPushChannel(socket, instanceId);
-    const requestId = channel ? `req-${++requestCounter}-${Date.now().toString(36)}` : '';
-
-    const result: ChatCompletionResponse & { accepted?: boolean } = await socket.sendTo(instanceId, 'chatCompletion', {
-        timeout,
-        model: request.model,
+    const result = await aiClientFor(socket, instanceId).ask({
         provider: request.provider,
-        messages: request.messages,
-        ...(request.baseUrl ? { baseUrl: request.baseUrl } : {}),
-        ...(request.tools?.length ? { tools: request.tools } : {}),
-        ...(channel ? { uiSession: channel.sessionToken, requestId } : {}),
+        model: request.model,
+        messages: request.messages as OpenAIMessage[],
+        tools: request.tools as OpenAITool[] | undefined,
+        timeout: request.timeout,
     });
-
-    // Old adapter, or one that did not take the push route: it already answered in full.
-    if (!channel || !result?.accepted) {
-        return result;
-    }
-
-    return new Promise<ChatCompletionResponse>(resolve => {
-        const timer = setTimeout(() => {
-            channel.pending.delete(requestId);
-            // The adapter accepted the request and then never pushed - most likely it was
-            // restarted. Subscribing again on the next try is the cheapest recovery.
-            resetAiPushChannel();
-            resolve({ error: `${I18n.t('No answer within')} ${Math.round(timeout / 1000)}s` });
-        }, timeout);
-
-        channel.pending.set(requestId, answer => {
-            clearTimeout(timer);
-            resolve(answer);
-        });
-    });
+    return result;
 }
 
 // ─── Device Detection ────────────────────────────────────────────
@@ -894,27 +668,7 @@ Write comments in ${lang}. Put blocks in a \`\`\`xml code block.`;
 }
 
 // ─── Code Extraction Helpers ────────────────────────────────────
-/** Strip LLM thinking artifacts from response content */
-export function stripThinkingArtifacts(content: string): string {
-    let cleaned = content;
-    cleaned = cleaned.replace(/<think>[\s\S]*?<\/think>/gi, '');
-    cleaned = cleaned.replace(/<\|endoftext\|>/g, '');
-    cleaned = cleaned.replace(/<\|im_start\|>[\s\S]*?<\|im_end\|>/g, '');
-    cleaned = cleaned.replace(/<\|im_start\|>[\s\S]*/g, '');
-    return cleaned.trim();
-}
-
-/**
- * Whether the endpoint stopped because it ran out of output budget rather than because it was done.
- *
- * Anthropic says `max_tokens`, the OpenAI-compatible ones say `length`. In both cases the answer
- * ends mid-word and is worthless as code, so it must not look like a finished reply.
- *
- * @param result the response as the adapter passed it on
- */
-export function isTruncatedAnswer(result: ChatCompletionResponse): boolean {
-    return result.finishReason === 'max_tokens' || result.finishReason === 'length';
-}
+export { stripThinkingArtifacts, isTruncatedAnswer };
 
 /**
  * What to put in the chat bubble when the request went through but there is nothing to show.

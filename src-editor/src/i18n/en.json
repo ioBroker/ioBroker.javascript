@@ -581,7 +581,6 @@
     "No final answer after %s tool rounds": "No final answer after %s tool rounds",
     "The javascript adapter did not answer this request. Check the adapter log.": "The javascript adapter did not answer this request. Check the adapter log.",
     "Reply": "Reply",
-    "No answer within": "No answer within",
     "The answer is incomplete: the model hit its output limit. Raise \"Maximum answer length\" in the adapter settings, or ask for a smaller part.": "The answer is incomplete: the model hit its output limit. Raise \"Maximum answer length\" in the adapter settings, or ask for a smaller part.",
     "Diff": "Diff",
     "Show the changes against the saved version": "Show the changes against the saved version",

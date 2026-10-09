@@ -9,6 +9,7 @@
         "@devbookhq/splitter": "^1.4.2",
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
+        "@iobroker/ai-gui": "^0.0.2",
         "@iobroker/gui-components": "^10.3.9",
         "@iobroker/javascript-rules-dev": "^1.1.0",
         "@iobroker/type-detector": "^6.0.1",

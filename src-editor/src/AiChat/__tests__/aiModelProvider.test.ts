@@ -16,7 +16,7 @@ const SHARED = 'claude-opus-5';
 const RUNNING = { 'javascript.0': true };
 
 /**
- * A socket that answers `getAvailableAiProviders` and `testApiConnection`, with a delay per
+ * A socket that answers `ai:providers` and `ai:models`, with a delay per
  * provider - so a test can decide who wins the race and still assert who gets the model.
  *
  * @param providers what the backend reports as configured
@@ -30,10 +30,10 @@ function fakeSocket(
 ): any {
     return {
         sendTo: (_instance: string, command: string, message: any): Promise<any> => {
-            if (command === 'getAvailableAiProviders') {
+            if (command === 'ai:providers') {
                 return Promise.resolve({ providers });
             }
-            if (command === 'testApiConnection') {
+            if (command === 'ai:models') {
                 const provider = message.provider as string;
                 return new Promise(resolve =>
                     setTimeout(() => resolve({ models: models[provider] || [] }), delays[provider] || 0),
@@ -100,7 +100,7 @@ describe('loadModels', () => {
     it('reports the error of one provider without losing the models of the others', async () => {
         const socket: any = {
             sendTo: (_i: string, command: string, message: any) => {
-                if (command === 'getAvailableAiProviders') {
+                if (command === 'ai:providers') {
                     return Promise.resolve({ providers: [{ provider: 'openai' }, { provider: 'custom' }] });
                 }
                 return Promise.resolve(

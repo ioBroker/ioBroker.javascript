@@ -1,7 +1,7 @@
 import type * as monacoEditor from 'monaco-editor';
 import type { AdminConnection } from '@iobroker/gui-components';
 
-import { readRememberedModel } from './AiChatService';
+import { aiClientFor, readRememberedModel } from './AiChatService';
 
 const DEBOUNCE_MS = 800;
 
@@ -70,9 +70,8 @@ export function registerAiInlineProvider(
                         // Actual keys never leave the adapter.
                         if (!cachedProviders || Date.now() - cachedProviders.ts > CONFIG_CACHE_TTL) {
                             try {
-                                const res: { providers?: { provider: string; baseUrl?: string }[] } =
-                                    await socket.sendTo(instanceId, 'getAvailableAiProviders', {});
-                                cachedProviders = { providers: res?.providers || [], ts: Date.now() };
+                                const providers = await aiClientFor(socket, instanceId).getProviders();
+                                cachedProviders = { providers: providers || [], ts: Date.now() };
                             } catch {
                                 resolve(undefined);
                                 return;
@@ -99,7 +98,6 @@ export function registerAiInlineProvider(
                             resolve(undefined);
                             return;
                         }
-                        const baseUrl = hit.baseUrl || '';
 
                         // Build context: lines before and after cursor
                         const totalLines = model.getLineCount();
@@ -129,30 +127,25 @@ export function registerAiInlineProvider(
                         });
 
                         try {
-                            const result: { content?: string; error?: string } = await socket.sendTo(
-                                instanceId,
-                                'chatCompletion',
-                                {
-                                    timeout: 15000,
-                                    ...(baseUrl ? { baseUrl } : {}),
-                                    model: savedModel,
-                                    provider,
-                                    messages: [
-                                        { role: 'system', content: SYSTEM_PROMPT },
-                                        {
-                                            role: 'user',
-                                            content: `${codeBeforeCursor}<CURSOR>${codeAfterCursor}`,
-                                        },
-                                    ],
-                                },
-                            );
+                            const result = await aiClientFor(socket, instanceId).ask({
+                                timeout: 15000,
+                                model: savedModel,
+                                provider,
+                                messages: [
+                                    { role: 'system', content: SYSTEM_PROMPT },
+                                    {
+                                        role: 'user',
+                                        content: `${codeBeforeCursor}<CURSOR>${codeAfterCursor}`,
+                                    },
+                                ],
+                            });
 
                             if (cancelled || token.isCancellationRequested) {
                                 resolve(undefined);
                                 return;
                             }
 
-                            if (result.error || !result.content) {
+                            if (!('content' in result) || !result.content) {
                                 resolve(undefined);
                                 return;
                             }
