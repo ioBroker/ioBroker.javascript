@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "10.4.0",
+    "version": "10.4.1",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "10.4.1": {
+        "en": "Changed: the AI assistant uses the shared libraries `@iobroker/ai-core` and `@iobroker/ai-gui`",
+        "de": "Geändert: Der KI-Assistent nutzt die Bibliotheken @iobroker /ai-core und @iobroker /ai-gui",
+        "ru": "Изменено: помощник по искусственному интеллекту использует разделяемые библиотеки `@iobroker /ai-core` и `@iobroker /ai-gui`",
+        "pt": "Alterado: o assistente de IA usa as bibliotecas `@iobroker /ai-core` e `@iobroker /ai-gui`",
+        "nl": "Gewijzigd: de AI-assistent gebruikt de gedeelde bibliotheken `@iobroker /ai-core` en `@iobroker /ai-gui`",
+        "fr": "Modifié : l'assistant IA utilise les bibliothèques partagées @iobroker /ai-core et @iobroker /ai-gui",
+        "it": "Modificato: l'AI usa le librerie condivise @iobroker /ai-core e @iobroker /ai-gui",
+        "es": "Cambiado: el asistente de IA usa las bibliotecas compartidas `@iobroker /ai-core` y `@iobroker /ai-gui`",
+        "pl": "Zmieniono: asystent AI korzysta z bibliotek współdzielonych `@iobroker /ai-core` i `@iobroker /ai-gui`",
+        "uk": "Змінено: помічник AI використовує спільні бібліотеки `@iobroker /ai-core` та `@iobroker /ai-gui`",
+        "zh-cn": "已更改：AI 助手使用共享库 @iobroker /ai-core 和 @iobroker /ai-gui"
+      },
       "10.3.0": {
         "en": "The code editor (Monaco), Blockly and the Rules blocks are loaded only when a script of that kind is opened, so the editor starts faster\nAdded function block diagrams (FBD, in the style of CFC): timers, counters, flip-flops, edges, comparison, arithmetic, conversions, control, calendar (cron, sun events), log and messages, and a block with own JavaScript - wired to ioBroker states. See [the description](docs/en/fbd.md)",
         "de": "Die Blöcke Code-Editor (Monaco), Blockly und Rules werden nur geladen, wenn ein Skript geöffnet wird.\nFunktionsblockdiagramme (FBD, im CFC-Stil) hinzugefügt: Timer, Zähler, Flipflops, Kanten, Vergleich, Arithmetik, Umrechnungen, Kalender (Cron, Sun), Log und Nachrichten und ein Block mit eigenem JavaScript — mit ioBroker-Status. Siehe [Beschreibung] (docs/en/fbd.md)",
