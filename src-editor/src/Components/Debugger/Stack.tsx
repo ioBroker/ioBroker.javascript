@@ -3,7 +3,7 @@ import React from 'react';
 import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
 
 import { SplitSizes } from '../splitSizes';
-import ReactJson from 'react-json-view';
+import ReactJsonImport from 'react-json-view';
 
 import { ListItemButton, ListItemText, Input, InputAdornment, IconButton, List, Box } from '@mui/material';
 
@@ -11,6 +11,9 @@ import { MdCheck as CheckIcon, MdAdd as IconAdd, MdDelete as IconDelete } from '
 
 import { I18n, type IobTheme, type ThemeType } from '@iobroker/gui-components';
 import type { DebugScope, CallFrame, DebugValue, DebugVariable, DebugObject } from './types';
+
+// the package is CommonJS: Vite imports its default as the whole `module.exports`, the component is in `default`
+const ReactJson = (ReactJsonImport as unknown as { default?: typeof ReactJsonImport }).default || ReactJsonImport;
 
 const styles: Record<string, any> = {
     frameRoot: {

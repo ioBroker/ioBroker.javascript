@@ -1,5 +1,7 @@
 import type { CSSProperties } from 'react';
-import ChannelDetector, { type DetectOptions, Types, type PatternControl } from '@iobroker/type-detector';
+import { type DetectOptions, Types, type PatternControl } from '@iobroker/type-detector';
+// not the default export: the package is CommonJS and Vite imports its default as the whole `module.exports`
+import { ChannelDetector } from '@iobroker/type-detector/build/ChannelDetector';
 import { I18n, type AdminConnection } from '@iobroker/gui-components';
 import { AiClient, type OpenAIMessage, type OpenAITool } from '@iobroker/ai-gui';
 import { isChatModel, isTruncatedAnswer, stripThinkingArtifacts } from '@iobroker/ai-core/build/shared/models';
