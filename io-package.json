@@ -40,19 +40,6 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
-      "10.4.2": {
-        "en": "Fixed: the AI chat stopped with \"m.default is not a constructor\", and the variable view of the debugger did not show objects",
-        "de": "Behoben: Der KI-Chat endete mit „m.default is not a constructor“ und die Variablenansicht des Debuggers zeigte keine Objekte",
-        "ru": "Исправлено: чат с искусственным интеллектом останавливался с надписью «m.default не является конструктором», а в виде переменных в отладчике не отображались объекты",
-        "pt": "Corrigido: o chat de IA parou com “m.default não é um construtor” e a visão variável do depurador não mostra objetos",
-        "nl": "Opgelost: de AI-chat stopte met „m.default is geen constructor”, en de variabele weergave van de debugger toonde geen objecten",
-        "fr": "Corrigé : le chat IA s'arrêtait avec « m.default n'est pas un constructeur » et la vue variable du débogueur ne montrait aucun objet",
-        "it": "Risolto: la chat AI si fermava con «m.default non è un costruttore» e la vista variabile del debugger non mostrava oggetti",
-        "es": "Corregido: el chat de la IA paró con «m.default no es un constructor» y la vista variable del depurador no mostraba objetos",
-        "pl": "Naprawiono: czat AI zatrzymał się z „m.default nie jest konstruktorem”, a zmienny widok debuggera nie pokazywał obiektów",
-        "uk": "Виправлено: чат AI зупинився з «m.default не є конструктором», а змінний вигляд налагоджувача не показував об'єктів",
-        "zh-cn": "修复：AI 聊天因 “m.default 不是构造函数” 而停止，调试器的变量视图未显示对象"
-      },
       "10.4.1": {
         "en": "Changed: the AI assistant uses the shared libraries `@iobroker/ai-core` and `@iobroker/ai-gui`",
         "de": "Geändert: Der KI-Assistent nutzt die Bibliotheken @iobroker /ai-core und @iobroker /ai-gui",

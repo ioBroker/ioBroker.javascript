@@ -30,8 +30,9 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
-### 10.4.2 (2026-10-11)
-* (@GermanBluefox) Fixed: the AI chat stopped with "m.default is not a constructor", and the variable view of the debugger did not show objects
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Fixed: instances of different versions
+* (@GermanBluefox) Fixed: the AI chat stopped with "m.default is not a constructor"
 
 ### 10.4.1 (2026-10-09)
 * (@GermanBluefox) Changed: the AI assistant uses the shared libraries `@iobroker/ai-core` and `@iobroker/ai-gui`
