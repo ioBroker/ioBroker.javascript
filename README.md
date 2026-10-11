@@ -30,7 +30,7 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 10.4.2 (2026-10-11)
 * (@GermanBluefox) Fixed: the AI chat stopped with "m.default is not a constructor", and the variable view of the debugger did not show objects
 
 ### 10.4.1 (2026-10-09)
@@ -63,10 +63,6 @@ Executes JavaScript, TypeScript Scripts.
 
 ### 10.2.5 (2026-09-17)
 * (@GermanBluefox) Added the functions help dialog in editor
-
-### 10.2.4 (2026-09-14)
-* (@GermanBluefox) Rules: selection of state fixed
-* (@GermanBluefox) Fixed debugger
 
 ## License
 The MIT License (MIT)
