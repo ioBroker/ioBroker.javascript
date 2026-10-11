@@ -30,7 +30,7 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 10.4.3 (2026-10-11)
 * (@GermanBluefox) Fixed: instances of different versions
 * (@GermanBluefox) Fixed: the AI chat stopped with "m.default is not a constructor"
 
