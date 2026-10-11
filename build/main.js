@@ -171,6 +171,26 @@ const regExGlobalNew = /script\.js\.global\./;
 function checkIsGlobal(obj) {
     return obj?.common && (regExGlobalOld.test(obj.common.name) || regExGlobalNew.test(obj._id));
 }
+/** The fields in which the instances store the compiled sources and the declarations of a script */
+const SCRIPT_CACHE_FIELDS = ['compiled', 'declarations', 'sourceHash'];
+/**
+ * Whether a script object changed in more than the stored compilation results.
+ * Every instance on every host compiles the global scripts and writes the result to the shared
+ * object. Instances of different versions never agree on the hash, so each one overwrites the
+ * cache of the other - and if that counted as a change of the script, they would restart each
+ * other forever (#2402).
+ */
+function scriptChanged(obj, formerObj) {
+    const common = obj.common;
+    const formerCommon = formerObj.common;
+    const keys = new Set([...Object.keys(common), ...Object.keys(formerCommon)]);
+    for (const key of keys) {
+        if (!SCRIPT_CACHE_FIELDS.includes(key) && JSON.stringify(common[key]) !== JSON.stringify(formerCommon[key])) {
+            return true;
+        }
+    }
+    return false;
+}
 function fileMatching(sub, id, fileName) {
     if (sub.idRegEx) {
         if (!sub.idRegEx.test(id)) {
@@ -863,7 +883,8 @@ class JavaScript extends adapter_core_1.Adapter {
         else if (obj?.type === 'script' && formerObj?.common) {
             // Script changed ...
             if (checkIsGlobal(obj)) {
-                if (obj.common.enabled || formerObj.common.enabled) {
+                if ((obj.common.enabled || formerObj.common.enabled) &&
+                    scriptChanged(obj, formerObj)) {
                     this.log.info(`Global Script ${id} updated. Restart instance.`);
                     this.restart();
                 }
@@ -1792,8 +1813,8 @@ class JavaScript extends adapter_core_1.Adapter {
                                         if (declarations) {
                                             newCommon.declarations = declarations;
                                         }
-                                        // Store the compiled source and the original source hash, so we don't need to do the work again next time
-                                        this.ignoreObjectChange.add(obj._id); // ignore the next change and don't restart scripts
+                                        // Store the compiled source and the original source hash, so we don't need to do the work again next time.
+                                        // No instance restarts on this change, see scriptChanged()
                                         void this.extendForeignObject(obj._id, {
                                             common: newCommon,
                                         });
@@ -1843,8 +1864,8 @@ class JavaScript extends adapter_core_1.Adapter {
                                     }
                                     if (tsCompiled.success && tsCompiled.declarations != null) {
                                         declarations = tsCompiled.declarations;
-                                        // Store them, so the next start does not have to build the program again
-                                        this.ignoreObjectChange.add(obj._id); // ignore the next change and don't restart scripts
+                                        // Store them, so the next start does not have to build the program again.
+                                        // No instance restarts on this change, see scriptChanged()
                                         void this.extendForeignObject(obj._id, {
                                             common: { sourceHash, declarations },
                                         });

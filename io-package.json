@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "10.4.2",
+    "version": "10.4.3",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "10.4.3": {
+        "en": "Fixed: instances of different versions\nFixed: the AI chat stopped with \"m.default is not a constructor\"",
+        "de": "Behoben: Instanzen anderer Versionen\nBehoben: Der KI-Chat endete mit „m.default is not a constructor“",
+        "ru": "Исправлено: экземпляры разных версий\nИсправлено: чат с искусственным интеллектом остановился с надписью «m.default не является конструктором»",
+        "pt": "Fixo: casos de várias versões\nCorrigido: o chat AI parou com “m.default não é um construtor”",
+        "nl": "Opgelost: exemplaren van verschillende versies\nOpgelost: de AI-chat stopte met „m.default is geen constructor”",
+        "fr": "Corrigé : différentes versions\nCorrigé : le chat AI s'arrêtait avec « m.default n'est pas un constructeur »",
+        "it": "Risolto: casi di versioni diverse\nRisolto: la chat AI si fermò con «m.default non è un costruttore»",
+        "es": "Fijo: casos de diferentes versiones\nCorregido: el chat de IA paró con «m.default no es un constructor»",
+        "pl": "Naprawiono: wystąpienia różnych wersji\nNaprawiono: czat AI zatrzymał się z „m.default nie jest konstruktorem”",
+        "uk": "Виправлено: екземпляри різних версій\nВиправлено: чат AI зупинився з «m.default не є конструктором»",
+        "zh-cn": "修复：不同版本的实例\n修复：AI 聊天因 “m.default 不是构造函数” 而停止的"
+      },
       "10.4.1": {
         "en": "Changed: the AI assistant uses the shared libraries `@iobroker/ai-core` and `@iobroker/ai-gui`",
         "de": "Geändert: Der KI-Assistent nutzt die Bibliotheken @iobroker /ai-core und @iobroker /ai-gui",
