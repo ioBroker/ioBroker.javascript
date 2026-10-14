@@ -1183,7 +1183,7 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                     return context.convertBackStringifiedValues(this[0], states[this[0]]);
                 }
             };
-            result.getStateAsync = withCallerStack(async function () {
+            result.getStateAsync = async function () {
                 if (adapter.config.subscribe) {
                     const state = await adapter.getForeignStateAsync(this[0]);
                     return context.convertBackStringifiedValues(this[0], state);
@@ -1195,7 +1195,7 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                     return context.convertBackStringifiedValues(this[0], context.interimStateValues[this[0]]);
                 }
                 return context.convertBackStringifiedValues(this[0], states[this[0]]);
-            });
+            };
             result.setState = function (state, isAck, callback) {
                 if (typeof isAck === 'function') {
                     callback = isAck;
@@ -1205,11 +1205,11 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                 void result.setStateAsync(state, isAck).then(() => typeof callback === 'function' && callback(), (err) => typeof callback === 'function' && callback(err));
                 return this;
             };
-            result.setStateAsync = withCallerStack(async function (state, isAck) {
+            result.setStateAsync = async function (state, isAck) {
                 for (let i = 0; i < this.length; i++) {
                     await sandbox.setStateAsync(this[i], state, isAck);
                 }
-            });
+            };
             result.setStateChanged = function (state, isAck, callback) {
                 if (typeof isAck === 'function') {
                     callback = isAck;
@@ -1219,11 +1219,15 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                 void result.setStateChangedAsync(state, isAck).then(() => typeof callback === 'function' && callback(), () => { });
                 return this;
             };
-            result.setStateChangedAsync = withCallerStack(async function (state, isAck) {
+            result.setStateChangedAsync = async function (state, isAck) {
                 for (let i = 0; i < this.length; i++) {
                     await sandbox.setStateChangedAsync(this[i], state, isAck);
                 }
-            });
+            };
+            // A rejection the script does not handle must be recognized as one of the script (see withCallerStack)
+            result.getStateAsync = withCallerStack(result.getStateAsync);
+            result.setStateAsync = withCallerStack(result.setStateAsync);
+            result.setStateChangedAsync = withCallerStack(result.setStateChangedAsync);
             result.setStateDelayed = function (state, isAck, delay, clearRunning, callback) {
                 if (typeof isAck !== 'boolean') {
                     callback = clearRunning;
