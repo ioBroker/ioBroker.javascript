@@ -13,10 +13,10 @@
     "devDependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
-        "@iobroker/gui-components": "^10.3.9",
-        "@iobroker/json-config": "^10.1.0",
+        "@iobroker/gui-components": "^10.3.10",
+        "@iobroker/json-config": "^10.1.2",
         "@module-federation/runtime": "^2.9.2",
-        "@module-federation/vite": "^1.23.4",
+        "@module-federation/vite": "^1.23.5",
         "@mui/icons-material": "^9.5.0",
         "@mui/material": "^9.5.0",
         "@mui/x-date-pickers": "^9.15.0",

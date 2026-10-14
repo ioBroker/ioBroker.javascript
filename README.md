@@ -32,6 +32,7 @@ Executes JavaScript, TypeScript Scripts.
 ## Changelog
 ### 10.4.3 (2026-10-11)
 * (@GermanBluefox) Fixed: instances of different versions
+* (@GermanBluefox) Fixed: a script that did not handle a rejected `setStateAsync` (e.g. of a missing state) or another asynchronous function terminated the adapter
 * (@GermanBluefox) Fixed: the AI chat stopped with "m.default is not a constructor"
 
 ### 10.4.1 (2026-10-09)

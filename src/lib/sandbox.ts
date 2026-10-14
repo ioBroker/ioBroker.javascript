@@ -37,6 +37,42 @@ import type { AstroEvent } from './consts';
 const SCRIPT_CODE_MARKER = 'script.js.';
 
 /**
+ * Lets the rejection of an asynchronous API function point to the script that called it.
+ *
+ * The errors are mostly created later, in a callback of the database or in a `setImmediate`, so their stack
+ * has no frame of the script. Unhandled by the script, such a rejection could not be told apart from one of
+ * the adapter itself (see the `error` handler in main.ts), and the controller terminated the adapter.
+ * The frames of the call are appended to the stack of the error, as long as they contain the script.
+ *
+ * @param fn The function returning a promise
+ */
+function withCallerStack<F extends (...args: any[]) => Promise<any>>(fn: F): F {
+    const wrapped = function (this: unknown, ...args: any[]): Promise<any> {
+        // Only the frames are captured here; they become a text when `stack` is read, i.e. only on a rejection
+        const caller: { stack?: string } = {};
+        Error.captureStackTrace(caller, wrapped);
+        return fn.apply(this, args).catch((err: unknown): never => {
+            const stack = (err as Error | undefined)?.stack;
+            const callerStack = caller.stack;
+            if (
+                typeof stack === 'string' &&
+                !stack.includes(SCRIPT_CODE_MARKER) &&
+                callerStack?.includes(SCRIPT_CODE_MARKER)
+            ) {
+                try {
+                    // without the first line, it is the message of the captured object
+                    (err as Error).stack = stack + callerStack.substring(callerStack.indexOf('\n'));
+                } catch {
+                    // the error is frozen: it stays as it is
+                }
+            }
+            throw err;
+        });
+    };
+    return wrapped as F;
+}
+
+/**
  * State types whose value - and therefore whose default - is stored as JSON, not as itself.
  *
  * `json` is missing from `ioBroker.CommonType` but js-controller accepts it and applies the same
@@ -1290,9 +1326,11 @@ export function sandBox(
                     callback = isAck;
                     isAck = undefined;
                 }
-                void result
-                    .setStateAsync(state, isAck as boolean | 'false' | 'true')
-                    .then(() => typeof callback === 'function' && callback());
+                // setStateHelper has already logged the error; without a catch, it would terminate the adapter
+                void result.setStateAsync(state, isAck as boolean | 'false' | 'true').then(
+                    () => typeof callback === 'function' && callback(),
+                    (err: Error) => typeof callback === 'function' && callback(err),
+                );
                 return this;
             };
             result.setStateAsync = async function (
@@ -1312,7 +1350,11 @@ export function sandBox(
                     callback = isAck;
                     isAck = undefined;
                 }
-                void result.setStateChangedAsync(state, isAck).then(() => typeof callback === 'function' && callback());
+                // setStateHelper has already logged the error; without a catch, it would terminate the adapter
+                void result.setStateChangedAsync(state, isAck).then(
+                    () => typeof callback === 'function' && callback(),
+                    () => {},
+                );
                 return this;
             };
             result.setStateChangedAsync = async function (
@@ -1323,6 +1365,10 @@ export function sandBox(
                     await sandbox.setStateChangedAsync(this[i], state, isAck);
                 }
             };
+            // A rejection the script does not handle must be recognized as one of the script (see withCallerStack)
+            result.getStateAsync = withCallerStack(result.getStateAsync);
+            result.setStateAsync = withCallerStack(result.setStateAsync);
+            result.setStateChangedAsync = withCallerStack(result.setStateChangedAsync);
             result.setStateDelayed = function (
                 state: ioBroker.SettableState | ioBroker.StateValue,
                 isAck: boolean | number | undefined,
@@ -6066,6 +6112,14 @@ export function sandBox(
     sandbox.getHistoryAsync = promisify(sandbox.getHistory);
     sandbox.httpGetAsync = promisify(sandbox.httpGet);
     sandbox.httpPostAsync = promisify(sandbox.httpPost);
+
+    // A rejection the script does not handle must be recognized as one of the script (see withCallerStack)
+    for (const prop of Object.keys(sandbox)) {
+        const fn = (sandbox as Record<string, any>)[prop];
+        if ((prop.endsWith('Async') || prop === 'jsonataExpression') && typeof fn === 'function') {
+            (sandbox as Record<string, any>)[prop] = withCallerStack(fn);
+        }
+    }
 
     // Make all predefined properties and methods readonly so scripts cannot overwrite them
     for (const prop of Object.keys(sandbox)) {

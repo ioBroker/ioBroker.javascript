@@ -50,6 +50,40 @@ const types_1 = require("./fb/types");
 const patternCompareFunctions_1 = require("./patternCompareFunctions");
 const SCRIPT_CODE_MARKER = 'script.js.';
 /**
+ * Lets the rejection of an asynchronous API function point to the script that called it.
+ *
+ * The errors are mostly created later, in a callback of the database or in a `setImmediate`, so their stack
+ * has no frame of the script. Unhandled by the script, such a rejection could not be told apart from one of
+ * the adapter itself (see the `error` handler in main.ts), and the controller terminated the adapter.
+ * The frames of the call are appended to the stack of the error, as long as they contain the script.
+ *
+ * @param fn The function returning a promise
+ */
+function withCallerStack(fn) {
+    const wrapped = function (...args) {
+        // Only the frames are captured here; they become a text when `stack` is read, i.e. only on a rejection
+        const caller = {};
+        Error.captureStackTrace(caller, wrapped);
+        return fn.apply(this, args).catch((err) => {
+            const stack = err?.stack;
+            const callerStack = caller.stack;
+            if (typeof stack === 'string' &&
+                !stack.includes(SCRIPT_CODE_MARKER) &&
+                callerStack?.includes(SCRIPT_CODE_MARKER)) {
+                try {
+                    // without the first line, it is the message of the captured object
+                    err.stack = stack + callerStack.substring(callerStack.indexOf('\n'));
+                }
+                catch {
+                    // the error is frozen: it stays as it is
+                }
+            }
+            throw err;
+        });
+    };
+    return wrapped;
+}
+/**
  * State types whose value - and therefore whose default - is stored as JSON, not as itself.
  *
  * `json` is missing from `ioBroker.CommonType` but js-controller accepts it and applies the same
@@ -1149,7 +1183,7 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                     return context.convertBackStringifiedValues(this[0], states[this[0]]);
                 }
             };
-            result.getStateAsync = async function () {
+            result.getStateAsync = withCallerStack(async function () {
                 if (adapter.config.subscribe) {
                     const state = await adapter.getForeignStateAsync(this[0]);
                     return context.convertBackStringifiedValues(this[0], state);
@@ -1161,35 +1195,35 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                     return context.convertBackStringifiedValues(this[0], context.interimStateValues[this[0]]);
                 }
                 return context.convertBackStringifiedValues(this[0], states[this[0]]);
-            };
+            });
             result.setState = function (state, isAck, callback) {
                 if (typeof isAck === 'function') {
                     callback = isAck;
                     isAck = undefined;
                 }
-                void result
-                    .setStateAsync(state, isAck)
-                    .then(() => typeof callback === 'function' && callback());
+                // setStateHelper has already logged the error; without a catch, it would terminate the adapter
+                void result.setStateAsync(state, isAck).then(() => typeof callback === 'function' && callback(), (err) => typeof callback === 'function' && callback(err));
                 return this;
             };
-            result.setStateAsync = async function (state, isAck) {
+            result.setStateAsync = withCallerStack(async function (state, isAck) {
                 for (let i = 0; i < this.length; i++) {
                     await sandbox.setStateAsync(this[i], state, isAck);
                 }
-            };
+            });
             result.setStateChanged = function (state, isAck, callback) {
                 if (typeof isAck === 'function') {
                     callback = isAck;
                     isAck = undefined;
                 }
-                void result.setStateChangedAsync(state, isAck).then(() => typeof callback === 'function' && callback());
+                // setStateHelper has already logged the error; without a catch, it would terminate the adapter
+                void result.setStateChangedAsync(state, isAck).then(() => typeof callback === 'function' && callback(), () => { });
                 return this;
             };
-            result.setStateChangedAsync = async function (state, isAck) {
+            result.setStateChangedAsync = withCallerStack(async function (state, isAck) {
                 for (let i = 0; i < this.length; i++) {
                     await sandbox.setStateChangedAsync(this[i], state, isAck);
                 }
-            };
+            });
             result.setStateDelayed = function (state, isAck, delay, clearRunning, callback) {
                 if (typeof isAck !== 'boolean') {
                     callback = clearRunning;
@@ -4987,6 +5021,13 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
     sandbox.getHistoryAsync = (0, tools_1.promisify)(sandbox.getHistory);
     sandbox.httpGetAsync = (0, tools_1.promisify)(sandbox.httpGet);
     sandbox.httpPostAsync = (0, tools_1.promisify)(sandbox.httpPost);
+    // A rejection the script does not handle must be recognized as one of the script (see withCallerStack)
+    for (const prop of Object.keys(sandbox)) {
+        const fn = sandbox[prop];
+        if ((prop.endsWith('Async') || prop === 'jsonataExpression') && typeof fn === 'function') {
+            sandbox[prop] = withCallerStack(fn);
+        }
+    }
     // Make all predefined properties and methods readonly so scripts cannot overwrite them
     for (const prop of Object.keys(sandbox)) {
         Object.defineProperty(sandbox, prop, {
