@@ -34,6 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FORBIDDEN_CHARS = void 0;
+exports.withCallerStack = withCallerStack;
 exports.normalizeStateDefault = normalizeStateDefault;
 exports.isValidPattern = isValidPattern;
 exports.pattern2RegEx = pattern2RegEx;
@@ -75,7 +76,7 @@ function withCallerStack(fn) {
                     err.stack = stack + callerStack.substring(callerStack.indexOf('\n'));
                 }
                 catch {
-                    // the error is frozen: it stays as it is
+                    // the stack is read-only (e.g. of a frozen error, depending on the Node.js version): it stays as it is
                 }
             }
             throw err;

@@ -2308,6 +2308,45 @@ describe('Test JS', function () {
         objects.setObject(script._id, script, err => assert.equal(err, null));
     });
 
+    it('Test JS: an unhandled rejection of an asynchronous function must not terminate the adapter', function (done) {
+        this.timeout(10000);
+        // Both errors are created later, in a setImmediate or in a callback of the database, so they have no
+        // frame of the script. The adapter took them for its own errors and was terminated by js-controller.
+        // If it is still running, the script sets the state afterward - stopping the adapter clears its timers.
+        const script = {
+            _id: 'script.js.test_unhandledRejection',
+            type: 'script',
+            common: {
+                name: 'test unhandled rejection',
+                enabled: true,
+                verbose: true,
+                engine: 'system.adapter.javascript.0',
+                engineType: 'Javascript/js',
+                source:
+                    `createState('test_unhandledRejection', false, () => {\n` +
+                    `    setStateAsync('javascript.0.test_unhandledRejection_missing', 1);\n` +
+                    `    readFileAsync('0_userdata.0', 'test_unhandledRejection_missing.txt');\n` +
+                    `    setTimeout(() => setState('test_unhandledRejection', { val: true, ack: true }), 2000);\n` +
+                    `});`,
+            },
+            native: {},
+        };
+
+        const onStateChanged = function (id, state) {
+            if (id === 'javascript.0.test_unhandledRejection' && state?.val === true) {
+                removeStateChangedHandler(onStateChanged);
+                states.getState('system.adapter.javascript.0.alive', (err, alive) => {
+                    assert.equal(err, null);
+                    assert.equal(alive?.val, true);
+                    done();
+                });
+            }
+        };
+        addStateChangedHandler(onStateChanged);
+
+        objects.setObject(script._id, script, err => assert.equal(err, null));
+    });
+
     after('Test JS: Stop js-controller', function (done) {
         this.timeout(6000);
 

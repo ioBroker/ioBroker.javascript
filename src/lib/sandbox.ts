@@ -46,7 +46,7 @@ const SCRIPT_CODE_MARKER = 'script.js.';
  *
  * @param fn The function returning a promise
  */
-function withCallerStack<F extends (...args: any[]) => Promise<any>>(fn: F): F {
+export function withCallerStack<F extends (...args: any[]) => Promise<any>>(fn: F): F {
     const wrapped = function (this: unknown, ...args: any[]): Promise<any> {
         // Only the frames are captured here; they become a text when `stack` is read, i.e. only on a rejection
         const caller: { stack?: string } = {};
@@ -63,7 +63,7 @@ function withCallerStack<F extends (...args: any[]) => Promise<any>>(fn: F): F {
                     // without the first line, it is the message of the captured object
                     (err as Error).stack = stack + callerStack.substring(callerStack.indexOf('\n'));
                 } catch {
-                    // the error is frozen: it stays as it is
+                    // the stack is read-only (e.g. of a frozen error, depending on the Node.js version): it stays as it is
                 }
             }
             throw err;
