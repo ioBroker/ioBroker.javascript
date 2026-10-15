@@ -82,6 +82,11 @@ describe('Blockly JavaScript function blocks', function () {
             connection = arg.nextConnection;
         }
         await Blockly.renderManagement.finishQueuedRenders();
+        // `compose` runs in a change listener of the dialog, and Blockly fires the events of a change in a
+        // `setTimeout` it schedules from the next frame (`fireInternal` in core/events/utils.ts) - after the
+        // renders are finished. Mocha's next step raced with it: on a slow runner the first test saw no
+        // parameter at all. A timeout scheduled from the frame after that runs after the events.
+        await new Promise(resolve => env.window.requestAnimationFrame(() => env.window.setTimeout(resolve, 0)));
 
         return def;
     }
