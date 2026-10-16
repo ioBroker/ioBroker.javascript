@@ -1,6 +1,7 @@
 const tsc = require('virtual-tsc');
 const fs = require('node:fs');
 const path = require('node:path');
+const { Script } = require('node:vm');
 const { tsCompilerOptions } = require('../build/lib/typescriptSettings');
 
 const assert = require('node:assert').strict;
@@ -8,6 +9,8 @@ const {
     scriptIdToTSFilename,
     transformScriptBeforeCompilation,
     transformGlobalDeclarations,
+    wrapCompiledGlobalScriptInCommonJsScope,
+    wrapCompiledScriptInCommonJsScope,
 } = require('../build/lib/typescriptTools');
 
 describe('TypeScript tools', () => {
@@ -140,6 +143,78 @@ export {};`
         it('generates a valid filename from a script ID', () => {
             assert.equal(scriptIdToTSFilename('script.js.foo.bar.baz'), 'foo/bar/baz.ts');
         });
+    });
+});
+
+/**
+ * Regression tests for https://github.com/ioBroker/ioBroker.javascript/issues/2341
+ *
+ * The global scripts and the script itself run as one `vm.Script`. TypeScript emits the same binding
+ * (`const fixturelib_1 = require("fixturelib")`) for every script that imports the same module, so
+ * without a scope per script the second one fails with "Identifier has already been declared".
+ */
+describe('Scope isolation of compiled TypeScript scripts', () => {
+    const tsServer = new tsc.Server({ ...tsCompilerOptions, strict: true }, undefined);
+    tsServer.provideAmbientDeclarations({
+        'fixturelib.d.ts': `declare module "fixturelib" {
+    export class Observable<T> {
+        constructor(subscribe: (observer: { next(value: T): void }) => void);
+    }
+}`,
+    });
+
+    const IMPORT = `import { Observable } from "fixturelib";
+new Observable<string>(observer => observer.next("ok"));`;
+
+    function compile(filename, source, isGlobal) {
+        const compiled = tsServer.compile(filename, transformScriptBeforeCompilation(source, isGlobal));
+        assert.equal(compiled.success, true, compiled.diagnostics.map(d => d.description).join('\n'));
+        return compiled.result;
+    }
+
+    function run(code) {
+        const context = {
+            exports: {},
+            require: () => ({
+                Observable: class {
+                    constructor(subscribe) {
+                        subscribe({ next: () => undefined });
+                    }
+                },
+            }),
+        };
+        new Script(code).runInNewContext(context);
+        return context;
+    }
+
+    it('fails without isolation (reproduces the issue)', () => {
+        const globalCompiled = compile('global.ts', IMPORT, true);
+        const localCompiled = compile('local.ts', IMPORT, false);
+        assert.throws(() => new Script(`${globalCompiled}\n${localCompiled}`), /already been declared/);
+    }).timeout(20000);
+
+    it('lets a global and a normal script import the same module', () => {
+        const globalCompiled = compile('global.ts', `${IMPORT}\nfunction fromGlobal() { return "global"; }`, true);
+        const localCompiled = compile('local.ts', `${IMPORT}\ndeclare function fromGlobal(): string;\ndeclare let result: string;\nresult = fromGlobal();`, false);
+
+        const context = run(
+            `var result;\n${wrapCompiledGlobalScriptInCommonJsScope(globalCompiled)}\n${wrapCompiledScriptInCommonJsScope(localCompiled)}`,
+        );
+        assert.equal(context.result, 'global');
+    }).timeout(20000);
+
+    it('lets two global scripts import the same module and publishes their exports', () => {
+        const first = compile('first.ts', `${IMPORT}\nfunction first() { return "one"; }\nlet counter = 1;`, true);
+        const second = compile('second.ts', `${IMPORT}\nfunction second() { return "two"; }`, true);
+
+        const context = run(`${wrapCompiledGlobalScriptInCommonJsScope(first)}
+${wrapCompiledGlobalScriptInCommonJsScope(second)}
+${wrapCompiledScriptInCommonJsScope('counter++; globalThis.result = `${first()}-${second()}-${counter}`;')}`);
+        assert.equal(context.result, 'one-two-2');
+    }).timeout(20000);
+
+    it('keeps the compiled source on the first line of the wrapper', () => {
+        assert.equal(wrapCompiledScriptInCommonJsScope('a;\nb;').split('\n')[0], '(function () {a;');
     });
 });
 
