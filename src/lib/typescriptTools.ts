@@ -688,6 +688,20 @@ export function transformGlobalDeclarations(decl: string): string {
 }
 
 /**
+ * Isolates the module-local bindings emitted by TypeScript while retaining access to globals
+ * provided by ioBroker's shared scripts. Calling the wrapper with `exports` also matches the
+ * top-level `this` value a CommonJS module normally receives.
+ *
+ * The compiled source starts on the wrapper's first line so existing line-number correction
+ * remains valid.
+ *
+ * @param source The JavaScript emitted for a non-global TypeScript script
+ */
+export function wrapCompiledScriptInCommonJsScope(source: string): string {
+    return `(function () {${source}\n}).call(exports);`;
+}
+
+/**
  * Translates a script ID to a filename for the compiler
  *
  * @param scriptID The ID of the script
