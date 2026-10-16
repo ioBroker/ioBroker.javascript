@@ -4,6 +4,8 @@ exports.resolveTypescriptLibs = resolveTypescriptLibs;
 exports.resolveTypings = resolveTypings;
 exports.transformScriptBeforeCompilation = transformScriptBeforeCompilation;
 exports.transformGlobalDeclarations = transformGlobalDeclarations;
+exports.wrapCompiledScriptInCommonJsScope = wrapCompiledScriptInCommonJsScope;
+exports.wrapCompiledGlobalScriptInCommonJsScope = wrapCompiledGlobalScriptInCommonJsScope;
 exports.scriptIdToTSFilename = scriptIdToTSFilename;
 const node_fs_1 = require("node:fs");
 const node_path_1 = require("node:path");
@@ -548,6 +550,35 @@ function transformGlobalDeclarations(decl) {
     const sourceFile = (0, typescript_1.createSourceFile)('index.d.ts', decl, typescript_1.ScriptTarget.ESNext, /* setParentNodes */ true);
     const result = (0, typescript_1.transform)(sourceFile, [transformer]);
     return (0, typescript_1.createPrinter)(PRINTER_OPTIONS).printNode(typescript_1.EmitHint.Unspecified, result.transformed[0], sourceFile);
+}
+/**
+ * Isolates the module-local bindings emitted by TypeScript while retaining access to globals
+ * provided by ioBroker's shared scripts. Calling the wrapper with `exports` also matches the
+ * top-level `this` value a CommonJS module normally receives.
+ *
+ * The compiled source starts on the wrapper's first line so existing line-number correction
+ * remains valid.
+ *
+ * @param source The JavaScript emitted for a non-global TypeScript script
+ */
+function wrapCompiledScriptInCommonJsScope(source) {
+    return `(function () {${source}\n}).call(exports);`;
+}
+/**
+ * Isolates one compiled global TypeScript script from all other compiled scripts and publishes
+ * its transformed exports as ioBroker globals. Accessors preserve updates to exported variables.
+ *
+ * The wrapper only occupies the first line of the source and the line after it - the one that is
+ * empty without the wrapper -, so the line numbers in the combined global scripts stay the same.
+ *
+ * @param source The JavaScript emitted for a global TypeScript script
+ */
+function wrapCompiledGlobalScriptInCommonJsScope(source) {
+    // TypeScript ends its output with a new line; without one, a trailing line comment would swallow the wrapper
+    const body = source.endsWith('\n') ? source : `${source}\n`;
+    return (`(function () { const scriptExports = {}; (function (exports) {${body}` +
+        '}).call(globalThis, scriptExports); for (const key of Object.keys(scriptExports)) { if (key === "__esModule") continue; ' +
+        'Object.defineProperty(globalThis, key, { configurable: true, enumerable: true, get: () => scriptExports[key], set: value => { scriptExports[key] = value; } }); } }).call(globalThis);');
 }
 /**
  * Translates a script ID to a filename for the compiler

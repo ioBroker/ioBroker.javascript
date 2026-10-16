@@ -84,6 +84,8 @@ import {
     scriptIdToTSFilename,
     transformScriptBeforeCompilation,
     transformGlobalDeclarations,
+    wrapCompiledGlobalScriptInCommonJsScope,
+    wrapCompiledScriptInCommonJsScope,
 } from './lib/typescriptTools';
 import type {
     FileSubscriptionResult,
@@ -2204,7 +2206,7 @@ class JavaScript extends Adapter {
                                         continue;
                                     }
                                 }
-                                this.globalScript += `${compiled}\n`;
+                                this.globalScript += `${wrapCompiledGlobalScriptInCommonJsScope(compiled || '')}\n`;
                                 // if declarations were generated, remember them
                                 if (declarations != null) {
                                     this.provideDeclarationsForGlobalScript(obj._id, declarations);
@@ -3247,7 +3249,11 @@ class JavaScript extends Adapter {
                 const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource).join('\n');
                 return empty(`TypeScript compilation failed:\n${errors}`);
             }
-            createdScript = this.createVM(`${this.globalScript}\n${tsCompiled.result || ''}`, name, false);
+            createdScript = this.createVM(
+                `${this.globalScript}\n${wrapCompiledScriptInCommonJsScope(tsCompiled.result || '')}`,
+                name,
+                false,
+            );
         } else {
             createdScript = this.createVM(`${this.globalScript}\n${source}`, name, true);
         }
@@ -3714,7 +3720,11 @@ class JavaScript extends Adapter {
                         return false;
                     }
                 }
-                const createdScript: JsScript | false = this.createVM(`${this.globalScript}\n${compiled}`, name, false);
+                const createdScript: JsScript | false = this.createVM(
+                    `${this.globalScript}\n${wrapCompiledScriptInCommonJsScope(compiled)}`,
+                    name,
+                    false,
+                );
                 if (!createdScript) {
                     return false;
                 }
