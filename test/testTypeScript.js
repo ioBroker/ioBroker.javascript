@@ -216,6 +216,14 @@ ${wrapCompiledScriptInCommonJsScope('counter++; globalThis.result = `${first()}-
     it('keeps the compiled source on the first line of the wrapper', () => {
         assert.equal(wrapCompiledScriptInCommonJsScope('a;\nb;').split('\n')[0], '(function () {a;');
     });
+
+    it('keeps the line numbers of the combined global scripts', () => {
+        // without the wrapper every global script takes its own lines plus the empty line after it
+        const source = 'a;\nb;\n';
+        const wrapped = wrapCompiledGlobalScriptInCommonJsScope(source);
+        assert.equal(`${wrapped}\n`.split('\n').length, `${source}\n`.split('\n').length);
+        assert.equal(wrapped.split('\n')[1], 'b;');
+    });
 });
 
 describe('TypeScript compilation regression tests (non-global scripts)', () => {
