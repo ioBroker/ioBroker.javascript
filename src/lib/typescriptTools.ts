@@ -702,6 +702,29 @@ export function wrapCompiledScriptInCommonJsScope(source: string): string {
 }
 
 /**
+ * Isolates one compiled global TypeScript script from all other compiled scripts and publishes
+ * its transformed exports as ioBroker globals. Accessors preserve updates to exported variables.
+ *
+ * @param source The JavaScript emitted for a global TypeScript script
+ */
+export function wrapCompiledGlobalScriptInCommonJsScope(source: string): string {
+    return `(function () {
+    const scriptExports = {};
+    (function (exports) {${source}
+    }).call(globalThis, scriptExports);
+    for (const key of Object.keys(scriptExports)) {
+        if (key === "__esModule") continue;
+        Object.defineProperty(globalThis, key, {
+            configurable: true,
+            enumerable: true,
+            get: () => scriptExports[key],
+            set: value => { scriptExports[key] = value; },
+        });
+    }
+}).call(globalThis);`;
+}
+
+/**
  * Translates a script ID to a filename for the compiler
  *
  * @param scriptID The ID of the script

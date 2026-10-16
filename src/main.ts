@@ -84,6 +84,7 @@ import {
     scriptIdToTSFilename,
     transformScriptBeforeCompilation,
     transformGlobalDeclarations,
+    wrapCompiledGlobalScriptInCommonJsScope,
     wrapCompiledScriptInCommonJsScope,
 } from './lib/typescriptTools';
 import type {
@@ -2205,7 +2206,7 @@ class JavaScript extends Adapter {
                                         continue;
                                     }
                                 }
-                                this.globalScript += `${compiled}\n`;
+                                this.globalScript += `${wrapCompiledGlobalScriptInCommonJsScope(compiled || '')}\n`;
                                 // if declarations were generated, remember them
                                 if (declarations != null) {
                                     this.provideDeclarationsForGlobalScript(obj._id, declarations);
