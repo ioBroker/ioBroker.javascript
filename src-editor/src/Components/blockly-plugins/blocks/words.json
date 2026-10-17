@@ -8,7 +8,7 @@
         "fr": "sélectionnez ID",
         "it": "seleziona ID",
         "es": "seleccionar ID",
-        "pl": "select ID",
+        "pl": "wybierz ID",
         "uk": "виберіть ID",
         "zh-cn": "对象ID"
     },
@@ -21,7 +21,7 @@
         "fr": "niveau de journalisation",
         "it": "livello di registro",
         "es": "nivel de registro",
-        "pl": "log level",
+        "pl": "poziom logowania",
         "uk": "рівень журналу",
         "zh-cn": "日志级别"
     },
@@ -47,7 +47,7 @@
         "fr": "aucun",
         "it": "nessuna",
         "es": "ninguna",
-        "pl": "none",
+        "pl": "brak",
         "uk": "немає",
         "zh-cn": "不输出"
     },
@@ -86,7 +86,7 @@
         "fr": "Attention",
         "it": "avvertimento",
         "es": "advertencia",
-        "pl": "warning",
+        "pl": "ostrzeżenie",
         "uk": "УВАГА",
         "zh-cn": "警告信息"
     },
@@ -99,7 +99,7 @@
         "fr": "Erreur",
         "it": "errore",
         "es": "error",
-        "pl": "error",
+        "pl": "błąd",
         "uk": "помилка",
         "zh-cn": "错误信息"
     },
@@ -411,7 +411,7 @@
         "fr": "Actes",
         "it": "Azioni",
         "es": "Comportamiento",
-        "pl": "Actions",
+        "pl": "Akcje",
         "uk": "Дії",
         "zh-cn": "系统指令"
     },
@@ -424,7 +424,7 @@
         "fr": "ID du sélecteur",
         "it": "ID dal selettore",
         "es": "Identificadores de selector",
-        "pl": "IDs from Selector",
+        "pl": "ID z selektora",
         "uk": "Ідентифікатори від Selector",
         "zh-cn": "选择器中的 Id"
     },
@@ -450,7 +450,7 @@
         "fr": "commander",
         "it": "comando",
         "es": "mando",
-        "pl": "command",
+        "pl": "polecenie",
         "uk": "команда",
         "zh-cn": "命令行指令"
     },
@@ -476,7 +476,7 @@
         "fr": "Exécuter une commande",
         "it": "Esegui un comando",
         "es": "Ejecuta algún comando",
-        "pl": "Execute some command",
+        "pl": "Wykonaj polecenie systemowe",
         "uk": "Виконати якусь команду",
         "zh-cn": "执行一些指令"
     },
@@ -489,7 +489,7 @@
         "fr": "result (stdout)",
         "it": "result (stdout)",
         "es": "result (stdout)",
-        "pl": "result (stdout)",
+        "pl": "wynik (stdout)",
         "uk": "result (stdout)",
         "zh-cn": "result (stdout)"
     },
@@ -502,7 +502,7 @@
         "fr": "error (stderr)",
         "it": "error (stderr)",
         "es": "error (stderr)",
-        "pl": "error (stderr)",
+        "pl": "błąd (stderr)",
         "uk": "error (stderr)",
         "zh-cn": "error (stderr)"
     },
@@ -515,7 +515,7 @@
         "fr": "Erreur",
         "it": "errore",
         "es": "error",
-        "pl": "error",
+        "pl": "błąd",
         "uk": "помилка",
         "zh-cn": "错误信息"
     },
@@ -541,7 +541,7 @@
         "fr": "Résultats de la commande",
         "it": "Risultati del comando",
         "es": "Resultados del comando",
-        "pl": "Wyniki dowodzenia",
+        "pl": "Wyniki polecenia",
         "uk": "Результати команди",
         "zh-cn": "指挥结果"
     },
@@ -554,7 +554,7 @@
         "fr": "timeout",
         "it": "timeout",
         "es": "timeout",
-        "pl": "timeout",
+        "pl": "limit czasu",
         "uk": "timeout",
         "zh-cn": "timeout"
     },
@@ -580,7 +580,7 @@
         "fr": "seconde",
         "it": "secondo",
         "es": "segundo",
-        "pl": "sec",
+        "pl": "s",
         "uk": "сек",
         "zh-cn": "秒"
     },
@@ -684,7 +684,7 @@
         "fr": "Demander des ressources via http",
         "it": "Richiesta di risorse via http",
         "es": "Solicitar ressources via http",
-        "pl": "Wniosek o ponowne źródła informacji za pośrednictwem http",
+        "pl": "Pobierz zasoby przez http",
         "uk": "Запит ресурсів через HTTP",
         "zh-cn": "通过 http 请求资源源"
     },
@@ -736,7 +736,7 @@
         "fr": "Demander des ressources via http",
         "it": "Richiesta di risorse via http",
         "es": "Solicitar ressources via http",
-        "pl": "Wniosek o ponowne źródła informacji za pośrednictwem http",
+        "pl": "Pobierz zasoby przez http",
         "uk": "Запит ресурсів через HTTP",
         "zh-cn": "通过 http 请求资源源"
     },
@@ -762,7 +762,7 @@
         "fr": "data",
         "it": "data",
         "es": "data",
-        "pl": "data",
+        "pl": "dane",
         "uk": "data",
         "zh-cn": "data"
     },
@@ -775,7 +775,7 @@
         "fr": "status code",
         "it": "status code",
         "es": "status code",
-        "pl": "status code",
+        "pl": "kod statusu",
         "uk": "status code",
         "zh-cn": "status code"
     },
@@ -788,7 +788,7 @@
         "fr": "temps de réponse (ms)",
         "it": "tempo di risposta (ms)",
         "es": "tiempo de respuesta (ms)",
-        "pl": "czas reakcji (ms)",
+        "pl": "czas odpowiedzi (ms)",
         "uk": "час відповіді (ms)",
         "zh-cn": "响应时间 (ms)"
     },
@@ -801,7 +801,7 @@
         "fr": "response headers",
         "it": "response headers",
         "es": "response headers",
-        "pl": "response headers",
+        "pl": "nagłówki odpowiedzi",
         "uk": "response headers",
         "zh-cn": "response headers"
     },
@@ -866,7 +866,7 @@
         "fr": "obtenir le chemin de réponse temporaire du fichier",
         "it": "ottenere percorso di file temporaneo di risposta",
         "es": "get temporary file path of response",
-        "pl": "uzyskać tymczasową ścieżkę odpowiedzi pliku",
+        "pl": "pobierz ścieżkę pliku tymczasowego z odpowiedzią",
         "uk": "отримати тимчасовий шлях файлу відповіді",
         "zh-cn": "获取响应的临时文件路径"
     },
@@ -918,7 +918,7 @@
         "fr": "Écrire un fichier",
         "it": "Scrivere file",
         "es": "Libro",
-        "pl": "Plik zapisu",
+        "pl": "zapisz plik",
         "uk": "Ім'я файла",
         "zh-cn": "文件写入"
     },
@@ -983,7 +983,7 @@
         "fr": "Fichier lu",
         "it": "Informazioni sul file",
         "es": "Archivo leído",
-        "pl": "Odczyt pliku",
+        "pl": "odczytaj plik",
         "uk": "Файл читати",
         "zh-cn": "文件已读取"
     },
@@ -1035,7 +1035,7 @@
         "fr": "data",
         "it": "data",
         "es": "data",
-        "pl": "data",
+        "pl": "dane",
         "uk": "data",
         "zh-cn": "data"
     },
@@ -1087,7 +1087,7 @@
         "fr": "demande (deprecated)",
         "it": "richiesta (deprecated)",
         "es": "solicitud (deprecated)",
-        "pl": "request (deprecated)",
+        "pl": "request (przestarzałe)",
         "uk": "запит (deprecated)",
         "zh-cn": "请求网址 (deprecated)"
     },
@@ -1113,7 +1113,7 @@
         "fr": "Demander une URL",
         "it": "URL di richiesta",
         "es": "URL de solicitud",
-        "pl": "Request URL",
+        "pl": "Zapytanie do URL",
         "uk": "URL запиту",
         "zh-cn": "请求网址"
     },
@@ -1139,7 +1139,7 @@
         "fr": "Convertir",
         "it": "Convertire",
         "es": "Convertir",
-        "pl": "Convert",
+        "pl": "Konwersja",
         "uk": "конвертувати",
         "zh-cn": "转换"
     },
@@ -1152,7 +1152,7 @@
         "fr": "toNumber",
         "it": "ToNumber",
         "es": "Al numero",
-        "pl": "toNumber",
+        "pl": "na liczbę",
         "uk": "toNumber",
         "zh-cn": "至数字"
     },
@@ -1165,7 +1165,7 @@
         "fr": "Transmettre l'entrée au numéro",
         "it": "Trasmetti l'input al numero",
         "es": "Emitir entrada al número",
-        "pl": "Cast input to number",
+        "pl": "Konwertuj wejście na liczbę",
         "uk": "Перевести вхід до числа",
         "zh-cn": "将输入转换为数字"
     },
@@ -1178,7 +1178,7 @@
         "fr": "toBooléen",
         "it": "toBoolean",
         "es": "toBoolean",
-        "pl": "toBoolean",
+        "pl": "na wartość logiczną",
         "uk": "toBoolean",
         "zh-cn": "至布尔值"
     },
@@ -1191,7 +1191,7 @@
         "fr": "Transmettre l'entrée au booléen",
         "it": "Trasmetti l'input a booleano",
         "es": "Enviar entrada a boolean",
-        "pl": "Cast input to boolean",
+        "pl": "Konwertuj wejście na wartość logiczną",
         "uk": "Перевести вхід до логічного значення",
         "zh-cn": "将输入转换为布尔值"
     },
@@ -1204,7 +1204,7 @@
         "fr": "toString",
         "it": "accordare",
         "es": "Encadenar",
-        "pl": "toString",
+        "pl": "na tekst",
         "uk": "toString",
         "zh-cn": "至字符串"
     },
@@ -1217,7 +1217,7 @@
         "fr": "Transmettre l'entrée au numéro",
         "it": "Trasmetti l'input al numero",
         "es": "Emitir entrada al número",
-        "pl": "Cast input to number",
+        "pl": "Konwertuj wejście na tekst",
         "uk": "Перевести вхідні дані в рядок",
         "zh-cn": "将输入转换为字符串"
     },
@@ -1230,7 +1230,7 @@
         "fr": "Type de",
         "it": "tipo di",
         "es": "tipo de",
-        "pl": "type of",
+        "pl": "typ",
         "uk": "тип",
         "zh-cn": "获取类型"
     },
@@ -1243,7 +1243,7 @@
         "fr": "Renvoie le type d'entrée",
         "it": "Restituisce il tipo di input",
         "es": "Devuelve tipo de entrada",
-        "pl": "Returns type of input",
+        "pl": "Zwraca typ wejścia",
         "uk": "Повертає тип введення",
         "zh-cn": "返回输入类型"
     },
@@ -1256,7 +1256,7 @@
         "fr": "à date/heure",
         "it": "alla data/ora",
         "es": "hasta la fecha/hora",
-        "pl": "to Date/Time",
+        "pl": "na datę/czas",
         "uk": "до дати/часу",
         "zh-cn": "至日期/时间"
     },
@@ -1269,7 +1269,7 @@
         "fr": "Diffuser l'entrée à ce jour",
         "it": "Trasmetti l'input fino alla data",
         "es": "Emitir entrada hasta la fecha",
-        "pl": "Cast input to date",
+        "pl": "Konwertuj wejście na datę",
         "uk": "Трансляція введення на дату",
         "zh-cn": "将输入转换为至日期/时间"
     },
@@ -1282,7 +1282,7 @@
         "fr": "date/heure",
         "it": "appuntamento",
         "es": "fecha y hora",
-        "pl": "date/time",
+        "pl": "data/czas",
         "uk": "дата, час",
         "zh-cn": "从日期/时间"
     },
@@ -1295,7 +1295,7 @@
         "fr": "à",
         "it": "a",
         "es": "a",
-        "pl": "to",
+        "pl": "na",
         "uk": "до",
         "zh-cn": "至"
     },
@@ -1308,7 +1308,7 @@
         "fr": "Transmettre l'entrée de la date",
         "it": "Trasmetti input dalla data",
         "es": "Emitir entrada desde la fecha",
-        "pl": "Cast input from date",
+        "pl": "Konwertuj datę na wybrany format",
         "uk": "Трансляція введення з дати",
         "zh-cn": "将输入时间转换目标格式的时间"
     },
@@ -1321,7 +1321,7 @@
         "fr": "JSON à objet",
         "it": "JSON per obiettare",
         "es": "JSON para objetar",
-        "pl": "JSON to object",
+        "pl": "JSON na obiekt",
         "uk": "JSON для об’єкта",
         "zh-cn": "从JSON到对象"
     },
@@ -1334,7 +1334,7 @@
         "fr": "Parse JSON chaîne",
         "it": "Analizza la stringa JSON",
         "es": "Cadena Parson JSON",
-        "pl": "Parse JSON string",
+        "pl": "Parsuj tekst JSON",
         "uk": "Проаналізуйте рядок JSON",
         "zh-cn": "解析JSON字符串"
     },
@@ -1347,7 +1347,7 @@
         "fr": "objet à JSON",
         "it": "oggetto a JSON",
         "es": "objetar a JSON",
-        "pl": "object to JSON",
+        "pl": "obiekt na JSON",
         "uk": "об'єкт для JSON",
         "zh-cn": "从对象到JSON"
     },
@@ -1360,7 +1360,7 @@
         "fr": "Strinify objet",
         "it": "Strinificare l'oggetto",
         "es": "Objeto Strinify",
-        "pl": "Strinify object",
+        "pl": "Konwertuj obiekt na tekst JSON",
         "uk": "Стрінгіфікувати об'єкт",
         "zh-cn": "将对象转为JSON字符串"
     },
@@ -1373,7 +1373,7 @@
         "fr": "enjoliver",
         "it": "abbellire",
         "es": "embellecer",
-        "pl": "prettify",
+        "pl": "formatuj",
         "uk": "прикрашати",
         "zh-cn": "并格式化"
     },
@@ -1399,7 +1399,7 @@
         "fr": "postuler à",
         "it": "applica a",
         "es": "aplicar para",
-        "pl": "ubiegać się o",
+        "pl": "zastosuj do",
         "uk": "застосувати до",
         "zh-cn": "适用于"
     },
@@ -1438,7 +1438,7 @@
         "fr": "hh:mm:ss",
         "it": "hh:mm:ss",
         "es": "hh:mm:ss",
-        "pl": "h:mm:ss",
+        "pl": "hh:mm:ss",
         "uk": "hh:mm:ss",
         "zh-cn": "hh:mm:ss"
     },
@@ -1464,7 +1464,7 @@
         "fr": "hh:mm",
         "it": "hh:mm",
         "es": "hh:mm",
-        "pl": "h:mm",
+        "pl": "hh:mm",
         "uk": "hh:mm",
         "zh-cn": "hh:mm"
     },
@@ -1490,7 +1490,7 @@
         "fr": "mm:ss",
         "it": "mm:ss",
         "es": "mm:ss",
-        "pl": "h:mm",
+        "pl": "mm:ss",
         "uk": "mm:ss",
         "zh-cn": "mm:ss"
     },
@@ -1503,7 +1503,7 @@
         "fr": "m:s",
         "it": "m:s",
         "es": "m:s",
-        "pl": "h:mm",
+        "pl": "m:s",
         "uk": "m:s",
         "zh-cn": "m:s"
     },
@@ -1516,7 +1516,7 @@
         "fr": "format personnalisé",
         "it": "formato personalizzato",
         "es": "formato personalizado",
-        "pl": "custom format",
+        "pl": "własny format",
         "uk": "спеціальний формат",
         "zh-cn": "自定义格式"
     },
@@ -1529,7 +1529,7 @@
         "fr": "hh:mm:ss",
         "it": "hh:mm:ss",
         "es": "hh:mm:ss",
-        "pl": "h:mm:ss",
+        "pl": "hh:mm:ss",
         "uk": "hh:mm:ss",
         "zh-cn": "hh:mm:ss"
     },
@@ -1542,7 +1542,7 @@
         "fr": "Convertir des millisecondes en format lisible",
         "it": "Converte i millisecondi in un formato leggibile",
         "es": "Convertir milisegundos en un formato legible",
-        "pl": "Konwertuje milisekundy do gotowego formatu",
+        "pl": "Konwertuje milisekundy na czytelny format",
         "uk": "Конвертує мілісекунди до читабельного формату",
         "zh-cn": "溶剂"
     },
@@ -1568,7 +1568,7 @@
         "fr": "message",
         "it": "Messaggio",
         "es": "mensaje",
-        "pl": "message",
+        "pl": "wiadomość",
         "uk": "повідомлення",
         "zh-cn": "消息"
     },
@@ -1594,7 +1594,7 @@
         "fr": "Texte pour parler",
         "it": "Sintesi vocale",
         "es": "Texto a voz",
-        "pl": "Text to speech",
+        "pl": "Wyślij polecenie do instancji",
         "uk": "Перетворення тексту на мовлення",
         "zh-cn": "给适配器发消息"
     },
@@ -1620,7 +1620,7 @@
         "fr": "paramètres",
         "it": "parametri",
         "es": "parámetros",
-        "pl": "parameters",
+        "pl": "parametry",
         "uk": "параметри",
         "zh-cn": "参数组"
     },
@@ -1633,7 +1633,7 @@
         "fr": "commander",
         "it": "comando",
         "es": "mando",
-        "pl": "command",
+        "pl": "polecenie",
         "uk": "команда",
         "zh-cn": "命令"
     },
@@ -1646,7 +1646,7 @@
         "fr": "paramètre",
         "it": "parametro",
         "es": "parámetro",
-        "pl": "parameter",
+        "pl": "parametr",
         "uk": "параметр",
         "zh-cn": "参数"
     },
@@ -1659,7 +1659,7 @@
         "fr": "Ajouter un paramètre à l'objet sendTo.",
         "it": "Aggiungi parametro all'oggetto sendTo.",
         "es": "Agregar parámetro al objeto sendTo.",
-        "pl": "Add parameter to sendTo object.",
+        "pl": "Dodaj parametr do obiektu sendTo.",
         "uk": "Додайте параметр до об’єкта sendTo.",
         "zh-cn": "增加发送消息的参数"
     },
@@ -1672,7 +1672,7 @@
         "fr": "No instances",
         "it": "No instances",
         "es": "No instances",
-        "pl": "No instances",
+        "pl": "Brak instancji",
         "uk": "Жодних випадків",
         "zh-cn": "没有实例"
     },
@@ -1711,7 +1711,7 @@
         "fr": "ID de l'objet",
         "it": "ID oggetto",
         "es": "ID del objeto",
-        "pl": "Object ID",
+        "pl": "ID obiektu",
         "uk": "ID об'єкта",
         "zh-cn": "获取对象ID"
     },
@@ -1724,7 +1724,7 @@
         "fr": "À partir de (temps)",
         "it": "Da (tempo)",
         "es": "De (tiempo)",
-        "pl": "Od czasu (pol.)",
+        "pl": "Od (czas)",
         "uk": "Від (час)",
         "zh-cn": "(时)"
     },
@@ -1737,7 +1737,7 @@
         "fr": "Jusqu'à (heure)",
         "it": "Fino a (tempo)",
         "es": "Hasta (tiempo)",
-        "pl": "Do czasu (pol.)",
+        "pl": "Do (czas)",
         "uk": "До (час)",
         "zh-cn": "在此之前(时间)"
     },
@@ -1750,7 +1750,7 @@
         "fr": "Aggregate by",
         "it": "Aggregato da",
         "es": "Aggregate",
-        "pl": "Aggregate (ang.)",
+        "pl": "Agregacja według",
         "uk": "Агрегати",
         "zh-cn": "同意"
     },
@@ -1763,7 +1763,7 @@
         "fr": "aucun",
         "it": "nessuna",
         "es": "ninguna",
-        "pl": "none",
+        "pl": "brak",
         "uk": "немає",
         "zh-cn": "不输出"
     },
@@ -1789,7 +1789,7 @@
         "fr": "maximum",
         "it": "massimo",
         "es": "máximo",
-        "pl": "maksymalny",
+        "pl": "maksimum",
         "uk": "максимум",
         "zh-cn": "最高限额"
     },
@@ -1802,7 +1802,7 @@
         "fr": "compte",
         "it": "conteggio",
         "es": "cuenta",
-        "pl": "hrabia",
+        "pl": "liczba",
         "uk": "кількість",
         "zh-cn": "目 录"
     },
@@ -1841,7 +1841,7 @@
         "fr": "Étape",
         "it": "Passo",
         "es": "Paso",
-        "pl": "Step",
+        "pl": "wielkość kroku",
         "uk": "Крок",
         "zh-cn": "步骤"
     },
@@ -1867,7 +1867,7 @@
         "fr": "seconde",
         "it": "secondo",
         "es": "segundo",
-        "pl": "sec",
+        "pl": "s",
         "uk": "сек",
         "zh-cn": "秒"
     },
@@ -1893,7 +1893,7 @@
         "fr": "heures",
         "it": "ore",
         "es": "horas",
-        "pl": "hours",
+        "pl": "godziny",
         "uk": "години",
         "zh-cn": "小时"
     },
@@ -1984,7 +1984,7 @@
         "fr": "Mode Verbeux actif",
         "it": "Modalità Verbose attiva",
         "es": "Modo de verbose activo",
-        "pl": "Aktywny tryb werbosy",
+        "pl": "Tryb szczegółowy aktywny",
         "uk": "Режим Verbose активний",
         "zh-cn": "Verbose 模式活动"
     },
@@ -2062,7 +2062,7 @@
         "fr": "sortie de débogage",
         "it": "uscita di debug",
         "es": "salida de depuración",
-        "pl": "debug output",
+        "pl": "wyjście debug",
         "uk": "вихід налагодження",
         "zh-cn": "调试输出"
     },
@@ -2101,7 +2101,7 @@
         "fr": "commentaire",
         "it": "commento",
         "es": "comentario",
-        "pl": "comment",
+        "pl": "komentarz",
         "uk": "коментар",
         "zh-cn": "注释"
     },
@@ -2114,7 +2114,7 @@
         "fr": "Entrez un commentaire pour expliquer le code",
         "it": "Inserisci il commento per spiegare il codice",
         "es": "Ingrese un comentario para explicar el código",
-        "pl": "Enter comment to explain the code",
+        "pl": "Wpisz komentarz objaśniający kod",
         "uk": "Введіть коментар, щоб пояснити код",
         "zh-cn": "输入注释来解释代码"
     },
@@ -2127,7 +2127,7 @@
         "fr": "contrôle",
         "it": "сontrol",
         "es": "ontrol",
-        "pl": "сontrol",
+        "pl": "steruj",
         "uk": "контроль",
         "zh-cn": "将"
     },
@@ -2140,7 +2140,7 @@
         "fr": "Etat de contrôle",
         "it": "Stato di controllo",
         "es": "Estado de control",
-        "pl": "Control state",
+        "pl": "Steruj stanem",
         "uk": "Контрольний стан",
         "zh-cn": "控制对象"
     },
@@ -2166,7 +2166,7 @@
         "fr": "avec",
         "it": "con",
         "es": "con",
-        "pl": "with",
+        "pl": "na",
         "uk": "з",
         "zh-cn": "的值设置为"
     },
@@ -2179,7 +2179,7 @@
         "fr": "avec du retard",
         "it": "con ritardo",
         "es": "con retraso",
-        "pl": "with delay",
+        "pl": "z opóźnieniem",
         "uk": "із запізненням",
         "zh-cn": "。要延时"
     },
@@ -2205,7 +2205,7 @@
         "fr": "seconde",
         "it": "secondo",
         "es": "segundo",
-        "pl": "sec",
+        "pl": "s",
         "uk": "сек",
         "zh-cn": "秒"
     },
@@ -2231,7 +2231,7 @@
         "fr": ", course libre",
         "it": ", chiara corsa",
         "es": ", claro funcionamiento",
-        "pl": ", clear running",
+        "pl": ", anuluj trwające",
         "uk": ", чіткий біг",
         "zh-cn": "后执行。清除未运行的指令"
     },
@@ -2244,7 +2244,7 @@
         "fr": "basculer",
         "it": "ginocchiera",
         "es": "palanca",
-        "pl": "toggle",
+        "pl": "przełącz",
         "uk": "перемикач",
         "zh-cn": "将"
     },
@@ -2257,7 +2257,7 @@
         "fr": "Basculer l'état",
         "it": "Attiva/disattiva lo stato",
         "es": "Alternar el estado",
-        "pl": "Toggle the state",
+        "pl": "Przełącz stan",
         "uk": "Перемкнути стан",
         "zh-cn": "切换状态"
     },
@@ -2283,7 +2283,7 @@
         "fr": "avec",
         "it": "con",
         "es": "con",
-        "pl": "with",
+        "pl": "na",
         "uk": "з",
         "zh-cn": "伴随"
     },
@@ -2296,7 +2296,7 @@
         "fr": "avec du retard",
         "it": "con ritardo",
         "es": "con retraso",
-        "pl": "with delay",
+        "pl": "z opóźnieniem",
         "uk": "із запізненням",
         "zh-cn": "的值切换。要延时"
     },
@@ -2309,7 +2309,7 @@
         "fr": "en ms",
         "it": "in ms",
         "es": "en ms",
-        "pl": "in ms",
+        "pl": "w ms",
         "uk": "у мс",
         "zh-cn": "毫秒"
     },
@@ -2322,7 +2322,7 @@
         "fr": ", course libre",
         "it": ", chiara corsa",
         "es": ", claro funcionamiento",
-        "pl": ", clear running",
+        "pl": ", anuluj trwające",
         "uk": ", чіткий біг",
         "zh-cn": "后执行。清除未运行的指令"
     },
@@ -2335,7 +2335,7 @@
         "fr": "mettre à jour",
         "it": "aggiornare",
         "es": "actualizar",
-        "pl": "update",
+        "pl": "aktualizuj",
         "uk": "оновлення",
         "zh-cn": "仅将"
     },
@@ -2348,7 +2348,7 @@
         "fr": "Mettre à jour",
         "it": "Stato di aggiornamento",
         "es": "Actualizar estado",
-        "pl": "Update state",
+        "pl": "Aktualizuj stan",
         "uk": "Стан оновлення",
         "zh-cn": "仅更新值"
     },
@@ -2374,7 +2374,7 @@
         "fr": "avec",
         "it": "con",
         "es": "con",
-        "pl": "with",
+        "pl": "na",
         "uk": "з",
         "zh-cn": "的值更新为"
     },
@@ -2387,7 +2387,7 @@
         "fr": "avec du retard",
         "it": "con ritardo",
         "es": "con retraso",
-        "pl": "with delay",
+        "pl": "z opóźnieniem",
         "uk": "із запізненням",
         "zh-cn": "。要延时"
     },
@@ -2400,7 +2400,7 @@
         "fr": "en ms",
         "it": "in ms",
         "es": "en ms",
-        "pl": "in ms",
+        "pl": "w ms",
         "uk": "у мс",
         "zh-cn": "毫秒"
     },
@@ -2413,7 +2413,7 @@
         "fr": "lier",
         "it": "legare",
         "es": "enlazar",
-        "pl": "bind",
+        "pl": "powiąż",
         "uk": "зв'язати",
         "zh-cn": "将"
     },
@@ -2426,7 +2426,7 @@
         "fr": "Liez deux états l'un à l'autre",
         "it": "Associare due stati tra loro",
         "es": "Enlazar dos estados entre sí",
-        "pl": "Bind two states with each other",
+        "pl": "Powiąż ze sobą dwa stany",
         "uk": "Зв'яжіть два стани один з одним",
         "zh-cn": "将两个设备状态绑定在一起"
     },
@@ -2452,7 +2452,7 @@
         "fr": "d'objet",
         "it": "oggetto",
         "es": "Object",
-        "pl": "Object",
+        "pl": "Obiekt",
         "uk": "Об'єкт",
         "zh-cn": "Object"
     },
@@ -2465,7 +2465,7 @@
         "fr": "seulement des changements",
         "it": "solo cambiamenti",
         "es": "solo cambios",
-        "pl": "only changes",
+        "pl": "tylko zmiany",
         "uk": "тільки зміни",
         "zh-cn": "。仅变化时更新"
     },
@@ -2478,7 +2478,7 @@
         "fr": "avec",
         "it": "con",
         "es": "con",
-        "pl": "with",
+        "pl": "z",
         "uk": "з",
         "zh-cn": "的状态绑定到"
     },
@@ -2491,7 +2491,7 @@
         "fr": "Instance de contrôle",
         "it": "Esempio di controllo",
         "es": "Caso de control",
-        "pl": "Przykład kontroli",
+        "pl": "steruj instancją",
         "uk": "Контроль",
         "zh-cn": "控制实例"
     },
@@ -2504,7 +2504,7 @@
         "fr": "No instances",
         "it": "No instances",
         "es": "No instances",
-        "pl": "No instances",
+        "pl": "Brak instancji",
         "uk": "Жодних випадків",
         "zh-cn": "没有实例"
     },
@@ -2530,7 +2530,7 @@
         "fr": "début",
         "it": "inizio",
         "es": "empieza",
-        "pl": "start",
+        "pl": "uruchom",
         "uk": "почати",
         "zh-cn": "开始"
     },
@@ -2543,7 +2543,7 @@
         "fr": "arrêter",
         "it": "fermati",
         "es": "para",
-        "pl": "stop",
+        "pl": "zatrzymaj",
         "uk": "увійти",
         "zh-cn": "停下来"
     },
@@ -2595,7 +2595,7 @@
         "fr": "Contrôle du script",
         "it": "Script di controllo",
         "es": "Control script",
-        "pl": "Skrypt sterowania",
+        "pl": "steruj skryptem",
         "uk": "Статус на сервери",
         "zh-cn": "控制脚本"
     },
@@ -2608,7 +2608,7 @@
         "fr": "début",
         "it": "inizio",
         "es": "empieza",
-        "pl": "start",
+        "pl": "uruchom",
         "uk": "почати",
         "zh-cn": "开始"
     },
@@ -2621,7 +2621,7 @@
         "fr": "arrêter",
         "it": "fermati",
         "es": "para",
-        "pl": "stop",
+        "pl": "zatrzymaj",
         "uk": "увійти",
         "zh-cn": "停下来"
     },
@@ -2660,7 +2660,7 @@
         "fr": "écrire",
         "it": "Scrivi",
         "es": "escribir",
-        "pl": "write",
+        "pl": "zapisz",
         "uk": "писати",
         "zh-cn": "发命令"
     },
@@ -2673,7 +2673,7 @@
         "fr": "Etat de contrôle",
         "it": "Stato di controllo",
         "es": "Estado de control",
-        "pl": "Control state",
+        "pl": "Steruj stanem",
         "uk": "Контрольний стан",
         "zh-cn": "通用发命令块"
     },
@@ -2686,7 +2686,7 @@
         "fr": "contrôle",
         "it": "сontrol",
         "es": "ontrol",
-        "pl": "сontrol",
+        "pl": "steruj",
         "uk": "контроль",
         "zh-cn": "控制设备"
     },
@@ -2699,7 +2699,7 @@
         "fr": "mettre à jour",
         "it": "aggiornare",
         "es": "actualizar",
-        "pl": "update",
+        "pl": "aktualizuj",
         "uk": "оновлення",
         "zh-cn": "仅更新值"
     },
@@ -2712,7 +2712,7 @@
         "fr": "retarder en ms",
         "it": "ritardo in ms",
         "es": "retraso en ms",
-        "pl": "delay in ms",
+        "pl": "opóźnienie w ms",
         "uk": "затримка в мс",
         "zh-cn": "以毫秒延时执行"
     },
@@ -2738,7 +2738,7 @@
         "fr": "valeur",
         "it": "valore",
         "es": "valor",
-        "pl": "value",
+        "pl": "wartość",
         "uk": "значення",
         "zh-cn": "值"
     },
@@ -2751,7 +2751,7 @@
         "fr": "clair course",
         "it": "corsa libera",
         "es": "funcionamiento claro",
-        "pl": "clear running",
+        "pl": "anuluj trwające",
         "uk": "чіткий біг",
         "zh-cn": "清除未运行的指令"
     },
@@ -2764,7 +2764,7 @@
         "fr": "créer un état",
         "it": "creare stato",
         "es": "crear estado",
-        "pl": "create state",
+        "pl": "utwórz stan",
         "uk": "створити державу",
         "zh-cn": "创建"
     },
@@ -2777,7 +2777,7 @@
         "fr": "ID de l'objet",
         "it": "ID oggetto",
         "es": "ID del objeto",
-        "pl": "Object ID",
+        "pl": "ID obiektu",
         "uk": "ID об'єкта",
         "zh-cn": "获取对象ID"
     },
@@ -2790,7 +2790,7 @@
         "fr": "Valeur init",
         "it": "Valore init",
         "es": "Valor init",
-        "pl": "Init value",
+        "pl": "Wartość początkowa",
         "uk": "Початкове значення",
         "zh-cn": "初始值"
     },
@@ -2829,7 +2829,7 @@
         "fr": "chaîne (string)",
         "it": "Stringa (string)",
         "es": "cadena de caracteres (string)",
-        "pl": "string (string)",
+        "pl": "tekst (string)",
         "uk": "рядок (string)",
         "zh-cn": "串 (string)"
     },
@@ -2842,7 +2842,7 @@
         "fr": "nombre (number)",
         "it": "Numero (number)",
         "es": "numero (number)",
-        "pl": "numer (number)",
+        "pl": "liczba (number)",
         "uk": "номер (number)",
         "zh-cn": "数 (number)"
     },
@@ -2855,7 +2855,7 @@
         "fr": "booléen (boolean)",
         "it": "Booleano (boolean)",
         "es": "booleano (boolean)",
-        "pl": "boolean (boolean)",
+        "pl": "wartość logiczna (boolean)",
         "uk": "логічний (boolean)",
         "zh-cn": "布尔 (boolean)"
     },
@@ -2933,7 +2933,7 @@
         "fr": "créer un état",
         "it": "creare stato",
         "es": "crear estado",
-        "pl": "create state",
+        "pl": "utwórz stan",
         "uk": "створити державу",
         "zh-cn": "创建全局可见的状态变量"
     },
@@ -2959,7 +2959,7 @@
         "fr": "Obtenir la valeur de l'état",
         "it": "Ottieni valore statale",
         "es": "Obtener valor de estado",
-        "pl": "Get state value",
+        "pl": "Pobierz wartość stanu",
         "uk": "Отримати державне значення",
         "zh-cn": "获取状态的值"
     },
@@ -2972,7 +2972,7 @@
         "fr": "d'identifiant d'objet",
         "it": "di ID oggetto",
         "es": "de Object ID",
-        "pl": "of Object ID",
+        "pl": "z ID obiektu",
         "uk": "ідентифікатора об’єкта",
         "zh-cn": "来自于"
     },
@@ -2985,7 +2985,7 @@
         "fr": "Valeur",
         "it": "Valore",
         "es": "Valor",
-        "pl": "Value",
+        "pl": "Wartość",
         "uk": "Значення",
         "zh-cn": "值"
     },
@@ -2998,7 +2998,7 @@
         "fr": "Reconnaître",
         "it": "Riconoscere",
         "es": "Reconocer",
-        "pl": "Acknowledge",
+        "pl": "Potwierdzenie",
         "uk": "Визнати",
         "zh-cn": "是否应答"
     },
@@ -3011,7 +3011,7 @@
         "fr": "Horodatage",
         "it": "timestamp",
         "es": "Marca de tiempo",
-        "pl": "Timestamp",
+        "pl": "Znacznik czasu",
         "uk": "Мітка часу",
         "zh-cn": "当前时间戳"
     },
@@ -3024,7 +3024,7 @@
         "fr": "Dernier changement",
         "it": "Ultima modifica",
         "es": "Ultimo cambio",
-        "pl": "Last change ",
+        "pl": "Ostatnia zmiana",
         "uk": "Остання зміна",
         "zh-cn": "上次变更时间"
     },
@@ -3037,7 +3037,7 @@
         "fr": "Qualité",
         "it": "Qualità",
         "es": "Calidad",
-        "pl": "Quality",
+        "pl": "Jakość",
         "uk": "якість",
         "zh-cn": "状态质量"
     },
@@ -3050,7 +3050,7 @@
         "fr": "Commentaire sur la valeur",
         "it": "Commento di valore",
         "es": "Comentario de valor",
-        "pl": "Wartość komentarza",
+        "pl": "Komentarz do wartości",
         "uk": "Коментар вартості",
         "zh-cn": "值评论"
     },
@@ -3063,7 +3063,7 @@
         "fr": "La source",
         "it": "fonte",
         "es": "Fuente",
-        "pl": "Source",
+        "pl": "Źródło",
         "uk": "Джерело",
         "zh-cn": "上次变更发起者"
     },
@@ -3115,7 +3115,7 @@
         "fr": "Unité d'état",
         "it": "Unità statale",
         "es": "unidad estatal",
-        "pl": "Jednostka państwowa",
+        "pl": "Jednostka stanu",
         "uk": "Державна одиниця",
         "zh-cn": "国家单位"
     },
@@ -3180,7 +3180,7 @@
         "fr": "Obtenir la valeur de l'état",
         "it": "Ottieni valore statale",
         "es": "Obtener valor de estado",
-        "pl": "Get state value",
+        "pl": "Pobierz wartość stanu",
         "uk": "Отримати державне значення",
         "zh-cn": "获取状态的值"
     },
@@ -3193,7 +3193,7 @@
         "fr": "Sélectionnez l'ID d'objet avec la boîte de dialogue",
         "it": "Seleziona ID oggetto con finestra di dialogo",
         "es": "Seleccionar ID de objeto con diálogo",
-        "pl": "Select object ID with dialog",
+        "pl": "Wybierz ID obiektu w oknie dialogowym",
         "uk": "Виберіть ідентифікатор об’єкта за допомогою діалогового вікна",
         "zh-cn": "使用对话框选择对象ID"
     },
@@ -3310,7 +3310,7 @@
         "fr": "Sélectionnez OID",
         "it": "Seleziona OID",
         "es": "Seleccionar OID",
-        "pl": "Select OID",
+        "pl": "Wybierz OID",
         "uk": "Виберіть OID",
         "zh-cn": "选择对象ID"
     },
@@ -3323,7 +3323,7 @@
         "fr": "ID de l'objet",
         "it": "ID oggetto",
         "es": "ID del objeto",
-        "pl": "Object ID",
+        "pl": "ID obiektu",
         "uk": "ID об'єкта",
         "zh-cn": "获取对象ID"
     },
@@ -3336,7 +3336,7 @@
         "fr": "ID de l'objet (meta)",
         "it": "ID oggetto (meta)",
         "es": "ID del objeto (meta)",
-        "pl": "Object ID (meta)",
+        "pl": "ID obiektu (meta)",
         "uk": "ID об'єкта (meta)",
         "zh-cn": "获取对象ID (meta)"
     },
@@ -3349,7 +3349,7 @@
         "fr": "ID de l'objet (script)",
         "it": "ID oggetto (script)",
         "es": "ID del objeto (script)",
-        "pl": "Object ID (script)",
+        "pl": "ID obiektu (skrypt)",
         "uk": "ID об'єкта (script)",
         "zh-cn": "获取对象ID (script)"
     },
@@ -3362,7 +3362,7 @@
         "fr": "Sélectionnez l'ID d'objet avec la boîte de dialogue",
         "it": "Seleziona ID oggetto con finestra di dialogo",
         "es": "Seleccionar ID de objeto con diálogo",
-        "pl": "Select object ID with dialog",
+        "pl": "Wybierz ID obiektu w oknie dialogowym",
         "uk": "Виберіть ідентифікатор об’єкта за допомогою діалогового вікна",
         "zh-cn": "使用对话框选择对象ID"
     },
@@ -3375,7 +3375,7 @@
         "fr": "Obtenir l'attribut",
         "it": "Ottieni attributo",
         "es": "Obtener atributo",
-        "pl": "Get attribute",
+        "pl": "Pobierz atrybut",
         "uk": "Отримати атрибут",
         "zh-cn": "获取属性"
     },
@@ -3388,7 +3388,7 @@
         "fr": "Attribut",
         "it": "Attributo",
         "es": "Atributo",
-        "pl": "Attribute",
+        "pl": "Atrybut",
         "uk": "Атрибут",
         "zh-cn": "获取"
     },
@@ -3401,7 +3401,7 @@
         "fr": "d'objet",
         "it": "di oggetto",
         "es": "de Object",
-        "pl": "of Object",
+        "pl": "obiektu",
         "uk": "об'єкта",
         "zh-cn": "属性，来自于对象"
     },
@@ -3414,7 +3414,7 @@
         "fr": "Obtenir l'attribut d'objet ou JSON par chemin, comme: 'attr1.attr'",
         "it": "Ottieni attributo di oggetto o JSON per percorso, ad esempio: 'attr1.attr'",
         "es": "Obtenga el atributo de objeto o JSON por ruta, como: 'attr1.attr'",
-        "pl": "Get attribute of object or JSON by path, like: 'attr1.attr'",
+        "pl": "Pobierz atrybut obiektu lub JSON według ścieżki, np.: 'attr1.attr'",
         "uk": "Отримати атрибут об'єкта або JSON за шляхом, наприклад: 'attr1.attr'",
         "zh-cn": "通过规则获取对象或JSON的属性，如：'attr1.attr'"
     },
@@ -3440,7 +3440,7 @@
         "fr": "Nouvelle ligne",
         "it": "Nuova linea",
         "es": "Nueva línea",
-        "pl": "New line",
+        "pl": "Nowa linia",
         "uk": "Нова лінія",
         "zh-cn": "换行"
     },
@@ -3453,7 +3453,7 @@
         "fr": "Place une nouvelle ligne dans le texte",
         "it": "Inserisce una nuova riga nel testo",
         "es": "Coloca una nueva línea en el texto",
-        "pl": "Places new line in text",
+        "pl": "Wstawia nową linię w tekście",
         "uk": "Розміщує новий рядок у тексті",
         "zh-cn": "在文本中添加换行"
     },
@@ -3531,7 +3531,7 @@
         "fr": "Arrondir",
         "it": "Arrotondare",
         "es": "Redondea",
-        "pl": "Round",
+        "pl": "Zaokrąglij",
         "uk": "Круглий",
         "zh-cn": "约"
     },
@@ -3544,7 +3544,7 @@
         "fr": "à",
         "it": "a",
         "es": "a",
-        "pl": "to",
+        "pl": "do",
         "uk": "до",
         "zh-cn": "至"
     },
@@ -3557,7 +3557,7 @@
         "fr": "décimales",
         "it": "decimali",
         "es": "lugares decimales",
-        "pl": "decimal places",
+        "pl": "miejsc po przecinku",
         "uk": "знаки після коми",
         "zh-cn": "小数位"
     },
@@ -3570,7 +3570,7 @@
         "fr": "Arrondit la valeur à n décimales",
         "it": "Arrotonda il valore in n posizioni decimali",
         "es": "Redondea el valor a n lugares decimales",
-        "pl": "Rounds value to n decimal places",
+        "pl": "Zaokrągla wartość do n miejsc po przecinku",
         "uk": "Округлює значення до n знаків після коми",
         "zh-cn": "将值舍入为n个小数位"
     },
@@ -3583,7 +3583,7 @@
         "fr": "Date et l'heure",
         "it": "Data e ora",
         "es": "Fecha y hora",
-        "pl": "Date and Time",
+        "pl": "Data i czas",
         "uk": "Дата і час",
         "zh-cn": "日期和时间"
     },
@@ -3596,7 +3596,7 @@
         "fr": "Heure actuelle",
         "it": "Tempo reale",
         "es": "Tiempo actual",
-        "pl": "Actual time",
+        "pl": "Aktualny czas",
         "uk": "Фактичний час",
         "zh-cn": "当前时间"
     },
@@ -3609,7 +3609,7 @@
         "fr": "Temps personnalisé",
         "it": "Tempo personalizzato",
         "es": "Hora personalizada",
-        "pl": "Custom time",
+        "pl": "Własny czas",
         "uk": "Індивідуальний час",
         "zh-cn": "设定时间"
     },
@@ -3622,7 +3622,7 @@
         "fr": "est",
         "it": "è",
         "es": "es",
-        "pl": "is",
+        "pl": "jest",
         "uk": "є",
         "zh-cn": "是"
     },
@@ -3635,7 +3635,7 @@
         "fr": "temps",
         "it": "tempo",
         "es": "hora",
-        "pl": "time",
+        "pl": "czas",
         "uk": "час",
         "zh-cn": "时间"
     },
@@ -3648,7 +3648,7 @@
         "fr": "Comparer le temps",
         "it": "Confronta il tempo",
         "es": "Compara el tiempo",
-        "pl": "Compare time",
+        "pl": "Porównaj czas",
         "uk": "Порівняти час",
         "zh-cn": "比较时间"
     },
@@ -3674,7 +3674,7 @@
         "fr": "L'heure actuelle est",
         "it": "Il tempo reale è",
         "es": "El tiempo real es",
-        "pl": "Actual time is",
+        "pl": "Aktualny czas jest",
         "uk": "Фактичний час",
         "zh-cn": "当前时间是"
     },
@@ -3687,7 +3687,7 @@
         "fr": "Comparer l'heure actuelle",
         "it": "Confronta l'ora corrente",
         "es": "Compara la hora actual",
-        "pl": "Compare current time",
+        "pl": "Porównaj z aktualnym czasem",
         "uk": "Порівняти поточний час",
         "zh-cn": "比较当前时间"
     },
@@ -3713,7 +3713,7 @@
         "fr": "moins que",
         "it": "meno di",
         "es": "menos que",
-        "pl": "less than",
+        "pl": "mniejszy niż",
         "uk": "менше ніж",
         "zh-cn": "小于"
     },
@@ -3726,7 +3726,7 @@
         "fr": "égal ou inférieur à",
         "it": "uguale o inferiore a",
         "es": "igual o menor que",
-        "pl": "equal to or less than",
+        "pl": "mniejszy lub równy",
         "uk": "дорівнює або менше",
         "zh-cn": "小于等于"
     },
@@ -3739,7 +3739,7 @@
         "fr": "plus grand que",
         "it": "più grande di",
         "es": "mas grande que",
-        "pl": "greater than",
+        "pl": "większy niż",
         "uk": "більше, ніж, величніше ніж, крутіший за",
         "zh-cn": "大于"
     },
@@ -3752,7 +3752,7 @@
         "fr": "égal ou supérieur à",
         "it": "uguale o maggiore di",
         "es": "igual o mayor que",
-        "pl": "equal to or greater than",
+        "pl": "większy lub równy",
         "uk": "дорівнює або перевищує",
         "zh-cn": "大于等于"
     },
@@ -3765,7 +3765,7 @@
         "fr": "égal à",
         "it": "uguale a",
         "es": "igual a",
-        "pl": "equal to",
+        "pl": "równy",
         "uk": "дорівнює",
         "zh-cn": "等于"
     },
@@ -3778,7 +3778,7 @@
         "fr": "entre",
         "it": "fra",
         "es": "Entre",
-        "pl": "between",
+        "pl": "pomiędzy",
         "uk": "між",
         "zh-cn": "之间"
     },
@@ -3791,7 +3791,7 @@
         "fr": "pas entre",
         "it": "non in mezzo",
         "es": "no entre",
-        "pl": "not between",
+        "pl": "nie pomiędzy",
         "uk": "не між",
         "zh-cn": "之外"
     },
@@ -3804,7 +3804,7 @@
         "fr": "et",
         "it": "e",
         "es": "y",
-        "pl": "and",
+        "pl": "i",
         "uk": "і",
         "zh-cn": "和"
     },
@@ -3817,7 +3817,7 @@
         "fr": "Heure réelle sous",
         "it": "Tempo reale come",
         "es": "Tiempo real como",
-        "pl": "Actual time as",
+        "pl": "Aktualny czas jako",
         "uk": "Фактичний час як",
         "zh-cn": "获取当前时间，格式为"
     },
@@ -3843,7 +3843,7 @@
         "fr": "toutes les instances",
         "it": "tutte le istanze",
         "es": "todas las instancias",
-        "pl": "all instances",
+        "pl": "wszystkie instancje",
         "uk": "всі екземпляри",
         "zh-cn": "所有实例"
     },
@@ -3856,7 +3856,7 @@
         "fr": "Envoyer un message au télégramme",
         "it": "Invia un messaggio al telegramma",
         "es": "Enviar mensaje a telegrama",
-        "pl": "Send message to telegram",
+        "pl": "Pobierz aktualny czas w wybranym formacie",
         "uk": "Надіслати повідомлення в телеграм",
         "zh-cn": "按指定格式获取当前时间"
     },
@@ -3869,7 +3869,7 @@
         "fr": "Objet de date",
         "it": "Data oggetto",
         "es": "Objeto de fecha",
-        "pl": "Date object",
+        "pl": "obiekt daty",
         "uk": "Об'єкт дати",
         "zh-cn": "日期对象"
     },
@@ -3882,7 +3882,7 @@
         "fr": "millisecondes",
         "it": "millisecondi",
         "es": "milisegundos",
-        "pl": "milliseconds",
+        "pl": "milisekundy",
         "uk": "мілісекунд",
         "zh-cn": "毫秒"
     },
@@ -3895,7 +3895,7 @@
         "fr": "secondes",
         "it": "secondi",
         "es": "segundos",
-        "pl": "seconds",
+        "pl": "sekundy",
         "uk": "секунд",
         "zh-cn": "秒"
     },
@@ -3908,7 +3908,7 @@
         "fr": "minutes",
         "it": "minuti",
         "es": "minutos",
-        "pl": "minutes",
+        "pl": "minuty",
         "uk": "хвилин",
         "zh-cn": "分钟"
     },
@@ -3921,7 +3921,7 @@
         "fr": "minutes dans la journée",
         "it": "minuti al giorno",
         "es": "minutos en el día",
-        "pl": "minutes in day",
+        "pl": "minuty od początku dnia",
         "uk": "хвилин на день",
         "zh-cn": "一天中的分钟"
     },
@@ -3934,7 +3934,7 @@
         "fr": "secondes dans la journée",
         "it": "secondi nel giorno",
         "es": "segundos en el día",
-        "pl": "seconds in day",
+        "pl": "sekundy od początku dnia",
         "uk": "секунд на день",
         "zh-cn": "一天中的秒"
     },
@@ -3947,7 +3947,7 @@
         "fr": "heures",
         "it": "ore",
         "es": "horas",
-        "pl": "hours",
+        "pl": "godziny",
         "uk": "години",
         "zh-cn": "小时"
     },
@@ -3960,7 +3960,7 @@
         "fr": "jour du mois",
         "it": "giorno del mese",
         "es": "dia del mes",
-        "pl": "day of month",
+        "pl": "dzień miesiąca",
         "uk": "день місяця",
         "zh-cn": "一个月的一天"
     },
@@ -3973,7 +3973,7 @@
         "fr": "mois en nombre",
         "it": "mese come numero",
         "es": "mes como número",
-        "pl": "month as number",
+        "pl": "miesiąc jako liczba",
         "uk": "місяць як число",
         "zh-cn": "月份为数字"
     },
@@ -3986,7 +3986,7 @@
         "fr": "mois comme texte",
         "it": "mese come testo",
         "es": "mes como texto",
-        "pl": "month as text",
+        "pl": "miesiąc jako tekst",
         "uk": "місяць як текст",
         "zh-cn": "月份作为文字"
     },
@@ -3999,7 +3999,7 @@
         "fr": "mois comme texte court",
         "it": "mese come breve testo",
         "es": "mes como texto corto",
-        "pl": "month as short text",
+        "pl": "miesiąc jako krótki tekst",
         "uk": "місяць як короткий текст",
         "zh-cn": "月份作为缩写文字"
     },
@@ -4012,7 +4012,7 @@
         "fr": "année courte",
         "it": "breve anno",
         "es": "año corto",
-        "pl": "short year",
+        "pl": "rok (krótki)",
         "uk": "короткий рік",
         "zh-cn": "简写的年"
     },
@@ -4025,7 +4025,7 @@
         "fr": "année complète",
         "it": "anno pieno",
         "es": "Año completo",
-        "pl": "full year",
+        "pl": "rok (pełny)",
         "uk": "повний рік",
         "zh-cn": "完整的年"
     },
@@ -4038,7 +4038,7 @@
         "fr": "texte de la semaine",
         "it": "testo del giorno della settimana",
         "es": "texto del día de la semana",
-        "pl": "week day text",
+        "pl": "dzień tygodnia jako tekst",
         "uk": "текст дня тижня",
         "zh-cn": "星期作为文字"
     },
@@ -4051,7 +4051,7 @@
         "fr": "jour de la semaine courte",
         "it": "breve giorno della settimana",
         "es": "día corto de la semana",
-        "pl": "short week day",
+        "pl": "dzień tygodnia (krótki)",
         "uk": "короткий робочий день",
         "zh-cn": "星期作为缩写文字"
     },
@@ -4064,7 +4064,7 @@
         "fr": "jour de la semaine en nombre",
         "it": "giorno della settimana come numero",
         "es": "día de la semana como número",
-        "pl": "week day as number",
+        "pl": "dzień tygodnia jako liczba",
         "uk": "день тижня як число",
         "zh-cn": "星期作为数字"
     },
@@ -4077,7 +4077,7 @@
         "fr": "semaine civile",
         "it": "settimana del calendario",
         "es": "semanal",
-        "pl": "cotygodniowy",
+        "pl": "tydzień kalendarzowy",
         "uk": "календарний тиждень",
         "zh-cn": "日历周"
     },
@@ -4090,7 +4090,7 @@
         "fr": "format personnalisé",
         "it": "formato personalizzato",
         "es": "formato personalizado",
-        "pl": "custom format",
+        "pl": "własny format",
         "uk": "спеціальний формат",
         "zh-cn": "自定义格式"
     },
@@ -4324,7 +4324,7 @@
         "fr": "Heure réelle de",
         "it": "Tempo reale di",
         "es": "Tiempo real de",
-        "pl": "Actual time of",
+        "pl": "Aktualny czas zdarzenia",
         "uk": "Фактичний час",
         "zh-cn": "当前时间"
     },
@@ -4337,7 +4337,7 @@
         "fr": "Décalage (minutes)",
         "it": "Offset (minuti)",
         "es": "Desplazamiento (minutos)",
-        "pl": "Offset (minutes)",
+        "pl": "Przesunięcie (minuty)",
         "uk": "Зсув (хвилини)",
         "zh-cn": "延时（分钟）"
     },
@@ -4363,7 +4363,7 @@
         "fr": "Obtenez le temps réel ou",
         "it": "Ottieni tempo reale o",
         "es": "Obtenga tiempo real o",
-        "pl": "Get actual time or ",
+        "pl": "Pobierz czas zdarzenia astronomicznego",
         "uk": "Отримати фактичний час або",
         "zh-cn": "获取当前时间或当前时间加延时"
     },
@@ -4389,7 +4389,7 @@
         "fr": "Temps calculé",
         "it": "Tempo calcolato",
         "es": "Tiempo calculado",
-        "pl": "Kalkulacja czasu",
+        "pl": "Obliczony czas",
         "uk": "Розрахунковий час",
         "zh-cn": "计算时间"
     },
@@ -4480,7 +4480,7 @@
         "fr": "Calculer les timbres horaires",
         "it": "Calcola i timestamp",
         "es": "Calcular sellos de tiempo",
-        "pl": "Kalkulacja",
+        "pl": "Oblicz znaczniki czasu",
         "uk": "Розрахунок штампів часу",
         "zh-cn": "定时邮票"
     },
@@ -4493,7 +4493,7 @@
         "fr": "Temps de calcul",
         "it": "Calcola il tempo",
         "es": "Calcular tiempo",
-        "pl": "Czas kalendarzowy",
+        "pl": "Oblicz czas",
         "uk": "Розрахунок часу",
         "zh-cn": "时间"
     },
@@ -4532,7 +4532,7 @@
         "fr": "seconde",
         "it": "secondo",
         "es": "segundo",
-        "pl": "sec",
+        "pl": "s",
         "uk": "сек",
         "zh-cn": "秒"
     },
@@ -4584,7 +4584,7 @@
         "fr": "semaines",
         "it": "settimane",
         "es": "semanas",
-        "pl": "tydzień",
+        "pl": "tygodnie",
         "uk": "тижнів",
         "zh-cn": "星期"
     },
@@ -4597,7 +4597,7 @@
         "fr": "Temps d'ajout ou de sous-traitance",
         "it": "Aggiungere o substrarsi il tempo",
         "es": "Tiempo de adición o subcontrato",
-        "pl": "Addd lub Substract time",
+        "pl": "Dodaj lub odejmij czas",
         "uk": "Додати або підстрактний час",
         "zh-cn": "增加或说明时间"
     },
@@ -4610,7 +4610,7 @@
         "fr": "Délais",
         "it": "Timeout",
         "es": "Tiempos de espera",
-        "pl": "Timeouts",
+        "pl": "Opóźnienia",
         "uk": "Тайм-аути",
         "zh-cn": "定时器"
     },
@@ -4662,7 +4662,7 @@
         "fr": "Exécution",
         "it": "Esecuzione",
         "es": "Ejecución",
-        "pl": "Execution",
+        "pl": "Wykonaj",
         "uk": "виконання",
         "zh-cn": "将"
     },
@@ -4675,7 +4675,7 @@
         "fr": "temps libre",
         "it": "tempo scaduto",
         "es": "se acabó el tiempo",
-        "pl": "timeout",
+        "pl": "opóźnienie",
         "uk": "час вийшов",
         "zh-cn": "超时"
     },
@@ -4688,7 +4688,7 @@
         "fr": "dans",
         "it": "in",
         "es": "en",
-        "pl": "in",
+        "pl": "za",
         "uk": "в",
         "zh-cn": "延时"
     },
@@ -4714,7 +4714,7 @@
         "fr": "seconde",
         "it": "secondo",
         "es": "segundo",
-        "pl": "sec",
+        "pl": "s",
         "uk": "сек",
         "zh-cn": "秒"
     },
@@ -4740,7 +4740,7 @@
         "fr": "Retarder l'exécution",
         "it": "Ritardare l'esecuzione",
         "es": "Demora de ejecución",
-        "pl": "Delay execution",
+        "pl": "Opóźnij wykonanie",
         "uk": "Відстрочка виконання",
         "zh-cn": "延迟执行"
     },
@@ -4766,7 +4766,7 @@
         "fr": "clair",
         "it": "chiaro",
         "es": "claro",
-        "pl": "clear",
+        "pl": "zatrzymaj",
         "uk": "ясно",
         "zh-cn": "清除"
     },
@@ -4779,7 +4779,7 @@
         "fr": "Effacer l'exécution du délai",
         "it": "Cancella l'esecuzione del ritardo",
         "es": "Ejecución de retraso claro",
-        "pl": "Clear delay execution",
+        "pl": "Anuluj opóźnione wykonanie",
         "uk": "Чітка затримка виконання",
         "zh-cn": "清除延迟执行"
     },
@@ -4805,7 +4805,7 @@
         "fr": "temps libre",
         "it": "tempo scaduto",
         "es": "se acabó el tiempo",
-        "pl": "timeout",
+        "pl": "opóźnienie",
         "uk": "timeout",
         "zh-cn": "超时"
     },
@@ -4818,7 +4818,7 @@
         "fr": "temps libre",
         "it": "tempo scaduto",
         "es": "se acabó el tiempo",
-        "pl": "timeout",
+        "pl": "opóźnienie",
         "uk": "timeout",
         "zh-cn": "超时"
     },
@@ -4844,7 +4844,7 @@
         "fr": "Exécution",
         "it": "Esecuzione",
         "es": "Ejecución",
-        "pl": "Execution",
+        "pl": "Wykonuj",
         "uk": "виконання",
         "zh-cn": "执行"
     },
@@ -4857,7 +4857,7 @@
         "fr": "intervalle",
         "it": "intervallo",
         "es": "intervalo",
-        "pl": "interval",
+        "pl": "interwał",
         "uk": "інтервал",
         "zh-cn": "间隔"
     },
@@ -4870,7 +4870,7 @@
         "fr": "chaque",
         "it": "ogni",
         "es": "cada",
-        "pl": "every",
+        "pl": "co",
         "uk": "кожен",
         "zh-cn": "每一个"
     },
@@ -4896,7 +4896,7 @@
         "fr": "Exécution cyclique",
         "it": "Esecuzione ciclica",
         "es": "Ejecución cíclica",
-        "pl": "Cyclic execution",
+        "pl": "Cykliczne wykonywanie",
         "uk": "Циклічне виконання",
         "zh-cn": "循环执行"
     },
@@ -4922,7 +4922,7 @@
         "fr": "intervalle clair",
         "it": "intervallo chiaro",
         "es": "intervalo claro",
-        "pl": "clear interval",
+        "pl": "zatrzymaj interwał",
         "uk": "чіткий інтервал",
         "zh-cn": "清除间隔"
     },
@@ -4935,7 +4935,7 @@
         "fr": "Effacer l'intervalle d'exécution",
         "it": "Cancella l'esecuzione dell'intervallo",
         "es": "Ejecución de intervalo claro",
-        "pl": "Clear interval execution",
+        "pl": "Zatrzymaj cykliczne wykonywanie",
         "uk": "Чітке інтервальне виконання",
         "zh-cn": "清除执行间隔"
     },
@@ -4961,7 +4961,7 @@
         "fr": "intervalle",
         "it": "intervallo",
         "es": "intervalo",
-        "pl": "interval",
+        "pl": "interwał",
         "uk": "interval",
         "zh-cn": "间隔"
     },
@@ -4974,7 +4974,7 @@
         "fr": "intervalle",
         "it": "intervallo",
         "es": "intervalo",
-        "pl": "interval",
+        "pl": "interwał",
         "uk": "interval",
         "zh-cn": "间隔"
     },
@@ -5000,7 +5000,7 @@
         "fr": "Déclencheur",
         "it": "Grilletto",
         "es": "Desencadenar",
-        "pl": "Trigger",
+        "pl": "Wyzwalacze",
         "uk": "Тригер",
         "zh-cn": "触发"
     },
@@ -5039,7 +5039,7 @@
         "fr": "a été changé",
         "it": "era cambiato",
         "es": "fue cambiado",
-        "pl": "was changed",
+        "pl": "został zmieniony",
         "uk": "було змінено",
         "zh-cn": "已改变"
     },
@@ -5052,7 +5052,7 @@
         "fr": "a été mis à jour",
         "it": "è stato aggiornato",
         "es": "fue actualizado",
-        "pl": "was updated",
+        "pl": "został zaktualizowany",
         "uk": "було оновлено",
         "zh-cn": "已更新"
     },
@@ -5065,7 +5065,7 @@
         "fr": "est plus grand que le dernier",
         "it": "è più grande dell'ultimo",
         "es": "es mayor que el último",
-        "pl": "is greater than last",
+        "pl": "jest większy niż poprzedni",
         "uk": "більший за останній",
         "zh-cn": "大于上次"
     },
@@ -5078,7 +5078,7 @@
         "fr": "est supérieur ou égal à la dernière",
         "it": "è maggiore o uguale alla precedente",
         "es": "es mayor o igual que el último",
-        "pl": "is greater or equal than last",
+        "pl": "jest większy lub równy poprzedniemu",
         "uk": "більше або дорівнює останньому",
         "zh-cn": "大于等于上次"
     },
@@ -5091,7 +5091,7 @@
         "fr": "est moins que la dernière",
         "it": "è inferiore all'ultima",
         "es": "es menos que el último",
-        "pl": "is less than last",
+        "pl": "jest mniejszy niż poprzedni",
         "uk": "менший за останній",
         "zh-cn": "小于上次"
     },
@@ -5104,7 +5104,7 @@
         "fr": "est inférieur ou égal à la dernière",
         "it": "è inferiore o uguale all'ultima",
         "es": "es menor o igual que el último",
-        "pl": "is less or equal than last",
+        "pl": "jest mniejszy lub równy poprzedniemu",
         "uk": "менше або дорівнює останньому",
         "zh-cn": "小于等于上次"
     },
@@ -5117,7 +5117,7 @@
         "fr": "est le même que le dernier",
         "it": "è lo stesso dell'ultimo",
         "es": "es lo mismo que el último",
-        "pl": "is same as last",
+        "pl": "jest taki sam jak poprzedni",
         "uk": "така ж, як остання",
         "zh-cn": "与上次相同"
     },
@@ -5130,7 +5130,7 @@
         "fr": "est vrai",
         "it": "è vero",
         "es": "es verdad",
-        "pl": "is true",
+        "pl": "jest prawdą",
         "uk": "правда",
         "zh-cn": "为真"
     },
@@ -5143,7 +5143,7 @@
         "fr": "c'est faux",
         "it": "è falso",
         "es": "Es falso",
-        "pl": "is false",
+        "pl": "jest fałszem",
         "uk": "є помилковим",
         "zh-cn": "为假"
     },
@@ -5169,7 +5169,7 @@
         "fr": "Ack est",
         "it": "Ack è",
         "es": "Ack es",
-        "pl": "Ack is",
+        "pl": "Ack jest",
         "uk": "Ack є",
         "zh-cn": "应答为"
     },
@@ -5182,7 +5182,7 @@
         "fr": "tout",
         "it": "qualunque",
         "es": "alguna",
-        "pl": "any",
+        "pl": "dowolny",
         "uk": "будь-який",
         "zh-cn": "任何"
     },
@@ -5195,7 +5195,7 @@
         "fr": "mettre à jour",
         "it": "aggiornare",
         "es": "actualizar",
-        "pl": "update",
+        "pl": "aktualizacja",
         "uk": "оновлення",
         "zh-cn": "更新"
     },
@@ -5208,7 +5208,7 @@
         "fr": "commander",
         "it": "comando",
         "es": "mando",
-        "pl": "command",
+        "pl": "polecenie",
         "uk": "команда",
         "zh-cn": "命令"
     },
@@ -5221,7 +5221,7 @@
         "fr": "Evénement: si des objets",
         "it": "Evento: se oggetti",
         "es": "Evento: si los objetos",
-        "pl": "Event: if objects",
+        "pl": "Zdarzenie: jeśli obiekty",
         "uk": "Подія: якщо об'єкти",
         "zh-cn": "事件：如果对象"
     },
@@ -5234,7 +5234,7 @@
         "fr": "Si un état a été modifié ou mis à jour",
         "it": "Se qualche stato è cambiato o aggiornato",
         "es": "Si algún estado cambió o se actualizó",
-        "pl": "If some state changed or updated",
+        "pl": "Jeśli stan został zmieniony lub zaktualizowany",
         "uk": "Якщо якийсь стан змінено або оновлено",
         "zh-cn": "如果对象有改变或更新则触发"
     },
@@ -5247,7 +5247,7 @@
         "fr": "ID d'objet",
         "it": "ID oggetto",
         "es": "ID de objeto",
-        "pl": "object ID",
+        "pl": "ID obiektu",
         "uk": "ID об'єкта",
         "zh-cn": "对象ID"
     },
@@ -5260,7 +5260,7 @@
         "fr": "ID de l'objet",
         "it": "ID oggetto",
         "es": "ID del objeto",
-        "pl": "Object ID",
+        "pl": "ID obiektu",
         "uk": "ID об'єкта",
         "zh-cn": "对象ID"
     },
@@ -5273,7 +5273,7 @@
         "fr": "déclencher",
         "it": "innesco su",
         "es": "desencadenar",
-        "pl": "trigger on",
+        "pl": "wyzwalaj, gdy",
         "uk": "тригер увімкнено",
         "zh-cn": "触发源"
     },
@@ -5286,7 +5286,7 @@
         "fr": "déclencher",
         "it": "innesco su",
         "es": "desencadenar",
-        "pl": "trigger on",
+        "pl": "wyzwalaj, gdy",
         "uk": "тригер увімкнено",
         "zh-cn": "多触发源触发"
     },
@@ -5299,7 +5299,7 @@
         "fr": "Evénement: si objet",
         "it": "Evento: se oggetto",
         "es": "Evento: si el objeto",
-        "pl": "Event: if object",
+        "pl": "Zdarzenie: jeśli obiekt",
         "uk": "Подія: якщо об'єкт",
         "zh-cn": "事件：如果对象"
     },
@@ -5312,7 +5312,7 @@
         "fr": "Si un état a été modifié ou mis à jour",
         "it": "Se qualche stato è cambiato o aggiornato",
         "es": "Si algún estado cambió o se actualizó",
-        "pl": "If some state changed or updated",
+        "pl": "Jeśli stan został zmieniony lub zaktualizowany",
         "uk": "Якщо якийсь стан змінено або оновлено",
         "zh-cn": "如果对象有改变或更新则触发"
     },
@@ -5325,7 +5325,7 @@
         "fr": "obtenir",
         "it": "ottenere",
         "es": "obtener",
-        "pl": "get",
+        "pl": "pobierz",
         "uk": "отримати",
         "zh-cn": "得到"
     },
@@ -5338,7 +5338,7 @@
         "fr": "de déclenchement",
         "it": "di innesco",
         "es": "de gatillo",
-        "pl": "of trigger",
+        "pl": "wyzwalacza",
         "uk": "тригера",
         "zh-cn": "触发器"
     },
@@ -5351,7 +5351,7 @@
         "fr": "Obtenir des informations sur l'événement",
         "it": "Ottieni informazioni sull'evento",
         "es": "Obtener información sobre el evento",
-        "pl": "Get information about event",
+        "pl": "Pobierz informacje o zdarzeniu",
         "uk": "Отримати інформацію про подію",
         "zh-cn": "获取触发此次事件的对象的信息"
     },
@@ -5364,7 +5364,7 @@
         "fr": "ID d'objet",
         "it": "ID oggetto",
         "es": "ID de objeto",
-        "pl": "object ID",
+        "pl": "ID obiektu",
         "uk": "ID об'єкта",
         "zh-cn": "对象ID"
     },
@@ -5377,7 +5377,7 @@
         "fr": "prénom",
         "it": "nome",
         "es": "nombre",
-        "pl": "name",
+        "pl": "nazwa",
         "uk": "назва",
         "zh-cn": "名字"
     },
@@ -5390,7 +5390,7 @@
         "fr": "la description",
         "it": "descrizione",
         "es": "descripción",
-        "pl": "description",
+        "pl": "opis",
         "uk": "опис",
         "zh-cn": "描述"
     },
@@ -5403,7 +5403,7 @@
         "fr": "Identifiant de la chaine",
         "it": "Canale ID",
         "es": "Canal ID",
-        "pl": "channel ID",
+        "pl": "ID kanału",
         "uk": "ідентифікатор каналу",
         "zh-cn": "通道ID"
     },
@@ -5416,7 +5416,7 @@
         "fr": "nom du canal",
         "it": "nome del canale",
         "es": "Nombre del Canal",
-        "pl": "channel name",
+        "pl": "nazwa kanału",
         "uk": "назва каналу",
         "zh-cn": "通道名称"
     },
@@ -5429,7 +5429,7 @@
         "fr": "Reference de l'appareil",
         "it": "ID del dispositivo",
         "es": "ID del dispositivo",
-        "pl": "device ID",
+        "pl": "ID urządzenia",
         "uk": "ID пристрою",
         "zh-cn": "设备ID"
     },
@@ -5442,7 +5442,7 @@
         "fr": "nom de l'appareil",
         "it": "nome del dispositivo",
         "es": "nombre del dispositivo",
-        "pl": "device name",
+        "pl": "nazwa urządzenia",
         "uk": "Ім'я пристрою",
         "zh-cn": "设备名称"
     },
@@ -5455,7 +5455,7 @@
         "fr": "valeur d'état",
         "it": "valore di stato",
         "es": "valor de estado",
-        "pl": "state value",
+        "pl": "wartość stanu",
         "uk": "державне значення",
         "zh-cn": "状态值"
     },
@@ -5468,7 +5468,7 @@
         "fr": "horodatage de l'état",
         "it": "timestamp di stato",
         "es": "marca de tiempo del estado",
-        "pl": "state timestamp",
+        "pl": "znacznik czasu stanu",
         "uk": "державна позначка часу",
         "zh-cn": "状态时间戳"
     },
@@ -5481,7 +5481,7 @@
         "fr": "qualité de l'état",
         "it": "qualità dello stato",
         "es": "calidad del estado",
-        "pl": "state quality",
+        "pl": "jakość stanu",
         "uk": "державна якість",
         "zh-cn": "状态质量"
     },
@@ -5494,7 +5494,7 @@
         "fr": "origine de la valeur",
         "it": "origine del valore",
         "es": "origen del valor",
-        "pl": "origin of value",
+        "pl": "pochodzenie wartości",
         "uk": "походження вартості",
         "zh-cn": "值的来源"
     },
@@ -5507,7 +5507,7 @@
         "fr": "est la commande ou la mise à jour",
         "it": "è comando o aggiornamento",
         "es": "es comando o actualización",
-        "pl": "is command or update",
+        "pl": "polecenie czy aktualizacja",
         "uk": "це команда або оновлення",
         "zh-cn": "是命令或更新"
     },
@@ -5520,7 +5520,7 @@
         "fr": "dernier changement d'état",
         "it": "ultimo cambio di stato",
         "es": "último cambio de estado",
-        "pl": "last change of state",
+        "pl": "ostatnia zmiana stanu",
         "uk": "остання зміна стану",
         "zh-cn": "上一次状态改变的时间"
     },
@@ -5559,7 +5559,7 @@
         "fr": "valeur précédente",
         "it": "valore precedente",
         "es": "valor anterior",
-        "pl": "previous value",
+        "pl": "poprzednia wartość",
         "uk": "попереднє значення",
         "zh-cn": "触发前的值"
     },
@@ -5572,7 +5572,7 @@
         "fr": "Horodatage précédent",
         "it": "timestamp precedente",
         "es": "fecha y hora anterior",
-        "pl": "previous timestamp",
+        "pl": "poprzedni znacznik czasu",
         "uk": "попередня позначка часу",
         "zh-cn": "触发前的时间戳"
     },
@@ -5585,7 +5585,7 @@
         "fr": "qualité précédente",
         "it": "qualità precedente",
         "es": "calidad previa",
-        "pl": "previous quality",
+        "pl": "poprzednia jakość",
         "uk": "попередня якість",
         "zh-cn": "触发前的质量"
     },
@@ -5598,7 +5598,7 @@
         "fr": "origine précédente",
         "it": "origine precedente",
         "es": "origen anterior",
-        "pl": "previous origin",
+        "pl": "poprzednie pochodzenie",
         "uk": "попереднє походження",
         "zh-cn": "触发前的值的来源"
     },
@@ -5611,7 +5611,7 @@
         "fr": "commande précédente ou mise à jour",
         "it": "comando precedente o aggiornamento",
         "es": "comando anterior o actualización",
-        "pl": "previous command or update",
+        "pl": "poprzednie polecenie czy aktualizacja",
         "uk": "попередня команда або оновлення",
         "zh-cn": "触发前的是命令或更新"
     },
@@ -5624,7 +5624,7 @@
         "fr": "précédent dernier changement",
         "it": "precedente ultima modifica",
         "es": "último cambio anterior",
-        "pl": "previous last change",
+        "pl": "poprzednia ostatnia zmiana",
         "uk": "попередня остання зміна",
         "zh-cn": "触发前的上一次状态改变的时间"
     },
@@ -5663,7 +5663,7 @@
         "fr": "Ce bloc doit être utilisé uniquement à l'intérieur du bloc d'événements",
         "it": "Questo blocco deve essere utilizzato solo all'interno del blocco eventi",
         "es": "Este bloque debe usarse solo dentro del bloque de evento",
-        "pl": "This block must be used only inside of event block",
+        "pl": "Ten blok może być używany tylko wewnątrz bloku zdarzenia",
         "uk": "Цей блок можна використовувати лише всередині блоку подій",
         "zh-cn": "必须在事件块内使用此块"
     },
@@ -5676,7 +5676,7 @@
         "fr": "confirmer une nouvelle valeur (ack: true)",
         "it": "conferma nuovo valore (ack: true)",
         "es": "confirmar nuevo valor (ack: true)",
-        "pl": "potwierdzić nową wartość (ack: true)",
+        "pl": "potwierdź nową wartość (ack: true)",
         "uk": "підтвердження вартості (ack: true)",
         "zh-cn": "确认新值 (ack: true)"
     },
@@ -5702,7 +5702,7 @@
         "fr": "Ce bloc doit être utilisé uniquement à l'intérieur du bloc d'événements",
         "it": "Questo blocco deve essere utilizzato solo all'interno del blocco eventi",
         "es": "Este bloque debe usarse solo dentro del bloque de evento",
-        "pl": "This block must be used only inside of event block",
+        "pl": "Ten blok może być używany tylko wewnątrz bloku zdarzenia",
         "uk": "Цей блок можна використовувати лише всередині блоку подій",
         "zh-cn": "必须在事件块内使用此块"
     },
@@ -5715,7 +5715,7 @@
         "fr": "programme",
         "it": "programma",
         "es": "programar",
-        "pl": "schedule",
+        "pl": "harmonogram",
         "uk": "графік",
         "zh-cn": "调度器"
     },
@@ -5728,7 +5728,7 @@
         "fr": "Faire quelque chose sur le calendrier cron",
         "it": "Fai qualcosa su cron schedule",
         "es": "Hacer algo en el cronograma cron",
-        "pl": "Do something on cron schedule",
+        "pl": "Wykonaj coś według harmonogramu cron",
         "uk": "Зробіть щось за розкладом cron",
         "zh-cn": "周期执行一些事"
     },
@@ -5754,7 +5754,7 @@
         "fr": "Horaire par temps",
         "it": "Orari per Stato del tempo",
         "es": "Horario por hora estado",
-        "pl": "Schedulacja czasu",
+        "pl": "Harmonogram według stanu czasu",
         "uk": "Графік роботи за часом",
         "zh-cn": "时间表"
     },
@@ -5767,7 +5767,7 @@
         "fr": "Crée et met à jour un horaire basé sur la valeur des objets",
         "it": "Crea e aggiorna un programma basato sul valore degli oggetti",
         "es": "Crea y actualiza un calendario basado en el valor de objetos",
-        "pl": "Twórcy i aktualizują harmonogram oparty na wartości obiektów",
+        "pl": "Tworzy i aktualizuje harmonogram na podstawie wartości obiektu",
         "uk": "Створення та оновлення графіка на основі значення об'єктів",
         "zh-cn": "基于目标价值制定和更新时间表"
     },
@@ -5806,7 +5806,7 @@
         "fr": "Faire quelque chose sur l'événement astrologique",
         "it": "Fai qualcosa sull'evento astrologico",
         "es": "Haz algo en el evento astrológico",
-        "pl": "Do something on astrological event",
+        "pl": "Wykonaj coś przy zdarzeniu astronomicznym",
         "uk": "Зробіть щось на астрологічну подію",
         "zh-cn": "当设定的天文时间被触发后执行一些事"
     },
@@ -5819,7 +5819,7 @@
         "fr": ", décalage",
         "it": ", compensare",
         "es": ", compensar",
-        "pl": ", offset",
+        "pl": ", przesunięcie",
         "uk": ", зсув",
         "zh-cn": "，延时"
     },
@@ -5832,7 +5832,7 @@
         "fr": "minutes",
         "it": "minuti",
         "es": "minutos",
-        "pl": "minutes",
+        "pl": "minut",
         "uk": "хвилин",
         "zh-cn": "分钟"
     },
@@ -5845,7 +5845,7 @@
         "fr": "lever du soleil",
         "it": "Alba",
         "es": "amanecer",
-        "pl": "sunrise",
+        "pl": "wschód słońca",
         "uk": "схід сонця",
         "zh-cn": "日出"
     },
@@ -5858,7 +5858,7 @@
         "fr": "fin du lever du soleil",
         "it": "alba fine",
         "es": "salida del sol",
-        "pl": "sunrise end",
+        "pl": "koniec wschodu słońca",
         "uk": "кінець сходу сонця",
         "zh-cn": "日出结束"
     },
@@ -5871,7 +5871,7 @@
         "fr": "fin de l'heure d'or",
         "it": "ora d'oro fine",
         "es": "hora dorada",
-        "pl": "golden hour end",
+        "pl": "koniec złotej godziny",
         "uk": "кінець золотої години",
         "zh-cn": "黄金时段结束"
     },
@@ -5884,7 +5884,7 @@
         "fr": "midi solaire",
         "it": "mezzogiorno solare",
         "es": "mediodía solar",
-        "pl": "solar noon",
+        "pl": "górowanie słońca",
         "uk": "сонячний полудень",
         "zh-cn": "太阳正午"
     },
@@ -5897,7 +5897,7 @@
         "fr": "heure d'or",
         "it": "ora d'oro",
         "es": "hora dorada",
-        "pl": "golden hour",
+        "pl": "złota godzina",
         "uk": "золота година",
         "zh-cn": "黄金时段"
     },
@@ -5910,7 +5910,7 @@
         "fr": "coucher de soleil début",
         "it": "inizio del tramonto",
         "es": "puesta de sol",
-        "pl": "sunset start",
+        "pl": "początek zachodu słońca",
         "uk": "початок заходу сонця",
         "zh-cn": "日落开始"
     },
@@ -5923,7 +5923,7 @@
         "fr": "le coucher du soleil",
         "it": "tramonto",
         "es": "puesta de sol",
-        "pl": "sunset",
+        "pl": "zachód słońca",
         "uk": "захід сонця",
         "zh-cn": "日落"
     },
@@ -5936,7 +5936,7 @@
         "fr": "crépuscule",
         "it": "crepuscolo",
         "es": "oscuridad",
-        "pl": "dusk",
+        "pl": "zmierzch",
         "uk": "сутінки",
         "zh-cn": "黄昏"
     },
@@ -5949,7 +5949,7 @@
         "fr": "crépuscule nautique",
         "it": "crepuscolo nautico",
         "es": "anochecer náutico",
-        "pl": "nautical dusk",
+        "pl": "zmierzch żeglarski",
         "uk": "морські сутінки",
         "zh-cn": "航海黄昏"
     },
@@ -5962,7 +5962,7 @@
         "fr": "nuit",
         "it": "notte",
         "es": "noche",
-        "pl": "night",
+        "pl": "noc",
         "uk": "ніч",
         "zh-cn": "夜晚"
     },
@@ -5975,7 +5975,7 @@
         "fr": "fin de nuit",
         "it": "fine della notte",
         "es": "fin de noche",
-        "pl": "night end",
+        "pl": "koniec nocy",
         "uk": "кінець ночі",
         "zh-cn": "夜晚结束"
     },
@@ -5988,7 +5988,7 @@
         "fr": "aube nautique",
         "it": "alba nautica",
         "es": "amanecer náutico",
-        "pl": "nautical dawn",
+        "pl": "świt żeglarski",
         "uk": "морський світанок",
         "zh-cn": "航海黎明"
     },
@@ -6001,7 +6001,7 @@
         "fr": "Aube",
         "it": "alba",
         "es": "amanecer",
-        "pl": "dawn",
+        "pl": "świt",
         "uk": "світанок",
         "zh-cn": "黎明"
     },
@@ -6040,7 +6040,7 @@
         "fr": "programme",
         "it": "programma",
         "es": "programar",
-        "pl": "schedule",
+        "pl": "harmonogram",
         "uk": "графік",
         "zh-cn": "调度器"
     },
@@ -6053,7 +6053,7 @@
         "fr": "programme",
         "it": "programma",
         "es": "programar",
-        "pl": "schedule",
+        "pl": "harmonogram",
         "uk": "графік",
         "zh-cn": "调度器"
     },
@@ -6066,7 +6066,7 @@
         "fr": "règle cron",
         "it": "regola cron",
         "es": "regla cron",
-        "pl": "cron rule",
+        "pl": "reguła cron",
         "uk": "правило cron",
         "zh-cn": "计划任务规则"
     },
@@ -6079,7 +6079,7 @@
         "fr": "Retarder l'exécution",
         "it": "Ritardare l'esecuzione",
         "es": "Demora de ejecución",
-        "pl": "Delay execution",
+        "pl": "Utwórz harmonogram",
         "uk": "Відстрочка виконання",
         "zh-cn": "定期执行"
     },
@@ -6105,7 +6105,7 @@
         "fr": "clair",
         "it": "chiaro",
         "es": "claro",
-        "pl": "clear",
+        "pl": "zatrzymaj",
         "uk": "ясно",
         "zh-cn": "清除"
     },
@@ -6118,7 +6118,7 @@
         "fr": "Effacer l'exécution du délai",
         "it": "Cancella l'esecuzione del ritardo",
         "es": "Ejecución de retraso claro",
-        "pl": "Clear delay execution",
+        "pl": "Anuluj harmonogram",
         "uk": "Чітка затримка виконання",
         "zh-cn": "清除调度器"
     },
@@ -6170,7 +6170,7 @@
         "fr": "Créer une règle CRON avec dialogue",
         "it": "Crea una regola CRON con finestra di dialogo",
         "es": "Crear regla CRON con diálogo",
-        "pl": "Create CRON rule with dialog",
+        "pl": "Utwórz regułę CRON w oknie dialogowym",
         "uk": "Створіть правило CRON із діалоговим вікном",
         "zh-cn": "使用对话框创建计划任务规则"
     },
@@ -6209,7 +6209,7 @@
         "fr": "Créer une règle CRON avec dialogue",
         "it": "Crea una regola CRON con finestra di dialogo",
         "es": "Crear regla CRON con diálogo",
-        "pl": "Create CRON rule with dialog",
+        "pl": "Utwórz regułę CRON w oknie dialogowym",
         "uk": "Створіть правило CRON із діалоговим вікном",
         "zh-cn": "使用对话框创建计划任务规则"
     },
@@ -6222,7 +6222,7 @@
         "fr": "avec secondes",
         "it": "con secondi",
         "es": "con segundos",
-        "pl": "with seconds",
+        "pl": "z sekundami",
         "uk": "з секундами",
         "zh-cn": "精确到秒"
     },
@@ -6235,7 +6235,7 @@
         "fr": "jour de la semaine",
         "it": "giorno della settimana",
         "es": "día de la semana",
-        "pl": "day of week",
+        "pl": "dzień tygodnia",
         "uk": "день тижня",
         "zh-cn": "星期"
     },
@@ -6248,7 +6248,7 @@
         "fr": "mois",
         "it": "mese",
         "es": "mes",
-        "pl": "month",
+        "pl": "miesiąc",
         "uk": "місяць",
         "zh-cn": "月份"
     },
@@ -6261,7 +6261,7 @@
         "fr": "rendez-vous amoureux",
         "it": "Data",
         "es": "fecha",
-        "pl": "date",
+        "pl": "dzień",
         "uk": "дата",
         "zh-cn": "日期"
     },
@@ -6274,7 +6274,7 @@
         "fr": "heure",
         "it": "ora",
         "es": "hora",
-        "pl": "hour",
+        "pl": "godzina",
         "uk": "година",
         "zh-cn": "小时"
     },
@@ -6287,7 +6287,7 @@
         "fr": "minutes",
         "it": "minuti",
         "es": "minutos",
-        "pl": "minutes",
+        "pl": "minuty",
         "uk": "хвилин",
         "zh-cn": "分钟"
     },
@@ -6300,7 +6300,7 @@
         "fr": "secondes",
         "it": "secondi",
         "es": "segundos",
-        "pl": "seconds",
+        "pl": "sekundy",
         "uk": "секунд",
         "zh-cn": "秒"
     },
@@ -6313,7 +6313,7 @@
         "fr": "en ligne",
         "it": "come linea",
         "es": "como línea",
-        "pl": "as line",
+        "pl": "jako jedna linia",
         "uk": "як лінія",
         "zh-cn": "横向显示"
     },
@@ -6326,7 +6326,7 @@
         "fr": "JS function with return",
         "it": "JS function with return",
         "es": "JS function with return",
-        "pl": "JS function with return",
+        "pl": "Funkcja JS z wynikiem",
         "uk": "Функція JS із поверненням",
         "zh-cn": "JS function with return"
     },
@@ -6339,7 +6339,7 @@
         "fr": "Javascript function",
         "it": "Javascript function",
         "es": "Javascript function",
-        "pl": "Javascript function",
+        "pl": "Funkcja JavaScript",
         "uk": "Функція Javascript",
         "zh-cn": "Javascript function"
     },
@@ -6352,7 +6352,7 @@
         "fr": "Interrupteur / boîtier",
         "it": "Scatola dell'interruttore",
         "es": "Interruptor / caja",
-        "pl": "Sprawa przełącznik",
+        "pl": "Switch / case",
         "uk": "Перемикач / корпус",
         "zh-cn": "开关/箱"
     },
@@ -6365,7 +6365,7 @@
         "fr": "le cas est",
         "it": "il caso è",
         "es": "el caso es",
-        "pl": "sprawa jest",
+        "pl": "przypadek to",
         "uk": "справа є",
         "zh-cn": "情况是"
     },
@@ -6391,7 +6391,7 @@
         "fr": "faire",
         "it": "fare",
         "es": "hacer",
-        "pl": "zrobić",
+        "pl": "wykonaj",
         "uk": "робити",
         "zh-cn": "做"
     },
@@ -6443,7 +6443,7 @@
         "fr": "Evénement : si fichier",
         "it": "Evento: se file",
         "es": "Evento: si el archivo",
-        "pl": "Zdarzenie: jeśli plik",
+        "pl": "Zdarzenie: zmiana pliku",
         "uk": "Подія: оновлення файлу",
         "zh-cn": "事件：如果文件"
     },
@@ -6508,7 +6508,7 @@
         "fr": "data",
         "it": "data",
         "es": "data",
-        "pl": "data",
+        "pl": "dane",
         "uk": "data",
         "zh-cn": "data"
     },
@@ -6690,7 +6690,7 @@
         "fr": "Événement : si objet membre de dénombrement",
         "it": "Evento: se enumeration member object",
         "es": "Evento: si el objeto miembro de la enumeración",
-        "pl": "Event: jeśli zaznaczono obiekt członka",
+        "pl": "Zdarzenie: jeśli obiekt należy do kategorii",
         "uk": "Подія: якщо об'єкт учасника",
         "zh-cn": "事件: 如果列举成员对象"
     },
@@ -6703,7 +6703,7 @@
         "fr": "Si un membre de l'état de dénombrement a changé ou mis à jour",
         "it": "Se un membro dello stato di enumerazione è cambiato o aggiornato",
         "es": "Si un miembro del estado de enumeración cambió o actualizó",
-        "pl": "Jeżeli członek stanu wyliczenia zmienił lub zaktualizował",
+        "pl": "Jeśli stan należący do kategorii został zmieniony lub zaktualizowany",
         "uk": "При зміні або оновленому державі",
         "zh-cn": "如果计数状态的一名成员改变或更新"
     },
@@ -6729,7 +6729,7 @@
         "fr": "Message à un autre script",
         "it": "Messaggio ad altri script",
         "es": "Mensaje a otro script",
-        "pl": "Posłanie do innych scenariuszy",
+        "pl": "wiadomość do innego skryptu",
         "uk": "Повідомлення на інший скрипт",
         "zh-cn": "其他说明"
     },
@@ -6755,7 +6755,7 @@
         "fr": "toutes les instances",
         "it": "tutte le istanze",
         "es": "todas las instancias",
-        "pl": "all instances",
+        "pl": "wszystkie instancje",
         "uk": "всі екземпляри",
         "zh-cn": "所有实例"
     },
@@ -6768,7 +6768,7 @@
         "fr": "timeout",
         "it": "timeout",
         "es": "timeout",
-        "pl": "timeout",
+        "pl": "limit czasu",
         "uk": "timeout",
         "zh-cn": "timeout"
     },
@@ -6781,7 +6781,7 @@
         "fr": "scénario",
         "it": "copione",
         "es": "guión",
-        "pl": "scenariusz",
+        "pl": "skrypt",
         "uk": "сценарій",
         "zh-cn": "脚本"
     },
@@ -6794,7 +6794,7 @@
         "fr": "message",
         "it": "messaggio",
         "es": "mensaje",
-        "pl": "komunikat",
+        "pl": "wiadomość",
         "uk": "повідомлення",
         "zh-cn": "消息"
     },
@@ -6820,7 +6820,7 @@
         "fr": "autre script",
         "it": "altri script",
         "es": "otro script",
-        "pl": "inny scenariusz",
+        "pl": "inny skrypt",
         "uk": "інший сценарій",
         "zh-cn": "其他说明"
     },
@@ -6859,7 +6859,7 @@
         "fr": "message",
         "it": "messaggio",
         "es": "mensaje",
-        "pl": "komunikat",
+        "pl": "wiadomość",
         "uk": "повідомлення",
         "zh-cn": "消息"
     },
@@ -6872,7 +6872,7 @@
         "fr": "message",
         "it": "messaggio",
         "es": "mensaje",
-        "pl": "komunikat",
+        "pl": "wiadomość",
         "uk": "повідомлення",
         "zh-cn": "消息"
     },
@@ -6950,7 +6950,7 @@
         "fr": "message",
         "it": "Messaggio",
         "es": "mensaje",
-        "pl": "message",
+        "pl": "wiadomość",
         "uk": "повідомлення",
         "zh-cn": "消息"
     },
@@ -6963,7 +6963,7 @@
         "fr": "La source",
         "it": "fonte",
         "es": "Fuente",
-        "pl": "Source",
+        "pl": "Źródło",
         "uk": "Джерело",
         "zh-cn": "上次变更发起者"
     },
@@ -6976,7 +6976,7 @@
         "fr": "Horodatage",
         "it": "timestamp",
         "es": "Marca de tiempo",
-        "pl": "Timestamp",
+        "pl": "Znacznik czasu",
         "uk": "Мітка часу",
         "zh-cn": "当前时间戳"
     },
@@ -7028,7 +7028,7 @@
         "fr": "et",
         "it": "e",
         "es": "y",
-        "pl": "and",
+        "pl": "i",
         "uk": "і",
         "zh-cn": "和"
     },
@@ -7132,7 +7132,7 @@
         "fr": "si vide",
         "it": "se vuoto",
         "es": "si está vacío",
-        "pl": "jeśli chodzi o puste",
+        "pl": "jeśli puste",
         "uk": "якщо порожній",
         "zh-cn": "空"
     },
@@ -7145,7 +7145,7 @@
         "fr": "puis",
         "it": "allora",
         "es": "entonces",
-        "pl": "potem",
+        "pl": "to",
         "uk": "потім",
         "zh-cn": "然后"
     },
