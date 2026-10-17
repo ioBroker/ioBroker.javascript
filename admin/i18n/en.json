@@ -125,5 +125,17 @@
     "Cancel": "Cancel",
     "Credentials": "Credentials",
     "Delete all stored versions": "Delete all stored versions",
-    "The history of every script is removed, including the scripts that still exist. The scripts themselves are not touched. This cannot be undone.": "The history of every script is removed, including the scripts that still exist. The scripts themselves are not touched. This cannot be undone."
+    "The history of every script is removed, including the scripts that still exist. The scripts themselves are not touched. This cannot be undone.": "The history of every script is removed, including the scripts that still exist. The scripts themselves are not touched. This cannot be undone.",
+    "Main settings": "Main settings",
+    "default 1000": "default 1000",
+    "default 100": "default 100",
+    "Reasoning effort": "Reasoning effort",
+    "Only for OpenAI-compatible endpoints. Leave on \"Endpoint default\" unless the endpoint needs to be told.": "Only for OpenAI-compatible endpoints. Leave on \"Endpoint default\" unless the endpoint needs to be told.",
+    "Endpoint default": "Endpoint default",
+    "Off (local models)": "Off (local models)",
+    "Minimal": "Minimal",
+    "Low": "Low",
+    "Medium": "Medium",
+    "High": "High",
+    "optional": "optional"
 }
