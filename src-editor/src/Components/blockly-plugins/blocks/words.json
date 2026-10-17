@@ -1586,17 +1586,17 @@
         "zh-cn": "发消息给"
     },
     "sendto_custom_tooltip": {
-        "en": "Text to speech",
-        "de": "Text zu Sprache",
-        "ru": "Произнести сообщение",
-        "pt": "Texto para Língua",
-        "nl": "Tekst naar spraak",
-        "fr": "Texte pour parler",
-        "it": "Sintesi vocale",
-        "es": "Texto a voz",
-        "pl": "Wyślij polecenie do instancji",
-        "uk": "Перетворення тексту на мовлення",
-        "zh-cn": "给适配器发消息"
+        "en": "Send a command with parameters to an adapter instance",
+        "de": "Befehl mit Parametern an eine Adapter-Instanz senden",
+        "ru": "Отправить команду с параметрами экземпляру адаптера",
+        "pt": "Enviar um comando com parâmetros para uma instância do adaptador",
+        "nl": "Opdracht met parameters naar een adapterinstantie sturen",
+        "fr": "Envoyer une commande avec des paramètres à une instance d'adaptateur",
+        "it": "Invia un comando con parametri a un'istanza dell'adattatore",
+        "es": "Enviar un comando con parámetros a una instancia del adaptador",
+        "pl": "Wyślij polecenie z parametrami do instancji adaptera",
+        "uk": "Надіслати команду з параметрами екземпляру адаптера",
+        "zh-cn": "向适配器实例发送带参数的命令"
     },
     "sendto_custom_help": {
         "en": "sendto",
@@ -2107,8 +2107,8 @@
     },
     "comment_tooltip": {
         "en": "Enter comment to explain the code",
-        "de": "Debug",
-        "ru": "Debug",
+        "de": "Kommentar zur Erklärung des Codes eingeben",
+        "ru": "Введите комментарий, поясняющий код",
         "pt": "Digite um comentário para explicar o código",
         "nl": "Voer een opmerking in om de code uit te leggen",
         "fr": "Entrez un commentaire pour expliquer le code",
@@ -3848,16 +3848,16 @@
         "zh-cn": "所有实例"
     },
     "time_get_tooltip": {
-        "en": "Send message to telegram",
-        "de": "Sende eine Meldung über Telegram",
-        "ru": "Послать сообщение через Telegram",
-        "pt": "Enviar mensagem pelo Telegram",
-        "nl": "Stuur bericht naar telegram",
-        "fr": "Envoyer un message au télégramme",
-        "it": "Invia un messaggio al telegramma",
-        "es": "Enviar mensaje a telegrama",
+        "en": "Get the current time in the selected format",
+        "de": "Aktuelle Zeit im gewählten Format holen",
+        "ru": "Получить текущее время в выбранном формате",
+        "pt": "Obter a hora atual no formato selecionado",
+        "nl": "Huidige tijd in de gekozen notatie ophalen",
+        "fr": "Obtenir l'heure actuelle dans le format choisi",
+        "it": "Ottieni l'ora attuale nel formato selezionato",
+        "es": "Obtener la hora actual en el formato seleccionado",
         "pl": "Pobierz aktualny czas w wybranym formacie",
-        "uk": "Надіслати повідомлення в телеграм",
+        "uk": "Отримати поточний час у вибраному форматі",
         "zh-cn": "按指定格式获取当前时间"
     },
     "time_get_object": {
@@ -4355,17 +4355,17 @@
         "zh-cn": "YYYY.MM.DD hh:mm:ss.sss"
     },
     "time_astro_tooltip": {
-        "en": "Get actual time or ",
-        "de": "Sende eine Meldung über Telegram",
-        "ru": "Послать сообщение через Telegram",
-        "pt": "Receba o horário atual ou",
-        "nl": "Krijg actuele tijd of",
-        "fr": "Obtenez le temps réel ou",
-        "it": "Ottieni tempo reale o",
-        "es": "Obtenga tiempo real o",
-        "pl": "Pobierz czas zdarzenia astronomicznego",
-        "uk": "Отримати фактичний час або",
-        "zh-cn": "获取当前时间或当前时间加延时"
+        "en": "Get the time of an astronomical event, with an offset in minutes",
+        "de": "Zeitpunkt eines Astro-Ereignisses holen, mit Versatz in Minuten",
+        "ru": "Получить время астрономического события со смещением в минутах",
+        "pt": "Obter a hora de um evento astronômico, com deslocamento em minutos",
+        "nl": "Tijdstip van een astronomische gebeurtenis ophalen, met verschuiving in minuten",
+        "fr": "Obtenir l'heure d'un événement astronomique, avec un décalage en minutes",
+        "it": "Ottieni l'ora di un evento astronomico, con uno scostamento in minuti",
+        "es": "Obtener la hora de un evento astronómico, con un desplazamiento en minutos",
+        "pl": "Pobierz czas zdarzenia astronomicznego z przesunięciem w minutach",
+        "uk": "Отримати час астрономічної події зі зміщенням у хвилинах",
+        "zh-cn": "获取天文事件的时间，可设置分钟偏移"
     },
     "time_astro_help": {
         "en": "getastrodate",
@@ -6071,17 +6071,17 @@
         "zh-cn": "计划任务规则"
     },
     "schedule_create_tooltip": {
-        "en": "Delay execution",
-        "de": "Ausführung verzögern",
-        "ru": "Сделать паузу",
-        "pt": "Atrasar a execução",
-        "nl": "Vertraag uitvoering",
-        "fr": "Retarder l'exécution",
-        "it": "Ritardare l'esecuzione",
-        "es": "Demora de ejecución",
-        "pl": "Utwórz harmonogram",
-        "uk": "Відстрочка виконання",
-        "zh-cn": "定期执行"
+        "en": "Create a named schedule",
+        "de": "Benannten Zeitplan erstellen",
+        "ru": "Создать именованное расписание",
+        "pt": "Criar um agendamento nomeado",
+        "nl": "Benoemd schema maken",
+        "fr": "Créer une planification nommée",
+        "it": "Crea una pianificazione con nome",
+        "es": "Crear una programación con nombre",
+        "pl": "Utwórz nazwany harmonogram",
+        "uk": "Створити іменований розклад",
+        "zh-cn": "创建命名的计划"
     },
     "schedule_create_help": {
         "en": "settimeout",
@@ -6110,17 +6110,17 @@
         "zh-cn": "清除"
     },
     "schedule_clear_tooltip": {
-        "en": "Clear delay execution",
-        "de": "Ausführungsverzögerung anhalten",
-        "ru": "Отменить выполнение с паузой",
-        "pt": "Parar a execução com atraso",
-        "nl": "Duidelijke uitvoering van vertragingen",
-        "fr": "Effacer l'exécution du délai",
-        "it": "Cancella l'esecuzione del ritardo",
-        "es": "Ejecución de retraso claro",
-        "pl": "Anuluj harmonogram",
-        "uk": "Чітка затримка виконання",
-        "zh-cn": "清除调度器"
+        "en": "Stop a named schedule",
+        "de": "Benannten Zeitplan beenden",
+        "ru": "Остановить именованное расписание",
+        "pt": "Parar um agendamento nomeado",
+        "nl": "Benoemd schema stoppen",
+        "fr": "Arrêter une planification nommée",
+        "it": "Interrompi una pianificazione con nome",
+        "es": "Detener una programación con nombre",
+        "pl": "Zatrzymaj nazwany harmonogram",
+        "uk": "Зупинити іменований розклад",
+        "zh-cn": "停止命名的计划"
     },
     "schedule_clear_help": {
         "en": "cleartimeout",
