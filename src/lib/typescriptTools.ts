@@ -688,6 +688,39 @@ export function transformGlobalDeclarations(decl: string): string {
 }
 
 /**
+ * Isolates the module-local bindings emitted by TypeScript while retaining access to globals
+ * provided by ioBroker's shared scripts. Calling the wrapper with `exports` also matches the
+ * top-level `this` value a CommonJS module normally receives.
+ *
+ * The compiled source starts on the wrapper's first line so existing line-number correction
+ * remains valid.
+ *
+ * @param source The JavaScript emitted for a non-global TypeScript script
+ */
+export function wrapCompiledScriptInCommonJsScope(source: string): string {
+    return `(function () {${source}\n}).call(exports);`;
+}
+
+/**
+ * Isolates one compiled global TypeScript script from all other compiled scripts and publishes
+ * its transformed exports as ioBroker globals. Accessors preserve updates to exported variables.
+ *
+ * The wrapper only occupies the first line of the source and the line after it - the one that is
+ * empty without the wrapper -, so the line numbers in the combined global scripts stay the same.
+ *
+ * @param source The JavaScript emitted for a global TypeScript script
+ */
+export function wrapCompiledGlobalScriptInCommonJsScope(source: string): string {
+    // TypeScript ends its output with a new line; without one, a trailing line comment would swallow the wrapper
+    const body = source.endsWith('\n') ? source : `${source}\n`;
+    return (
+        `(function () { const scriptExports = {}; (function (exports) {${body}` +
+        '}).call(globalThis, scriptExports); for (const key of Object.keys(scriptExports)) { if (key === "__esModule") continue; ' +
+        'Object.defineProperty(globalThis, key, { configurable: true, enumerable: true, get: () => scriptExports[key], set: value => { scriptExports[key] = value; } }); } }).call(globalThis);'
+    );
+}
+
+/**
  * Translates a script ID to a filename for the compiler
  *
  * @param scriptID The ID of the script

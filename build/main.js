@@ -1824,7 +1824,7 @@ class JavaScript extends adapter_core_1.Adapter {
                                         continue;
                                     }
                                 }
-                                this.globalScript += `${compiled}\n`;
+                                this.globalScript += `${(0, typescriptTools_1.wrapCompiledGlobalScriptInCommonJsScope)(compiled || '')}\n`;
                                 // if declarations were generated, remember them
                                 if (declarations != null) {
                                     this.provideDeclarationsForGlobalScript(obj._id, declarations);
@@ -2734,7 +2734,7 @@ class JavaScript extends adapter_core_1.Adapter {
                 const errors = tsCompiled.diagnostics.map(diag => diag.annotatedSource).join('\n');
                 return empty(`TypeScript compilation failed:\n${errors}`);
             }
-            createdScript = this.createVM(`${this.globalScript}\n${tsCompiled.result || ''}`, name, false);
+            createdScript = this.createVM(`${this.globalScript}\n${(0, typescriptTools_1.wrapCompiledScriptInCommonJsScope)(tsCompiled.result || '')}`, name, false);
         }
         else {
             createdScript = this.createVM(`${this.globalScript}\n${source}`, name, true);
@@ -3157,7 +3157,7 @@ class JavaScript extends adapter_core_1.Adapter {
                         return false;
                     }
                 }
-                const createdScript = this.createVM(`${this.globalScript}\n${compiled}`, name, false);
+                const createdScript = this.createVM(`${this.globalScript}\n${(0, typescriptTools_1.wrapCompiledScriptInCommonJsScope)(compiled)}`, name, false);
                 if (!createdScript) {
                     return false;
                 }
