@@ -30,6 +30,9 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Fixed: the @-mention list of the AI chat showed only the first 13 scripts
+
 ### 10.4.4 (2026-10-16)
 * (@GermanBluefox) Fixed: a script that did not handle a rejected `setStateAsync` (e.g. of a missing state) or another asynchronous function terminated the adapter
 * (@GermanBluefox) Fixed: instances of different versions
