@@ -1,4 +1,7 @@
 The newest change log is in README.md
+## 10.2.5 (2026-09-17)
+* (@GermanBluefox) Added the functions help dialog in editor
+
 ## 10.2.4 (2026-09-14)
 * (@GermanBluefox) Rules: selection of state fixed
 * (@GermanBluefox) Fixed debugger

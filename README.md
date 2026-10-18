@@ -30,7 +30,7 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 10.4.5 (2026-10-18)
 * (@GermanBluefox) Fixed: a script that did not handle a rejected `setStateAsync` (e.g. of a missing state) or another asynchronous function terminated the adapter
 * (@agross) Fixed: TypeScript scripts that import the same module as a global script failed with "Identifier has already been declared"
 * (@GermanBluefox) Fixed: the @-mention list of the AI chat showed only the first 13 scripts
@@ -68,9 +68,6 @@ Executes JavaScript, TypeScript Scripts.
 ### 10.3.0 (2026-09-20)
 * (@GermanBluefox) The code editor (Monaco), Blockly and the Rules blocks are loaded only when a script of that kind is opened, so the editor starts faster
 * (@GermanBluefox) Added function block diagrams (FBD, in the style of CFC): timers, counters, flip-flops, edges, comparison, arithmetic, conversions, control, calendar (cron, sun events), log and messages, and a block with own JavaScript - wired to ioBroker states. See [the description](docs/en/fbd.md)
-
-### 10.2.5 (2026-09-17)
-* (@GermanBluefox) Added the functions help dialog in editor
 
 ## License
 The MIT License (MIT)
