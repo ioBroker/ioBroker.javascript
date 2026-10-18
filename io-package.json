@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "10.4.4",
+    "version": "10.4.5",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "10.4.5": {
+        "en": "Fixed: a script that did not handle a rejected `setStateAsync` (e.g. of a missing state) or another asynchronous function terminated the adapter\nFixed: TypeScript scripts that import the same module as a global script failed with \"Identifier has already been declared\"\nFixed: the @-mention list of the AI chat showed only the first 13 scripts\nFixed: selection of state if predefined",
+        "de": "Behoben: Ein Script, das abgelehnte `setStateAsync` (z. B. mit fehlendem Status) oder asynchroner Funktion nicht behandelte, beendete den Adapter\nBehoben: TypeScript-Skripte, die dasselbe Modul wie Global-Skripte importieren, scheiterten mit „ID wurde schon deklariert“\nBehoben: Die @-Liste des KI-Chats zeigte nur die ersten 13 Skripte\nBehoben: Zustandswahl, falls vorgegeben",
+        "ru": "Исправлено: скрипт, который не обрабатывал отклоненную функцию setStateAsync (например, отсутствующее состояние) или другую асинхронную функцию, прерывал работу адаптера\nИсправлено: скрипты TypeScript, импортирующие тот же модуль, что и глобальный скрипт, не работали с сообщением «Идентификатор уже объявлен»\nИсправлено: в списке @-mention чата с искусственным интеллектом отображались только первые 13 скриптов\nИсправлено: выбор состояния, если оно предопределено",
+        "pt": "Corrigido: um script que não tratava um `setStateAsync` rejeitado (p. ex., ausente) ou outra função assíncrona encerrou o adaptador\nCorrigido: scripts TypeScript que importam o mesmo módulo de um script global falharam com “Identificador já declarado”\nCorrigido: a lista de @menções do chat AI só mostrava 13 scripts\nFixo: seleção de estado predefinida",
+        "nl": "Opgelost: een script dat een afgewezen `SetStateAsync` niet afhandelde (bijvoorbeeld een ontbrekende status) of een andere asynchrone functie beëindigde de adapter\nOpgelost: TypeScript-scripts die dezelfde module importeren als een globaal script, zijn mislukt met „Identifier is al gedeclareerd”\nOpgelost: op de lijst met @-vermeldingen van de AI-chat stonden alleen de eerste 13 scripts\nOpgelost: selectie van de staat, indien vooraf gedefinieerd",
+        "fr": "Corrigé : un script qui ne gérait pas un setStateAsync rejeté (par exemple un état manquant) ou une autre fonction asynchrone a mis fin à l'adaptateur\nCorrigé : Les scripts TypeScript qui importaient le même module en tant que script global échouaient avec « L'identifiant a déjà été déclaré »\nCorrigé : seuls les 13 premiers scripts figuraient sur la liste @mention\nCorrigé : sélection d'un état prédéfini",
+        "it": "Risolto: uno script che non gestiva un `setStateAsync` rifiutato (ad es. uno stato mancante) o un'altra funzione asincrona chiudeva l'adattatore\nRisolto: gli script TypeScript che importano lo stesso modulo come script globale fallirono con «ID già dichiarato»\nRisolto: la lista @-menzioni della chat AI mostrava solo i primi 13 script\nFisso: scelta dello stato se predefinito",
+        "es": "Corregido: un guion que no gestionaba un `setStateAsync` rechazado (por ejemplo, de un estado faltante) u otra función asincrónica terminaba el adaptador\nCorregido: Los scripts de TypeScript que importan el mismo módulo que un guion global fallaban con «El identificador ya se ha declarado»\nCorregido: la lista @menciones del chat de IA solo mostraba los 13 primeros guiones\nFijo: selección de estado si está predefinido",
+        "pl": "Naprawiono: skrypt, który nie obsługiwał odrzuconego `setStateSync` (np. brakującego stanu) lub innej funkcji asynchronicznej, zakończył adapter\nNaprawiono: skrypty TypeScript, które importują ten sam moduł co skrypt globalny, zawiodły z „Identyfikator został już zadeklarowany”\nNaprawiono: lista @-name czatu AI pokazywała tylko pierwsze 13 skryptów\nNaprawiono: wybór stanu, jeśli jest predefiniowany",
+        "uk": "Виправлено: скрипт, який не обробляв відхилений `setStateAsync` (наприклад, відсутній стан) або інша асинхронна функція припинила адаптер\nВиправлено: Скрипти TypeScript, які імпортують той самий модуль, що і глобальний скрипт, не вдалися з «Ідентифікатор вже оголошений»\nВиправлено: список @-згадок чату AI показав лише перші 13 скриптів\nВиправлено: вибір стану, якщо попередньо визначено",
+        "zh-cn": "修复：未处理被拒绝的 “setStateAsync”（例如缺失状态）或其他异步函数的脚本终止了适配器\n修复：导入与全局脚本相同模块的 TypeScript 脚本失败，并显示 “标识符已被声明”\n修复：AI 聊天的 @-mention 列表仅显示前 13 个脚本\n修复：如果已预定义则选择状态"
+      },
       "10.4.4": {
         "en": "Fixed: a script that did not handle a rejected `setStateAsync` (e.g. of a missing state) or another asynchronous function terminated the adapter\nFixed: instances of different versions\nFixed: the AI chat stopped with \"m.default is not a constructor\"",
         "de": "Behoben: Ein Script, das abgelehnte `setStateAsync` (z. B. mit fehlendem Status) oder asynchroner Funktion nicht behandelte, beendete den Adapter\nBehoben: Instanzen anderer Versionen\nBehoben: Der KI-Chat endete mit „m.default is not a constructor“",
@@ -106,19 +119,6 @@
         "zh-cn": "规则：选州固定\n修复了调试器"
       },
       "10.2.3": {
-        "en": "Rules: selection of state fixed",
-        "de": "Regeln: Bundeslandwahl fest",
-        "ru": "Правила: выбор фиксированного государства",
-        "pt": "Regras: seleção de estado fixo",
-        "nl": "Regels: de keuze van de staat is vastgesteld",
-        "fr": "Règles : choix de l'État fixe",
-        "it": "Regole: scelta dello stato fissa",
-        "es": "Reglas: selección de estado fija",
-        "pl": "Zasady: wybór stanu stałego",
-        "uk": "Правила: вибір штату фіксований",
-        "zh-cn": "规则：选州固定"
-      },
-      "10.2.2": {
         "en": "Rules: selection of state fixed",
         "de": "Regeln: Bundeslandwahl fest",
         "ru": "Правила: выбор фиксированного государства",
