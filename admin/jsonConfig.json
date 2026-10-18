@@ -13,7 +13,10 @@
                     "label": "Additional npm modules",
                     "delimiter": " ",
                     "xs": 12,
-                    "sm": 12
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
                 },
                 "libraryTypings": {
                     "newLine": true,
@@ -21,7 +24,10 @@
                     "label": "Activate syntax help for these npm modules",
                     "delimiter": " ",
                     "xs": 12,
-                    "sm": 12
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
                 },
                 "mirrorPath": {
                     "newLine": true,
@@ -34,7 +40,10 @@
                     "validatorErrorText": "mirrorPath forbidden",
                     "validatorNoSaveOnError": true,
                     "xs": 12,
-                    "sm": 8
+                    "sm": 8,
+                    "md": 8,
+                    "lg": 8,
+                    "xl": 8
                 },
                 "mirrorInstance": {
                     "hidden": "!data.mirrorPath",
@@ -42,7 +51,10 @@
                     "adapter": "javascript",
                     "label": "Instance, that do mirroring",
                     "xs": 12,
-                    "sm": 4
+                    "sm": 4,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "enableSetObject": {
                     "newLine": true,
@@ -50,14 +62,18 @@
                     "label": "Enable command \"setObject\"",
                     "xs": 12,
                     "sm": 12,
-                    "md": 6
+                    "md": 6,
+                    "lg": 6,
+                    "xl": 6
                 },
                 "enableSendToHost": {
                     "type": "checkbox",
                     "label": "Enable command \"sendToHost\"",
                     "xs": 12,
                     "sm": 12,
-                    "md": 6
+                    "md": 6,
+                    "lg": 6,
+                    "xl": 6
                 },
                 "enableExec": {
                     "newLine": true,
@@ -65,14 +81,18 @@
                     "label": "Enable command \"exec\"",
                     "xs": 12,
                     "sm": 12,
-                    "md": 6
+                    "md": 6,
+                    "lg": 6,
+                    "xl": 6
                 },
                 "subscribe": {
                     "type": "checkbox",
                     "label": "Do not subscribe all states on start",
                     "xs": 12,
                     "sm": 12,
-                    "md": 6
+                    "md": 6,
+                    "lg": 6,
+                    "xl": 6
                 },
                 "maxSetStatePerMinute": {
                     "newLine": true,
@@ -83,7 +103,9 @@
                     "max": 100000,
                     "xs": 12,
                     "sm": 12,
-                    "md": 6
+                    "md": 6,
+                    "lg": 6,
+                    "xl": 6
                 },
                 "maxTriggersPerScript": {
                     "type": "number",
@@ -93,21 +115,29 @@
                     "max": 100000,
                     "xs": 12,
                     "sm": 12,
-                    "md": 6
+                    "md": 6,
+                    "lg": 6,
+                    "xl": 6
                 },
                 "allowSelfSignedCerts": {
                     "newLine": true,
                     "type": "checkbox",
                     "label": "Allow self-signed certificates for URL requests",
                     "xs": 12,
-                    "sm": 12
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
                 },
                 "sortGlobalScriptsAlphabetically": {
                     "newLine": true,
                     "type": "checkbox",
                     "label": "Sort global scripts alphabetically",
                     "xs": 12,
-                    "sm": 12
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
                 }
             }
         },
@@ -132,7 +162,10 @@
                     "type": "checkbox",
                     "label": "Create states for all astro times",
                     "xs": 12,
-                    "sm": 12
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
                 }
             }
         },
@@ -148,6 +181,9 @@
                     "helpLink": "https://www.typescriptlang.org/tsconfig/",
                     "xs": 12,
                     "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12,
                     "style": {
                         "marginBottom": 16
                     }
@@ -168,7 +204,9 @@
                     "default": true,
                     "xs": 12,
                     "sm": 12,
-                    "md": 12
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
                 },
                 "_tsHeaderLanguage": {
                     "newLine": true,
@@ -224,7 +262,9 @@
                     "default": "es2022",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsNoEmitOnError": {
                     "newLine": true,
@@ -234,7 +274,9 @@
                     "default": true,
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsEsModuleInterop": {
                     "type": "checkbox",
@@ -243,14 +285,18 @@
                     "default": true,
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsAllowSyntheticDefaultImports": {
                     "type": "checkbox",
                     "label": "allowSyntheticDefaultImports",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsUseDefineForClassFields": {
                     "newLine": true,
@@ -259,21 +305,27 @@
                     "help": "useDefineForClassFields help",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsDownlevelIteration": {
                     "type": "checkbox",
                     "label": "downlevelIteration",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsExperimentalDecorators": {
                     "type": "checkbox",
                     "label": "experimentalDecorators",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsEmitDecoratorMetadata": {
                     "newLine": true,
@@ -282,14 +334,18 @@
                     "disabled": "!data.tsExperimentalDecorators",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsRemoveComments": {
                     "type": "checkbox",
                     "label": "removeComments",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsSkipLibCheck": {
                     "type": "checkbox",
@@ -297,7 +353,9 @@
                     "help": "skipLibCheck help",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "_tsHeaderStrict": {
                     "newLine": true,
@@ -313,7 +371,10 @@
                     "label": "strict",
                     "help": "strict help",
                     "xs": 12,
-                    "sm": 12
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
                 },
                 "_tsStrictHint": {
                     "newLine": true,
@@ -321,6 +382,9 @@
                     "text": "Strict options description",
                     "xs": 12,
                     "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12,
                     "style": {
                         "marginBottom": 8
                     }
@@ -346,7 +410,9 @@
                     "default": "",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsStrictNullChecks": {
                     "type": "select",
@@ -368,7 +434,9 @@
                     "default": "",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsStrictFunctionTypes": {
                     "type": "select",
@@ -390,7 +458,9 @@
                     "default": "",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsStrictBindCallApply": {
                     "newLine": true,
@@ -413,7 +483,9 @@
                     "default": "",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsStrictPropertyInitialization": {
                     "type": "select",
@@ -435,7 +507,9 @@
                     "default": "",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsStrictBuiltinIteratorReturn": {
                     "type": "select",
@@ -457,7 +531,9 @@
                     "default": "",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsNoImplicitThis": {
                     "newLine": true,
@@ -480,7 +556,9 @@
                     "default": "",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsAlwaysStrict": {
                     "type": "select",
@@ -502,7 +580,9 @@
                     "default": "",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsUseUnknownInCatchVariables": {
                     "type": "select",
@@ -525,7 +605,9 @@
                     "default": "false",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "_tsHeaderChecks": {
                     "newLine": true,
@@ -541,21 +623,27 @@
                     "label": "noUnusedLocals",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsNoUnusedParameters": {
                     "type": "checkbox",
                     "label": "noUnusedParameters",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsNoImplicitReturns": {
                     "type": "checkbox",
                     "label": "noImplicitReturns",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsNoFallthroughCasesInSwitch": {
                     "newLine": true,
@@ -563,21 +651,27 @@
                     "label": "noFallthroughCasesInSwitch",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsNoImplicitOverride": {
                     "type": "checkbox",
                     "label": "noImplicitOverride",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsNoUncheckedIndexedAccess": {
                     "type": "checkbox",
                     "label": "noUncheckedIndexedAccess",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsNoPropertyAccessFromIndexSignature": {
                     "newLine": true,
@@ -585,14 +679,18 @@
                     "label": "noPropertyAccessFromIndexSignature",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsExactOptionalPropertyTypes": {
                     "type": "checkbox",
                     "label": "exactOptionalPropertyTypes",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsAllowUnreachableCode": {
                     "newLine": true,
@@ -615,7 +713,9 @@
                     "default": "",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "tsAllowUnusedLabels": {
                     "type": "select",
@@ -637,7 +737,9 @@
                     "default": "",
                     "xs": 12,
                     "sm": 6,
-                    "md": 4
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 }
             }
         },
@@ -651,6 +753,9 @@
                     "label": "AI settings description",
                     "xs": 12,
                     "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12,
                     "style": {
                         "marginBottom": 16
                     }
@@ -663,7 +768,9 @@
                     "default": true,
                     "xs": 12,
                     "sm": 12,
-                    "md": 12
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
                 },
                 "_aiProvidersHeader": {
                     "newLine": true,
@@ -690,7 +797,10 @@
                     "label": "Credentials type",
                     "default": "manual",
                     "xs": 12,
-                    "sm": 6
+                    "sm": 6,
+                    "md": 6,
+                    "lg": 6,
+                    "xl": 6
                 },
                 "gptKey": {
                     "newLine": true,
@@ -699,6 +809,9 @@
                     "hidden": "data.credentialType === 'manager'",
                     "xs": 12,
                     "sm": 9,
+                    "md": 9,
+                    "lg": 9,
+                    "xl": 9,
                     "help": "platform.openai.com",
                     "helpLink": "https://platform.openai.com/api-keys"
                 },
@@ -709,7 +822,10 @@
                     "label": "ChatGPT credential",
                     "hidden": "data.credentialType !== 'manager'",
                     "xs": 12,
-                    "sm": 9
+                    "sm": 9,
+                    "md": 9,
+                    "lg": 9,
+                    "xl": 9
                 },
                 "_testOpenAi": {
                     "type": "sendTo",
@@ -721,6 +837,9 @@
                     "disabled": "data.credentialType === 'manager' ? !data.credentialIdGptKey : !data.gptKey",
                     "xs": 12,
                     "sm": 3,
+                    "md": 3,
+                    "lg": 3,
+                    "xl": 3,
                     "showProcess": true
                 },
                 "claudeKey": {
@@ -730,6 +849,9 @@
                     "hidden": "data.credentialType === 'manager'",
                     "xs": 12,
                     "sm": 9,
+                    "md": 9,
+                    "lg": 9,
+                    "xl": 9,
                     "help": "console.anthropic.com",
                     "helpLink": "https://console.anthropic.com/settings/keys"
                 },
@@ -740,7 +862,10 @@
                     "label": "Anthropic credential",
                     "hidden": "data.credentialType !== 'manager'",
                     "xs": 12,
-                    "sm": 9
+                    "sm": 9,
+                    "md": 9,
+                    "lg": 9,
+                    "xl": 9
                 },
                 "_testClaude": {
                     "type": "sendTo",
@@ -752,6 +877,9 @@
                     "disabled": "data.credentialType === 'manager' ? !data.credentialIdClaudeKey : !data.claudeKey",
                     "xs": 12,
                     "sm": 3,
+                    "md": 3,
+                    "lg": 3,
+                    "xl": 3,
                     "showProcess": true
                 },
                 "geminiKey": {
@@ -761,6 +889,9 @@
                     "hidden": "data.credentialType === 'manager'",
                     "xs": 12,
                     "sm": 9,
+                    "md": 9,
+                    "lg": 9,
+                    "xl": 9,
                     "help": "aistudio.google.com",
                     "helpLink": "https://aistudio.google.com/apikey"
                 },
@@ -771,7 +902,10 @@
                     "label": "Gemini credential",
                     "hidden": "data.credentialType !== 'manager'",
                     "xs": 12,
-                    "sm": 9
+                    "sm": 9,
+                    "md": 9,
+                    "lg": 9,
+                    "xl": 9
                 },
                 "_testGemini": {
                     "type": "sendTo",
@@ -783,6 +917,9 @@
                     "disabled": "data.credentialType === 'manager' ? !data.credentialIdGeminiKey : !data.geminiKey",
                     "xs": 12,
                     "sm": 3,
+                    "md": 3,
+                    "lg": 3,
+                    "xl": 3,
                     "showProcess": true
                 },
                 "deepseekKey": {
@@ -792,6 +929,9 @@
                     "hidden": "data.credentialType === 'manager'",
                     "xs": 12,
                     "sm": 9,
+                    "md": 9,
+                    "lg": 9,
+                    "xl": 9,
                     "help": "platform.deepseek.com",
                     "helpLink": "https://platform.deepseek.com/api_keys"
                 },
@@ -802,7 +942,10 @@
                     "label": "DeepSeek credential",
                     "hidden": "data.credentialType !== 'manager'",
                     "xs": 12,
-                    "sm": 9
+                    "sm": 9,
+                    "md": 9,
+                    "lg": 9,
+                    "xl": 9
                 },
                 "_testDeepseek": {
                     "type": "sendTo",
@@ -814,6 +957,9 @@
                     "disabled": "data.credentialType === 'manager' ? !data.credentialIdDeepseekKey : !data.deepseekKey",
                     "xs": 12,
                     "sm": 3,
+                    "md": 3,
+                    "lg": 3,
+                    "xl": 3,
                     "showProcess": true
                 },
                 "gptBaseUrl": {
@@ -822,6 +968,9 @@
                     "label": "Custom API Base URL",
                     "xs": 12,
                     "sm": 5,
+                    "md": 5,
+                    "lg": 5,
+                    "xl": 5,
                     "help": "Custom API Base URL help",
                     "placeholder": "https://api.openai.com/v1"
                 },
@@ -831,6 +980,9 @@
                     "hidden": "data.credentialType === 'manager'",
                     "xs": 12,
                     "sm": 4,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4,
                     "help": "Custom API key help",
                     "placeholder": "optional"
                 },
@@ -840,7 +992,10 @@
                     "label": "Custom API credential",
                     "hidden": "data.credentialType !== 'manager'",
                     "xs": 12,
-                    "sm": 4
+                    "sm": 4,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "_testCustom": {
                     "type": "sendTo",
@@ -852,6 +1007,9 @@
                     "disabled": "!data.gptBaseUrl",
                     "xs": 12,
                     "sm": 3,
+                    "md": 3,
+                    "lg": 3,
+                    "xl": 3,
                     "showProcess": true
                 },
                 "aiMaxTokens": {
@@ -863,7 +1021,10 @@
                     "max": 200000,
                     "default": 8192,
                     "xs": 12,
-                    "sm": 5
+                    "sm": 5,
+                    "md": 5,
+                    "lg": 5,
+                    "xl": 5
                 },
                 "aiReasoningEffort": {
                     "newLine": true,
@@ -897,7 +1058,10 @@
                         }
                     ],
                     "xs": 12,
-                    "sm": 5
+                    "sm": 5,
+                    "md": 5,
+                    "lg": 5,
+                    "xl": 5
                 }
             }
         },
@@ -913,7 +1077,9 @@
                     "help": "The credentials of the central storage are available in the scripts, e.g. SECRETS.CameraPassword.key",
                     "xs": 12,
                     "sm": 12,
-                    "md": 6
+                    "md": 6,
+                    "lg": 6,
+                    "xl": 6
                 },
                 "_secrets": {
                     "newLine": true,
@@ -943,7 +1109,9 @@
                     "default": 30,
                     "xs": 12,
                     "sm": 12,
-                    "md": 6
+                    "md": 6,
+                    "lg": 6,
+                    "xl": 6
                 },
                 "_historyUsage": {
                     "newLine": true,

@@ -96,6 +96,7 @@ const AiChatInput: React.FC<AiChatInputProps> = ({
     const [mentionFilter, setMentionFilter] = useState('');
     const [mentionIndex, setMentionIndex] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
+    const mentionListRef = useRef<HTMLUListElement>(null);
     const mentionStartRef = useRef<number>(-1);
 
     // Input history (like shell/terminal) - persisted in localStorage
@@ -142,6 +143,13 @@ const AiChatInput: React.FC<AiChatInputProps> = ({
     useEffect(() => {
         setMentionIndex(0);
     }, [mentionFilter]);
+
+    // Keep the entry selected with the arrow keys visible in the scrollable dropdown
+    useEffect(() => {
+        if (mentionOpen) {
+            mentionListRef.current?.children[mentionIndex]?.scrollIntoView({ block: 'nearest' });
+        }
+    }, [mentionIndex, mentionOpen]);
 
     const handleSend = useCallback(() => {
         const trimmed = text.trim();
@@ -342,10 +350,11 @@ const AiChatInput: React.FC<AiChatInputProps> = ({
                     }}
                 >
                     <List
+                        ref={mentionListRef}
                         dense
                         disablePadding
                     >
-                        {filteredMentions.slice(0, 15).map((option, index) => (
+                        {filteredMentions.map((option, index) => (
                             <ListItemButton
                                 key={option.id}
                                 selected={index === mentionIndex}

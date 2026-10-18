@@ -33,8 +33,11 @@ Executes JavaScript, TypeScript Scripts.
 ### **WORK IN PROGRESS**
 * (@GermanBluefox) Fixed: a script that did not handle a rejected `setStateAsync` (e.g. of a missing state) or another asynchronous function terminated the adapter
 * (@agross) Fixed: TypeScript scripts that import the same module as a global script failed with "Identifier has already been declared"
+* (@GermanBluefox) Fixed: the @-mention list of the AI chat showed only the first 13 scripts
+* (@GermanBluefox) Fixed: selection of state if predefined
 
-### 10.4.3 (2026-10-11)
+### 10.4.4 (2026-10-16)
+* (@GermanBluefox) Fixed: a script that did not handle a rejected `setStateAsync` (e.g. of a missing state) or another asynchronous function terminated the adapter
 * (@GermanBluefox) Fixed: instances of different versions
 * (@GermanBluefox) Fixed: the AI chat stopped with "m.default is not a constructor"
 
@@ -72,9 +75,8 @@ Executes JavaScript, TypeScript Scripts.
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2014-2026 bluefox <dogafox@gmail.com>,
-
-Copyright (c) 2014      hobbyquaker
+Copyright (c) 2014-2026 bluefox <dogafox@gmail.com>  
+Copyright (c) 2014 hobbyquaker
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
