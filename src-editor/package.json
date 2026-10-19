@@ -1,6 +1,6 @@
 {
     "name": "js",
-    "version": "10.4.5",
+    "version": "10.4.6",
     "private": true,
     "type": "module",
     "dependencies": {

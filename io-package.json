@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "10.4.5",
+    "version": "10.4.6",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "10.4.6": {
+        "en": "Fixed: false \"Cannot redeclare block-scoped variable\" (TS2451) warnings for `const`s that are declared in several scripts\nFixed: `subscribeObject()`/`onObject()` and the rule trigger \"On object change\" never fired for a pattern with `*`\nFixed: a change of a TypeScript script could be ignored after its compilation result could not be stored",
+        "de": "Behoben: Falsche „Blockvariable kann nicht neu deklariert werden“ (TS2451) für `const`s in mehreren Skripten\nBehoben: `SubscribeObject () `/`OnObject () `und der Regeltrigger „On object change“ löste nie für Muster mit `*`\nBehoben: Eine Änderung eines TypeScript-Skripts konnte ignoriert werden",
+        "ru": "Исправлено: ложные предупреждения «Невозможно повторно объявить переменную с блочной областью видимости» (TS2451) для `const', объявленных в нескольких скриптах\nИсправлено: `subscribeObject () `/`onObject () `и триггер правила «При смене объекта» никогда не запускались для шаблона с `*`\nИсправлено: изменение скрипта TypeScript могло быть проигнорировано после того, как результат компиляции не мог быть сохранен",
+        "pt": "Corrigido: falso: “Não é possível redeclarar variável de bloco” (TS2451) para `const`s declarados em vários scripts\nCorrigido: `subscribeObject () `/`onObject () `e a regra “On object change” nunca acionaram um padrão com `*`\nCorrigido: uma alteração no script TypeScript podia ser ignorada após a compilação não ser salva",
+        "nl": "Opgelost: false „Kan variabele met blokbereik niet opnieuw declareren” (TS2451) waarschuwingen voor `const`s die in verschillende scripts zijn gedeclareerd\nOpgelost: `SubscribeObject () `/`onObject () `en de regeltrigger „On object change” werd nooit geactiveerd voor een patroon met `*`\nOpgelost: een wijziging van een TypeScript-script kon worden genegeerd nadat het compilatieresultaat niet kon worden opgeslagen",
+        "fr": "Corrigé : faux « Impossible de redéclarer une variable par blocs » (TS2451) pour les « consts » déclarés dans plusieurs scripts\nCorrigé : `subscribeObject () `/`onObject () `et la règle « On object change » ne se déclenchait jamais pour un pattern avec `*`\nCorrigé : la modification d'un script TypeScript était ignorée si le résultat de sa compilation n'était pas enregistré",
+        "it": "Risolto: falsi avvisi «Impossibile ridichiarare la variabile block-scoped» (TS2451) per i `const`s dichiarati in diversi script\nRisolto: `subscribeObject () `/`onObject () `e la regola «On object change» non è mai attiva per un pattern con `*`\nRisolto: una modifica di uno script TypeScript poteva essere ignorata se non salvava i risultati",
+        "es": "Corregido: falsas advertencias de «No se puede redeclarar la variable de ámbito de bloque» (TS2451) para las «consts» que se declaran en varios guiones\nCorregido: `SubscribeObject () `/`onObject () `y el activador de la regla «Al cambiar objeto» nunca se activaba para un patrón con `*`\nCorregido: se podía ignorar un cambio en un guion de TypeScript si no se guardaba el resultado de la compilación",
+        "pl": "Naprawiono: false „Nie można ponownie zadeklarować zmiennej o zasięgu blokowym” (TS2451) ostrzeżenia dla `const`ów, które są zadeklarowane w kilku skryptach\nNaprawiono: `subscribeObject () `/`onObject () `i wyzwalacz reguły „Zmiana obiektu” nigdy nie został uruchomiony dla wzoru z `*`\nNaprawiono: zmiana skryptu TypeScript mogła zostać zignorowana po tym, jak wynik kompilacji nie mógł zostać zapisany",
+        "uk": "Виправлено: false «Не можна переоголосити змінну з блоком» (TS2451) попередження для `const`s, які оголошуються в декількох сценаріях\nВиправлено: `subscribeObject () `/`onObject () `і тригер правил «При зміні об'єкта» ніколи не викликався для шаблону з `*`\nВиправлено: зміна скрипта TypeScript може бути ігнорована після того, як результат його компіляції не вдалося зберегти",
+        "zh-cn": "修复：针对在多个脚本中声明的 “const” 发出 false “无法重新声明块作用域变量” (TS2451) 警告\n修复：`subscribeObject () `/`onObject () `和规则触发器 “对象更改时” 从来不会为带有 `*` 的模式触发器\n修复：无法存储编译结果后 TypeScript 脚本的更改可能会被忽略"
+      },
       "10.4.5": {
         "en": "Fixed: a script that did not handle a rejected `setStateAsync` (e.g. of a missing state) or another asynchronous function terminated the adapter\nFixed: TypeScript scripts that import the same module as a global script failed with \"Identifier has already been declared\"\nFixed: the @-mention list of the AI chat showed only the first 13 scripts\nFixed: selection of state if predefined",
         "de": "Behoben: Ein Script, das abgelehnte `setStateAsync` (z. B. mit fehlendem Status) oder asynchroner Funktion nicht behandelte, beendete den Adapter\nBehoben: TypeScript-Skripte, die dasselbe Modul wie Global-Skripte importieren, scheiterten mit „ID wurde schon deklariert“\nBehoben: Die @-Liste des KI-Chats zeigte nur die ersten 13 Skripte\nBehoben: Zustandswahl, falls vorgegeben",
@@ -117,19 +130,6 @@
         "pl": "Zasady: wybór stanu stałego\nNaprawiono debugger",
         "uk": "Правила: вибір штату фіксований\nВиправлений налагоджувач",
         "zh-cn": "规则：选州固定\n修复了调试器"
-      },
-      "10.2.3": {
-        "en": "Rules: selection of state fixed",
-        "de": "Regeln: Bundeslandwahl fest",
-        "ru": "Правила: выбор фиксированного государства",
-        "pt": "Regras: seleção de estado fixo",
-        "nl": "Regels: de keuze van de staat is vastgesteld",
-        "fr": "Règles : choix de l'État fixe",
-        "it": "Regole: scelta dello stato fissa",
-        "es": "Reglas: selección de estado fija",
-        "pl": "Zasady: wybór stanu stałego",
-        "uk": "Правила: вибір штату фіксований",
-        "zh-cn": "规则：选州固定"
       }
     },
     "platform": "Javascript/Node.js",
