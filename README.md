@@ -30,7 +30,7 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 10.4.6 (2026-10-19)
 * (@GermanBluefox) Fixed: false "Cannot redeclare block-scoped variable" (TS2451) warnings for `const`s that are declared in several scripts
 * (@GermanBluefox) Fixed: `subscribeObject()`/`onObject()` and the rule trigger "On object change" never fired for a pattern with `*`
 * (@GermanBluefox) Fixed: a change of a TypeScript script could be ignored after its compilation result could not be stored
@@ -69,10 +69,6 @@ Executes JavaScript, TypeScript Scripts.
 * (@GermanBluefox) Added a "Script history" tab with the used storage per script and buttons to delete single, orphaned or all histories
 * (@GermanBluefox) Moved the credentials table to its own tab
 * (@GermanBluefox) Mirror: a changed file no longer resets `enabled` and `engine` of the script (#2396)
-
-### 10.3.0 (2026-09-20)
-* (@GermanBluefox) The code editor (Monaco), Blockly and the Rules blocks are loaded only when a script of that kind is opened, so the editor starts faster
-* (@GermanBluefox) Added function block diagrams (FBD, in the style of CFC): timers, counters, flip-flops, edges, comparison, arithmetic, conversions, control, calendar (cron, sun events), log and messages, and a block with own JavaScript - wired to ioBroker states. See [the description](docs/en/fbd.md)
 
 ## License
 The MIT License (MIT)
