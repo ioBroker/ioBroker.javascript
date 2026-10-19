@@ -303,8 +303,10 @@ class JavaScript extends adapter_core_1.Adapter {
     subscriptionsWildcard = [];
     subscriptionsFile = [];
     subscriptionsObject = [];
-    /** O(1) dispatch map for subscriptionsObject – pattern → subscribers */
+    /** O(1) dispatch map for subscriptionsObject – exact id → subscribers */
     subscriptionsObjectMap = new Map();
+    /** Object subscriptions with `*` in the pattern - these must be checked linearly on every object change */
+    subscriptionsObjectWildcard = [];
     /** IO-9: Cache for sendTo broadcast – adapterName → instance list, invalidated on object change */
     sendToInstanceCache = new Map();
     subscribedPatterns = {};
@@ -493,6 +495,7 @@ class JavaScript extends adapter_core_1.Adapter {
             subscriptionsFile: this.subscriptionsFile,
             subscriptionsObject: this.subscriptionsObject,
             subscriptionsObjectMap: this.subscriptionsObjectMap,
+            subscriptionsObjectWildcard: this.subscriptionsObjectWildcard,
             sendToInstanceCache: this.sendToInstanceCache,
             subscribedPatterns: this.subscribedPatterns,
             subscribedPatternsFile: this.subscribedPatternsFile,
@@ -826,6 +829,17 @@ class JavaScript extends adapter_core_1.Adapter {
         const objSubs = this.subscriptionsObjectMap.get(id);
         if (objSubs) {
             for (const sub of objSubs) {
+                try {
+                    sub.callback(id, obj);
+                }
+                catch (err) {
+                    this.log.error(`Error in callback: ${err.toString()}`);
+                }
+            }
+        }
+        // patterns with "*" cannot be looked up by the id
+        for (const sub of this.subscriptionsObjectWildcard) {
+            if (sub.regex.test(id)) {
                 try {
                     sub.callback(id, obj);
                 }
@@ -2976,6 +2990,10 @@ class JavaScript extends adapter_core_1.Adapter {
                             if (!mapSubs.length) {
                                 this.subscriptionsObjectMap.delete(sub.pattern);
                             }
+                        }
+                        const wildcardPos = this.subscriptionsObjectWildcard.indexOf(sub);
+                        if (wildcardPos !== -1) {
+                            this.subscriptionsObjectWildcard.splice(wildcardPos, 1);
                         }
                         this.unsubscribeForeignObjects(sub.pattern);
                     }

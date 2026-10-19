@@ -60,6 +60,7 @@ function makeContext() {
         subscriptionsFile: [],
         subscriptionsObject: [],
         subscriptionsObjectMap: new Map(),
+        subscriptionsObjectWildcard: [],
         sendToInstanceCache: new Map(),
         subscribedPatterns: {},
         subscribedPatternsFile: {},

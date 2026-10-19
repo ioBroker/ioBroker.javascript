@@ -5776,6 +5776,14 @@ export function sandBox(
             }
 
             const subs: SubscribeObject = { pattern, callback, name };
+            if (pattern.includes('*')) {
+                try {
+                    subs.regex = new RegExp(pattern2RegEx(pattern));
+                } catch (err: unknown) {
+                    sandbox.log(`Error by subscribeObject: ${(err as Error).message}`, 'error');
+                    return null;
+                }
+            }
             if (sandbox.verbose) {
                 sandbox.log(`subscribeObject: ${JSON.stringify(subs)}`, 'info');
             }
@@ -5783,11 +5791,16 @@ export function sandBox(
             adapter.subscribeForeignObjects(pattern);
 
             context.subscriptionsObject.push(subs);
-            // Keep O(1) dispatch map in sync
-            if (!context.subscriptionsObjectMap.has(pattern)) {
-                context.subscriptionsObjectMap.set(pattern, []);
+            if (subs.regex) {
+                // the id of a changed object cannot be looked up in the map for a pattern with "*"
+                context.subscriptionsObjectWildcard.push(subs);
+            } else {
+                // Keep O(1) dispatch map in sync
+                if (!context.subscriptionsObjectMap.has(pattern)) {
+                    context.subscriptionsObjectMap.set(pattern, []);
+                }
+                context.subscriptionsObjectMap.get(pattern)!.push(subs);
             }
-            context.subscriptionsObjectMap.get(pattern)!.push(subs);
 
             return subs;
         },
@@ -5819,6 +5832,10 @@ export function sandBox(
                             context.subscriptionsObjectMap.delete(subObject.pattern);
                         }
                     }
+                    const wildcardPos = context.subscriptionsObjectWildcard.indexOf(subObject);
+                    if (wildcardPos !== -1) {
+                        context.subscriptionsObjectWildcard.splice(wildcardPos, 1);
+                    }
                     sandbox.__engine.__subscriptionsObject--;
                     return true;
                 }
@@ -5841,6 +5858,10 @@ export function sandBox(
                         if (!mapSubsP.length) {
                             context.subscriptionsObjectMap.delete(subObject.pattern);
                         }
+                    }
+                    const wildcardPosP = context.subscriptionsObjectWildcard.indexOf(context.subscriptionsObject[i]);
+                    if (wildcardPosP !== -1) {
+                        context.subscriptionsObjectWildcard.splice(wildcardPosP, 1);
                     }
                     context.subscriptionsObject.splice(i, 1);
                     sandbox.__engine.__subscriptionsObject--;

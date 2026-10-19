@@ -384,8 +384,10 @@ class JavaScript extends Adapter {
     private readonly subscriptionsWildcard: SubscriptionResult[] = [];
     private readonly subscriptionsFile: FileSubscriptionResult[] = [];
     private readonly subscriptionsObject: SubscribeObject[] = [];
-    /** O(1) dispatch map for subscriptionsObject – pattern → subscribers */
+    /** O(1) dispatch map for subscriptionsObject – exact id → subscribers */
     private readonly subscriptionsObjectMap: Map<string, SubscribeObject[]> = new Map();
+    /** Object subscriptions with `*` in the pattern - these must be checked linearly on every object change */
+    private readonly subscriptionsObjectWildcard: SubscribeObject[] = [];
     /** IO-9: Cache for sendTo broadcast – adapterName → instance list, invalidated on object change */
     private readonly sendToInstanceCache: Map<string, string[]> = new Map();
     private readonly subscribedPatterns: Record<string, number> = {};
@@ -615,6 +617,7 @@ class JavaScript extends Adapter {
             subscriptionsFile: this.subscriptionsFile,
             subscriptionsObject: this.subscriptionsObject,
             subscriptionsObjectMap: this.subscriptionsObjectMap,
+            subscriptionsObjectWildcard: this.subscriptionsObjectWildcard,
             sendToInstanceCache: this.sendToInstanceCache,
             subscribedPatterns: this.subscribedPatterns,
             subscribedPatternsFile: this.subscribedPatternsFile,
@@ -980,6 +983,16 @@ class JavaScript extends Adapter {
         const objSubs = this.subscriptionsObjectMap.get(id);
         if (objSubs) {
             for (const sub of objSubs) {
+                try {
+                    sub.callback(id, obj);
+                } catch (err: any) {
+                    this.log.error(`Error in callback: ${err.toString()}`);
+                }
+            }
+        }
+        // patterns with "*" cannot be looked up by the id
+        for (const sub of this.subscriptionsObjectWildcard) {
+            if (sub.regex!.test(id)) {
                 try {
                     sub.callback(id, obj);
                 } catch (err: any) {
@@ -3517,6 +3530,10 @@ class JavaScript extends Adapter {
                             if (!mapSubs.length) {
                                 this.subscriptionsObjectMap.delete(sub.pattern);
                             }
+                        }
+                        const wildcardPos = this.subscriptionsObjectWildcard.indexOf(sub);
+                        if (wildcardPos !== -1) {
+                            this.subscriptionsObjectWildcard.splice(wildcardPos, 1);
                         }
                         this.unsubscribeForeignObjects(sub.pattern);
                     }

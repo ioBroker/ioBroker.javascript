@@ -32,6 +32,7 @@ Executes JavaScript, TypeScript Scripts.
 ## Changelog
 ### **WORK IN PROGRESS**
 * (@GermanBluefox) Fixed: false "Cannot redeclare block-scoped variable" (TS2451) warnings for `const`s that are declared in several scripts
+* (@GermanBluefox) Fixed: `subscribeObject()`/`onObject()` and the rule trigger "On object change" never fired for a pattern with `*`
 
 ### 10.4.5 (2026-10-18)
 * (@GermanBluefox) Fixed: a script that did not handle a rejected `setStateAsync` (e.g. of a missing state) or another asynchronous function terminated the adapter

@@ -152,6 +152,8 @@ export type SubscribeObject = {
     name: string;
     pattern: string;
     callback: (id: string, obj?: ioBroker.Object | null) => void;
+    /** Only for patterns with `*`: the compiled pattern */
+    regex?: RegExp;
 };
 
 export type IobSchedule = Job & { _ioBroker: { type: 'cron'; pattern: string | Date; scriptName: string; id: string } };
@@ -781,8 +783,10 @@ export interface JavascriptContext {
     subscriptionsWildcard: SubscriptionResult[];
     subscriptionsFile: FileSubscriptionResult[];
     subscriptionsObject: SubscribeObject[];
-    /** O(1) dispatch map – pattern → list of subscribers (kept in sync with subscriptionsObject) */
+    /** O(1) dispatch map – exact id → list of subscribers (kept in sync with subscriptionsObject) */
     subscriptionsObjectMap: Map<string, SubscribeObject[]>;
+    /** Subscriptions with `*` in the pattern – checked linearly on every object change */
+    subscriptionsObjectWildcard: SubscribeObject[];
     /** IO-9: Cache for sendTo broadcast – adapterName → instance ids, invalidated on system.adapter.* object change */
     sendToInstanceCache: Map<string, string[]>;
     subscribedPatterns: Record<string, number>;

@@ -365,6 +365,57 @@ describe('Test JS', function () {
         });
     });
 
+    it('Test JS: test onObject with wildcard pattern', function (done) {
+        this.timeout(5000);
+
+        // add a script
+        const script = {
+            _id: 'script.js.test_on_object_wildcard',
+            type: 'script',
+            common: {
+                name: 'test onObject with wildcard',
+                enabled: true,
+                verbose: true,
+                engine: 'system.adapter.javascript.0',
+                engineType: 'Javascript/js',
+                source:
+                    `onObject('0_userdata.0.wildcardTest.*', id => setState('test_on_object_wildcard', id, true));\n` +
+                    `onObject('0_userdata.0.wildcardTest.b*', id => setState('test_on_object_wildcard', 'wrong: ' + id, true));\n` +
+                    `createState('test_on_object_wildcard', '', () => setState('test_on_object_wildcard', 'ready', true));`,
+            },
+            native: {},
+        };
+
+        const onStateChanged = function (id, state) {
+            if (id !== 'javascript.0.test_on_object_wildcard' || !state) {
+                return;
+            }
+            if (state.val === 'ready') {
+                // the subscriptions are active now
+                objects.setObject(
+                    '0_userdata.0.wildcardTest.a',
+                    {
+                        type: 'state',
+                        common: { name: 'a', type: 'boolean', role: 'indicator', read: true, write: true },
+                        native: {},
+                    },
+                    err => err && done(err),
+                );
+            } else if (state.val === '0_userdata.0.wildcardTest.a') {
+                removeStateChangedHandler(onStateChanged);
+                done();
+            } else if (state.val) {
+                removeStateChangedHandler(onStateChanged);
+                done(new Error(`Unexpected value: ${state.val}`));
+            }
+        };
+        addStateChangedHandler(onStateChanged);
+
+        objects.setObject(script._id, script, err => {
+            assert.equal(err, null);
+        });
+    });
+
     it('Test JS: test creation of state for other instance', function (done) {
         this.timeout(3000);
         // add a script

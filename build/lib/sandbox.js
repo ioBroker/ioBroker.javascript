@@ -4768,16 +4768,31 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                 return null;
             }
             const subs = { pattern, callback, name };
+            if (pattern.includes('*')) {
+                try {
+                    subs.regex = new RegExp(pattern2RegEx(pattern));
+                }
+                catch (err) {
+                    sandbox.log(`Error by subscribeObject: ${err.message}`, 'error');
+                    return null;
+                }
+            }
             if (sandbox.verbose) {
                 sandbox.log(`subscribeObject: ${JSON.stringify(subs)}`, 'info');
             }
             adapter.subscribeForeignObjects(pattern);
             context.subscriptionsObject.push(subs);
-            // Keep O(1) dispatch map in sync
-            if (!context.subscriptionsObjectMap.has(pattern)) {
-                context.subscriptionsObjectMap.set(pattern, []);
+            if (subs.regex) {
+                // the id of a changed object cannot be looked up in the map for a pattern with "*"
+                context.subscriptionsObjectWildcard.push(subs);
             }
-            context.subscriptionsObjectMap.get(pattern).push(subs);
+            else {
+                // Keep O(1) dispatch map in sync
+                if (!context.subscriptionsObjectMap.has(pattern)) {
+                    context.subscriptionsObjectMap.set(pattern, []);
+                }
+                context.subscriptionsObjectMap.get(pattern).push(subs);
+            }
             return subs;
         },
         unsubscribeObject: function (subObject) {
@@ -4806,6 +4821,10 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                             context.subscriptionsObjectMap.delete(subObject.pattern);
                         }
                     }
+                    const wildcardPos = context.subscriptionsObjectWildcard.indexOf(subObject);
+                    if (wildcardPos !== -1) {
+                        context.subscriptionsObjectWildcard.splice(wildcardPos, 1);
+                    }
                     sandbox.__engine.__subscriptionsObject--;
                     return true;
                 }
@@ -4826,6 +4845,10 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                         if (!mapSubsP.length) {
                             context.subscriptionsObjectMap.delete(subObject.pattern);
                         }
+                    }
+                    const wildcardPosP = context.subscriptionsObjectWildcard.indexOf(context.subscriptionsObject[i]);
+                    if (wildcardPosP !== -1) {
+                        context.subscriptionsObjectWildcard.splice(wildcardPosP, 1);
                     }
                     context.subscriptionsObject.splice(i, 1);
                     sandbox.__engine.__subscriptionsObject--;
