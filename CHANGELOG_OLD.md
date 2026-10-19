@@ -28,15 +28,6 @@ The newest change log is in README.md
 * (@GermanBluefox) The 1px line between the script tabs and the toolbar stopped 10px short of the left edge and 40px short of the right one: the tab row carried a margin and a `calc(100% - 50px)` width to leave room for the "close all but current" button. Both are padding on the tab strip now, so the line reaches the edges of the pane
 * (@GermanBluefox) Blockly was grey in every dark theme - workspace, toolbox and flyout were hard-coded colours, which left a grey block sitting in the middle of, for instance, the navy "modernDark" admin. They follow the colours of the active ioBroker theme now, in light themes as well. The blocks themselves keep the colour of their category
 
-## 10.1.4 (2026-09-03)
-* (@GermanBluefox) Rules: the text of an action can round the trigger value with `%.1s` - any number of digits after the decimal point, also `%.2old` for the old value - formatted with the decimal separator of the system, so `Kühlschrank zu warm (%.1s°C)` gives `29,4°C` where `%s` gave `29.400000000000002°C`
-* (@GermanBluefox) Corrected the function block in blockly
-* (@GermanBluefox) A custom OpenAI-compatible AI endpoint answered "Invalid API key" in the inline completion and while loading the model list, although the test button in the settings said "ok": both asked the adapter for the provider `openai`, and the adapter picks the key by that name, so they used the "OpenAI API key" instead of the "Custom API key". The custom endpoint is now addressed as what it is, everywhere (#2369)
-* (@GermanBluefox) A configured "Custom API Base URL" also redirected every request meant for OpenAI itself to that address - with the OpenAI key attached and no way to switch it off. The base URL now belongs to the custom endpoint alone, so both can be used side by side. If the key of your custom endpoint is in the "OpenAI API key" field, move it to the "Custom API key" field; the adapter writes a warning in the log if it finds such a setup (#2369)
-* (@GermanBluefox) A folded "or"/"else" section of a rule still occupied the 64px every section reserves as a drop target, and showed the top 64px of the very cards it was supposed to hide - clipped, and out of reach of the scrollbar. Being the last thing in the rule, that looked like a rule that could not be scrolled to its end
-* (@GermanBluefox) The 1px line between the script tabs and the toolbar stopped 10px short of the left edge and 40px short of the right one: the tab row carried a margin and a `calc(100% - 50px)` width to leave room for the "close all but current" button. Both are padding on the tab strip now, so the line reaches the edges of the pane
-* (@GermanBluefox) Blockly was grey in every dark theme - workspace, toolbox and flyout were hard-coded colours, which left a grey block sitting in the middle of, for instance, the navy "modernDark" admin. They follow the colours of the active ioBroker theme now, in light themes as well. The blocks themselves keep the colour of their category
-
 ## 10.1.3 (2026-08-30)
 * (@GermanBluefox) The plain text export named its files after the script ID instead of the script name, so every dot of a name came out as an underscore - `HK-Balkontuer_v0.1` was exported as `HK-Balkontuer_v0_1.js`, and importing it back renamed the script to that. The files are now named after the script (#2364)
 * (@GermanBluefox) Importing a plain text export treated a dot inside a file name as a folder level, so `PW-TV-Control_v0.6.js` created a folder `PW-TV-Control_v0` containing a script named `6`. Only the directories of the ZIP are folders now (#2364)
@@ -144,20 +135,6 @@ The newest change log is in README.md
 * (Eistee82) Anthropic agent mode (native `tool_use`/`tool_result` blocks) and 10 new Monaco editor tools so the AI agent can read/navigate/edit the live editor
 * (Eistee82) `search_datapoints` covers every object type (channels, devices, folders, enums, …) and matches on role; `get_object_info` lists children for containers — fixes finding aliases/motion-sensors modeled as channels
 * (Eistee82) Non-chat model filter expanded (embeddings, image/audio/video/TTS, transcription, moderation, web-search, Ollama single-task models, …)
-
-## 9.2.0 (2026-04-11)
-* (Eistee82) AI Chat panel with multi-provider support, tool calling, inline completions, and smart-apply
-* (Eistee82) Fix: prevent duplicate 'Stopping script' log when script is not running
-* (Eistee82) Fix: only restart scripts on the instance that owns them
-* (Eistee82) Added OID display mode toggle for Blockly editor: 4 display modes (Name, Name path, State ID, Full ID) with toolbar dropdown, context menu, optional object icons, and translations in 11 languages
-* (Eistee82) Node 25 compatibility: replaced deprecated rmdirSync with rmSync in build tasks
-* (@GermanBluefox) Added support for plain import/export
-* (@GermanBluefox) Correcting error in configuration
-* (@GermanBluefox) disallow writing into node_modules folder by scripts
-* (@GermanBluefox) Correcting start of the script more than one time if restart is triggered
-* (@GermanBluefox) All delayed writings are stopped by the script stop
-* (@GermanBluefox) Added check if a script has been modified by another user/window
-* (@GermanBluefox) Make the instance number more prominent
 
 ## 9.2.0 (2026-04-11)
 * (Eistee82) AI Chat panel with multi-provider support, tool calling, inline completions, and smart-apply
