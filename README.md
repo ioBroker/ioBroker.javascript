@@ -35,6 +35,7 @@ Executes JavaScript, TypeScript Scripts.
 * (@agross) Fixed: TypeScript scripts that import the same module as a global script failed with "Identifier has already been declared"
 * (@GermanBluefox) Fixed: the @-mention list of the AI chat showed only the first 13 scripts
 * (@GermanBluefox) Fixed: selection of state if predefined
+* (@GermanBluefox) Fixed: false "Cannot redeclare block-scoped variable" (TS2451) warnings for `const`s that are declared in several scripts
 
 ### 10.4.4 (2026-10-16)
 * (@GermanBluefox) Fixed: a script that did not handle a rejected `setStateAsync` (e.g. of a missing state) or another asynchronous function terminated the adapter

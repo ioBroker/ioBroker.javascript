@@ -537,7 +537,12 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
         this.hideInlineDiff();
         if (this.editor) {
             this.props.onRegisterSelect?.(null);
+            // The editor does not dispose a model given to it by setModel(). A model left behind stays
+            // in the TypeScript program of Monaco, and its top-level `const`s then clash with the ones
+            // of the next script (false TS2451): https://github.com/ioBroker/ioBroker.javascript/issues/2412
+            const model = this.editor.getModel();
             this.editor.dispose();
+            model?.dispose();
             this.editor = null;
         }
     }
