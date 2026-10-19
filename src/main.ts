@@ -226,7 +226,7 @@ const SCRIPT_CACHE_FIELDS = ['compiled', 'declarations', 'sourceHash'];
  * Every instance on every host compiles the global scripts and writes the result to the shared
  * object. Instances of different versions never agree on the hash, so each one overwrites the
  * cache of the other - and if that counted as a change of the script, they would restart each
- * other forever (#2402).
+ * other forever (#2402). A non-global TypeScript script is not restarted on its own cache write either.
  */
 function scriptChanged(obj: ioBroker.ScriptObject, formerObj: ioBroker.ScriptObject): boolean {
     const common = obj.common as unknown as Record<string, unknown>;
@@ -477,8 +477,6 @@ class JavaScript extends Adapter {
     private typingsWarningShown = false;
 
     private logCollectors: { name: string; collector: (severity: ioBroker.LogLevel, msg: string) => void }[] = [];
-
-    private readonly ignoreObjectChange: Set<string> = new Set();
 
     private debugState: DebugState = {
         scriptName: '',
@@ -894,14 +892,6 @@ class JavaScript extends Adapter {
     }
 
     async onObjectChange(id: string, obj?: ioBroker.Object | null): Promise<void> {
-        // Check if we should ignore this change (once!) because we just updated the compiled sources
-        if (this.ignoreObjectChange.has(id)) {
-            // Update the cached script object and do nothing more
-            this.objects[id] = obj as ioBroker.Object;
-            this.ignoreObjectChange.delete(id);
-            return;
-        }
-
         // When still in initializing: already remember current values,
         // but data structures are initialized elsewhere
         if (!this.objectsInitDone) {
@@ -1056,8 +1046,8 @@ class JavaScript extends Adapter {
                     this.log.info(`Global Script ${id} updated. Restart instance.`);
                     this.restart();
                 }
-            } else {
-                // No global script
+            } else if (scriptChanged(obj, formerObj as ioBroker.ScriptObject)) {
+                // No global script, and not only its stored compilation result changed
                 if (obj.common?.engine === `system.adapter.${this.namespace}`) {
                     // create states for scripts
                     await this.createActiveObject(id, !!obj.common.enabled);
@@ -3724,8 +3714,8 @@ class JavaScript extends Adapter {
                         }
                         compiled = tsCompiled.result || '';
 
-                        // Store the compiled source and the original source hash, so we don't need to do the work again next time
-                        this.ignoreObjectChange.add(name); // ignore the next change and don't restart scripts
+                        // Store the compiled source and the original source hash, so we don't need to do the work again next time.
+                        // The script is not restarted on this change, see scriptChanged()
                         await this.extendForeignObjectAsync(name, {
                             common: {
                                 sourceHash,
