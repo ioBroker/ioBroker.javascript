@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "10.4.6",
+    "version": "10.4.7",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "10.4.7": {
+        "en": "Fixed: the AI chat did not see the open script when it was a Blockly script, and an outdated version of it after unsaved edits; the open script is now always the context when no other script is mentioned\nFixed: the code mode of the AI chat ignored the open script and wrote an unrelated new script for a request like \"turn on the logs in the script\"",
+        "de": "Behoben: Der KI-Chat sah das offene Blockly-Skript nicht und war nach ungespeicherten Änderungen veraltet. Das offene Skript ist jetzt immer der Kontext, wenn kein anderes Skript erwähnt wird\nBehoben: Der Code-Modus des AI-Chat ignorierte das offene Script und schrieb ein neues Script für Anfragen wie „Logs einschalten“",
+        "ru": "Исправлено: в чате с искусственным интеллектом не отображался открытый скрипт, когда это был скрипт Blockly, а после несохраненных правок — устаревшая версия скрипта; открытый скрипт теперь всегда является контекстом, если ни один другой скрипт не упоминается\nИсправлено: режим кода чата AI игнорировал открытый скрипт и писал не связанный с ним новый скрипт для запроса типа «включить логи в скрипте»",
+        "pt": "Corrigido: o chat de IA não via o script aberto quando era Blockly e uma versão desatualizada após edições não salvas; o script aberto agora é sempre o contexto quando nenhum outro script é mencionado\nCorrigido: o modo de código do chat AI ignorou o script aberto e criou um novo script para pedir “ativar os logs no script”",
+        "nl": "Opgelost: in de AI-chat werd het open script niet gezien toen het een Blockly-script was, en een verouderde versie ervan na niet-opgeslagen bewerkingen; het open script is nu altijd de context wanneer er geen ander script wordt genoemd\nOpgelost: de codemodus van de AI-chat negeerde het open script en schreef een nieuw script dat niets met elkaar te maken had voor een verzoek zoals „zet de logboeken aan in het script”",
+        "fr": "Corrigé : le chat IA ne voyait pas le script ouvert lorsqu'il s'agissait d'un script Blockly, et une version obsolète après des modifications non enregistrées. Désormais, aucun autre script n'est mentionné\nCorrigé : le mode code du chat IA ignorait le script ouvert et en écrivait un nouveau pour une requête du type « Activez les journaux »",
+        "it": "Risolto: la chat AI non vedeva lo script aperto quando era uno script Blockly e una versione obsoleta dopo le modifiche non salvate; lo script aperto ora è sempre il contesto in cui non si parla\nRisolto: la modalità codice della chat AI ignorava lo script aperto e ne creava uno nuovo per la richiesta «attiva i log»",
+        "es": "Corregido: el chat de IA no veía el guion abierto cuando era un guion de Blockly y una versión anticuada del mismo tras editarlo sin guardar; el guion abierto ahora es siempre el contexto cuando no se menciona otro guion\nCorregido: el modo código del chat de IA ignoró el guion abierto y escribió un nuevo guion no relacionado para una solicitud como «active los registros del guion»",
+        "pl": "Naprawiono: czat AI nie widział otwartego skryptu, gdy był to skrypt Blockly, i jego przestarzałą wersję po niezapisanych edycjach; otwarty skrypt jest teraz zawsze kontekstem, gdy żaden inny skrypt nie jest wymieniony\nNaprawiono: tryb kodu czatu AI zignorował otwarty skrypt i napisał niepowiązany nowy skrypt dla żądania, takiego jak „włącz dzienniki w skrypcie”",
+        "uk": "Виправлено: чат AI не бачив відкритого сценарію, коли це був скрипт Blockly, і застарілу його версію після незбережених редагувань; відкритий сценарій тепер завжди є контекстом, коли жоден інший сценарій не згадується\nВиправлено: режим коду чату AI ігнорував відкритий скрипт і написав непов'язаний новий скрипт для запиту на кшталт «включити журнали в скрипті»",
+        "zh-cn": "修复：AI 聊天在 Blockly 脚本时看不到打开的脚本，以及未保存编辑后的过时版本；当没有提及其他脚本时，打开的脚本现在始终是上下文\n修复：AI 聊天的代码模式忽略了打开的脚本，为 “打开脚本中的日志” 之类的请求编写了一个无关的新脚本"
+      },
       "10.4.6": {
         "en": "Fixed: false \"Cannot redeclare block-scoped variable\" (TS2451) warnings for `const`s that are declared in several scripts\nFixed: `subscribeObject()`/`onObject()` and the rule trigger \"On object change\" never fired for a pattern with `*`\nFixed: a change of a TypeScript script could be ignored after its compilation result could not be stored",
         "de": "Behoben: Falsche „Blockvariable kann nicht neu deklariert werden“ (TS2451) für `const`s in mehreren Skripten\nBehoben: `SubscribeObject () `/`OnObject () `und der Regeltrigger „On object change“ löste nie für Muster mit `*`\nBehoben: Eine Änderung eines TypeScript-Skripts konnte ignoriert werden",
@@ -117,19 +130,6 @@
         "pl": "Dodano okno dialogowe pomocy funkcji w edytorze",
         "uk": "Додано діалогове вікно допомоги функцій в редакторі",
         "zh-cn": "在编辑器中添加了功能帮助对话框"
-      },
-      "10.2.4": {
-        "en": "Rules: selection of state fixed\nFixed debugger",
-        "de": "Regeln: Bundeslandwahl fest\nFester Debugger",
-        "ru": "Правила: выбор фиксированного государства\nИсправлен отладчик",
-        "pt": "Regras: seleção de estado fixo\nDepurador fixo",
-        "nl": "Regels: de keuze van de staat is vastgesteld\nDebugger opgelost",
-        "fr": "Règles : choix de l'État fixe\nDébogueur fixe",
-        "it": "Regole: scelta dello stato fissa\nDebugger fisso",
-        "es": "Reglas: selección de estado fija\nDepurador fijo",
-        "pl": "Zasady: wybór stanu stałego\nNaprawiono debugger",
-        "uk": "Правила: вибір штату фіксований\nВиправлений налагоджувач",
-        "zh-cn": "规则：选州固定\n修复了调试器"
       }
     },
     "platform": "Javascript/Node.js",
