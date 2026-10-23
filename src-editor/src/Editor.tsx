@@ -1017,7 +1017,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
         const getRef = (): ScriptEditorType | null => this.scriptEditorRef.current;
         return {
             getSelection: () => getRef()?.getEditorSelection?.() ?? null,
-            getContent: () => getRef()?.getEditorContent?.() ?? '',
+            getContent: () => getRef()?.getEditorContent?.() || this.scripts[this.state.selected]?.source || '',
             getCursorPosition: () => getRef()?.getCursorPosition?.() ?? null,
             highlightText: (text: string) => getRef()?.highlightText?.(text) ?? 0,
             highlightLineRange: (startLine: number, endLine: number) =>
@@ -1036,6 +1036,51 @@ class Editor extends React.Component<EditorProps, EditorState> {
             getSymbols: async () => getRef()?.getDocumentSymbols?.() ?? [],
         };
     }
+
+    /** The code of the open JS/TS script for the AI chat, read when a message is sent */
+    getAiCurrentCode = (): string =>
+        this.scriptEditorRef.current?.getEditorContent?.() || this.scripts[this.state.selected]?.source || '';
+
+    /**
+     * The open Blockly script for the AI chat: generated JavaScript and the workspace XML, separated by
+     *  `%%BLOCKLY_XML%%`. Until the workspace is loaded, both come from the stored source, whose last
+     *  line is the XML as a comment (see BlocklyEditor.blocklyCode2JSCode()).
+     */
+    getAiBlocklyCode = (): string => {
+        const ref = this.blocklyEditorRef.current;
+        let jsCode = '';
+        let xml = '';
+        try {
+            jsCode = ref?.blocklyCode2JSCode(true) || '';
+        } catch {
+            /* ignore */
+        }
+        try {
+            xml = ref?.getWorkspaceXml() || '';
+        } catch {
+            /* ignore */
+        }
+        if (!jsCode && !xml) {
+            const lines = (this.scripts[this.state.selected]?.source || '').split(/\r\n|\r|\n/);
+            let xmlLine = lines.length - 1;
+            while (xmlLine >= 0 && !lines[xmlLine].startsWith('//')) {
+                xmlLine--;
+            }
+            if (xmlLine >= 0) {
+                const stored = lines[xmlLine].substring(2);
+                try {
+                    xml = stored.startsWith('<xml') ? stored : window.decodeURIComponent(window.atob(stored));
+                } catch {
+                    xml = '';
+                }
+                jsCode = lines.slice(0, xmlLine).join('\n').trim();
+            }
+        }
+        return `${jsCode}\n%%BLOCKLY_XML%%\n${xml}`;
+    };
+
+    /** Blockly has no Monaco editor; the AI tool get_editor_content still has to see the open script */
+    private blocklyAiEditorApi: EditorApi = { getContent: () => this.getAiBlocklyCode() };
 
     onConvertBlockly2JS(): void {
         this.showConfirmDialog(I18n.t('It will not be possible to revert this operation.'), result => {
@@ -2153,6 +2198,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             runningInstances={this.state.runningInstances}
                             themeType={this.state.themeType}
                             currentCode={this.scripts[this.state.selected]?.source || ''}
+                            getCurrentCode={this.getAiCurrentCode}
                             currentLanguage={currentLanguage}
                             selectedCode={this.getSelect?.() || ''}
                             allScripts={this.getScriptInfos()}
@@ -2281,23 +2327,11 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             socket={this.props.socket}
                             runningInstances={this.state.runningInstances}
                             themeType={this.state.themeType}
-                            currentCode={(() => {
-                                const ref = this.blocklyEditorRef.current;
-                                let jsCode = '';
-                                let xml = '';
-                                try {
-                                    jsCode = ref?.blocklyCode2JSCode(true) || '';
-                                } catch {
-                                    /* ignore */
-                                }
-                                try {
-                                    xml = ref?.getWorkspaceXml() || '';
-                                } catch {
-                                    /* ignore */
-                                }
-                                return `${jsCode}\n%%BLOCKLY_XML%%\n${xml}`;
-                            })()}
+                            currentCode={this.getAiBlocklyCode()}
+                            getCurrentCode={this.getAiBlocklyCode}
                             currentLanguage="blockly"
+                            currentScriptId={this.state.selected}
+                            editorApi={this.blocklyAiEditorApi}
                             allScripts={this.getScriptInfos()}
                             onInsertCode={xml => {
                                 const ref = this.blocklyEditorRef.current;

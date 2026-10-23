@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { I18n, type AdminConnection } from '@iobroker/gui-components';
 
 import type {
@@ -37,6 +37,8 @@ interface UseAiChatOptions {
     socket: AdminConnection;
     runningInstances: Record<string, unknown>;
     currentCode?: string;
+    /** Reads the code of the open script when a message is sent; `currentCode` is only the value of the last render */
+    getCurrentCode?: () => string;
     currentLanguage?: AiScriptLanguage;
     allScripts?: ScriptInfo[];
     /** Optional handle for agent tools to inspect/manipulate the live Monaco editor. */
@@ -77,7 +79,41 @@ function nextId(): string {
 }
 
 export function useAiChat(options: UseAiChatOptions): UseAiChatReturn {
-    const { socket, runningInstances, currentCode, currentLanguage, allScripts, editorApi, currentScriptId } = options;
+    const {
+        socket,
+        runningInstances,
+        currentCode,
+        getCurrentCode,
+        currentLanguage,
+        allScripts,
+        editorApi,
+        currentScriptId,
+    } = options;
+
+    /**
+     * The code of the open script as it is now. The editor does not re-render on every keystroke
+     *  (and Blockly has no workspace yet at the first render), so `currentCode` can be outdated or empty.
+     */
+    const readCurrentCode = useCallback((): string => {
+        try {
+            const live = getCurrentCode?.();
+            if (live) {
+                return live;
+            }
+        } catch {
+            // fall back to the rendered value
+        }
+        return currentCode || '';
+    }, [getCurrentCode, currentCode]);
+
+    /** Name and ID of the open script, so the AI knows which one "this script" is */
+    const currentScriptLabel = useMemo((): string => {
+        if (!currentScriptId) {
+            return '';
+        }
+        const name = allScripts?.find(s => s.id === currentScriptId)?.name;
+        return name ? `"${name}" (${currentScriptId})` : currentScriptId;
+    }, [currentScriptId, allScripts]);
 
     /**
      * Build a ChatSourceRange snapshot from whatever scope the caller can provide.
@@ -342,19 +378,28 @@ ${docsRef.current}`;
                 prompt += `\n\nAvailable smart home devices:\n${JSON.stringify(devicesRef.current, null, 0)}`;
             }
 
-            // Current script context
-            if (!hasMentions && currentCode) {
+            // Current script context: without @-mentions the open script is what the user asks about
+            if (!hasMentions) {
+                const code = readCurrentCode();
+                const label = currentScriptLabel ? ` ${currentScriptLabel}` : '';
+                const thisScript = `When the user says "this script", "the current script", "das aktuelle Skript" or does not name another script, they mean this one. Its source is given here, so never answer that no script is open.`;
                 if (isBlockly) {
                     const sep = '%%BLOCKLY_XML%%';
-                    const sepIndex = currentCode.indexOf(sep);
-                    const jsCode = sepIndex !== -1 ? currentCode.substring(0, sepIndex).trim() : currentCode;
-                    const xmlCode = sepIndex !== -1 ? currentCode.substring(sepIndex + sep.length).trim() : '';
-                    prompt += `\n\nThe user is working on this Blockly script (currently open in the editor).\n\nGenerated JavaScript (shows the logic):\n\`\`\`javascript\n${jsCode}\n\`\`\``;
-                    if (xmlCode) {
-                        prompt += `\n\nBlockly XML (use for modifications):\n\`\`\`xml\n${xmlCode}\n\`\`\``;
+                    const sepIndex = code.indexOf(sep);
+                    const jsCode = sepIndex !== -1 ? code.substring(0, sepIndex).trim() : code.trim();
+                    const xmlCode = sepIndex !== -1 ? code.substring(sepIndex + sep.length).trim() : '';
+                    if (jsCode || xmlCode) {
+                        prompt += `\n\nThe user is working on the Blockly script${label}, which is currently open in the editor. ${thisScript}\n\nGenerated JavaScript (shows the logic):\n\`\`\`javascript\n${jsCode}\n\`\`\``;
+                        if (xmlCode) {
+                            prompt += `\n\nBlockly XML (use for modifications):\n\`\`\`xml\n${xmlCode}\n\`\`\``;
+                        }
+                    } else if (currentScriptId) {
+                        prompt += `\n\nThe Blockly script${label} is currently open in the editor and has no blocks yet.`;
                     }
-                } else {
-                    prompt += `\n\nThe user's question is about this script (currently open in the editor, ${currentLanguage || 'javascript'}):\n\`\`\`${currentLanguage || 'javascript'}\n${currentCode}\n\`\`\``;
+                } else if (code.trim()) {
+                    prompt += `\n\nThe user's question is about the script${label}, which is currently open in the editor (${currentLanguage || 'javascript'}). ${thisScript}\n\`\`\`${currentLanguage || 'javascript'}\n${code}\n\`\`\``;
+                } else if (currentScriptId) {
+                    prompt += `\n\nThe script${label} is currently open in the editor and is still empty.`;
                 }
             }
 
@@ -375,7 +420,7 @@ ${docsRef.current}`;
 
             return [{ role: 'system', content: prompt }];
         },
-        [socket, runningInstances, currentCode, currentLanguage, allScripts],
+        [socket, runningInstances, readCurrentCode, currentScriptLabel, currentScriptId, currentLanguage, allScripts],
     );
 
     // ─── Code Mode: Two-step plan→code generation ─────────────────
@@ -432,8 +477,30 @@ ${docsRef.current}`;
                 }
                 const devices = devicesRef.current || [];
 
+                // The open script: a task like "turn on the logs in the script" is about it, not about a new one
+                const isBlockly = currentLanguage === 'blockly';
+                const code = readCurrentCode();
+                let openScript = '';
+                if (isBlockly) {
+                    const sepIndex = code.indexOf('%%BLOCKLY_XML%%');
+                    const jsCode = sepIndex !== -1 ? code.substring(0, sepIndex).trim() : code.trim();
+                    const xmlCode = sepIndex !== -1 ? code.substring(sepIndex + '%%BLOCKLY_XML%%'.length).trim() : '';
+                    if (jsCode || xmlCode) {
+                        openScript = `Generated JavaScript (shows the logic):\n\`\`\`javascript\n${jsCode}\n\`\`\``;
+                        if (xmlCode) {
+                            openScript += `\n\nBlockly XML:\n\`\`\`xml\n${xmlCode}\n\`\`\``;
+                        }
+                    }
+                } else if (code.trim()) {
+                    openScript = `\`\`\`${currentLanguage || 'javascript'}\n${code}\n\`\`\``;
+                }
+                const label = currentScriptLabel ? ` ${currentScriptLabel}` : '';
+                const openScriptIntro = openScript
+                    ? `Script currently open in the editor${label}:\n${openScript}\n\nIf the task refers to this script ("the script", "das Skript", changing, extending or fixing it), the task is about THIS script and not about a new one.\n\n`
+                    : '';
+
                 // ── Step 1: Planning (identical prompt to old merge) ──
-                const planPrompt = `Devices in my smart home:\n${JSON.stringify(devices)}\n\nI need a plan for this task: ${content}\n\nAnswer with max 6 lines. Use FULL device IDs from the list above (e.g. zigbee2mqtt.0.0xa4c1383f5ef5fb07.state). No explanation. No reasoning.\n1. IDs: <full IDs from the device list. If a device is not in the list, use TODO_DEVICE_ID as placeholder>\n2. Trigger: <on(id) for state changes OR schedule('min hour * * *') for time-based tasks>\n3. Condition: <when to act>\n4. Actions: <what to set, with full IDs and values. For Telegram use sendTo('telegram.0', 'send', {text: msg})>\n5. Else: <alternative actions or nothing>\n6. Extra: <logging, formatting, etc.>\nValues are boolean (true/false) or numbers, not strings. Use .state not .state_toggle.`;
+                const planPrompt = `${openScriptIntro}Devices in my smart home:\n${JSON.stringify(devices)}\n\nI need a plan for this task: ${content}\n\n${openScript ? 'If the task changes the open script, list instead in max 6 lines which parts of it change, keeping its triggers and IDs. ' : ''}Answer with max 6 lines. Use FULL device IDs from the list above (e.g. zigbee2mqtt.0.0xa4c1383f5ef5fb07.state). No explanation. No reasoning.\n1. IDs: <full IDs from the device list. If a device is not in the list, use TODO_DEVICE_ID as placeholder>\n2. Trigger: <on(id) for state changes OR schedule('min hour * * *') for time-based tasks>\n3. Condition: <when to act>\n4. Actions: <what to set, with full IDs and values. For Telegram use sendTo('telegram.0', 'send', {text: msg})>\n5. Else: <alternative actions or nothing>\n6. Extra: <logging, formatting, etc.>\nValues are boolean (true/false) or numbers, not strings. Use .state not .state_toggle.`;
 
                 const planResult = await sendChatCompletion(socket, instanceId, {
                     messages: [{ role: 'user', content: planPrompt }],
@@ -470,10 +537,14 @@ ${docsRef.current}`;
                 };
                 setMessages(prev => [...prev, codeMessage]);
 
-                const isBlockly = currentLanguage === 'blockly';
+                const changeOpenScript = !openScript
+                    ? ''
+                    : isBlockly
+                      ? '\n\nIf the task changes the open script, return the COMPLETE modified Blockly XML of it: keep all existing blocks and apply only the requested changes.'
+                      : `\n\nIf the task changes the open script, return the COMPLETE modified script in a \`\`\`${currentLanguage || 'javascript'} code block: keep all existing code, its structure and its style (function declarations, TypeScript types, existing IDs and triggers) and apply only the requested changes. The syntax rules of the system prompt apply only to new code then.`;
                 const codePrompt = isBlockly
-                    ? `TASK: ${content}\n\nPLAN:\n${planText}\n\nGenerate Blockly XML blocks for this ioBroker automation. Use the exact state IDs from the plan. If the plan contains TODO_DEVICE_ID, keep it as a placeholder. Write comments in ${lang}. Put the blocks in a \`\`\`xml code block. You may add a short explanation before or after the XML.`
-                    : `TASK: ${content}\n\nPLAN:\n${planText}\n\nWrite the ioBroker script. Use the exact state IDs from the plan. If the plan contains TODO_DEVICE_ID, keep it as a placeholder with a comment so the user can fill in the correct ID. Write comments in ${lang}. Put the code in a \`\`\`javascript code block. You may add a short explanation before or after the code.`;
+                    ? `${openScriptIntro}TASK: ${content}\n\nPLAN:\n${planText}\n\nGenerate Blockly XML blocks for this ioBroker automation. Use the exact state IDs from the plan. If the plan contains TODO_DEVICE_ID, keep it as a placeholder. Write comments in ${lang}. Put the blocks in a \`\`\`xml code block. You may add a short explanation before or after the XML.${changeOpenScript}`
+                    : `${openScriptIntro}TASK: ${content}\n\nPLAN:\n${planText}\n\nWrite the ioBroker script. Use the exact state IDs from the plan. If the plan contains TODO_DEVICE_ID, keep it as a placeholder with a comment so the user can fill in the correct ID. Write comments in ${lang}. Put the code in a \`\`\`javascript code block. You may add a short explanation before or after the code.${changeOpenScript}`;
 
                 const systemPrompt = isBlockly ? getBlocklyCodeModeSystemPrompt(lang) : getCodeModeSystemPrompt(lang);
 
@@ -506,14 +577,33 @@ ${docsRef.current}`;
                     return updated;
                 });
 
-                setLastContextInfo(`${I18n.t('devices')}: ${devices.length}`);
+                const scriptName = openScript ? allScripts?.find(s => s.id === currentScriptId)?.name : undefined;
+                setLastContextInfo(
+                    `${I18n.t('Context')}: ${
+                        openScript
+                            ? `${scriptName ? `${I18n.t('current script')} (${scriptName})` : I18n.t('current script')} + `
+                            : ''
+                    }${I18n.t('devices')} (${devices.length})`,
+                );
             } catch (err) {
                 setError(String(err));
                 setMessages(prev => prev.slice(0, -1));
             }
             setIsLoading(false);
         },
-        [model, modelProviderMap, isLoading, socket, runningInstances, currentLanguage, setMessages],
+        [
+            model,
+            modelProviderMap,
+            isLoading,
+            socket,
+            runningInstances,
+            currentLanguage,
+            setMessages,
+            readCurrentCode,
+            currentScriptLabel,
+            currentScriptId,
+            allScripts,
+        ],
     );
 
     // ─── Chat / Agent Mode ──────────────────────────────────────────
@@ -593,13 +683,14 @@ ${docsRef.current}`;
             } else if (mentionedScriptIds.length > 0) {
                 const names = mentionedScriptIds.map(id => id.replace(/^script\.js\./, ''));
                 contextParts.push(names.join(', '));
-            } else {
-                contextParts.push(I18n.t('current script'));
+            } else if (currentScriptId || readCurrentCode()) {
+                const name = allScripts?.find(s => s.id === currentScriptId)?.name;
+                contextParts.push(name ? `${I18n.t('current script')} (${name})` : I18n.t('current script'));
             }
             if (includeDevices) {
                 contextParts.push(I18n.t('devices'));
             }
-            setLastContextInfo(`${I18n.t('Context')}: ${contextParts.join(' + ')}`);
+            setLastContextInfo(contextParts.length ? `${I18n.t('Context')}: ${contextParts.join(' + ')}` : null);
 
             const systemMessages = await buildSystemMessages(includeAll, includeDevices, mentionedScriptIds);
             const baseUrl = provider === 'custom' ? config.gptBaseUrl || '' : '';
@@ -848,6 +939,8 @@ ${docsRef.current}`;
             setMessages,
             buildSourceRange,
             editorApi,
+            currentScriptId,
+            readCurrentCode,
         ],
     );
 

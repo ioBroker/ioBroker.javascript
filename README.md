@@ -30,6 +30,10 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Fixed: the AI chat did not see the open script when it was a Blockly script, and an outdated version of it after unsaved edits; the open script is now always the context when no other script is mentioned
+* (@GermanBluefox) Fixed: the code mode of the AI chat ignored the open script and wrote an unrelated new script for a request like "turn on the logs in the script"
+
 ### 10.4.6 (2026-10-19)
 * (@GermanBluefox) Fixed: false "Cannot redeclare block-scoped variable" (TS2451) warnings for `const`s that are declared in several scripts
 * (@GermanBluefox) Fixed: `subscribeObject()`/`onObject()` and the rule trigger "On object change" never fired for a pattern with `*`

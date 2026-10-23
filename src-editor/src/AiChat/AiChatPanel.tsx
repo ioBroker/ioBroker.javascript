@@ -13,6 +13,8 @@ interface AiChatPanelProps {
     runningInstances: Record<string, unknown>;
     themeType: ThemeType;
     currentCode?: string;
+    /** Reads the code of the open script when a message is sent; `currentCode` is only the value of the last render */
+    getCurrentCode?: () => string;
     currentLanguage?: AiScriptLanguage;
     selectedCode?: string;
     allScripts?: ScriptInfo[];
@@ -47,6 +49,7 @@ const AiChatPanel: React.FC<AiChatPanelProps> = ({
     runningInstances,
     themeType,
     currentCode,
+    getCurrentCode,
     currentLanguage,
     selectedCode,
     allScripts,
@@ -69,12 +72,22 @@ const AiChatPanel: React.FC<AiChatPanelProps> = ({
             socket,
             runningInstances,
             currentCode,
+            getCurrentCode,
             currentLanguage,
             allScripts,
             editorApi,
             currentScriptId,
         }),
-        [socket, runningInstances, currentCode, currentLanguage, allScripts, editorApi, currentScriptId],
+        [
+            socket,
+            runningInstances,
+            currentCode,
+            getCurrentCode,
+            currentLanguage,
+            allScripts,
+            editorApi,
+            currentScriptId,
+        ],
     );
 
     const {

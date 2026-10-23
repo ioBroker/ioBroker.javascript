@@ -621,7 +621,7 @@ function listScripts(scripts: ScriptInfo[]): string {
 /** Result helpers for editor-tool calls where the host API is missing. */
 function editorApiMissing(): string {
     return JSON.stringify({
-        error: 'Editor is not available. This tool requires the script editor to be open.',
+        error: 'Editor is not available: this tool only works in the JavaScript/TypeScript code editor (not for Blockly). This does not mean that no script is open: the open script is given in the system prompt.',
     });
 }
 
