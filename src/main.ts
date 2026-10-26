@@ -1123,9 +1123,27 @@ class JavaScript extends Adapter {
             if (oldState) {
                 // enable or disable script
                 if (!state.ack && id.startsWith(this.activeStr) && this.objects[id]?.native?.script) {
-                    void this.extendForeignObject(this.objects[id].native.script, {
-                        common: { enabled: state.val },
-                    });
+                    const scriptId: string = this.objects[id].native.script;
+                    const scriptObj = this.objects[scriptId] as ioBroker.ScriptObject | undefined;
+                    if (
+                        state.val &&
+                        scriptObj?.type === 'script' &&
+                        scriptObj.common?.enabled &&
+                        scriptObj.common.engine === `system.adapter.${this.namespace}` &&
+                        !checkIsGlobal(scriptObj)
+                    ) {
+                        // Already enabled => the object does not change, so restart the script directly
+                        this.stopCounters[scriptId] = this.stopCounters[scriptId] ? this.stopCounters[scriptId] + 1 : 1;
+                        void this.stopScript(scriptId).then(() => {
+                            if (!--this.stopCounters[scriptId]) {
+                                void this.loadScriptById(scriptId);
+                            }
+                        });
+                    } else {
+                        void this.extendForeignObject(scriptId, {
+                            common: { enabled: state.val },
+                        });
+                    }
                 }
 
                 // monitor if the adapter is alive and send all subscriptions once more, after the adapter goes online

@@ -1425,6 +1425,43 @@ describe('Test JS', function () {
         });
     }).timeout(5000);
 
+    it('Test JS: setting scriptEnabled to true restarts an already running script', function (done) {
+        this.timeout(10000);
+        const script = {
+            _id: 'script.js.restartOnEnabled',
+            type: 'script',
+            common: {
+                name: 'restartOnEnabled',
+                enabled: true,
+                verbose: true,
+                engine: 'system.adapter.javascript.0',
+                engineType: 'Javascript/js',
+                source: `createState('test_restartOnEnabled', 0, () => setState('test_restartOnEnabled', Date.now(), true));`,
+            },
+            native: {},
+        };
+        let starts = 0;
+        let enabledAck = false;
+        const onStateChanged = function (id, state) {
+            if (id === 'javascript.0.test_restartOnEnabled' && state && state.val) {
+                starts++;
+                if (starts === 1) {
+                    // script runs and is already enabled => trigger it once more
+                    states.setState('javascript.0.scriptEnabled.restartOnEnabled', { val: true, ack: false });
+                }
+            } else if (id === 'javascript.0.scriptEnabled.restartOnEnabled' && starts >= 1 && state?.ack) {
+                assert.equal(state.val, true);
+                enabledAck = true;
+            }
+            if (starts === 2 && enabledAck) {
+                removeStateChangedHandler(onStateChanged);
+                done();
+            }
+        };
+        addStateChangedHandler(onStateChanged);
+        objects.setObject(script._id, script);
+    });
+
     it('Test JS: test global function globalSetTestState', done => {
         // add a script
         const script = {
