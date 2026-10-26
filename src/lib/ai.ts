@@ -5,7 +5,7 @@
  * Keys are stored as `encryptedNative` + `protectedNative` in io-package.json and never leave the
  * adapter; the editor names a provider and the adapter adds the key.
  */
-import { readAiSettings, type AiNativeFields, type AiSettings } from '@iobroker/ai-core';
+import { readAdapterAiSettings, readAiSettings, type AiNativeFields, type AiSettings } from '@iobroker/ai-core';
 
 /** The `native` fields of the javascript adapter that hold its AI settings */
 export const JS_AI_FIELDS: AiNativeFields = {
@@ -48,4 +48,15 @@ export const JS_AI_ALIASES = {
  */
 export function jsAiSettings(config: object): AiSettings {
     return readAiSettings(config, JS_AI_FIELDS);
+}
+
+/**
+ * The AI settings this instance works with: its own, or the system-wide ones of `system.ai` that are
+ * set up once in admin - with the credential type `system`, or as long as no own provider is set up
+ *
+ * @param adapter the adapter
+ * @param config the configuration of the instance (`this.config`)
+ */
+export function jsActiveAiSettings(adapter: ioBroker.Adapter, config: object): Promise<AiSettings> {
+    return readAdapterAiSettings(adapter, config, JS_AI_FIELDS);
 }

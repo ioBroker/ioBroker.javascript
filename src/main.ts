@@ -52,7 +52,7 @@ import { requestModuleNameByUrl } from './lib/nodeModulesManagement';
 import { SecretsManager, isSecretId } from './lib/secrets';
 import type { FbDebugCommand, FbDebugStatus } from './lib/fb/types';
 import { AiBackend } from '@iobroker/ai-core';
-import { JS_AI_ALIASES, jsAiSettings } from './lib/ai';
+import { JS_AI_ALIASES, jsActiveAiSettings, jsAiSettings } from './lib/ai';
 import {
     addVersion,
     describeSource,
@@ -441,7 +441,7 @@ class JavaScript extends Adapter {
 
     /** Providers, keys and the push of long answers for the AI of the script editor */
     private readonly ai = new AiBackend(this, {
-        getSettings: () => jsAiSettings(this.config),
+        getSettings: () => jsActiveAiSettings(this, this.config),
         aliases: JS_AI_ALIASES,
     });
 
@@ -1347,7 +1347,8 @@ class JavaScript extends Adapter {
      * hand a real OpenAI key to a third-party host.
      */
     private warnAboutMisplacedCustomAiKey(): void {
-        if (!(this.config.gptBaseUrl || '').trim()) {
+        // the own fields do not count while the system-wide AI settings are used
+        if (!(this.config.gptBaseUrl || '').trim() || this.config.credentialType === 'system') {
             return;
         }
         const settings = jsAiSettings(this.config);

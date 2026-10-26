@@ -338,7 +338,7 @@ class JavaScript extends adapter_core_1.Adapter {
     setStateCountCheckInterval = null;
     /** Providers, keys and the push of long answers for the AI of the script editor */
     ai = new ai_core_1.AiBackend(this, {
-        getSettings: () => (0, ai_1.jsAiSettings)(this.config),
+        getSettings: () => (0, ai_1.jsActiveAiSettings)(this, this.config),
         aliases: ai_1.JS_AI_ALIASES,
     });
     /**
@@ -1162,7 +1162,8 @@ class JavaScript extends adapter_core_1.Adapter {
      * hand a real OpenAI key to a third-party host.
      */
     warnAboutMisplacedCustomAiKey() {
-        if (!(this.config.gptBaseUrl || '').trim()) {
+        // the own fields do not count while the system-wide AI settings are used
+        if (!(this.config.gptBaseUrl || '').trim() || this.config.credentialType === 'system') {
             return;
         }
         const settings = (0, ai_1.jsAiSettings)(this.config);

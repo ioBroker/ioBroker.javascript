@@ -6,7 +6,7 @@
  */
 const assert = require('node:assert').strict;
 const { baseUrlOf, listAvailableProviders } = require('@iobroker/ai-core');
-const { jsAiSettings, JS_AI_ALIASES } = require('../build/lib/ai');
+const { jsActiveAiSettings, jsAiSettings, JS_AI_ALIASES } = require('../build/lib/ai');
 
 describe('Test AI settings', function () {
     it('reads the key of every provider from its own field', function () {
@@ -66,6 +66,25 @@ describe('Test AI settings', function () {
             { provider: 'openai' },
             { provider: 'custom', baseUrl: 'http://192.168.1.10:11434/v1' },
         ]);
+    });
+
+    it('uses the AI settings of the system with "system" or without own keys', async function () {
+        const adapter = {
+            getForeignObjectAsync: async id =>
+                id === 'system.ai'
+                    ? { native: { provider: 'gemini', model: 'gemini-pro', credentialId: 'system.credentials.gemini' } }
+                    : null,
+        };
+        const providersOf = async config =>
+            listAvailableProviders(await jsActiveAiSettings(adapter, config)).map(item => item.provider);
+
+        assert.deepEqual(await providersOf({ credentialType: 'system', claudeKey: 'sk-ant' }), ['gemini']);
+        assert.deepEqual(await providersOf({ credentialType: 'manual' }), ['gemini']);
+        assert.deepEqual(await providersOf({ credentialType: 'manual', claudeKey: 'sk-ant' }), ['anthropic']);
+        assert.deepEqual(
+            await providersOf({ credentialType: 'manager', credentialIdGptKey: 'system.credentials.openai' }),
+            ['openai'],
+        );
     });
 
     it('still answers the command names of the older editor and of the settings dialog', function () {
