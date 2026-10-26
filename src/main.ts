@@ -145,6 +145,8 @@ const forbiddenMirrorLocations: string[] = [
 
 const packageJson: Record<string, any> = JSON.parse(readFileSync(`${__dirname}/../package.json`).toString());
 const SCRIPT_CODE_MARKER = 'script.js.';
+// Name prefix of the ephemeral scripts started via the "execute" message, which have no `scriptEnabled` state
+const EXECUTE_SCRIPT_MARKER = `${SCRIPT_CODE_MARKER}__execute_`;
 
 let webstormDebug: string | undefined;
 
@@ -3235,7 +3237,7 @@ class JavaScript extends Adapter {
             maxLogs = 5000;
         }
 
-        const name = `${SCRIPT_CODE_MARKER}__execute_${++this.executeCounter}`;
+        const name = `${EXECUTE_SCRIPT_MARKER}${++this.executeCounter}`;
 
         // Compile the source the same way regular scripts are compiled
         let createdScript: JsScript | false;
@@ -3426,7 +3428,10 @@ class JavaScript extends Adapter {
         if (!silent) {
             this.log.info(`${name}: Stopping script`);
 
-            await this.setState(`scriptEnabled.${name.substring(SCRIPT_CODE_MARKER.length)}`, false, true);
+            // also stopped by stopAllScripts() or the setState limit while the "execute" message waits for its output
+            if (!name.startsWith(EXECUTE_SCRIPT_MARKER)) {
+                await this.setState(`scriptEnabled.${name.substring(SCRIPT_CODE_MARKER.length)}`, false, true);
+            }
         }
 
         if (this.messageBusHandlers[name]) {
