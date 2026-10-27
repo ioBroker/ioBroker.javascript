@@ -786,6 +786,10 @@
                     "type": "select",
                     "options": [
                         {
+                            "label": "System-wide AI settings",
+                            "value": "system"
+                        },
+                        {
                             "label": "System credentials",
                             "value": "manager"
                         },
@@ -795,18 +799,38 @@
                         }
                     ],
                     "label": "Credentials type",
-                    "default": "manual",
+                    "default": "system",
                     "xs": 12,
                     "sm": 6,
                     "md": 6,
                     "lg": 6,
                     "xl": 6
                 },
+                "_aiSystemHint": {
+                    "newLine": true,
+                    "type": "staticText",
+                    "text": "ai_system_hint",
+                    "hidden": "!(data.credentialType === 'system' || !(data.credentialType === 'manager' ? (data.credentialIdGptKey || data.credentialIdClaudeKey || data.credentialIdGeminiKey || data.credentialIdDeepseekKey || data.gptBaseUrl) : (data.gptKey || data.claudeKey || data.geminiKey || data.deepseekKey || data.gptBaseUrl)))",
+                    "xs": 12
+                },
+                "_aiSystemLink": {
+                    "newLine": true,
+                    "type": "staticLink",
+                    "label": "Open the AI settings of the system",
+                    "href": "#tab-intro/system/tabAi",
+                    "target": "_blank",
+                    "button": true,
+                    "variant": "outlined",
+                    "icon": "info",
+                    "hidden": "!(data.credentialType === 'system' || !(data.credentialType === 'manager' ? (data.credentialIdGptKey || data.credentialIdClaudeKey || data.credentialIdGeminiKey || data.credentialIdDeepseekKey || data.gptBaseUrl) : (data.gptKey || data.claudeKey || data.geminiKey || data.deepseekKey || data.gptBaseUrl)))",
+                    "xs": 12,
+                    "sm": 6
+                },
                 "gptKey": {
                     "newLine": true,
                     "type": "password",
                     "label": "ChatGPT API key",
-                    "hidden": "data.credentialType === 'manager'",
+                    "hidden": "data.credentialType === 'manager' || data.credentialType === 'system'",
                     "xs": 12,
                     "sm": 9,
                     "md": 9,
@@ -840,13 +864,14 @@
                     "md": 3,
                     "lg": 3,
                     "xl": 3,
-                    "showProcess": true
+                    "showProcess": true,
+                    "hidden": "data.credentialType === 'system'"
                 },
                 "claudeKey": {
                     "newLine": true,
                     "type": "password",
                     "label": "Anthropic API key",
-                    "hidden": "data.credentialType === 'manager'",
+                    "hidden": "data.credentialType === 'manager' || data.credentialType === 'system'",
                     "xs": 12,
                     "sm": 9,
                     "md": 9,
@@ -880,13 +905,14 @@
                     "md": 3,
                     "lg": 3,
                     "xl": 3,
-                    "showProcess": true
+                    "showProcess": true,
+                    "hidden": "data.credentialType === 'system'"
                 },
                 "geminiKey": {
                     "newLine": true,
                     "type": "password",
                     "label": "Gemini API key",
-                    "hidden": "data.credentialType === 'manager'",
+                    "hidden": "data.credentialType === 'manager' || data.credentialType === 'system'",
                     "xs": 12,
                     "sm": 9,
                     "md": 9,
@@ -920,13 +946,14 @@
                     "md": 3,
                     "lg": 3,
                     "xl": 3,
-                    "showProcess": true
+                    "showProcess": true,
+                    "hidden": "data.credentialType === 'system'"
                 },
                 "deepseekKey": {
                     "newLine": true,
                     "type": "password",
                     "label": "DeepSeek API key",
-                    "hidden": "data.credentialType === 'manager'",
+                    "hidden": "data.credentialType === 'manager' || data.credentialType === 'system'",
                     "xs": 12,
                     "sm": 9,
                     "md": 9,
@@ -960,7 +987,8 @@
                     "md": 3,
                     "lg": 3,
                     "xl": 3,
-                    "showProcess": true
+                    "showProcess": true,
+                    "hidden": "data.credentialType === 'system'"
                 },
                 "gptBaseUrl": {
                     "newLine": true,
@@ -972,12 +1000,13 @@
                     "lg": 5,
                     "xl": 5,
                     "help": "Custom API Base URL help",
-                    "placeholder": "https://api.openai.com/v1"
+                    "placeholder": "https://api.openai.com/v1",
+                    "hidden": "data.credentialType === 'system'"
                 },
                 "gptBaseUrlKey": {
                     "type": "text",
                     "label": "Custom API key",
-                    "hidden": "data.credentialType === 'manager'",
+                    "hidden": "data.credentialType === 'manager' || data.credentialType === 'system'",
                     "xs": 12,
                     "sm": 4,
                     "md": 4,
@@ -1010,7 +1039,8 @@
                     "md": 3,
                     "lg": 3,
                     "xl": 3,
-                    "showProcess": true
+                    "showProcess": true,
+                    "hidden": "data.credentialType === 'system'"
                 },
                 "aiMaxTokens": {
                     "newLine": true,
@@ -1024,7 +1054,8 @@
                     "sm": 5,
                     "md": 5,
                     "lg": 5,
-                    "xl": 5
+                    "xl": 5,
+                    "hidden": "data.credentialType === 'system'"
                 },
                 "aiReasoningEffort": {
                     "newLine": true,
@@ -1061,7 +1092,8 @@
                     "sm": 5,
                     "md": 5,
                     "lg": 5,
-                    "xl": 5
+                    "xl": 5,
+                    "hidden": "data.credentialType === 'system'"
                 }
             }
         },

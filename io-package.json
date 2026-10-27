@@ -554,7 +554,7 @@
     "claudeKey": "",
     "geminiKey": "",
     "deepseekKey": "",
-    "credentialType": "manual",
+    "credentialType": "system",
     "credentialIdGptKey": "",
     "credentialIdClaudeKey": "",
     "credentialIdGeminiKey": "",

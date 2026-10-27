@@ -70,7 +70,8 @@ export interface JavaScriptAdapterConfig {
     geminiKey: string;
     deepseekKey: string;
     password?: string;
-    credentialType?: 'manual' | 'manager';
+    /** `system`: the AI settings of the system (`system.ai`); `manual`: the keys here; `manager`: credential ids */
+    credentialType?: 'system' | 'manual' | 'manager';
     credentialIdGptKey?: string;
     credentialIdClaudeKey?: string;
     credentialIdGeminiKey?: string;

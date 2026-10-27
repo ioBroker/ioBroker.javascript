@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JS_AI_ALIASES = exports.JS_AI_FIELDS = void 0;
 exports.jsAiSettings = jsAiSettings;
+exports.jsActiveAiSettings = jsActiveAiSettings;
 /**
  * Where this adapter keeps its AI settings. Everything else - providers, keys, the credential store,
  * the push of long answers - is `@iobroker/ai-core`.
@@ -49,5 +50,15 @@ exports.JS_AI_ALIASES = {
  */
 function jsAiSettings(config) {
     return (0, ai_core_1.readAiSettings)(config, exports.JS_AI_FIELDS);
+}
+/**
+ * The AI settings this instance works with: its own, or the system-wide ones of `system.ai` that are
+ * set up once in admin - with the credential type `system`, or as long as no own provider is set up
+ *
+ * @param adapter the adapter
+ * @param config the configuration of the instance (`this.config`)
+ */
+function jsActiveAiSettings(adapter, config) {
+    return (0, ai_core_1.readAdapterAiSettings)(adapter, config, exports.JS_AI_FIELDS);
 }
 //# sourceMappingURL=ai.js.map
