@@ -31,6 +31,8 @@ Executes JavaScript, TypeScript Scripts.
 
 ## Changelog
 ### **WORK IN PROGRESS**
+* (GermanBluefox) Fixed: setting scriptEnabled to true restarts an already running script again (#2417)
+* (@GermanBluefox) Fixed: a script that stopped itself with `stopScript()` (or was restarted with `runScript()`) kept running and `scriptEnabled` stayed `true`
 * (@GermanBluefox) Added: the AI uses the AI settings of the system that are set up once in admin (System settings → AI) - for new instances and for instances without own keys
 * (@GermanBluefox) Fixed: a script started via the `execute` message wrote `scriptEnabled.__execute_<n>` without object, when the instance stopped or the setState limit stopped the script before the output was collected
 

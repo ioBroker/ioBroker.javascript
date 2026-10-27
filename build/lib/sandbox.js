@@ -4316,7 +4316,7 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                 return true;
             }
             if (objects[scriptName].common.enabled) {
-                objects[scriptName].common.enabled = false;
+                // Do not change the cached object: onObjectChange compares the new object with it and stops the script only if "enabled" differs
                 adapter.extendForeignObject(scriptName, { common: { enabled: false } }, ( /* err, obj */) => {
                     adapter.extendForeignObject(scriptName, { common: { enabled: true } }, err => typeof callback === 'function' && callback(err));
                 });
@@ -4410,7 +4410,7 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                 return true;
             }
             if (objects[scriptName].common.enabled) {
-                objects[scriptName].common.enabled = false;
+                // Do not change the cached object: onObjectChange compares the new object with it and stops the script only if "enabled" differs
                 adapter.extendForeignObject(scriptName, { common: { enabled: false } }, err => {
                     if (typeof callback === 'function') {
                         callback(err, true);
