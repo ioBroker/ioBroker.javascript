@@ -108,6 +108,8 @@ const forbiddenMirrorLocations = [
 ];
 const packageJson = JSON.parse((0, node_fs_1.readFileSync)(`${__dirname}/../package.json`).toString());
 const SCRIPT_CODE_MARKER = 'script.js.';
+// Name prefix of the ephemeral scripts started via the "execute" message, which have no `scriptEnabled` state
+const EXECUTE_SCRIPT_MARKER = `${SCRIPT_CODE_MARKER}__execute_`;
 let webstormDebug;
 const isCI = !!process.env.CI;
 // ambient declarations for typescript
@@ -2723,7 +2725,7 @@ class JavaScript extends adapter_core_1.Adapter {
         if (isNaN(maxLogs) || maxLogs <= 0) {
             maxLogs = 5000;
         }
-        const name = `${SCRIPT_CODE_MARKER}__execute_${++this.executeCounter}`;
+        const name = `${EXECUTE_SCRIPT_MARKER}${++this.executeCounter}`;
         // Compile the source the same way regular scripts are compiled
         let createdScript;
         if (isTypeScript) {
@@ -2897,7 +2899,10 @@ class JavaScript extends adapter_core_1.Adapter {
         // `scriptEnabled` state and should not appear in the adapter log.
         if (!silent) {
             this.log.info(`${name}: Stopping script`);
-            await this.setState(`scriptEnabled.${name.substring(SCRIPT_CODE_MARKER.length)}`, false, true);
+            // also stopped by stopAllScripts() or the setState limit while the "execute" message waits for its output
+            if (!name.startsWith(EXECUTE_SCRIPT_MARKER)) {
+                await this.setState(`scriptEnabled.${name.substring(SCRIPT_CODE_MARKER.length)}`, false, true);
+            }
         }
         if (this.messageBusHandlers[name]) {
             delete this.messageBusHandlers[name];
