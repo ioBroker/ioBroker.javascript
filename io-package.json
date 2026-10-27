@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "javascript",
-    "version": "10.4.7",
+    "version": "10.4.8",
     "blockedVersions": [
       "8.0.0",
       "8.0.1"
@@ -40,6 +40,19 @@
       "Matthias Kleine <info@haus-automatisierung.com>"
     ],
     "news": {
+      "10.4.8": {
+        "en": "Fixed: setting scriptEnabled to true restarts an already running script again (#2417)\nFixed: a script that stopped itself with `stopScript()` (or was restarted with `runScript()`) kept running and `scriptEnabled` stayed `true`\nAdded: the AI uses the AI settings of the system that are set up once in admin (System settings → AI) - for new instances and for instances without own keys\nFixed: a script started via the `execute` message wrote `scriptEnabled.__execute_<n>` without object, when the instance stopped or the setState limit stopped the script before the output was collected",
+        "de": "Behoben: ScriptEnabled auf True startet ein laufendes Script erneut (#2417)\nBehoben: Ein Script, das sich mit StopScript () stoppte (oder mit RunScript () neu gestartet wurde), lief weiter und `scriptEnabled` blieb `true`\nHinzugefügt: Die KI nutzt die im Admin (Systemeinstellungen → KI) eingerichteten KI-Einstellungen — für neue Instanzen und für Instanzen ohne eigene Schlüssel\nBehoben: Ein mit `execute` gestartetes Script lautete `ScriptEnabled. __execute_ <n>`ohne Objekt, als die Instanz oder das SetState-Limit das Script stoppte, bevor die Ausgabe erfasst wurde",
+        "ru": "Исправлено: если для параметра ScriptEnabled задано значение true, уже запущенный скрипт снова запускается (#2417)\nИсправлено: скрипт, который сам остановился с помощью `stopScript () `(или был перезапущен с помощью `runScript ()`) продолжал работать, а `ScriptEnabled` остался верным\nДобавлено: искусственный интеллект использует настройки искусственного интеллекта системы, которые настраиваются один раз в админке (Системные настройки → AI) — для новых экземпляров и для экземпляров без собственных ключей\nИсправлено: скрипт, запущенный с помощью сообщения «выполнить», писал «ScriptEnabled». __execute_ <n>`без объекта, когда экземпляр был остановлен или ограничение setState остановило скрипт до получения выходных данных",
+        "pt": "Corrigido: definir scriptEnabled como true reinicia um script já em execução (#2417)\nCorrigido: um script que parou com `stopScript () `(ou reiniciado com `runScript ()`) continuou rodando e `scriptEnabled`\nAdicionado: a IA usa as configurações de IA do sistema definidas uma vez no admin (System settings → AI) - para novas instâncias e sem chaves próprias\nCorrigido: um script iniciado via `execute` escrevia `scriptEnabled. __execute_ <n>`sem objeto, quando a instância parou ou o limite setState parou o script antes da coleta da saída",
+        "nl": "Opgelost: als u ScriptEnabled instelt op true, wordt een script dat al actief is opnieuw gestart (#2417)\nOpgelost: een script dat zichzelf stopte met `StopScript () `(of opnieuw werd gestart met `RunScript ()`) bleef draaien en `ScriptEnabled` bleef `true`\nToegevoegd: de AI gebruikt de AI-instellingen van het systeem die eenmaal zijn ingesteld in admin (Systeeminstellingen → AI) - voor nieuwe exemplaren en voor instanties zonder eigen sleutels\nOpgelost: een script werd gestart met het `execute` bericht met de tekst `ScriptEnabled. __execute_ <n>`zonder object, wanneer de instantie stopte of de setState-limiet het script stopte voordat de uitvoer werd verzameld",
+        "fr": "Corrigé : définir ScriptEnabled sur true redémarre un script déjà en cours (#2417)\nCorrigé : un script qui s'arrêtait avec `stopScript () `(ou redémarrait avec `RunScript ()`) continuait à fonctionner et `ScriptEnabled` restait « vrai »\nAjouté : l'IA utilise les paramètres du système définis une fois dans admin (Paramètres système → IA), pour les nouvelles instances et pour les instances sans clé\nCorrigé : un script lancé via le message « Execute » écrivait « ScriptEnabled ». __execute_ <n>`sans objet, lorsque l'instance s'arrête ou que la limite SetState arrête le script avant la collecte de la sortie",
+        "it": "Risolto: impostando ScriptEnabled su true riavvia uno script già in esecuzione (#2417)\nRisolto: uno script che si bloccava con `stopScript () `(o riavviato con `runScript ()`) continuava a funzionare e `scriptEnableD` era `true`\nAggiunto: l'IA usa le impostazioni AI del sistema configurate una volta in admin (System Settings → AI), per nuove istanze e senza chiavi\nRisolto: uno script avviato con «execute» diceva «ScriptEnabled. __execute_ <n>`senza oggetto, quando l'istanza si è fermata o il limite SetState ha fermato lo script prima dell'output",
+        "es": "Corregido: poner scriptEnabled en true reinicia un guion que ya se está ejecutando (#2417)\nCorregido: un guion que se detenía solo con `stopScript () `(o se reiniciaba con `RunScript ()`) seguía ejecutándose y `ScriptEnabled` permanecía `true`\nAñadido: la IA utiliza los ajustes de IA del sistema que se configuran una vez en admin (Ajustes del sistema → IA), para instancias nuevas y sin claves propias\nCorregido: un guion iniciado con el mensaje «ejecutar» decía `ScriptEnabled. __ejecute_ <n>`sin objeto, cuando la instancia se detuvo o el límite setState detuvo el guion antes de recopilar la salida",
+        "pl": "Naprawiono: ustawienie ScriptEnabled na true ponownie uruchamia już uruchomiony skrypt (#2417)\nNaprawiono: skrypt, który zatrzymał się za pomocą `StopScript () `(lub został ponownie uruchomiony z `RunScript ()`) nadal działał, a `ScripteTabled` pozostał „true”\nDodano: AI korzysta z ustawień AI systemu, które są skonfigurowane raz w administratorze (Ustawienia systemowe → AI) - dla nowych instancji i instancji bez własnych kluczy\nNaprawiono: skrypt uruchomiony przez komunikat `execute` napisał `ScriptEnabled. __execute_ <n>`bez obiektu, gdy instancja została zatrzymana lub limit setState zatrzymał skrypt przed zebraniem danych wyjściowych",
+        "uk": "Виправлено: налаштування ScriptEnabled на true знову перезавантажує вже запущений скрипт (#2417)\nВиправлено: скрипт, який зупинився за допомогою `StopScript () `(або був перезапущений за допомогою `RunScript ()`) продовжував працювати, а `ScripteNable` залишався `true `\nДодано: AI використовує налаштування AI системи, які налаштовуються один раз в admin (Системні налаштування → AI) - для нових екземплярів і для екземплярів без власних ключів\nВиправлено: скрипт, запущений через повідомлення `execute` написано `ScriptEnabled. __execute_ <n>`без об'єкта, коли екземпляр зупинився або ліміт setState зупинив скрипт до збору виводу",
+        "zh-cn": "修复：将 ScriptEnabled 设置为 true 会再次重新启动已经在运行的脚本 (#2417)\n已修复：使用 `stopScript () `自行停止（或使用 `runScript ()` 重新启动）的脚本继续运行且 `ScripteNabled` 保持 `true`\n新增：对于新实例和没有自有密钥的实例，AI 使用系统的 AI 设置（系统设置 → AI）中设置过一次的系统 AI 设置\n修复：通过 “执行” 消息启动的脚本写入了 “ScriptEnabled”。__execute_ <n>`不带对象，当实例停止或 setState 限制在收集输出之前停止脚本时"
+      },
       "10.4.7": {
         "en": "Fixed: the AI chat did not see the open script when it was a Blockly script, and an outdated version of it after unsaved edits; the open script is now always the context when no other script is mentioned\nFixed: the code mode of the AI chat ignored the open script and wrote an unrelated new script for a request like \"turn on the logs in the script\"",
         "de": "Behoben: Der KI-Chat sah das offene Blockly-Skript nicht und war nach ungespeicherten Änderungen veraltet. Das offene Skript ist jetzt immer der Kontext, wenn kein anderes Skript erwähnt wird\nBehoben: Der Code-Modus des AI-Chat ignorierte das offene Script und schrieb ein neues Script für Anfragen wie „Logs einschalten“",
@@ -117,19 +130,6 @@
         "pl": "Edytor kodu (Monaco), Blockly i bloki Reguły są ładowane tylko po otwarciu tego rodzaju skryptu, więc edytor uruchamia się szybciej\nDodano diagramy blokowe funkcji (FBD, w stylu CFC): timery, liczniki, klapki, krawędzie, porównanie, arytmetyka, konwersje, sterowanie, kalendarz (cron, zdarzenia słoneczne), dzienniki i wiadomości oraz blok z własnym JavaScript - podłączony do stanów ioBroker. Patrz [opis] (docs/en/fbd.md)",
         "uk": "Редактор коду (Монако), блоки Blockly та Rules завантажуються лише тоді, коли відкривається такий сценарій, тому редактор запускається швидше\nДодані функціональні блокові діаграми (FBD, в стилі CFC): таймери, лічильники, шльопанці, ребра, порівняння, арифметика, перетворення, управління, календар (cron, sun events), журнал і повідомлення, а також блок з власним JavaScript - підключений до станів IObroker. Див. [опис] (docs/uk/fbd.md)",
         "zh-cn": "代码编辑器（摩纳哥）、Blockly 和 Rules 块仅在打开此类脚本时加载，因此编辑器启动速度更快\n添加了函数方框图（FBD，采用 CFC 风格）：计时器、计数器、触发器、边缘、比较、算术、转换、控制、日历（cron、sun 事件）、日志和消息，以及带有自己的 JavaScript 的方块（连接到 IOBroker 状态）。参见 [描述]（docs/en/fbd.md）"
-      },
-      "10.2.5": {
-        "en": "Added the functions help dialog in editor",
-        "de": "Hilfedialog im Editor hinzugefügt",
-        "ru": "Добавлен диалог справки по функциям в редакторе",
-        "pt": "Adicionou a ajuda de funções no editor",
-        "nl": "De helpdialoog voor functies toegevoegd in de editor",
-        "fr": "Ajout de la boîte d'aide aux fonctions de l'éditeur",
-        "it": "Aggiunte le funzioni di aiuto in editor",
-        "es": "Añadió las funciones de ayuda en el editor",
-        "pl": "Dodano okno dialogowe pomocy funkcji w edytorze",
-        "uk": "Додано діалогове вікно допомоги функцій в редакторі",
-        "zh-cn": "在编辑器中添加了功能帮助对话框"
       }
     },
     "platform": "Javascript/Node.js",
