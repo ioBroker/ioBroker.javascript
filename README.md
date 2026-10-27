@@ -59,6 +59,10 @@ Executes JavaScript, TypeScript Scripts.
 * (@GermanBluefox) Fixed: instances of different versions
 * (@GermanBluefox) Fixed: the AI chat stopped with "m.default is not a constructor"
 
+### 10.4.1 (2026-10-09)
+* (@GermanBluefox) Changed: the AI assistant uses the shared libraries `@iobroker/ai-core` and `@iobroker/ai-gui`
+* (@GermanBluefox) Fixed: the AI push session is bound to the user who opened it, and testing the values of the AI settings form needs the "execute" right
+
 ## License
 The MIT License (MIT)
 
