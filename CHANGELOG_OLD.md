@@ -1,4 +1,8 @@
 The newest change log is in README.md
+## 10.4.1 (2026-10-09)
+* (@GermanBluefox) Changed: the AI assistant uses the shared libraries `@iobroker/ai-core` and `@iobroker/ai-gui`
+* (@GermanBluefox) Fixed: the AI push session is bound to the user who opened it, and testing the values of the AI settings form needs the "execute" right
+
 ## 10.4.0 (2026-10-08)
 * (@GermanBluefox) The endpoint of an AI request comes out of the configuration and no longer out of the request. An address in the message used to win over the stored one, which was the comfortable way to put a proxy in front of OpenAI - and at the same time the way to have this instance carry the stored key, as the `Authorization` of that request, to an address of somebody else's choosing. Whoever may send a message to this instance could do that. A proxy belongs in the configuration now, where it is entered once by whoever may configure the adapter. The editor never sent an address, so nothing changes for it; the Test buttons of the settings dialog keep trying what stands in the form, with one limit: an address out of the form counts only together with a key out of the form - one's own key to one's own endpoint gives nothing away. In the credential-store mode the saved address is used, so an endpoint of one's own has to be saved before it can be tested there
 * (@GermanBluefox) Only an entry that was stored as an AI credential is read from the central credential store. The store holds the secrets of the whole system - a database password, the login of a camera - and a request for "the key of this provider" could name any one of them
