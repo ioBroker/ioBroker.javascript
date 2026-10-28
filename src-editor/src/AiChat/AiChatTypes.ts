@@ -53,7 +53,7 @@ export interface ApiConfig {
 }
 
 /** Supported AI provider identifiers */
-export type AiProviderName = 'openai' | 'anthropic' | 'gemini' | 'deepseek' | 'custom';
+export type AiProviderName = 'openai' | 'anthropic' | 'gemini' | 'deepseek' | 'openrouter' | 'custom';
 
 /** Script language for AI chat context */
 export type AiScriptLanguage = 'javascript' | 'typescript' | 'blockly';

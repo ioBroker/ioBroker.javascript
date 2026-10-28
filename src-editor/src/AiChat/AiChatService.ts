@@ -182,6 +182,7 @@ export async function loadModels(
         anthropic: 'Anthropic',
         gemini: 'Gemini',
         deepseek: 'DeepSeek',
+        openrouter: 'OpenRouter',
         custom: 'Custom',
     };
     for (const provider of config.providers) {
