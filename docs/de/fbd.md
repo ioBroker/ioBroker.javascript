@@ -150,7 +150,9 @@ Die Regelungsbausteine:
 - `PID` - PID-Regler: Sollwert `SP`, Istwert `PV`, Stellgröße `Y` zwischen `YMIN` und `YMAX`. `KP` ist die
   Verstärkung, `TN` die Nachstellzeit des I-Anteils, `TV` die Vorhaltzeit; `TN` oder `TV` gleich `0` lässt den Anteil
   weg. Steht `Y` an einer Grenze, wächst der I-Anteil nicht weiter (Anti-Windup); der D-Anteil wird aus `PV` gebildet,
-  ein neuer Sollwert gibt also keinen Stoß. `RST` löscht den I-Anteil.
+  ein neuer Sollwert gibt also keinen Stoß. `RST` setzt den Regler zurück: Solange es `TRUE` ist, ist `Y` gleich `0`
+  (bzw. die nächste Grenze, wenn `0` nicht zwischen `YMIN` und `YMAX` liegt); danach beginnt der I-Anteil wieder bei
+  `0`.
   - `INV` kehrt den Wirksinn um (e = `PV` - `SP`): `Y` steigt, solange `PV` über `SP` liegt, wie bei einer Kühlung.
   - `HOLD` hält `Y` fest, etwa während einer Umschaltung, auf die der Regler nicht reagieren soll.
   - `DB` ist eine Totzone: Solange `PV` höchstens `DB` von `SP` entfernt ist, bleibt `Y`, wie es ist. `0` schaltet
