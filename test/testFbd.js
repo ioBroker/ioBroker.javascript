@@ -949,9 +949,18 @@ describe('FBD: control blocks', () => {
         limited.run(0, 1, 1, 1000, 0, 0, 2.5, false, 1000, false);
         assert.ok(limited.Y < 2.5, `no wind-up: ${limited.Y}`);
 
-        // RST clears the integral part
+        // RST puts out 0 (#2426), and afterwards the integral part starts from 0
         pi.run(1, 0, 1, 1000, 0, 0, 100, true, 1000, false);
-        assert.equal(pi.Y, 1);
+        assert.equal(pi.Y, 0);
+        pi.run(1, 0, 1, 1000, 0, 0, 100, false, 1000, false);
+        assert.equal(pi.Y, 2);
+        // ... or the limit nearest to 0
+        const above = runtime.PID();
+        above.run(1, 0, 1, 1000, 0, 10, 100, true, 0, true);
+        assert.equal(above.Y, 10);
+        const below = runtime.PID();
+        below.run(1, 0, 1, 1000, 0, -50, -20, true, 0, true);
+        assert.equal(below.Y, -20);
 
         // D works against a rising process value
         const pd = runtime.PID();
@@ -984,7 +993,7 @@ describe('FBD: control blocks', () => {
 
         // RST goes before HOLD
         pi.run(5, 0, 1, 1000, 0, 0, 100, true, 1000, false, true);
-        assert.equal(pi.Y, 5);
+        assert.equal(pi.Y, 0);
 
         // dead band: Y stays while PV is no further than DB from SP
         const band = runtime.PID();

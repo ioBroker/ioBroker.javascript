@@ -325,7 +325,8 @@ export class Pt1Block {
  *   with a tenth of TV - a cycle that comes early because an input changed has a small `dt`, which
  *   would make it jump.
  * - Anti-windup: while Y is at a limit, the integral part does not grow further in that direction.
- * - RST clears the integral part and holds Y at the P part.
+ * - RST resets the controller: Y is 0 - or the limit nearest to it, when 0 is not between YMIN and
+ *   YMAX - and the integral part starts from 0 again when RST is gone.
  * - INV turns the direction round: e = PV - SP, for cooling, as a negative KP would.
  * - Y stays as it is while HOLD is true, and while PV is no further than DB from SP (dead band). MAN
  *   puts out YMAN instead. Meanwhile the integral part follows, so Y goes on from there without a
@@ -370,7 +371,15 @@ export class PidBlock {
             return;
         }
 
-        if (firstScan || RST) {
+        if (RST) {
+            this.integral = 0;
+            this.derivative = 0;
+            this.lastPV = PV;
+            this.Y = Math.min(high, Math.max(low, 0));
+            return;
+        }
+
+        if (firstScan) {
             this.integral = 0;
             this.derivative = 0;
         } else if (dt > 0) {

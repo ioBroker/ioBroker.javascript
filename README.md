@@ -33,6 +33,7 @@ Executes JavaScript, TypeScript Scripts.
 ### **WORK IN PROGRESS**
 * (@GermanBluefox) Added: OpenRouter, if it is chosen in the system-wide AI settings of admin (`@iobroker/ai-core` 0.0.6, `@iobroker/ai-gui` 0.0.5)
 * (@GermanBluefox) Added: function block diagrams - selection blocks `SEL`, `MUX` and `LIMIT`; the `PID` block got `HOLD`, a dead band `DB`, a manual mode (`MAN`, `YMAN`) and `INV` to reverse its direction
+* (@GermanBluefox) Changed: function block diagrams - `RST` of the `PID` block puts out `Y` = 0 (or the limit nearest to it) instead of the P part (#2426)
 
 ### 10.4.8 (2026-10-27)
 * (@GermanBluefox) Fixed: setting scriptEnabled to true restarts an already running script again (#2417)
