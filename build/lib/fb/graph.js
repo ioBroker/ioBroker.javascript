@@ -50,15 +50,37 @@ function getInputCount(block, def) {
     const count = Number(block.params?.inputs);
     return Math.max(def.extensible.min, Math.min(def.extensible.max, Math.round(Number.isFinite(count) ? count : def.extensible.min)));
 }
+/**
+ * The value of an open input whose type a parameter chooses, like IN0 of SEL: the default of the
+ * library only while it is of that type - a 0 of a block switched to STRING is an empty text.
+ */
+function typedDefault(value, type) {
+    switch (type) {
+        case 'BOOL':
+            return typeof value === 'boolean' ? value : false;
+        case 'STRING':
+            return typeof value === 'string' ? value : '';
+        case 'ANY':
+            return value;
+        default:
+            return typeof value === 'number' ? value : 0;
+    }
+}
+/** An input of a block, with its type resolved */
+function toPin(block, def, pin) {
+    const type = resolvePinType(block, pin.type, def);
+    return typeof pin.type === 'object' ? { ...pin, type, default: typedDefault(pin.default, type) } : { ...pin, type };
+}
 function getInputs(block, def = (0, library_1.getBlockDef)(block.type)) {
     if (!def) {
         return [];
     }
-    const inputs = def.inputs.map(pin => ({ ...pin, type: resolvePinType(block, pin.type, def) }));
+    const inputs = def.inputs.map(pin => toPin(block, def, pin));
     if (def.extensible) {
-        const { prefix, type, default: defaultValue } = def.extensible;
-        for (let i = 1; i <= getInputCount(block, def); i++) {
-            inputs.push({ id: `${prefix}${i}`, type: resolvePinType(block, type, def), default: defaultValue });
+        const { prefix, type, default: defaultValue, start = 1 } = def.extensible;
+        const count = getInputCount(block, def);
+        for (let i = start; i < start + count; i++) {
+            inputs.push(toPin(block, def, { id: `${prefix}${i}`, type, default: defaultValue }));
         }
     }
     return inputs;

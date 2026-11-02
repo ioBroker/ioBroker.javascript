@@ -41,6 +41,7 @@ export const CATEGORY_COLORS: Record<FbCategory, string> = {
     timers: '#8b5cf6',
     counters: '#d946ef',
     compare: '#14b8a6',
+    select: '#f97316',
     arithmetic: '#0ea5e9',
     convert: '#84cc16',
     control: '#ec4899',

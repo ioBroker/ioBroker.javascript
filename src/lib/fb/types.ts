@@ -10,7 +10,7 @@
 export const FB_FORMAT = 1;
 
 /** Version of the block library and of the runtime module the generated code needs */
-export const FB_RUNTIME_VERSION = '1.5.0';
+export const FB_RUNTIME_VERSION = '1.6.0';
 
 /** Name under which the generated code requires the runtime module */
 export const FB_RUNTIME_MODULE = '@iobroker/fb-runtime';
@@ -134,6 +134,7 @@ export type FbCategory =
     | 'timers'
     | 'counters'
     | 'compare'
+    | 'select'
     | 'arithmetic'
     | 'convert'
     | 'control'
@@ -188,10 +189,19 @@ export interface FbBlockDef {
     outputs: FbPinDef[];
     params?: FbParamDef[];
     /**
-     * Inputs `<prefix>1` to `<prefix>n`; `n` is the parameter `inputs` of the block - `count` when a
-     * block is placed, `min` if not given
+     * `n` inputs `<prefix>1` to `<prefix>n` after the fixed ones; `n` is the parameter `inputs` of the
+     * block - `count` when a block is placed, `min` if not given. With `start` the numbers begin there,
+     * like `IN0` of MUX.
      */
-    extensible?: { prefix: string; type: FbPinType; default: FbValue; min: number; max: number; count?: number };
+    extensible?: {
+        prefix: string;
+        type: FbPinType;
+        default: FbValue;
+        min: number;
+        max: number;
+        count?: number;
+        start?: number;
+    };
     /** Outputs `<prefix>1` to `<prefix>n` in the same way, by the parameter `outputs` */
     extensibleOutputs?: { prefix: string; type: FbPinType; min: number; max: number; count?: number };
     /** Remembers something from one cycle to the next; implemented by `fb.<type>()` of the runtime */
