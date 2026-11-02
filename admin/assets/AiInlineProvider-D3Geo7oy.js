@@ -1,4 +1,4 @@
-import{h as e,r as t}from"./AiChatService-emQ5dK7Q.js";var n=800,r=`You are a code completion engine for ioBroker JavaScript adapter scripts.
+import{h as e,r as t}from"./AiChatService-EFfFnYRL.js";var n=800,r=`You are a code completion engine for ioBroker JavaScript adapter scripts.
 Complete the code at the cursor position marked with <CURSOR>.
 Return ONLY the completion text, no explanation, no markdown fences, no comments about what you did.
 If you cannot complete, return an empty string.
