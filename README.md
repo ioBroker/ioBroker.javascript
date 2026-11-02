@@ -34,7 +34,7 @@ Executes JavaScript, TypeScript Scripts.
 * (@GermanBluefox) Added: OpenRouter, if it is chosen in the system-wide AI settings of admin (`@iobroker/ai-core` 0.0.6, `@iobroker/ai-gui` 0.0.5)
 
 ### 10.4.8 (2026-10-27)
-* (GermanBluefox) Fixed: setting scriptEnabled to true restarts an already running script again (#2417)
+* (@GermanBluefox) Fixed: setting scriptEnabled to true restarts an already running script again (#2417)
 * (@GermanBluefox) Fixed: a script that stopped itself with `stopScript()` (or was restarted with `runScript()`) kept running and `scriptEnabled` stayed `true`
 * (@GermanBluefox) Added: the AI uses the AI settings of the system that are set up once in admin (System settings → AI) - for new instances and for instances without own keys
 * (@GermanBluefox) Fixed: a script started via the `execute` message wrote `scriptEnabled.__execute_<n>` without object, when the instance stopped or the setState limit stopped the script before the output was collected
@@ -58,10 +58,6 @@ Executes JavaScript, TypeScript Scripts.
 * (@GermanBluefox) Fixed: a script that did not handle a rejected `setStateAsync` (e.g. of a missing state) or another asynchronous function terminated the adapter
 * (@GermanBluefox) Fixed: instances of different versions
 * (@GermanBluefox) Fixed: the AI chat stopped with "m.default is not a constructor"
-
-### 10.4.1 (2026-10-09)
-* (@GermanBluefox) Changed: the AI assistant uses the shared libraries `@iobroker/ai-core` and `@iobroker/ai-gui`
-* (@GermanBluefox) Fixed: the AI push session is bound to the user who opened it, and testing the values of the AI settings form needs the "execute" right
 
 ## License
 The MIT License (MIT)
