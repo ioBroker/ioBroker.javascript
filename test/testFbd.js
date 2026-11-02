@@ -960,6 +960,89 @@ describe('FBD: control blocks', () => {
         assert.ok(pd.Y < -1, `the D part pulls down: ${pd.Y}`);
     });
 
+    it('turns round, holds, has a dead band and a manual mode', () => {
+        // the arguments after firstScan: HOLD, MAN, YMAN, DB, INV
+        // INV: e = PV - SP, like a negative KP
+        const cooling = runtime.PID();
+        cooling.run(20, 23, 2, 0, 0, 0, 100, false, 0, true, false, false, 0, 0, true);
+        assert.equal(cooling.Y, 6);
+        const pd = runtime.PID();
+        pd.run(0, 0, 1, 0, 1000, -100, 100, false, 0, true, false, false, 0, 0, true);
+        pd.run(0, 1, 1, 0, 1000, -100, 100, false, 200, false, false, false, 0, 0, true);
+        assert.ok(pd.Y > 1, `turned round, the D part pushes up: ${pd.Y}`);
+
+        // HOLD keeps Y while the set point jumps, and the controller goes on from there without a jump
+        const pi = runtime.PID();
+        pi.run(1, 0, 1, 1000, 0, 0, 100, false, 0, true);
+        pi.run(1, 0, 1, 1000, 0, 0, 100, false, 1000, false);
+        assert.equal(pi.Y, 2);
+        pi.run(5, 0, 1, 1000, 0, 0, 100, false, 1000, false, true);
+        pi.run(5, 0, 1, 1000, 0, 0, 100, false, 1000, false, true);
+        assert.equal(pi.Y, 2);
+        pi.run(5, 0, 1, 1000, 0, 0, 100, false, 10, false);
+        assert.ok(Math.abs(pi.Y - 2.05) < 1e-9, `no jump after HOLD: ${pi.Y}`);
+
+        // RST goes before HOLD
+        pi.run(5, 0, 1, 1000, 0, 0, 100, true, 1000, false, true);
+        assert.equal(pi.Y, 5);
+
+        // dead band: Y stays while PV is no further than DB from SP
+        const band = runtime.PID();
+        band.run(20, 18, 10, 0, 0, 0, 100, false, 0, true, false, false, 0, 0.5);
+        assert.equal(band.Y, 20);
+        band.run(20, 19.6, 10, 0, 0, 0, 100, false, 1000, false, false, false, 0, 0.5);
+        assert.equal(band.Y, 20);
+        band.run(20, 20.3, 10, 0, 0, 0, 100, false, 1000, false, false, false, 0, 0.5);
+        assert.equal(band.Y, 20);
+        band.run(20, 21, 10, 0, 0, 0, 100, false, 1000, false, false, false, 0, 0.5);
+        assert.equal(band.Y, 0, 'out of the band it controls again');
+
+        // MAN puts out YMAN within the limits, goes before RST, and the controller takes over from there
+        const manual = runtime.PID();
+        manual.run(1, 0, 1, 1000, 0, 0, 100, false, 0, true, false, true, 40);
+        assert.equal(manual.Y, 40);
+        manual.run(1, 0, 1, 1000, 0, 0, 100, false, 1000, false, false, true, 150);
+        assert.equal(manual.Y, 100);
+        manual.run(1, 0, 1, 1000, 0, 0, 100, true, 1000, false, false, true, 30);
+        assert.equal(manual.Y, 30);
+        manual.run(1, 0, 1, 1000, 0, 0, 100, false, 10, false);
+        assert.ok(Math.abs(manual.Y - 30.01) < 1e-9, `on from the manual value: ${manual.Y}`);
+
+        // without an integral part there is nothing to follow: Y is the P part again
+        const p = runtime.PID();
+        p.run(10, 4, 2, 0, 0, 0, 100, false, 0, true, false, true, 50);
+        assert.equal(p.Y, 50);
+        p.run(10, 4, 2, 0, 0, 0, 100, false, 1000, false);
+        assert.equal(p.Y, 12);
+    });
+
+    it('passes HOLD and INV of a PID in a diagram', async () => {
+        const d = diagram();
+        const temp = d.add('STATE_IN', 0, 0, { oid: 'x.0.temp', type: 'REAL' });
+        const hold = d.add('STATE_IN', 0, 100, { oid: 'x.0.hold', type: 'BOOL' });
+        const pid = d.add('PID', 200, 0, { SP: 20, KP: 2, INV: true });
+        const output = d.add('STATE_OUT', 400, 0, { oid: 'x.0.valve' });
+        d.link(temp, 'Q', pid, 'PV');
+        d.link(hold, 'Q', pid, 'HOLD');
+        d.link(pid, 'Y', output, 'IN');
+        d.graph.cycle = { mode: 'auto', ms: 50 };
+        const { source, analysis } = fb.generateSource(d.graph);
+        assert.deepEqual(errors(analysis), []);
+
+        const sandbox = runInSandbox(source, { 'x.0.temp': 23, 'x.0.hold': false });
+        await wait(80);
+        assert.equal(sandbox.writes.at(-1).val, 6, 'cooling: 3 degrees too warm');
+        sandbox.set('x.0.hold', true);
+        await wait(30);
+        sandbox.set('x.0.temp', 30);
+        await wait(80);
+        assert.equal(sandbox.writes.at(-1).val, 6, 'held');
+        sandbox.set('x.0.hold', false);
+        await wait(80);
+        assert.equal(sandbox.writes.at(-1).val, 20, 'controls again');
+        sandbox.stop();
+    });
+
     it('runs in a diagram', async () => {
         const d = diagram();
         const input = d.add('STATE_IN', 0, 0, { oid: 'x.0.temp', type: 'REAL' });
@@ -983,6 +1066,91 @@ describe('FBD: control blocks', () => {
             [false, true],
         );
         sandbox.stop();
+    });
+});
+
+describe('FBD: selection', () => {
+    it('takes the input number K with MUX', () => {
+        assert.equal(runtime.mux(0, 'a', 'b', 'c'), 'a');
+        assert.equal(runtime.mux(2, 'a', 'b', 'c'), 'c');
+        assert.equal(runtime.mux(1.4, 'a', 'b', 'c'), 'b');
+        assert.equal(runtime.mux(-1, 'a', 'b', 'c'), 'a', 'below 0 the first');
+        assert.equal(runtime.mux(7, 'a', 'b', 'c'), 'c', 'beyond the last the last');
+        assert.equal(runtime.mux(NaN, 'a', 'b'), 'a');
+    });
+
+    it('numbers the inputs of MUX from IN0', () => {
+        const d = diagram();
+        const def = fb.getBlockDef('MUX');
+        const mux = d.add('MUX', 0, 0);
+        assert.deepEqual(
+            fb.getInputs(mux, def).map(pin => pin.id),
+            ['K', 'IN0', 'IN1'],
+        );
+        mux.params.inputs = 4;
+        assert.deepEqual(
+            fb.getInputs(mux, def).map(pin => pin.id),
+            ['K', 'IN0', 'IN1', 'IN2', 'IN3'],
+        );
+        assert.equal(fb.getInputCount(mux, def), 4);
+        mux.params.type = 'STRING';
+        assert.deepEqual(
+            fb.getInputs(mux, def).map(pin => pin.type),
+            ['INT', 'STRING', 'STRING', 'STRING', 'STRING'],
+        );
+        assert.equal(fb.getOutputs(mux, def)[0].type, 'STRING');
+        assert.deepEqual(
+            fb.getInputs(mux, def).map(pin => pin.default),
+            [0, '', '', '', ''],
+            'an open input of a text is empty, not "0"',
+        );
+        mux.params.type = 'BOOL';
+        assert.deepEqual(
+            fb.getInputs(mux, def).map(pin => pin.default),
+            [0, false, false, false, false],
+        );
+    });
+
+    it('selects, multiplexes and limits in a diagram', async () => {
+        const d = diagram();
+        const g = d.add('STATE_IN', 0, 0, { oid: 'x.0.g', type: 'BOOL' });
+        const k = d.add('STATE_IN', 0, 100, { oid: 'x.0.k', type: 'INT' });
+        const value = d.add('STATE_IN', 0, 200, { oid: 'x.0.value', type: 'REAL' });
+        const sel = d.add('SEL', 200, 0, { IN0: 10, IN1: 20 });
+        const mux = d.add('MUX', 200, 100, { type: 'STRING', inputs: 3, IN0: 'off', IN1: 'eco', IN2: 'comfort' });
+        const limit = d.add('LIMIT', 200, 200, { MN: 5, MX: 25 });
+        const outSel = d.add('STATE_OUT', 400, 0, { oid: 'x.0.sel' });
+        const outMux = d.add('STATE_OUT', 400, 100, { oid: 'x.0.mode' });
+        const outLimit = d.add('STATE_OUT', 400, 200, { oid: 'x.0.limited' });
+        d.link(g, 'Q', sel, 'G');
+        d.link(k, 'Q', mux, 'K');
+        d.link(value, 'Q', limit, 'IN');
+        d.link(sel, 'OUT', outSel, 'IN');
+        d.link(mux, 'OUT', outMux, 'IN');
+        d.link(limit, 'OUT', outLimit, 'IN');
+        const { source, analysis } = fb.generateSource(d.graph);
+        assert.deepEqual(errors(analysis), []);
+
+        const last = writes => Object.fromEntries(writes.map(write => [write.id, write.val]));
+        const sandbox = runInSandbox(source, { 'x.0.g': false, 'x.0.k': 1, 'x.0.value': 30 });
+        await wait(50);
+        assert.deepEqual(last(sandbox.writes), { 'x.0.sel': 10, 'x.0.mode': 'eco', 'x.0.limited': 25 });
+        sandbox.set('x.0.g', true);
+        sandbox.set('x.0.k', 5);
+        sandbox.set('x.0.value', 3);
+        await wait(50);
+        assert.deepEqual(last(sandbox.writes), { 'x.0.sel': 20, 'x.0.mode': 'comfort', 'x.0.limited': 5 });
+        sandbox.stop();
+    });
+
+    it('refuses a link of the wrong type into SEL', () => {
+        const d = diagram();
+        const text = d.add('STATE_IN', 0, 0, { oid: 'x.0.text', type: 'STRING' });
+        const sel = d.add('SEL', 200, 0);
+        d.link(text, 'Q', sel, 'IN0');
+        assert.deepEqual(errors(fb.analyzeGraph(d.graph)), ['Types do not match: %s cannot be connected to %s']);
+        sel.params.type = 'STRING';
+        assert.deepEqual(errors(fb.analyzeGraph(d.graph)), []);
     });
 });
 

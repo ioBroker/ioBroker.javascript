@@ -67,15 +67,39 @@ export function getInputCount(block: FbBlock, def: FbBlockDef): number {
     );
 }
 
+/**
+ * The value of an open input whose type a parameter chooses, like IN0 of SEL: the default of the
+ * library only while it is of that type - a 0 of a block switched to STRING is an empty text.
+ */
+function typedDefault(value: FbValue | undefined, type: FbSignalType | 'ANY'): FbValue | undefined {
+    switch (type) {
+        case 'BOOL':
+            return typeof value === 'boolean' ? value : false;
+        case 'STRING':
+            return typeof value === 'string' ? value : '';
+        case 'ANY':
+            return value;
+        default:
+            return typeof value === 'number' ? value : 0;
+    }
+}
+
+/** An input of a block, with its type resolved */
+function toPin(block: FbBlock, def: FbBlockDef, pin: Omit<FbPin, 'type'> & { type: FbPinType }): FbPin {
+    const type = resolvePinType(block, pin.type, def);
+    return typeof pin.type === 'object' ? { ...pin, type, default: typedDefault(pin.default, type) } : { ...pin, type };
+}
+
 export function getInputs(block: FbBlock, def = getBlockDef(block.type)): FbPin[] {
     if (!def) {
         return [];
     }
-    const inputs: FbPin[] = def.inputs.map(pin => ({ ...pin, type: resolvePinType(block, pin.type, def) }));
+    const inputs: FbPin[] = def.inputs.map(pin => toPin(block, def, pin));
     if (def.extensible) {
-        const { prefix, type, default: defaultValue } = def.extensible;
-        for (let i = 1; i <= getInputCount(block, def); i++) {
-            inputs.push({ id: `${prefix}${i}`, type: resolvePinType(block, type, def), default: defaultValue });
+        const { prefix, type, default: defaultValue, start = 1 } = def.extensible;
+        const count = getInputCount(block, def);
+        for (let i = start; i < start + count; i++) {
+            inputs.push(toPin(block, def, { id: `${prefix}${i}`, type, default: defaultValue }));
         }
     }
     return inputs;

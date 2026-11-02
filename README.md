@@ -32,9 +32,10 @@ Executes JavaScript, TypeScript Scripts.
 ## Changelog
 ### **WORK IN PROGRESS**
 * (@GermanBluefox) Added: OpenRouter, if it is chosen in the system-wide AI settings of admin (`@iobroker/ai-core` 0.0.6, `@iobroker/ai-gui` 0.0.5)
+* (@GermanBluefox) Added: function block diagrams - selection blocks `SEL`, `MUX` and `LIMIT`; the `PID` block got `HOLD`, a dead band `DB`, a manual mode (`MAN`, `YMAN`) and `INV` to reverse its direction
 
 ### 10.4.8 (2026-10-27)
-* (GermanBluefox) Fixed: setting scriptEnabled to true restarts an already running script again (#2417)
+* (@GermanBluefox) Fixed: setting scriptEnabled to true restarts an already running script again (#2417)
 * (@GermanBluefox) Fixed: a script that stopped itself with `stopScript()` (or was restarted with `runScript()`) kept running and `scriptEnabled` stayed `true`
 * (@GermanBluefox) Added: the AI uses the AI settings of the system that are set up once in admin (System settings → AI) - for new instances and for instances without own keys
 * (@GermanBluefox) Fixed: a script started via the `execute` message wrote `scriptEnabled.__execute_<n>` without object, when the instance stopped or the setState limit stopped the script before the output was collected

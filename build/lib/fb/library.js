@@ -20,8 +20,10 @@ exports.FB_ASTRO_EVENTS = [
     'night',
     'nadir',
 ];
+/** The signal types to choose from, for a block that works with each of them */
+const SIGNAL_TYPE_OPTIONS = ['BOOL', 'INT', 'REAL', 'TIME', 'STRING'];
 /**
- * The blocks of the library: logic, memory (flip-flops, edges), timers, counters, comparison,
+ * The blocks of the library: logic, memory (flip-flops, edges), timers, counters, comparison, selection,
  * arithmetic, conversion, control, calendar, messages, a block with code, and the ioBroker states.
  *
  * Type names follow IEC 61131-3. The editor translates the names of the categories, the types
@@ -238,6 +240,42 @@ exports.FB_LIBRARY = [
         outputs: [{ id: 'OUT', type: 'BOOL' }],
         code: `{OUT} = {IN1} ${operator} {IN2};`,
     })),
+    // ---- selection
+    {
+        // IN0 while G is false, IN1 while G is true
+        type: 'SEL',
+        category: 'select',
+        inputs: [
+            { id: 'G', type: 'BOOL', default: false },
+            { id: 'IN0', type: { param: 'type' }, default: 0 },
+            { id: 'IN1', type: { param: 'type' }, default: 0 },
+        ],
+        outputs: [{ id: 'OUT', type: { param: 'type' } }],
+        params: [{ id: 'type', type: 'ENUM', options: SIGNAL_TYPE_OPTIONS, default: 'REAL' }],
+        code: '{OUT} = {G} ? {IN1} : {IN0};',
+    },
+    {
+        // the input number K of IN0..INn; below 0 the first one, beyond the last one the last one
+        type: 'MUX',
+        category: 'select',
+        inputs: [{ id: 'K', type: 'INT', default: 0 }],
+        outputs: [{ id: 'OUT', type: { param: 'type' } }],
+        params: [{ id: 'type', type: 'ENUM', options: SIGNAL_TYPE_OPTIONS, default: 'REAL' }],
+        extensible: { prefix: 'IN', type: { param: 'type' }, default: 0, min: 2, max: 16, start: 0 },
+        code: '{OUT} = fb.mux({K}, {IN*:, });',
+    },
+    {
+        // IN, but not below MN and not above MX - in the order of IEC 61131-3
+        type: 'LIMIT',
+        category: 'select',
+        inputs: [
+            { id: 'MN', type: 'REAL', param: true, default: 0 },
+            { id: 'IN', type: 'REAL', default: 0 },
+            { id: 'MX', type: 'REAL', param: true, default: 100 },
+        ],
+        outputs: [{ id: 'OUT', type: 'REAL' }],
+        code: '{OUT} = Math.min(Math.max({IN}, {MN}), {MX});',
+    },
     // ---- arithmetic
     {
         type: 'ADD',
@@ -382,11 +420,22 @@ exports.FB_LIBRARY = [
             { id: 'YMIN', type: 'REAL', param: true, default: 0 },
             { id: 'YMAX', type: 'REAL', param: true, default: 100 },
             { id: 'RST', type: 'BOOL', default: false },
+            // the pins below came with runtime 1.6 - after RST, so the older ones keep their place
+            // Y stays as it is, until HOLD is false again
+            { id: 'HOLD', type: 'BOOL', default: false },
+            // manual mode: Y is YMAN
+            { id: 'MAN', type: 'BOOL', default: false },
+            { id: 'YMAN', type: 'REAL', default: 0 },
+            // dead band: Y stays while PV is no further than this from SP
+            { id: 'DB', type: 'REAL', param: true, default: 0 },
+            // reverse acting, e = PV - SP: Y rises while PV is above SP, for cooling
+            { id: 'INV', type: 'BOOL', param: true, default: false },
         ],
         outputs: [{ id: 'Y', type: 'REAL' }],
         stateful: true,
         timeDependent: true,
-        code: '{I}.run({SP}, {PV}, {KP}, {TN}, {TV}, {YMIN}, {YMAX}, {RST}, dt, firstScan); {Y} = {I}.Y;',
+        code: '{I}.run({SP}, {PV}, {KP}, {TN}, {TV}, {YMIN}, {YMAX}, {RST}, dt, firstScan, ' +
+            '{HOLD}, {MAN}, {YMAN}, {DB}, {INV}); {Y} = {I}.Y;',
     },
     // ---- ioBroker
     {
@@ -589,6 +638,7 @@ exports.FB_CATEGORIES = [
     'timers',
     'counters',
     'compare',
+    'select',
     'arithmetic',
     'convert',
     'control',
