@@ -202,6 +202,9 @@ interface AppState extends GenericAppState {
  */
 const EDITOR_PING_INTERVAL_MS = 10_000;
 
+/** How long the restart button waits for the instance to answer `restartScript` */
+const RESTART_ANSWER_TIMEOUT_MS = 3_000;
+
 export default class App extends GenericApp<AppProps, AppState> {
     private hosts: string[] = [];
     /**
@@ -788,6 +791,36 @@ export default class App extends GenericApp<AppProps, AppState> {
         }
     }
 
+    /**
+     * The restart button. `enabled: true` changes nothing in a script that runs already, so the
+     * instance is asked to restart it (#2423). An instance from before this message does not answer -
+     * it gets the object write that restarted the script up to 10.4.6. A script that does not run is
+     * started by that write.
+     */
+    onRestart = (id: string): void => {
+        const common = (this.scripts[id] as ioBroker.ScriptObject | undefined)?.common;
+        const writeEnabled = (): void => {
+            void this.socket.extendObject(id, { common: { enabled: true } });
+        };
+        if (!common?.enabled || !common.engine?.startsWith('system.adapter.')) {
+            writeEnabled();
+            return;
+        }
+        const timer = setTimeout(writeEnabled, RESTART_ANSWER_TIMEOUT_MS);
+        this.socket.sendTo(common.engine.replace('system.adapter.', ''), 'restartScript', { script: id }).then(
+            (result?: { error?: string }) => {
+                clearTimeout(timer);
+                if (result?.error) {
+                    this.showJsError(result.error);
+                }
+            },
+            () => {
+                clearTimeout(timer);
+                writeEnabled();
+            },
+        );
+    };
+
     showJsError(err: Error | string): void {
         this.setState({ errorText: err ? err.toString() : '' });
     }
@@ -1295,7 +1328,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                             this.setState(newState as AppState);
                         }
                     }}
-                    onRestart={id => this.socket.extendObject(id, { common: { enabled: true } })}
+                    onRestart={this.onRestart}
                     onOpen={id => this.onSelect(id)}
                     selected={
                         this.state.selected && this.scripts[this.state.selected]?.type === 'script'
