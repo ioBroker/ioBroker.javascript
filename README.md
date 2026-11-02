@@ -30,7 +30,7 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 10.4.9 (2026-11-02)
 * (@GermanBluefox) Fixed: the restart button of the editor did nothing for a running script since 10.4.7 (#2423)
 * (@GermanBluefox) Added: OpenRouter, if it is chosen in the system-wide AI settings of admin (`@iobroker/ai-core` 0.0.6, `@iobroker/ai-gui` 0.0.5)
 * (@GermanBluefox) Added: function block diagrams - selection blocks `SEL`, `MUX` and `LIMIT`; the `PID` block got `HOLD`, a dead band `DB`, a manual mode (`MAN`, `YMAN`) and `INV` to reverse its direction
@@ -56,11 +56,6 @@ Executes JavaScript, TypeScript Scripts.
 * (@agross) Fixed: TypeScript scripts that import the same module as a global script failed with "Identifier has already been declared"
 * (@GermanBluefox) Fixed: the @-mention list of the AI chat showed only the first 13 scripts
 * (@GermanBluefox) Fixed: selection of state if predefined
-
-### 10.4.4 (2026-10-16)
-* (@GermanBluefox) Fixed: a script that did not handle a rejected `setStateAsync` (e.g. of a missing state) or another asynchronous function terminated the adapter
-* (@GermanBluefox) Fixed: instances of different versions
-* (@GermanBluefox) Fixed: the AI chat stopped with "m.default is not a constructor"
 
 ## License
 The MIT License (MIT)
