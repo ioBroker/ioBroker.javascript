@@ -108,6 +108,7 @@ diagram saved with this version; a diagram saved before can already be forced an
 | Timers     | `TON`, `TOF`, `TP`, `BLINK`                                      |
 | Counters   | `CTU`, `CTD`, `CTUD`                                             |
 | Comparison | `GT`, `GE`, `LT`, `LE`, `EQ`, `NE`                               |
+| Selection  | `SEL`, `MUX`, `LIMIT`                                            |
 | Arithmetic | `ADD`, `SUB`, `MUL`, `DIV`, `MIN`, `MAX`, `ROUND`                |
 | Conversion | `TO_BOOL`, `TO_INT`, `TO_REAL`, `TO_TIME`, `TO_STRING`, `CONCAT` |
 | Control    | `HYST`, `RAMP`, `PT1`, `PID`                                     |
@@ -117,6 +118,15 @@ diagram saved with this version; a diagram saved before can already be forced an
 
 The names and the behavior follow IEC 61131-3. `AND`, `OR`, `XOR`, `ADD`, `MUL`, `MIN`, `MAX` and `CONCAT` can
 have 2 to 16 inputs. Times are entered like `500ms`, `2s`, `1m30s` or `T#2s`, times of day like `08:30`.
+
+The selection blocks:
+
+- `SEL` - binary selection: `OUT` is `IN0` while `G` is false and `IN1` while `G` is true.
+- `MUX` - multiplexer: `OUT` is the input number `K`, counted from `IN0`; 2 to 16 inputs. A `K` below 0 takes
+  `IN0`, one beyond the last input takes the last one.
+- `LIMIT` - `OUT` is `IN`, but not below `MN` and not above `MX`.
+
+`SEL` and `MUX` work with every type - choose it in the properties (`REAL` at first).
 
 The control blocks:
 
@@ -130,6 +140,14 @@ The control blocks:
   `TN` the reset time of the integral part, `TV` the derivative time; `TN` or `TV` of `0` leaves that part out.
   While `Y` is at a limit, the integral part does not grow further (anti-windup); the derivative is taken from `PV`,
   so a new set point gives no kick. `RST` clears the integral part.
+  - `INV` reverses the direction (e = `PV` - `SP`): `Y` rises while `PV` is above `SP`, as for a cooling.
+  - `HOLD` keeps `Y` as it is, like while something is switched over that the controller should not react to.
+  - `DB` is a dead band: while `PV` is no further than `DB` from `SP`, `Y` stays as it is. `0` switches it off.
+  - `MAN` puts out `YMAN` instead (manual mode).
+
+  While `Y` is held or given, the integral part follows it, so the controller goes on from there without a jump
+  when it takes over again - without an integral part (`TN` 0) `Y` jumps to the P part. `MAN` goes before `RST`,
+  `RST` before `HOLD` and the dead band.
 
 `RAMP`, `PT1` and `PID` depend on time: a diagram with them runs cyclically.
 

@@ -10,6 +10,7 @@ exports.JS = exports.BLINK = exports.CTUD = exports.CTD = exports.CTU = exports.
 exports.toBool = toBool;
 exports.toNum = toNum;
 exports.div = div;
+exports.mux = mux;
 exports.toReal = toReal;
 exports.toInt = toInt;
 exports.toTime = toTime;
@@ -38,6 +39,11 @@ function toNum(value) {
 /** A division that gives 0 instead of Infinity or NaN for a divisor of 0 */
 function div(a, b) {
     return b ? a / b : 0;
+}
+/** MUX: the value number `k` of `values`, counted from 0 - the first one below 0, the last one beyond */
+function mux(k, ...values) {
+    const index = Math.round(toNum(k));
+    return values[Number.isFinite(index) ? Math.max(0, Math.min(values.length - 1, index)) : 0];
 }
 /** A number of TO_REAL: a decimal comma counts as a point, what is no number gives 0 */
 function toReal(value) {
@@ -323,24 +329,39 @@ exports.Pt1Block = Pt1Block;
  *   would make it jump.
  * - Anti-windup: while Y is at a limit, the integral part does not grow further in that direction.
  * - RST clears the integral part and holds Y at the P part.
+ * - INV turns the direction round: e = PV - SP, for cooling, as a negative KP would.
+ * - Y stays as it is while HOLD is true, and while PV is no further than DB from SP (dead band). MAN
+ *   puts out YMAN instead. Meanwhile the integral part follows, so Y goes on from there without a
+ *   jump when the controller takes over again - without an integral part (TN 0) it jumps to the P part.
+ *
+ * Priority: MAN, then RST, then HOLD, then the dead band. The arguments after `firstScan` came with
+ * runtime 1.6; code of older versions leaves them out.
  */
 class PidBlock {
     Y = 0;
     integral = 0;
     derivative = 0;
     lastPV = 0;
-    run(SP, PV, KP, TN, TV, YMIN, YMAX, RST, dt, firstScan) {
+    run(SP, PV, KP, TN, TV, YMIN, YMAX, RST, dt, firstScan, HOLD = false, MAN = false, YMAN = 0, DB = 0, INV = false) {
         const low = Math.min(YMIN, YMAX);
         const high = Math.max(YMIN, YMAX);
-        const error = SP - PV;
+        const error = INV ? PV - SP : SP - PV;
         const proportional = KP * error;
+        if (MAN || (!RST && (HOLD || (DB > 0 && Math.abs(SP - PV) <= DB)))) {
+            // Y is given or held; the integral part follows it for a smooth take-over
+            this.Y = Math.min(high, Math.max(low, MAN ? YMAN : this.Y));
+            this.integral = TN > 0 ? this.Y - proportional : 0;
+            this.derivative = 0;
+            this.lastPV = PV;
+            return;
+        }
         if (firstScan || RST) {
             this.integral = 0;
             this.derivative = 0;
         }
         else if (dt > 0) {
             if (TV > 0) {
-                const raw = (-KP * TV * (PV - this.lastPV)) / dt;
+                const raw = (-KP * TV * (INV ? this.lastPV - PV : PV - this.lastPV)) / dt;
                 this.derivative += (raw - this.derivative) * (1 - Math.exp(-dt / (TV / 10)));
             }
             else {

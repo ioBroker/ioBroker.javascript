@@ -118,6 +118,7 @@ wurde; ein älterer lässt sich schon erzwingen und anhalten.
 | Zeit       | `TON`, `TOF`, `TP`, `BLINK`                                      |
 | Zähler     | `CTU`, `CTD`, `CTUD`                                             |
 | Vergleich  | `GT`, `GE`, `LT`, `LE`, `EQ`, `NE`                               |
+| Auswahl    | `SEL`, `MUX`, `LIMIT`                                            |
 | Arithmetik | `ADD`, `SUB`, `MUL`, `DIV`, `MIN`, `MAX`, `ROUND`                |
 | Umwandlung | `TO_BOOL`, `TO_INT`, `TO_REAL`, `TO_TIME`, `TO_STRING`, `CONCAT` |
 | Regelung   | `HYST`, `RAMP`, `PT1`, `PID`                                     |
@@ -127,6 +128,15 @@ wurde; ein älterer lässt sich schon erzwingen und anhalten.
 
 Namen und Verhalten folgen IEC 61131-3. `AND`, `OR`, `XOR`, `ADD`, `MUL`, `MIN`, `MAX` und `CONCAT` haben 2 bis 16
 Eingänge. Zeiten werden wie `500ms`, `2s`, `1m30s` oder `T#2s` eingegeben, Uhrzeiten wie `08:30`.
+
+Die Auswahlbausteine:
+
+- `SEL` - binäre Auswahl: `OUT` ist `IN0`, solange `G` falsch ist, und `IN1`, solange `G` wahr ist.
+- `MUX` - Multiplexer: `OUT` ist der Eingang Nummer `K`, gezählt ab `IN0`; 2 bis 16 Eingänge. Ein `K` unter 0
+  nimmt `IN0`, eines über dem letzten Eingang den letzten.
+- `LIMIT` - `OUT` ist `IN`, aber nicht unter `MN` und nicht über `MX`.
+
+`SEL` und `MUX` arbeiten mit jedem Typ - er wird in den Eigenschaften gewählt (zuerst `REAL`).
 
 Die Regelungsbausteine:
 
@@ -141,6 +151,15 @@ Die Regelungsbausteine:
   Verstärkung, `TN` die Nachstellzeit des I-Anteils, `TV` die Vorhaltzeit; `TN` oder `TV` gleich `0` lässt den Anteil
   weg. Steht `Y` an einer Grenze, wächst der I-Anteil nicht weiter (Anti-Windup); der D-Anteil wird aus `PV` gebildet,
   ein neuer Sollwert gibt also keinen Stoß. `RST` löscht den I-Anteil.
+  - `INV` kehrt den Wirksinn um (e = `PV` - `SP`): `Y` steigt, solange `PV` über `SP` liegt, wie bei einer Kühlung.
+  - `HOLD` hält `Y` fest, etwa während einer Umschaltung, auf die der Regler nicht reagieren soll.
+  - `DB` ist eine Totzone: Solange `PV` höchstens `DB` von `SP` entfernt ist, bleibt `Y`, wie es ist. `0` schaltet
+    sie ab.
+  - `MAN` gibt stattdessen `YMAN` aus (Handbetrieb).
+
+  Solange `Y` gehalten oder vorgegeben wird, zieht der I-Anteil mit; der Regler macht danach ohne Sprung von dort
+  aus weiter - ohne I-Anteil (`TN` 0) springt `Y` auf den P-Anteil. `MAN` geht vor `RST`, `RST` vor `HOLD` und der
+  Totzone.
 
 `RAMP`, `PT1` und `PID` hängen von der Zeit ab: Ein Plan mit ihnen läuft zyklisch.
 

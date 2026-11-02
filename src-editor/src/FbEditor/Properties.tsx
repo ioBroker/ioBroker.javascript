@@ -38,6 +38,7 @@ import {
     formatTime,
     jsParameters,
     getBlockDef,
+    getInputCount,
     getInputs,
     getOutputs,
     createBlockInfo,
@@ -817,7 +818,7 @@ function BlockProperties(
                                 select
                                 size="small"
                                 fullWidth
-                                value={inputs.length}
+                                value={getInputCount(block, def)}
                                 onChange={event => setParam('inputs', Number(event.target.value))}
                             >
                                 {Array.from(

@@ -301,6 +301,10 @@ function BlockNode({ id, data, selected }: NodeProps<BlockNodeType>): React.JSX.
                 </span>
             );
         }
+        if (def?.params?.length === 1 && def.params[0].id === 'type') {
+            // a block for every type, like SEL or MUX: the one it works with
+            return <span className="fb-inline fb-inline-wide">{resolvePinType(block, { param: 'type' }, def)}</span>;
+        }
         const oid = block.params?.oid ? String(block.params.oid) : '';
         return (
             <span
