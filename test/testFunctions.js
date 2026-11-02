@@ -1462,6 +1462,58 @@ describe('Test JS', function () {
         objects.setObject(script._id, script);
     });
 
+    it('Test JS: the message restartScript restarts a running script', function (done) {
+        this.timeout(10000);
+        const target = {
+            _id: 'script.js.restartByMessage',
+            type: 'script',
+            common: {
+                name: 'restartByMessage',
+                enabled: true,
+                verbose: true,
+                engine: 'system.adapter.javascript.0',
+                engineType: 'Javascript/js',
+                source: `createState('test_restartByMessage', 0, () => setState('test_restartByMessage', Date.now(), true));`,
+            },
+            native: {},
+        };
+        // what the restart button of the editor sends
+        const sender = {
+            _id: 'script.js.restartSender',
+            type: 'script',
+            common: {
+                name: 'restartSender',
+                enabled: true,
+                verbose: true,
+                engine: 'system.adapter.javascript.0',
+                engineType: 'Javascript/js',
+                source:
+                    `createState('test_restartAnswer', '', () => sendTo('javascript.0', 'restartScript', ` +
+                    `{ script: 'script.js.restartByMessage' }, result => setState('test_restartAnswer', JSON.stringify(result), true)));`,
+            },
+            native: {},
+        };
+        let starts = 0;
+        let answer = null;
+        const onStateChanged = function (id, state) {
+            if (id === 'javascript.0.test_restartByMessage' && state?.val) {
+                starts++;
+                if (starts === 1) {
+                    objects.setObject(sender._id, sender);
+                }
+            } else if (id === 'javascript.0.test_restartAnswer' && state?.val) {
+                answer = JSON.parse(state.val);
+            }
+            if (starts === 2 && answer) {
+                removeStateChangedHandler(onStateChanged);
+                assert.deepEqual(answer, { result: 'script' });
+                done();
+            }
+        };
+        addStateChangedHandler(onStateChanged);
+        objects.setObject(target._id, target);
+    });
+
     it('Test JS: stopScript(undefined) stops the own script and resets scriptEnabled', function (done) {
         this.timeout(10000);
         const script = {
