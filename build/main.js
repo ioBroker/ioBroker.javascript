@@ -925,14 +925,7 @@ class JavaScript extends adapter_core_1.Adapter {
                 else if (obj.common.engine === `system.adapter.${this.namespace}` ||
                     formerObj.common.engine === `system.adapter.${this.namespace}`) {
                     // Source changed => restart the script (only on the relevant instance)
-                    this.stopCounters[id] = this.stopCounters[id] ? this.stopCounters[id] + 1 : 1;
-                    void this.stopScript(id).then(() => {
-                        // only start again after stop when "last" object change to prevent problems on
-                        // multiple changes in fast frequency
-                        if (!--this.stopCounters[id]) {
-                            void this.loadScriptById(id);
-                        }
-                    });
+                    this.restartRunningScript(id);
                 }
             }
         }
@@ -972,12 +965,7 @@ class JavaScript extends adapter_core_1.Adapter {
                         scriptObj.common.engine === `system.adapter.${this.namespace}` &&
                         !checkIsGlobal(scriptObj)) {
                         // Already enabled => the object does not change, so restart the script directly
-                        this.stopCounters[scriptId] = this.stopCounters[scriptId] ? this.stopCounters[scriptId] + 1 : 1;
-                        void this.stopScript(scriptId).then(() => {
-                            if (!--this.stopCounters[scriptId]) {
-                                void this.loadScriptById(scriptId);
-                            }
-                        });
+                        this.restartRunningScript(scriptId);
                     }
                     else {
                         void this.extendForeignObject(scriptId, {
@@ -1151,6 +1139,57 @@ class JavaScript extends adapter_core_1.Adapter {
      *
      * @param obj the incoming message
      */
+    /**
+     * Stops a script and starts it again. Several calls in a row - object changes in fast frequency -
+     * start it only once, after the last stop.
+     */
+    restartRunningScript(id) {
+        this.stopCounters[id] = this.stopCounters[id] ? this.stopCounters[id] + 1 : 1;
+        void this.stopScript(id).then(() => {
+            if (!--this.stopCounters[id]) {
+                void this.loadScriptById(id);
+            }
+        });
+    }
+    /**
+     * The message `restartScript` (`{ script: 'script.js.…' }`): restarts a script of this instance
+     * that runs. A global script is part of every script, so for it the caller restarts the whole
+     * instance (`result: 'instance'`). The user who sent it - where the controller names one - needs
+     * the right to write objects, as for the `enabled: true` the editor wrote before.
+     */
+    async restartScriptFor(obj) {
+        const id = obj.message?.script;
+        if (typeof id !== 'string' || !id.startsWith(SCRIPT_CODE_MARKER)) {
+            return { error: 'No script given' };
+        }
+        const user = obj.user;
+        let scriptObj;
+        try {
+            if (user) {
+                const permissions = await this.calculatePermissionsAsync(user, {
+                    restartScript: { type: 'object', operation: 'write' },
+                });
+                if (!permissions?.object?.write) {
+                    return { error: `User "${user}" has no permission to restart scripts` };
+                }
+            }
+            scriptObj = (await this.getForeignObjectAsync(id));
+        }
+        catch (e) {
+            return { error: `Cannot restart "${id}": ${e instanceof Error ? e.message : String(e)}` };
+        }
+        if (scriptObj?.type !== 'script' || scriptObj.common?.engine !== `system.adapter.${this.namespace}`) {
+            return { error: `Script "${id}" does not belong to ${this.namespace}` };
+        }
+        if (!scriptObj.common.enabled) {
+            return { error: `Script "${id}" is not running` };
+        }
+        if (checkIsGlobal(scriptObj)) {
+            return { result: 'instance' };
+        }
+        this.restartRunningScript(id);
+        return { result: 'script' };
+    }
     async mayExecuteFor(obj) {
         // `user` is not in the older `@iobroker/types` this adapter builds against
         const user = obj.user;
@@ -1593,6 +1632,20 @@ class JavaScript extends adapter_core_1.Adapter {
                 else {
                     this.sendTo(obj.from, obj.command, { error: 'No code provided' }, obj.callback);
                 }
+                break;
+            }
+            case 'restartScript': {
+                // The restart button of the editor. Writing `enabled: true` into a script that runs
+                // already changes nothing in its object, so that restarts nothing (#2423).
+                void this.restartScriptFor(obj).then(result => {
+                    if (obj.callback) {
+                        this.sendTo(obj.from, obj.command, result, obj.callback);
+                    }
+                    if (result.result === 'instance') {
+                        this.log.info(`Global script ${obj.message.script} restarted. Restart instance.`);
+                        this.restart();
+                    }
+                });
                 break;
             }
             case 'execute': {
