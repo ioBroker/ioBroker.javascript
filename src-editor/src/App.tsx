@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
 import { SplitSizes } from './Components/splitSizes';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
@@ -45,6 +46,19 @@ import { getScriptName, nameToFileName, scriptIdToZipFolder, zipPathToScript } f
 import type { ScriptType } from '@/types';
 import PasswordDialog from '@/Dialogs/Password';
 import { preloadFbEditor } from '@/FbEditor/preload';
+
+/** The node, in which the editor lives; it fills the place of the editor in the layout like that place did */
+function createEditorHost(): HTMLDivElement {
+    const host = window.document.createElement('div');
+    Object.assign(host.style, {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+    });
+    return host;
+}
 
 const styles: Record<string, any> = {
     root: {
@@ -253,6 +267,13 @@ export default class App extends GenericApp<AppProps, AppState> {
     private readonly menuRef = React.createRef<HTMLDivElement>();
     /** The log, which slides in when it is shown again */
     private readonly logRef = React.createRef<HTMLDivElement>();
+    /**
+     * The DOM node of the editor. The layout changes its structure, when the side menu or the log is shown or
+     * hidden, or when the debug mode starts or ends: React would create the editor anew there and throw away
+     * the unsaved changes of all open scripts (#1739). So the editor is rendered once into this node (a portal),
+     * and only the node moves to the place, which the current layout has for it.
+     */
+    private readonly editorHost: HTMLDivElement = createEditorHost();
 
     constructor(props: AppProps) {
         super(props, {
@@ -1377,74 +1398,88 @@ export default class App extends GenericApp<AppProps, AppState> {
         this.setState({ logHorzLayout: !this.state.logHorzLayout });
     }
 
-    renderEditor(): React.JSX.Element {
+    /** The place of the editor in the current layout: the editor (its DOM node) moves in here */
+    renderEditorPlace(): React.JSX.Element {
+        return (
+            <Box
+                sx={styles.editorPane}
+                key="editorPane"
+                ref={this.placeEditor}
+            />
+        );
+    }
+
+    private readonly placeEditor = (place: HTMLDivElement | null): void => {
+        if (place && this.editorHost.parentElement !== place) {
+            place.appendChild(this.editorHost);
+        }
+    };
+
+    /** The editor itself, always at the same place in the tree of React, so that it is never created anew */
+    renderEditor(): React.ReactPortal {
         const isAnyRulesExists = Object.keys(this.scripts).reduce(
             (sum, id) => sum + ((this.scripts[id].common as ioBroker.ScriptCommon).engineType === 'Rules' ? 1 : 0),
             0,
         );
 
-        return (
-            <Box
-                sx={styles.editorPane}
-                key="editorPane"
-            >
-                <Editor
-                    key="editor"
-                    scriptsHash={this.state.scriptsHash}
-                    debugMode={this.state.debugMode}
-                    onDebugModeChange={value => {
-                        if (!value) {
-                            this.setState({ debugMode: false, debugInstance: null });
-                        } else {
-                            this.setState({ debugMode: true });
-                        }
-                    }}
-                    visible={!this.state.resizing}
-                    socket={this.socket}
-                    adapterName={this.adapterName}
-                    onLocate={menuSelectId => this.setState({ menuSelectId })}
-                    password={this.state.password}
-                    runningInstances={this.state.runningInstances}
-                    aiEditorHelpers={this.state.aiEditorHelpers}
-                    menuOpened={this.state.menuOpened}
-                    searchText={this.state.searchText}
-                    themeType={this.state.themeType}
-                    themeName={this.state.themeName}
-                    theme={this.state.theme}
-                    expertMode={this.state.expertMode}
-                    onChange={(id, common) => this.onUpdateScript(id, common)}
-                    newRuleId={this.state.newRuleId}
-                    onNewRuleHandled={() => this.setState({ newRuleId: '' })}
-                    isAnyRulesExists={isAnyRulesExists}
-                    debugInstance={this.state.debugInstance}
-                    onSelectedChange={(id, editing) => {
-                        const newState: Partial<AppState> = {};
-                        let changed = false;
-                        if (id !== this.state.selected) {
-                            changed = true;
-                            newState.selected = id;
-                        }
-                        if (JSON.stringify(editing) !== JSON.stringify(this.state.editing)) {
-                            changed = true;
-                            newState.editing = [...editing];
-                        }
-                        if (changed) {
-                            this.setState(newState as AppState);
-                        }
-                    }}
-                    onRestart={this.onRestart}
-                    pendingScripts={this.state.pendingScripts}
-                    onOpen={id => this.onSelect(id)}
-                    selected={
-                        this.state.selected && this.scripts[this.state.selected]?.type === 'script'
-                            ? this.state.selected
-                            : ''
+        return createPortal(
+            <Editor
+                key="editor"
+                scriptsHash={this.state.scriptsHash}
+                debugMode={this.state.debugMode}
+                onDebugModeChange={value => {
+                    if (!value) {
+                        this.setState({ debugMode: false, debugInstance: null });
+                    } else {
+                        this.setState({ debugMode: true });
                     }
-                    objects={this.scripts}
-                    resizing={this.state.resizing}
-                    onChangedChanged={changed => (this.changedScripts = changed)}
-                />
-            </Box>
+                }}
+                visible={!this.state.resizing}
+                socket={this.socket}
+                adapterName={this.adapterName}
+                onLocate={menuSelectId => this.setState({ menuSelectId })}
+                password={this.state.password}
+                runningInstances={this.state.runningInstances}
+                aiEditorHelpers={this.state.aiEditorHelpers}
+                menuOpened={this.state.menuOpened}
+                searchText={this.state.searchText}
+                themeType={this.state.themeType}
+                themeName={this.state.themeName}
+                theme={this.state.theme}
+                expertMode={this.state.expertMode}
+                onChange={(id, common) => this.onUpdateScript(id, common)}
+                newRuleId={this.state.newRuleId}
+                onNewRuleHandled={() => this.setState({ newRuleId: '' })}
+                isAnyRulesExists={isAnyRulesExists}
+                debugInstance={this.state.debugInstance}
+                onSelectedChange={(id, editing) => {
+                    const newState: Partial<AppState> = {};
+                    let changed = false;
+                    if (id !== this.state.selected) {
+                        changed = true;
+                        newState.selected = id;
+                    }
+                    if (JSON.stringify(editing) !== JSON.stringify(this.state.editing)) {
+                        changed = true;
+                        newState.editing = [...editing];
+                    }
+                    if (changed) {
+                        this.setState(newState as AppState);
+                    }
+                }}
+                onRestart={this.onRestart}
+                pendingScripts={this.state.pendingScripts}
+                onOpen={id => this.onSelect(id)}
+                selected={
+                    this.state.selected && this.scripts[this.state.selected]?.type === 'script'
+                        ? this.state.selected
+                        : ''
+                }
+                objects={this.scripts}
+                resizing={this.state.resizing}
+                onChangedChanged={changed => (this.changedScripts = changed)}
+            />,
+            this.editorHost,
         );
     }
 
@@ -1481,7 +1516,7 @@ export default class App extends GenericApp<AppProps, AppState> {
             content = (
                 <>
                     {!this.state.debugMode && this.state.hideLog ? this.showLogButton() : undefined}
-                    {this.renderEditor()}
+                    {this.renderEditorPlace()}
                 </>
             );
         } else {
@@ -1499,7 +1534,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                     }}
                     gutterClassName={this.logSplit.gutterClassName(this.state.themeType)}
                 >
-                    {this.renderEditor()}
+                    {this.renderEditorPlace()}
                     <div
                         key="log"
                         ref={this.logRef}
@@ -1652,7 +1687,10 @@ export default class App extends GenericApp<AppProps, AppState> {
                     <CssBaseline />
                     <ScrollbarStyles theme={this.state.theme} />
                     <div style={styles.root}>
-                        <ContextWrapper socket={this.socket}>{context}</ContextWrapper>
+                        <ContextWrapper socket={this.socket}>
+                            {context}
+                            {this.renderEditor()}
+                        </ContextWrapper>
                     </div>
                 </ThemeProvider>
             </StyledEngineProvider>
