@@ -1,0 +1,1 @@
+import{or as e,qn as t}from"./_virtual_mf___mfe_internal__iobroker_javascript__mf_owner__167145040919167__loadShare___mf_0_iobroker_mf_1_gui_mf_2_components__loadShare__.js-CWhMn-El.js";var n=t(e(`path`,{d:`M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z`}),`ChevronRight`),r=t(e(`path`,{d:`M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z`}),`ExpandMore`);export{n,r as t};

@@ -30,7 +30,7 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 10.4.10 (2026-11-04)
 * (@GermanBluefox) Fixed: the unsaved changes of the open scripts were lost, when the list of scripts or the log was hidden or shown again (#1739)
 * (@GermanBluefox) Added: animated icons in the editor (`@iobroker/gui-components` 10.3.16) - start/stop morphs between play and pause and shows a ring until the instance confirmed it, the restart button turns until the script is restarted, folders open with an animation, animated delete, menu arrow and expert mode symbols, a check mark after saving and copying
 * (@GermanBluefox) Added: more animations in the editor - the rows of a folder grow and shrink when it is opened and closed, new scripts light up, the colors of the start/stop buttons fade, the Save/Diff/Cancel buttons and new tabs grow to their width, closed tabs shrink, new log lines slide in, the side menu and the log slide in when they are opened, badges jump when their number grows
@@ -59,12 +59,6 @@ Executes JavaScript, TypeScript Scripts.
 * (@GermanBluefox) Fixed: false "Cannot redeclare block-scoped variable" (TS2451) warnings for `const`s that are declared in several scripts
 * (@GermanBluefox) Fixed: `subscribeObject()`/`onObject()` and the rule trigger "On object change" never fired for a pattern with `*`
 * (@GermanBluefox) Fixed: a change of a TypeScript script could be ignored after its compilation result could not be stored
-
-### 10.4.5 (2026-10-18)
-* (@GermanBluefox) Fixed: a script that did not handle a rejected `setStateAsync` (e.g. of a missing state) or another asynchronous function terminated the adapter
-* (@agross) Fixed: TypeScript scripts that import the same module as a global script failed with "Identifier has already been declared"
-* (@GermanBluefox) Fixed: the @-mention list of the AI chat showed only the first 13 scripts
-* (@GermanBluefox) Fixed: selection of state if predefined
 
 ## License
 The MIT License (MIT)

@@ -1,4 +1,10 @@
 The newest change log is in README.md
+## 10.4.5 (2026-10-18)
+* (@GermanBluefox) Fixed: a script that did not handle a rejected `setStateAsync` (e.g. of a missing state) or another asynchronous function terminated the adapter
+* (@agross) Fixed: TypeScript scripts that import the same module as a global script failed with "Identifier has already been declared"
+* (@GermanBluefox) Fixed: the @-mention list of the AI chat showed only the first 13 scripts
+* (@GermanBluefox) Fixed: selection of state if predefined
+
 ## 10.4.4 (2026-10-16)
 * (@GermanBluefox) Fixed: a script that did not handle a rejected `setStateAsync` (e.g. of a missing state) or another asynchronous function terminated the adapter
 * (@GermanBluefox) Fixed: instances of different versions
