@@ -36,7 +36,6 @@ import {
     MdHistory as IconHistory,
     MdCancel as IconCancel,
     MdClose as IconClose,
-    MdRefresh as IconRestart,
     MdInput as IconDoEdit,
     MdGpsFixed as IconLocate,
     MdClearAll as IconCloseAll,
@@ -44,8 +43,6 @@ import {
     MdBugReport as IconDebug,
     MdPlaylistAddCheck as IconVerbose,
     MdBugReport as IconDebugMode,
-    MdPlayArrow as IconPlay,
-    MdPause as IconPause,
     MdBrightness4 as IconAstro,
     MdCode as IconCode,
     MdAutoFixHigh as IconWizard,
@@ -87,7 +84,11 @@ import {
     type ThemeType,
     type AdminConnection,
     type ThemeName,
+    IconPlayPause,
+    IconRefresh,
+    IconResult,
 } from '@iobroker/gui-components';
+import { GrowIn, growIn, shrinkOut } from './Components/Motion';
 
 import steps, { STEPS } from './Components/RulesEditor/helpers/Tour';
 import type { AstroTimes, ScriptType } from './types';
@@ -253,6 +254,15 @@ const styles: Record<string, any> = {
         marginRight: 8,
         marginLeft: 8,
     },
+    /** The start/stop button fades into the color of the new state */
+    colorFade: {
+        transition: 'color 0.4s ease, background-color 150ms',
+    },
+    /** The check mark after saving */
+    savedMark: {
+        marginLeft: 4,
+        marginRight: 4,
+    },
     tabButton: {
         minHeight: 48,
     },
@@ -274,9 +284,13 @@ interface EditorProps {
     runningInstances: Record<string, boolean>;
     /** `native.aiEditorHelpers` per javascript instance. A missing entry means "not configured" => enabled */
     aiEditorHelpers: Record<string, boolean>;
-    onChange: (id: string, common: ioBroker.ScriptCommon) => void;
+    /** Stores the script. If it returns a promise, it tells whether the script was stored. */
+    onChange: (id: string, common: ioBroker.ScriptCommon) => void | Promise<boolean>;
     onSelectedChange: (selected: string, editing: string[]) => void;
-    onRestart?: (id: string) => void;
+    /** Restarts the script. If it returns a promise, the restart button turns until it is resolved. */
+    onRestart?: (id: string) => void | Promise<void>;
+    /** Scripts that were started or stopped and are not confirmed by their instance yet: the wanted `enabled` */
+    pendingScripts?: Record<string, boolean>;
     /** Opens another script, like the diagram of a block */
     onOpen?: (id: string) => void;
     debugMode: boolean;
@@ -353,7 +367,14 @@ interface EditorState {
     inlineAskHandler: ((question: string, code: string) => Promise<string>) | null;
     aiCompletionsEnabled: boolean;
     scriptConflict: string;
+    /** The script whose restart is not finished yet: its restart button turns */
+    restarting: string;
+    /** After saving, a check mark (or a cross if it failed) is drawn in the toolbar for a moment */
+    savedMark: { id: string; ok: boolean; count: number } | null;
 }
+
+/** How long the check mark after saving stays in the toolbar */
+const SAVED_MARK_MS = 2_500;
 
 class Editor extends React.Component<EditorProps, EditorState> {
     private getSelect: (() => string | undefined) | null = null;
@@ -397,6 +418,19 @@ class Editor extends React.Component<EditorProps, EditorState> {
     private scriptEditorRef = React.createRef<ScriptEditorType>();
 
     private lastKnownTs: Record<string, number> = {};
+
+    /** The DOM elements of the tabs, to let them grow when they are opened and shrink when they are closed */
+    private readonly tabElements: Record<string, HTMLElement> = {};
+
+    /** Tabs that are shown already: only a newly opened tab grows */
+    private readonly knownTabs = new Set<string>();
+
+    /** Tabs that shrink right now, before they are closed */
+    private readonly closingTabs = new Set<string>();
+
+    private savedMarkTimer: ReturnType<typeof setTimeout> | null = null;
+
+    private savedCount = 0;
 
     constructor(props: EditorProps) {
         super(props);
@@ -452,6 +486,8 @@ class Editor extends React.Component<EditorProps, EditorState> {
             aiCompletionsEnabled: window.localStorage.getItem('Editor.aiCompletions') !== 'false',
             triggerPrettier: 1,
             scriptConflict: '',
+            restarting: '',
+            savedMark: null,
             rules: null,
             fbd: null,
             runningInstances: this.props.runningInstances || {},
@@ -473,6 +509,9 @@ class Editor extends React.Component<EditorProps, EditorState> {
             verboseEnabled: false,
             visible: props.visible,
         };
+
+        // the tabs of the last session are there from the start and do not grow
+        editing.forEach(id => this.knownTabs.add(id));
 
         this.setChangedInAdmin();
 
@@ -622,11 +661,52 @@ class Editor extends React.Component<EditorProps, EditorState> {
     componentWillUnmount(): void {
         window.removeEventListener('beforeunload', this.onBrowserClose);
         void this.props.socket.unsubscribeObject('system.adapter.*', Editor.onInstanceChanged);
+        if (this.savedMarkTimer) {
+            clearTimeout(this.savedMarkTimer);
+            this.savedMarkTimer = null;
+        }
+    }
+
+    /** A tab was rendered (or removed): a newly opened tab grows to its width */
+    onTabRef(id: string, element: HTMLElement | null): void {
+        if (!element) {
+            delete this.tabElements[id];
+            return;
+        }
+        this.tabElements[id] = element;
+        if (!this.knownTabs.has(id)) {
+            this.knownTabs.add(id);
+            growIn(element, 'x');
+        }
+    }
+
+    /** Shows the check mark after saving (or the cross, if it failed) for a moment */
+    showSavedMark(id: string, ok: boolean): void {
+        if (this.savedMarkTimer) {
+            clearTimeout(this.savedMarkTimer);
+        }
+        this.savedMarkTimer = setTimeout(() => {
+            this.savedMarkTimer = null;
+            this.setState({ savedMark: null });
+        }, SAVED_MARK_MS);
+        this.savedCount++;
+        this.setState({ savedMark: { id, ok, count: this.savedCount } });
+    }
+
+    /** Stores the script; when it is stored, a check mark confirms it */
+    storeScript(id: string, common: ioBroker.ScriptCommon): void {
+        const result = this.props.onChange?.(id, common);
+        if (result instanceof Promise) {
+            void result.then(ok => this.showSavedMark(id, ok));
+        }
     }
 
     componentDidUpdate(prevProps: EditorProps): void {
         // The instance settings or the selected script (and with it the engine) may have changed
         setAiHelpersEnabled(this.isAiHelpersEnabled());
+
+        // a tab that was closed ("close all but current" too) grows again, when it is opened anew
+        this.knownTabs.forEach(id => !this.state.editing.includes(id) && this.knownTabs.delete(id));
 
         if (prevProps.scriptsHash !== this.props.scriptsHash) {
             // Check if any currently editing script was modified externally
@@ -928,7 +1008,12 @@ class Editor extends React.Component<EditorProps, EditorState> {
     }
 
     onRestart(): void {
-        this.props.onRestart?.(this.state.selected);
+        const id = this.state.selected;
+        const result = this.props.onRestart?.(id);
+        if (result instanceof Promise) {
+            this.setState({ restarting: id });
+            void result.finally(() => this.state.restarting === id && this.setState({ restarting: '' }));
+        }
     }
 
     onStartStop(): void {
@@ -938,7 +1023,8 @@ class Editor extends React.Component<EditorProps, EditorState> {
             common.source = encryptText(this.props.password, common.source);
         }
 
-        this.props.onChange?.(this.state.selected, common);
+        // the button shows a ring until the instance confirmed it, errors are shown by the App
+        void this.props.onChange?.(this.state.selected, common);
     }
 
     onSave(): void {
@@ -956,13 +1042,14 @@ class Editor extends React.Component<EditorProps, EditorState> {
                 if (this.props.password && this.props.objects[this.state.selected].native?.protected) {
                     common.source = encryptText(this.props.password, common.source);
                 }
-                this.props.onChange?.(this.state.selected, common);
+                this.storeScript(this.state.selected, common);
             });
         }
     }
 
     onSaveAll(): void {
         const changed: Record<string, boolean> = { ...this.state.changed };
+        const results: Promise<boolean>[] = [];
         Object.keys(changed).forEach(id => {
             if (!this.scripts[id] || !this.props.objects[id]) {
                 // The script is gone; its flag would otherwise keep "Save all" alive forever
@@ -973,11 +1060,18 @@ class Editor extends React.Component<EditorProps, EditorState> {
                 if (this.props.password && this.props.objects[id].native?.protected) {
                     common.source = encryptText(this.props.password, common.source);
                 }
-                this.props.onChange?.(id, common);
+                const result = this.props.onChange?.(id, common);
+                if (result instanceof Promise) {
+                    results.push(result);
+                }
             }
         });
 
         this.setState({ changed }, () => this.setChangedInAdmin());
+        if (results.length) {
+            // one check mark for all, whichever script is open
+            void Promise.all(results).then(oks => this.showSavedMark('*', !oks.includes(false)));
+        }
     }
 
     onCancel(): void {
@@ -1164,7 +1258,6 @@ class Editor extends React.Component<EditorProps, EditorState> {
     onTabClose(id: string, e?: React.MouseEvent<any>): void {
         e?.stopPropagation();
 
-        const pos = this.state.editing.indexOf(id);
         if (this.state.editing.includes(id)) {
             if (this.isScriptChanged(id)) {
                 this.showConfirmDialog(I18n.t('Discard changes for %s', this.props.objects[id].common.name), ok => {
@@ -1174,51 +1267,66 @@ class Editor extends React.Component<EditorProps, EditorState> {
                         this.onTabClose(id);
                     }
                 });
-            } else {
-                const editing = [...this.state.editing];
-                editing.splice(pos, 1);
-                const newState: Partial<EditorState> = { editing };
-                if (id === this.state.selected) {
-                    if (editing.length) {
-                        if (pos === 0 || editing.length === 1) {
-                            newState.selected = editing[0];
-                        } else {
-                            newState.selected = editing[pos - 1];
-                        }
-                    } else {
-                        newState.selected = '';
-                    }
-                } else if (this.state.selected && !editing.length) {
-                    newState.selected = '';
-                }
-                window.localStorage.setItem('Editor.editing', JSON.stringify(editing));
-                if (newState.selected !== undefined) {
-                    newState.changed ||= { ...this.state.changed };
-                    newState.changed[newState.selected] = this.isScriptChanged(newState.selected);
-                    const common = newState.selected
-                        ? this.scripts[newState.selected] || this.getScriptFromObject(newState.selected)
-                        : undefined;
-
-                    newState.blockly = common?.engineType === 'Blockly';
-                    newState.rules = common?.engineType === 'Rules';
-                    newState.fbd = isFbd(common);
-                    newState.verboseEnabled = !!common?.verbose;
-                    newState.debugEnabled = !!common?.debug;
-                    newState.showCompiledCode = false;
-                }
-
-                this.setState(newState as EditorState, () => {
-                    this.setChangedInAdmin();
-
-                    if (newState.selected !== undefined) {
-                        this.props.onSelectedChange?.(newState.selected, this.state.editing);
-                        window.localStorage.setItem('Editor.selected', newState.selected);
-                    } else {
-                        this.props.onSelectedChange?.(this.state.selected, this.state.editing);
-                    }
+            } else if (!this.closingTabs.has(id)) {
+                // the tab shrinks first, then it is removed
+                this.closingTabs.add(id);
+                shrinkOut([this.tabElements[id]], 'x', () => {
+                    this.closingTabs.delete(id);
+                    this.knownTabs.delete(id);
+                    this.closeTab(id);
                 });
             }
         }
+    }
+
+    /** Removes the tab of the script from the opened ones and selects a neighbor, if it was the selected one */
+    closeTab(id: string): void {
+        const pos = this.state.editing.indexOf(id);
+        if (pos === -1) {
+            return;
+        }
+        const editing = [...this.state.editing];
+        editing.splice(pos, 1);
+        const newState: Partial<EditorState> = { editing };
+        if (id === this.state.selected) {
+            if (editing.length) {
+                if (pos === 0 || editing.length === 1) {
+                    newState.selected = editing[0];
+                } else {
+                    newState.selected = editing[pos - 1];
+                }
+            } else {
+                newState.selected = '';
+            }
+        } else if (this.state.selected && !editing.length) {
+            newState.selected = '';
+        }
+        window.localStorage.setItem('Editor.editing', JSON.stringify(editing));
+        if (newState.selected !== undefined) {
+            newState.changed ||= { ...this.state.changed };
+            newState.changed[newState.selected] = this.isScriptChanged(newState.selected);
+            const common = newState.selected
+                ? this.scripts[newState.selected] || this.getScriptFromObject(newState.selected)
+                : undefined;
+
+            newState.blockly = common?.engineType === 'Blockly';
+            newState.rules = common?.engineType === 'Rules';
+            newState.fbd = isFbd(common);
+            newState.verboseEnabled = !!common?.verbose;
+            newState.debugEnabled = !!common?.debug;
+            newState.showCompiledCode = false;
+        }
+
+        this.setState(newState as EditorState, () => {
+            this.setChangedInAdmin();
+
+            if (newState.selected !== undefined) {
+                this.props.onSelectedChange?.(newState.selected, this.state.editing);
+                window.localStorage.setItem('Editor.selected', newState.selected);
+            } else {
+                this.props.onSelectedChange?.(this.state.selected, this.state.editing);
+            }
+        });
     }
 
     showConfirmDialog(question: string, cb: (result: boolean) => void): void {
@@ -1316,6 +1424,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                                     wrapped
                                     href={`#${id}`}
                                     key={id}
+                                    ref={(el: HTMLElement | null) => this.onTabRef(id, el)}
                                     label={label}
                                     value={id}
                                 />
@@ -1344,6 +1453,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             changed ? (
                                 <span
                                     key="changedSign"
+                                    className="iob-js-pop"
                                     style={styles.tabChangedIcon}
                                 >
                                     ▣
@@ -1383,6 +1493,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                                 }
                                 href={`#${id}`}
                                 key={id}
+                                ref={(el: HTMLElement | null) => this.onTabRef(id, el)}
                                 label={label}
                                 style={styles.tabButton}
                                 value={id}
@@ -1584,6 +1695,13 @@ class Editor extends React.Component<EditorProps, EditorState> {
             this.state.runningInstances[this.scripts[this.state.selected].engine]
         );
         const isScriptRunning = !!(this.state.selected && this.scripts[this.state.selected]?.enabled);
+        // started or stopped, but not confirmed by the instance yet: the button shows already the new state
+        const pending = this.state.selected ? this.props.pendingScripts?.[this.state.selected] : undefined;
+        const showRunning = pending ?? isScriptRunning;
+        const savedMark =
+            this.state.savedMark && (this.state.savedMark.id === '*' || this.state.savedMark.id === this.state.selected)
+                ? this.state.savedMark
+                : null;
 
         if (this.state.selected) {
             /*
@@ -1623,7 +1741,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             title={I18n.t('Restart')}
                             size="medium"
                         >
-                            <IconRestart />
+                            <IconRefresh loading={this.state.restarting === this.state.selected} />
                         </IconButton>
                     ) : null}
                     {!this.props.debugInstance && !changed ? (
@@ -1631,34 +1749,54 @@ class Editor extends React.Component<EditorProps, EditorState> {
                             key="start-stop"
                             disabled={this.props.debugMode}
                             onClick={() => this.onStartStop()}
-                            title={isScriptRunning ? I18n.t('Pause script') : I18n.t('Run script')}
+                            title={showRunning ? I18n.t('Pause script') : I18n.t('Run script')}
                             size="medium"
                             style={{
                                 ...styles.toolbarButtons,
-                                color: isScriptRunning ? COLOR_RUN : COLOR_PAUSE,
+                                ...styles.colorFade,
+                                color: showRunning ? COLOR_RUN : COLOR_PAUSE,
                             }}
                         >
-                            {isScriptRunning ? <IconPause /> : <IconPlay />}
+                            <IconPlayPause
+                                running={showRunning}
+                                pending={pending !== undefined}
+                            />
                         </IconButton>
                     ) : null}
-                    {!this.props.debugInstance && !changed && !isScriptRunning ? (
-                        <span style={styles.notRunning}>{I18n.t('Script is not running')}</span>
+                    {savedMark ? (
+                        <GrowIn
+                            key="saved"
+                            style={styles.savedMark}
+                        >
+                            <IconResult
+                                type={savedMark.ok ? 'success' : 'error'}
+                                replay={savedMark.count}
+                            />
+                        </GrowIn>
                     ) : null}
-                    {!changed && isScriptRunning && !isInstanceRunning ? (
-                        <span style={styles.notRunning}>{I18n.t('Instance is disabled')}</span>
+                    {!this.props.debugInstance && !changed && !showRunning ? (
+                        <GrowIn key="notRunning">
+                            <span style={styles.notRunning}>{I18n.t('Script is not running')}</span>
+                        </GrowIn>
+                    ) : null}
+                    {!changed && showRunning && !isInstanceRunning ? (
+                        <GrowIn key="instanceDisabled">
+                            <span style={styles.notRunning}>{I18n.t('Instance is disabled')}</span>
+                        </GrowIn>
                     ) : null}
                     {changed ? (
-                        <Button
-                            color="grey"
-                            key="save"
-                            variant="contained"
-                            style={{ ...styles.textButton, ...styles.saveButton }}
-                            className="button-save"
-                            onClick={() => this.onSave()}
-                            endIcon={<IconSave />}
-                        >
-                            {I18n.t('Save')}
-                        </Button>
+                        <GrowIn key="save">
+                            <Button
+                                color="grey"
+                                variant="contained"
+                                style={{ ...styles.textButton, ...styles.saveButton }}
+                                className="button-save"
+                                onClick={() => this.onSave()}
+                                endIcon={<IconSave />}
+                            >
+                                {I18n.t('Save')}
+                            </Button>
+                        </GrowIn>
                     ) : null}
                     {/*
                      * Text scripts only. For Blockly, Rules and FBD the stored source is generated
@@ -1666,17 +1804,21 @@ class Editor extends React.Component<EditorProps, EditorState> {
                      * nothing about what the user actually changed in the editor.
                      */}
                     {changed && !this.state.blockly && !this.state.rules && !this.state.fbd ? (
-                        <Button
-                            color="grey"
+                        <GrowIn
                             key="diff"
-                            variant="contained"
-                            style={styles.textButton}
-                            title={I18n.t('Show the changes against the saved version')}
-                            onClick={() => this.setState({ showDiff: true })}
-                            endIcon={<IconDiff />}
+                            delay={40}
                         >
-                            {I18n.t('Diff')}
-                        </Button>
+                            <Button
+                                color="grey"
+                                variant="contained"
+                                style={styles.textButton}
+                                title={I18n.t('Show the changes against the saved version')}
+                                onClick={() => this.setState({ showDiff: true })}
+                                endIcon={<IconDiff />}
+                            >
+                                {I18n.t('Diff')}
+                            </Button>
+                        </GrowIn>
                     ) : null}
                     {!this.state.blockly && !this.state.rules && !this.state.fbd && this.state.selected ? (
                         <IconButton
@@ -1690,32 +1832,37 @@ class Editor extends React.Component<EditorProps, EditorState> {
                         </IconButton>
                     ) : null}
                     {changedAll > 1 || (changedAll === 1 && !changed) ? (
-                        <Button
-                            color="grey"
-                            key="saveall"
-                            variant="contained"
-                            style={styles.textButton}
-                            title={[
-                                I18n.t('These scripts are not saved:'),
-                                ...changedIds.map(id => id.replace(/^script\.js\./, '')),
-                            ].join('\n')}
-                            onClick={() => this.onSaveAll()}
-                            endIcon={<IconSave />}
-                        >
-                            {I18n.t('Save all')}
-                        </Button>
+                        <GrowIn key="saveall">
+                            <Button
+                                color="grey"
+                                variant="contained"
+                                style={styles.textButton}
+                                title={[
+                                    I18n.t('These scripts are not saved:'),
+                                    ...changedIds.map(id => id.replace(/^script\.js\./, '')),
+                                ].join('\n')}
+                                onClick={() => this.onSaveAll()}
+                                endIcon={<IconSave />}
+                            >
+                                {I18n.t('Save all')}
+                            </Button>
+                        </GrowIn>
                     ) : null}
                     {changed ? (
-                        <Button
-                            color="grey"
+                        <GrowIn
                             key="cancel"
-                            variant="contained"
-                            style={styles.textButton}
-                            onClick={() => this.onCancel()}
-                            endIcon={<IconCancel />}
+                            delay={80}
                         >
-                            {I18n.t('Cancel')}
-                        </Button>
+                            <Button
+                                color="grey"
+                                variant="contained"
+                                style={styles.textButton}
+                                onClick={() => this.onCancel()}
+                                endIcon={<IconCancel />}
+                            >
+                                {I18n.t('Cancel')}
+                            </Button>
+                        </GrowIn>
                     ) : null}
                     {!this.state.showCompiledCode && !this.state.rules ? (
                         <IconButton

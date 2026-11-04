@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
 import { SplitSizes } from './Components/splitSizes';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
@@ -16,12 +17,14 @@ import {
     type IobTheme,
     type GenericAppProps,
     type GenericAppState,
+    IconMenuArrow,
 } from '@iobroker/gui-components';
 
-import { MdMenu as IconMenuClosed, MdArrowBack as IconMenuOpened, MdVisibility as IconShowLog } from 'react-icons/md';
+import { MdVisibility as IconShowLog } from 'react-icons/md';
 
 import SideMenu from './SideMenu';
 import Log from './Log';
+import { reveal } from './Components/Motion';
 import Editor from './Editor';
 import DialogError from './Dialogs/Error';
 import DialogImportFile from './Dialogs/ImportFile';
@@ -43,6 +46,19 @@ import { getScriptName, nameToFileName, scriptIdToZipFolder, zipPathToScript } f
 import type { ScriptType } from '@/types';
 import PasswordDialog from '@/Dialogs/Password';
 import { preloadFbEditor } from '@/FbEditor/preload';
+
+/** The node, in which the editor lives; it fills the place of the editor in the layout like that place did */
+function createEditorHost(): HTMLDivElement {
+    const host = window.document.createElement('div');
+    Object.assign(host.style, {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+    });
+    return host;
+}
 
 const styles: Record<string, any> = {
     root: {
@@ -68,6 +84,10 @@ const styles: Record<string, any> = {
         width: '100%',
         height: '100%',
         overflow: 'hidden',
+    },
+    logPane: {
+        width: '100%',
+        height: '100%',
     },
     /*
     appBarWithMenu: {
@@ -194,7 +214,15 @@ interface AppState extends GenericAppState {
     logSizes: [number, number];
     showPasswordDialog: boolean;
     password: string;
+    /**
+     * Scripts that were started or stopped, but their instance did not confirm it yet: the `enabled` they
+     * should get. Their start/stop buttons show a turning ring meanwhile.
+     */
+    pendingScripts: Record<string, boolean>;
 }
+
+/** How long the start/stop button of a script waits at most for its instance to confirm the change */
+const PENDING_TIMEOUT_MS = 10_000;
 
 /**
  * How often the editor tells the adapter that it is open. Has to be clearly below the 30 seconds
@@ -226,6 +254,26 @@ export default class App extends GenericApp<AppProps, AppState> {
     private readonly logSplit = new SplitSizes('log');
     /** Script tree against editor */
     private readonly menuSplit = new SplitSizes('menu');
+    /** Per pending script (see `pendingScripts`): the subscribed `scriptEnabled` state and the time limit */
+    private readonly pending: Record<
+        string,
+        {
+            stateId: string;
+            handler: (id: string, state: ioBroker.State | null | undefined) => void;
+            timer: ReturnType<typeof setTimeout>;
+        }
+    > = {};
+    /** The side menu, which slides in when it is opened */
+    private readonly menuRef = React.createRef<HTMLDivElement>();
+    /** The log, which slides in when it is shown again */
+    private readonly logRef = React.createRef<HTMLDivElement>();
+    /**
+     * The DOM node of the editor. The layout changes its structure, when the side menu or the log is shown or
+     * hidden, or when the debug mode starts or ends: React would create the editor anew there and throw away
+     * the unsaved changes of all open scripts (#1739). So the editor is rendered once into this node (a portal),
+     * and only the node moves to the place, which the current layout has for it.
+     */
+    private readonly editorHost: HTMLDivElement = createEditorHost();
 
     constructor(props: AppProps) {
         super(props, {
@@ -275,6 +323,7 @@ export default class App extends GenericApp<AppProps, AppState> {
             ...this.state,
             splitSizes,
             logSizes,
+            pendingScripts: {},
         };
 
         window.alert = (message: string): void => {
@@ -381,6 +430,7 @@ export default class App extends GenericApp<AppProps, AppState> {
 
     onConnectionReady(): void {
         window.systemLang = this.socket.systemLang;
+        Object.keys(this.pending).forEach(id => this.clearPending(id));
         this.setState(
             {
                 ready: false,
@@ -408,6 +458,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                 debugInstance: null,
                 splitSizes: [20, 80],
                 password: '',
+                pendingScripts: {},
             },
             async (): Promise<void> => {
                 const newState: Partial<AppState> = {};
@@ -516,7 +567,61 @@ export default class App extends GenericApp<AppProps, AppState> {
             this.editorPingInterval = null;
         }
         document.removeEventListener('visibilitychange', this.onVisibilityChange);
+        Object.keys(this.pending).forEach(id => this.clearPending(id));
         super.componentWillUnmount();
+    }
+
+    componentDidUpdate(_prevProps: AppProps, prevState: AppState): void {
+        // the side menu and the log slide in, when the user opens them again
+        if (!prevState.menuOpened && this.state.menuOpened) {
+            reveal(this.menuRef.current, 'left');
+        }
+        if (prevState.hideLog && !this.state.hideLog) {
+            reveal(this.logRef.current, this.state.logHorzLayout ? 'right' : 'bottom');
+        }
+    }
+
+    /**
+     * The script was started or stopped: its start/stop buttons show a ring, until the instance confirms
+     * it with the state `scriptEnabled.<name>` (or at most `PENDING_TIMEOUT_MS`). A stopped instance
+     * confirms nothing, so then there is no ring.
+     */
+    setPending(id: string, enabled: boolean): void {
+        const common = (this.scripts[id] as ioBroker.ScriptObject | undefined)?.common;
+        if (!common?.engine?.startsWith('system.adapter.') || !this.state.runningInstances[common.engine]) {
+            return;
+        }
+        this.clearPending(id);
+        const stateId = `${common.engine.replace('system.adapter.', '')}.scriptEnabled.${id.replace(/^script\.js\./, '')}`;
+        const handler = (_id: string, state: ioBroker.State | null | undefined): void => {
+            if (state?.ack && !!state.val === enabled) {
+                this.clearPending(id);
+            }
+        };
+        this.pending[id] = {
+            stateId,
+            handler,
+            timer: setTimeout(() => this.clearPending(id), PENDING_TIMEOUT_MS),
+        };
+        this.setState(
+            prevState => ({ pendingScripts: { ...prevState.pendingScripts, [id]: enabled } }),
+            () => void this.socket.subscribeState(stateId, handler),
+        );
+    }
+
+    clearPending(id: string): void {
+        const pending = this.pending[id];
+        if (!pending) {
+            return;
+        }
+        delete this.pending[id];
+        clearTimeout(pending.timer);
+        this.socket.unsubscribeState(pending.stateId, pending.handler);
+        this.setState(prevState => {
+            const pendingScripts = { ...prevState.pendingScripts };
+            delete pendingScripts[id];
+            return { pendingScripts };
+        });
     }
 
     async subscribeOnInstances(): Promise<{
@@ -726,16 +831,23 @@ export default class App extends GenericApp<AppProps, AppState> {
         }
     }
 
-    async onUpdateScript(id: string, common: ioBroker.ScriptCommon): Promise<void> {
+    /** @returns true if the script was stored */
+    async onUpdateScript(id: string, common: ioBroker.ScriptCommon): Promise<boolean> {
         if (this.scripts[id]?.type === 'script') {
+            if (common.enabled !== undefined && !!common.enabled !== !!this.scripts[id].common.enabled) {
+                this.setPending(id, !!common.enabled);
+            }
             try {
                 await this.updateScript(id, id, common);
+                return true;
             } catch (err) {
+                this.clearPending(id);
                 if (!(err as Error).toString().includes('canceled')) {
                     this.showJsError(err as Error);
                 }
             }
         }
+        return false;
     }
 
     onSelect(selected: string): void {
@@ -796,30 +908,40 @@ export default class App extends GenericApp<AppProps, AppState> {
      * instance is asked to restart it (#2423). An instance from before this message does not answer -
      * it gets the object write that restarted the script up to 10.4.6. A script that does not run is
      * started by that write.
+     *
+     * Resolves when the script was restarted (or the object was written), so the button can turn until then.
      */
-    onRestart = (id: string): void => {
-        const common = (this.scripts[id] as ioBroker.ScriptObject | undefined)?.common;
-        const writeEnabled = (): void => {
-            void this.socket.extendObject(id, { common: { enabled: true } });
-        };
-        if (!common?.enabled || !common.engine?.startsWith('system.adapter.')) {
-            writeEnabled();
-            return;
-        }
-        const timer = setTimeout(writeEnabled, RESTART_ANSWER_TIMEOUT_MS);
-        this.socket.sendTo(common.engine.replace('system.adapter.', ''), 'restartScript', { script: id }).then(
-            (result?: { error?: string }) => {
-                clearTimeout(timer);
-                if (result?.error) {
-                    this.showJsError(result.error);
+    onRestart = (id: string): Promise<void> =>
+        new Promise<void>(resolve => {
+            const common = (this.scripts[id] as ioBroker.ScriptObject | undefined)?.common;
+            const writeEnabled = (): void => {
+                this.socket.extendObject(id, { common: { enabled: true } }).then(
+                    () => resolve(),
+                    () => resolve(),
+                );
+            };
+            if (!common?.enabled || !common.engine?.startsWith('system.adapter.')) {
+                if (!common?.enabled) {
+                    this.setPending(id, true);
                 }
-            },
-            () => {
-                clearTimeout(timer);
                 writeEnabled();
-            },
-        );
-    };
+                return;
+            }
+            const timer = setTimeout(writeEnabled, RESTART_ANSWER_TIMEOUT_MS);
+            this.socket.sendTo(common.engine.replace('system.adapter.', ''), 'restartScript', { script: id }).then(
+                (result?: { error?: string }) => {
+                    clearTimeout(timer);
+                    if (result?.error) {
+                        this.showJsError(result.error);
+                    }
+                    resolve();
+                },
+                () => {
+                    clearTimeout(timer);
+                    writeEnabled();
+                },
+            );
+        });
 
     showJsError(err: Error | string): void {
         this.setState({ errorText: err ? err.toString() : '' });
@@ -998,6 +1120,9 @@ export default class App extends GenericApp<AppProps, AppState> {
     onEnableDisable(id: string, enabled: boolean): void {
         if (this.scripts[id]?.type === 'script') {
             const common: ioBroker.ScriptCommon = this.scripts[id].common;
+            if (!!common.enabled !== enabled) {
+                this.setPending(id, enabled);
+            }
             common.enabled = enabled;
             common.expert = true;
             this.updateScript(id, id, common).catch(err => err !== 'canceled' && this.showJsError(err));
@@ -1273,73 +1398,88 @@ export default class App extends GenericApp<AppProps, AppState> {
         this.setState({ logHorzLayout: !this.state.logHorzLayout });
     }
 
-    renderEditor(): React.JSX.Element {
+    /** The place of the editor in the current layout: the editor (its DOM node) moves in here */
+    renderEditorPlace(): React.JSX.Element {
+        return (
+            <Box
+                sx={styles.editorPane}
+                key="editorPane"
+                ref={this.placeEditor}
+            />
+        );
+    }
+
+    private readonly placeEditor = (place: HTMLDivElement | null): void => {
+        if (place && this.editorHost.parentElement !== place) {
+            place.appendChild(this.editorHost);
+        }
+    };
+
+    /** The editor itself, always at the same place in the tree of React, so that it is never created anew */
+    renderEditor(): React.ReactPortal {
         const isAnyRulesExists = Object.keys(this.scripts).reduce(
             (sum, id) => sum + ((this.scripts[id].common as ioBroker.ScriptCommon).engineType === 'Rules' ? 1 : 0),
             0,
         );
 
-        return (
-            <Box
-                sx={styles.editorPane}
-                key="editorPane"
-            >
-                <Editor
-                    key="editor"
-                    scriptsHash={this.state.scriptsHash}
-                    debugMode={this.state.debugMode}
-                    onDebugModeChange={value => {
-                        if (!value) {
-                            this.setState({ debugMode: false, debugInstance: null });
-                        } else {
-                            this.setState({ debugMode: true });
-                        }
-                    }}
-                    visible={!this.state.resizing}
-                    socket={this.socket}
-                    adapterName={this.adapterName}
-                    onLocate={menuSelectId => this.setState({ menuSelectId })}
-                    password={this.state.password}
-                    runningInstances={this.state.runningInstances}
-                    aiEditorHelpers={this.state.aiEditorHelpers}
-                    menuOpened={this.state.menuOpened}
-                    searchText={this.state.searchText}
-                    themeType={this.state.themeType}
-                    themeName={this.state.themeName}
-                    theme={this.state.theme}
-                    expertMode={this.state.expertMode}
-                    onChange={(id, common) => this.onUpdateScript(id, common)}
-                    newRuleId={this.state.newRuleId}
-                    onNewRuleHandled={() => this.setState({ newRuleId: '' })}
-                    isAnyRulesExists={isAnyRulesExists}
-                    debugInstance={this.state.debugInstance}
-                    onSelectedChange={(id, editing) => {
-                        const newState: Partial<AppState> = {};
-                        let changed = false;
-                        if (id !== this.state.selected) {
-                            changed = true;
-                            newState.selected = id;
-                        }
-                        if (JSON.stringify(editing) !== JSON.stringify(this.state.editing)) {
-                            changed = true;
-                            newState.editing = [...editing];
-                        }
-                        if (changed) {
-                            this.setState(newState as AppState);
-                        }
-                    }}
-                    onRestart={this.onRestart}
-                    onOpen={id => this.onSelect(id)}
-                    selected={
-                        this.state.selected && this.scripts[this.state.selected]?.type === 'script'
-                            ? this.state.selected
-                            : ''
+        return createPortal(
+            <Editor
+                key="editor"
+                scriptsHash={this.state.scriptsHash}
+                debugMode={this.state.debugMode}
+                onDebugModeChange={value => {
+                    if (!value) {
+                        this.setState({ debugMode: false, debugInstance: null });
+                    } else {
+                        this.setState({ debugMode: true });
                     }
-                    objects={this.scripts}
-                    resizing={this.state.resizing}
-                    onChangedChanged={changed => (this.changedScripts = changed)}
-                />
-            </Box>
+                }}
+                visible={!this.state.resizing}
+                socket={this.socket}
+                adapterName={this.adapterName}
+                onLocate={menuSelectId => this.setState({ menuSelectId })}
+                password={this.state.password}
+                runningInstances={this.state.runningInstances}
+                aiEditorHelpers={this.state.aiEditorHelpers}
+                menuOpened={this.state.menuOpened}
+                searchText={this.state.searchText}
+                themeType={this.state.themeType}
+                themeName={this.state.themeName}
+                theme={this.state.theme}
+                expertMode={this.state.expertMode}
+                onChange={(id, common) => this.onUpdateScript(id, common)}
+                newRuleId={this.state.newRuleId}
+                onNewRuleHandled={() => this.setState({ newRuleId: '' })}
+                isAnyRulesExists={isAnyRulesExists}
+                debugInstance={this.state.debugInstance}
+                onSelectedChange={(id, editing) => {
+                    const newState: Partial<AppState> = {};
+                    let changed = false;
+                    if (id !== this.state.selected) {
+                        changed = true;
+                        newState.selected = id;
+                    }
+                    if (JSON.stringify(editing) !== JSON.stringify(this.state.editing)) {
+                        changed = true;
+                        newState.editing = [...editing];
+                    }
+                    if (changed) {
+                        this.setState(newState as AppState);
+                    }
+                }}
+                onRestart={this.onRestart}
+                pendingScripts={this.state.pendingScripts}
+                onOpen={id => this.onSelect(id)}
+                selected={
+                    this.state.selected && this.scripts[this.state.selected]?.type === 'script'
+                        ? this.state.selected
+                        : ''
+                }
+                objects={this.scripts}
+                resizing={this.state.resizing}
+                onChangedChanged={changed => (this.changedScripts = changed)}
+            />,
+            this.editorHost,
         );
     }
 
@@ -1376,7 +1516,7 @@ export default class App extends GenericApp<AppProps, AppState> {
             content = (
                 <>
                     {!this.state.debugMode && this.state.hideLog ? this.showLogButton() : undefined}
-                    {this.renderEditor()}
+                    {this.renderEditorPlace()}
                 </>
             );
         } else {
@@ -1394,20 +1534,25 @@ export default class App extends GenericApp<AppProps, AppState> {
                     }}
                     gutterClassName={this.logSplit.gutterClassName(this.state.themeType)}
                 >
-                    {this.renderEditor()}
-                    <Log
+                    {this.renderEditorPlace()}
+                    <div
                         key="log"
-                        verticalLayout={!this.state.logHorzLayout}
-                        onLayoutChange={() => this.toggleLogLayout()}
-                        editing={this.state.editing}
-                        socket={this.socket}
-                        selected={this.state.selected}
-                        onHideLog={() => {
-                            window.localStorage.setItem('App.hideLog', 'true');
-                            this.setState({ hideLog: true, resizing: true });
-                            setTimeout(() => this.setState({ resizing: false }), 300);
-                        }}
-                    />
+                        ref={this.logRef}
+                        style={styles.logPane}
+                    >
+                        <Log
+                            verticalLayout={!this.state.logHorzLayout}
+                            onLayoutChange={() => this.toggleLogLayout()}
+                            editing={this.state.editing}
+                            socket={this.socket}
+                            selected={this.state.selected}
+                            onHideLog={() => {
+                                window.localStorage.setItem('App.hideLog', 'true');
+                                this.setState({ hideLog: true, resizing: true });
+                                setTimeout(() => this.setState({ resizing: false }), 300);
+                            }}
+                        />
+                    </div>
                 </ReactSplit>
             );
         }
@@ -1427,7 +1572,10 @@ export default class App extends GenericApp<AppProps, AppState> {
                         setTimeout(() => this.setState({ resizing: false }), 300);
                     }}
                 >
-                    {this.state.menuOpened ? <IconMenuOpened /> : <IconMenuClosed />}
+                    <IconMenuArrow
+                        open={this.state.menuOpened}
+                        fontSize="inherit"
+                    />
                 </Box>
                 {this.state.message ? (
                     <DialogMessage
@@ -1490,6 +1638,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                     <div
                         style={styles.mainDiv}
                         key="menu"
+                        ref={this.menuRef}
                     >
                         <SideMenu
                             password={this.state.password}
@@ -1512,6 +1661,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                                 this.setState({ themeName, themeType }, () => this.toggleTheme(themeName));
                             }}
                             runningInstances={this.state.runningInstances}
+                            pendingScripts={this.state.pendingScripts}
                             onExpertModeChange={(expertMode: boolean): void => this.onExpertModeChange(expertMode)}
                             onDelete={this.onDelete.bind(this)}
                             onAddNew={this.onAddNew.bind(this)}
@@ -1537,7 +1687,10 @@ export default class App extends GenericApp<AppProps, AppState> {
                     <CssBaseline />
                     <ScrollbarStyles theme={this.state.theme} />
                     <div style={styles.root}>
-                        <ContextWrapper socket={this.socket}>{context}</ContextWrapper>
+                        <ContextWrapper socket={this.socket}>
+                            {context}
+                            {this.renderEditor()}
+                        </ContextWrapper>
                     </div>
                 </ThemeProvider>
             </StyledEngineProvider>

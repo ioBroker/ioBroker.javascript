@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
     Box,
     Button,
@@ -20,10 +20,29 @@ import {
     Restore as IconRestore,
     Delete as IconDelete,
     DeleteSweep as IconDeleteAll,
+    Fullscreen as IconMaximize,
+    FullscreenExit as IconRestoreSize,
+    History as IconHistory,
 } from '@mui/icons-material';
 import { I18n, type AdminConnection, type ThemeType } from '@iobroker/gui-components';
 
 import MonacoDiff from '../Components/MonacoDiff';
+import { resizeFrom } from '../Components/Motion';
+import Resizer from '../Components/Resizer';
+
+/** The dialog keeps its size (maximized or not) for the next time */
+const MAXIMIZED_KEY = 'History.maximized';
+/** ... and the width of the list of versions, which can be dragged */
+const LIST_WIDTH_KEY = 'History.listWidth';
+const LIST_WIDTH_DEFAULT = 280;
+const LIST_WIDTH_MIN = 150;
+/** The diff keeps at least this width, when the list grows */
+const DIFF_WIDTH_MIN = 300;
+
+function readListWidth(): number {
+    const width = parseInt(window.localStorage.getItem(LIST_WIDTH_KEY) || '', 10);
+    return width >= LIST_WIDTH_MIN ? width : LIST_WIDTH_DEFAULT;
+}
 
 /** One stored version, as the adapter lists it - without its source */
 interface ScriptVersion {
@@ -71,6 +90,37 @@ const DialogHistory: React.FC<DialogHistoryProps> = ({
     const [source, setSource] = useState<string | null>(null);
     const [error, setError] = useState<string>('');
     const [loadingSource, setLoadingSource] = useState(false);
+    const [maximized, setMaximized] = useState(() => window.localStorage.getItem(MAXIMIZED_KEY) === 'true');
+    const [listWidth, setListWidth] = useState(readListWidth);
+    const titleRef = useRef<HTMLHeadingElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
+    const listRef = useRef<HTMLDivElement>(null);
+    /** The width of the list, when the drag of its border started */
+    const widthBefore = useRef(LIST_WIDTH_DEFAULT);
+    const widthNow = useRef(listWidth);
+
+    const resizeList = (width: number): void => {
+        const max = (contentRef.current?.clientWidth || 0) - DIFF_WIDTH_MIN;
+        const value = Math.round(Math.max(LIST_WIDTH_MIN, Math.min(width, max)));
+        widthNow.current = value;
+        setListWidth(value);
+    };
+    /** The size of the dialog before it was maximized or restored: it grows or shrinks from there */
+    const sizeBefore = useRef<DOMRect | null>(null);
+
+    const toggleMaximized = (): void => {
+        sizeBefore.current =
+            titleRef.current?.closest<HTMLElement>('.MuiDialog-paper')?.getBoundingClientRect() || null;
+        const value = !maximized;
+        window.localStorage.setItem(MAXIMIZED_KEY, value ? 'true' : 'false');
+        setMaximized(value);
+    };
+
+    useLayoutEffect(() => {
+        const from = sizeBefore.current;
+        sizeBefore.current = null;
+        resizeFrom(titleRef.current?.closest<HTMLElement>('.MuiDialog-paper'), from);
+    }, [maximized]);
 
     /** (Re-)read the list, keeping the selection if that version is still there */
     const reload = useCallback(
@@ -165,25 +215,50 @@ const DialogHistory: React.FC<DialogHistoryProps> = ({
             onClose={onClose}
             maxWidth="lg"
             fullWidth
-            sx={{ '& .MuiDialog-paper': { height: 'calc(100% - 64px)' } }}
+            // maximized, the diff gets the whole window
+            fullScreen={maximized}
+            sx={maximized ? undefined : { '& .MuiDialog-paper': { height: 'calc(100% - 64px)' } }}
         >
-            <DialogTitle>
+            <DialogTitle
+                ref={titleRef}
+                sx={{ display: 'flex', alignItems: 'center', pr: 1 }}
+                // like a window: a double click on the title bar maximizes the dialog or restores its size
+                onDoubleClick={toggleMaximized}
+            >
+                {/* the same symbol as the button, which opens the dialog; it turns back once */}
+                <IconHistory
+                    className="iob-js-rewind"
+                    sx={{ mr: 1, color: 'primary.main' }}
+                />
                 {I18n.t('Script history')}
                 <Typography
                     component="span"
-                    sx={{ ml: 1, color: 'text.secondary' }}
+                    sx={{ ml: 1, flex: 1, color: 'text.secondary' }}
                 >
                     {scriptId.replace(/^script\.js\./, '')}
                 </Typography>
+                <Tooltip title={maximized ? I18n.t('Restore size') : I18n.t('Maximize')}>
+                    <IconButton
+                        onClick={toggleMaximized}
+                        onDoubleClick={e => e.stopPropagation()}
+                    >
+                        {maximized ? <IconRestoreSize /> : <IconMaximize />}
+                    </IconButton>
+                </Tooltip>
             </DialogTitle>
-            <DialogContent sx={{ display: 'flex', p: 0, overflow: 'hidden', gap: 0 }}>
+            <DialogContent
+                ref={contentRef}
+                sx={{ display: 'flex', p: 0, overflow: 'hidden', gap: 0 }}
+            >
                 <Box
+                    ref={listRef}
                     sx={{
-                        width: 280,
+                        width: listWidth,
+                        // in a small window the diff keeps its place, the list gives way
+                        maxWidth: `calc(100% - ${DIFF_WIDTH_MIN}px)`,
+                        minWidth: LIST_WIDTH_MIN,
                         flexShrink: 0,
                         overflow: 'auto',
-                        borderRight: '1px solid',
-                        borderColor: 'divider',
                     }}
                 >
                     {versions === null ? (
@@ -232,7 +307,20 @@ const DialogHistory: React.FC<DialogHistoryProps> = ({
                         })}
                     </List>
                 </Box>
-                <Box sx={{ display: 'flex', flex: 1, minWidth: 0, flexDirection: 'column' }}>
+                <Resizer
+                    title={I18n.t('Drag to change the width, double click for the default width')}
+                    onResizeStart={() => {
+                        widthBefore.current = listRef.current?.getBoundingClientRect().width || listWidth;
+                    }}
+                    onResize={delta => resizeList(widthBefore.current + delta)}
+                    onResizeEnd={() => window.localStorage.setItem(LIST_WIDTH_KEY, String(widthNow.current))}
+                    onReset={() => {
+                        window.localStorage.removeItem(LIST_WIDTH_KEY);
+                        widthNow.current = LIST_WIDTH_DEFAULT;
+                        setListWidth(LIST_WIDTH_DEFAULT);
+                    }}
+                />
+                <Box sx={{ display: 'flex', flex: 1, minWidth: 0, flexDirection: 'column', position: 'relative' }}>
                     {error ? <Alert severity="error">{error}</Alert> : null}
                     {current?.protected && source !== null ? (
                         <Alert severity="info">
@@ -240,18 +328,32 @@ const DialogHistory: React.FC<DialogHistoryProps> = ({
                         </Alert>
                     ) : null}
                     {loadingSource ? (
-                        <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
+                        // over the diff of the version before: the diff stays, so does its divider
+                        <Box
+                            sx={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                display: 'flex',
+                                justifyContent: 'center',
+                                p: 2,
+                                zIndex: 1,
+                                pointerEvents: 'none',
+                            }}
+                        >
                             <CircularProgress size={20} />
                         </Box>
                     ) : null}
-                    {source !== null && !loadingSource ? (
-                        <Box sx={{ flex: 1, minHeight: 0 }}>
+                    {source !== null ? (
+                        <Box sx={{ display: 'flex', flex: 1, minHeight: 0 }}>
                             <MonacoDiff
                                 originalCode={source}
                                 modifiedCode={currentCode}
                                 language={language}
                                 themeType={themeType}
                                 readOnly
+                                navigation
                             />
                         </Box>
                     ) : null}
@@ -275,7 +377,8 @@ const DialogHistory: React.FC<DialogHistoryProps> = ({
                 <Button
                     variant="contained"
                     color="primary"
-                    disabled={source === null || loadingSource}
+                    // the same as in the editor: nothing to take over
+                    disabled={source === null || loadingSource || source === currentCode}
                     onClick={() => {
                         if (source !== null) {
                             onRestore(source);

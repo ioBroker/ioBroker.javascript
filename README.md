@@ -30,6 +30,15 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Fixed: the unsaved changes of the open scripts were lost, when the list of scripts or the log was hidden or shown again (#1739)
+* (@GermanBluefox) Added: animated icons in the editor (`@iobroker/gui-components` 10.3.16) - start/stop morphs between play and pause and shows a ring until the instance confirmed it, the restart button turns until the script is restarted, folders open with an animation, animated delete, menu arrow and expert mode symbols, a check mark after saving and copying
+* (@GermanBluefox) Added: more animations in the editor - the rows of a folder grow and shrink when it is opened and closed, new scripts light up, the colors of the start/stop buttons fade, the Save/Diff/Cancel buttons and new tabs grow to their width, closed tabs shrink, new log lines slide in, the side menu and the log slide in when they are opened, badges jump when their number grows
+* (@GermanBluefox) Added: the log shows the number of new lines, while it does not follow them
+* (@GermanBluefox) Added: the history dialog can be maximized (button or double click on its title); the width of the version list and the border between the two sides of the diff can be dragged; buttons jump from change to change; "Take over into the editor" is disabled for a version that is the same as the editor
+* (@GermanBluefox) Changed: the diffs (history, unsaved changes, AI suggestions) scroll to the first change and show changed indentation too
+* (@GermanBluefox) Updated packages
+
 ### 10.4.9 (2026-11-02)
 * (@GermanBluefox) Fixed: the restart button of the editor did nothing for a running script since 10.4.7 (#2423)
 * (@GermanBluefox) Added: OpenRouter, if it is chosen in the system-wide AI settings of admin (`@iobroker/ai-core` 0.0.6, `@iobroker/ai-gui` 0.0.5)
