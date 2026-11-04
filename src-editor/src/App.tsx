@@ -16,12 +16,14 @@ import {
     type IobTheme,
     type GenericAppProps,
     type GenericAppState,
+    IconMenuArrow,
 } from '@iobroker/gui-components';
 
-import { MdMenu as IconMenuClosed, MdArrowBack as IconMenuOpened, MdVisibility as IconShowLog } from 'react-icons/md';
+import { MdVisibility as IconShowLog } from 'react-icons/md';
 
 import SideMenu from './SideMenu';
 import Log from './Log';
+import { reveal } from './Components/Motion';
 import Editor from './Editor';
 import DialogError from './Dialogs/Error';
 import DialogImportFile from './Dialogs/ImportFile';
@@ -68,6 +70,10 @@ const styles: Record<string, any> = {
         width: '100%',
         height: '100%',
         overflow: 'hidden',
+    },
+    logPane: {
+        width: '100%',
+        height: '100%',
     },
     /*
     appBarWithMenu: {
@@ -194,7 +200,15 @@ interface AppState extends GenericAppState {
     logSizes: [number, number];
     showPasswordDialog: boolean;
     password: string;
+    /**
+     * Scripts that were started or stopped, but their instance did not confirm it yet: the `enabled` they
+     * should get. Their start/stop buttons show a turning ring meanwhile.
+     */
+    pendingScripts: Record<string, boolean>;
 }
+
+/** How long the start/stop button of a script waits at most for its instance to confirm the change */
+const PENDING_TIMEOUT_MS = 10_000;
 
 /**
  * How often the editor tells the adapter that it is open. Has to be clearly below the 30 seconds
@@ -226,6 +240,19 @@ export default class App extends GenericApp<AppProps, AppState> {
     private readonly logSplit = new SplitSizes('log');
     /** Script tree against editor */
     private readonly menuSplit = new SplitSizes('menu');
+    /** Per pending script (see `pendingScripts`): the subscribed `scriptEnabled` state and the time limit */
+    private readonly pending: Record<
+        string,
+        {
+            stateId: string;
+            handler: (id: string, state: ioBroker.State | null | undefined) => void;
+            timer: ReturnType<typeof setTimeout>;
+        }
+    > = {};
+    /** The side menu, which slides in when it is opened */
+    private readonly menuRef = React.createRef<HTMLDivElement>();
+    /** The log, which slides in when it is shown again */
+    private readonly logRef = React.createRef<HTMLDivElement>();
 
     constructor(props: AppProps) {
         super(props, {
@@ -275,6 +302,7 @@ export default class App extends GenericApp<AppProps, AppState> {
             ...this.state,
             splitSizes,
             logSizes,
+            pendingScripts: {},
         };
 
         window.alert = (message: string): void => {
@@ -381,6 +409,7 @@ export default class App extends GenericApp<AppProps, AppState> {
 
     onConnectionReady(): void {
         window.systemLang = this.socket.systemLang;
+        Object.keys(this.pending).forEach(id => this.clearPending(id));
         this.setState(
             {
                 ready: false,
@@ -408,6 +437,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                 debugInstance: null,
                 splitSizes: [20, 80],
                 password: '',
+                pendingScripts: {},
             },
             async (): Promise<void> => {
                 const newState: Partial<AppState> = {};
@@ -516,7 +546,61 @@ export default class App extends GenericApp<AppProps, AppState> {
             this.editorPingInterval = null;
         }
         document.removeEventListener('visibilitychange', this.onVisibilityChange);
+        Object.keys(this.pending).forEach(id => this.clearPending(id));
         super.componentWillUnmount();
+    }
+
+    componentDidUpdate(_prevProps: AppProps, prevState: AppState): void {
+        // the side menu and the log slide in, when the user opens them again
+        if (!prevState.menuOpened && this.state.menuOpened) {
+            reveal(this.menuRef.current, 'left');
+        }
+        if (prevState.hideLog && !this.state.hideLog) {
+            reveal(this.logRef.current, this.state.logHorzLayout ? 'right' : 'bottom');
+        }
+    }
+
+    /**
+     * The script was started or stopped: its start/stop buttons show a ring, until the instance confirms
+     * it with the state `scriptEnabled.<name>` (or at most `PENDING_TIMEOUT_MS`). A stopped instance
+     * confirms nothing, so then there is no ring.
+     */
+    setPending(id: string, enabled: boolean): void {
+        const common = (this.scripts[id] as ioBroker.ScriptObject | undefined)?.common;
+        if (!common?.engine?.startsWith('system.adapter.') || !this.state.runningInstances[common.engine]) {
+            return;
+        }
+        this.clearPending(id);
+        const stateId = `${common.engine.replace('system.adapter.', '')}.scriptEnabled.${id.replace(/^script\.js\./, '')}`;
+        const handler = (_id: string, state: ioBroker.State | null | undefined): void => {
+            if (state?.ack && !!state.val === enabled) {
+                this.clearPending(id);
+            }
+        };
+        this.pending[id] = {
+            stateId,
+            handler,
+            timer: setTimeout(() => this.clearPending(id), PENDING_TIMEOUT_MS),
+        };
+        this.setState(
+            prevState => ({ pendingScripts: { ...prevState.pendingScripts, [id]: enabled } }),
+            () => void this.socket.subscribeState(stateId, handler),
+        );
+    }
+
+    clearPending(id: string): void {
+        const pending = this.pending[id];
+        if (!pending) {
+            return;
+        }
+        delete this.pending[id];
+        clearTimeout(pending.timer);
+        this.socket.unsubscribeState(pending.stateId, pending.handler);
+        this.setState(prevState => {
+            const pendingScripts = { ...prevState.pendingScripts };
+            delete pendingScripts[id];
+            return { pendingScripts };
+        });
     }
 
     async subscribeOnInstances(): Promise<{
@@ -726,16 +810,23 @@ export default class App extends GenericApp<AppProps, AppState> {
         }
     }
 
-    async onUpdateScript(id: string, common: ioBroker.ScriptCommon): Promise<void> {
+    /** @returns true if the script was stored */
+    async onUpdateScript(id: string, common: ioBroker.ScriptCommon): Promise<boolean> {
         if (this.scripts[id]?.type === 'script') {
+            if (common.enabled !== undefined && !!common.enabled !== !!this.scripts[id].common.enabled) {
+                this.setPending(id, !!common.enabled);
+            }
             try {
                 await this.updateScript(id, id, common);
+                return true;
             } catch (err) {
+                this.clearPending(id);
                 if (!(err as Error).toString().includes('canceled')) {
                     this.showJsError(err as Error);
                 }
             }
         }
+        return false;
     }
 
     onSelect(selected: string): void {
@@ -796,30 +887,40 @@ export default class App extends GenericApp<AppProps, AppState> {
      * instance is asked to restart it (#2423). An instance from before this message does not answer -
      * it gets the object write that restarted the script up to 10.4.6. A script that does not run is
      * started by that write.
+     *
+     * Resolves when the script was restarted (or the object was written), so the button can turn until then.
      */
-    onRestart = (id: string): void => {
-        const common = (this.scripts[id] as ioBroker.ScriptObject | undefined)?.common;
-        const writeEnabled = (): void => {
-            void this.socket.extendObject(id, { common: { enabled: true } });
-        };
-        if (!common?.enabled || !common.engine?.startsWith('system.adapter.')) {
-            writeEnabled();
-            return;
-        }
-        const timer = setTimeout(writeEnabled, RESTART_ANSWER_TIMEOUT_MS);
-        this.socket.sendTo(common.engine.replace('system.adapter.', ''), 'restartScript', { script: id }).then(
-            (result?: { error?: string }) => {
-                clearTimeout(timer);
-                if (result?.error) {
-                    this.showJsError(result.error);
+    onRestart = (id: string): Promise<void> =>
+        new Promise<void>(resolve => {
+            const common = (this.scripts[id] as ioBroker.ScriptObject | undefined)?.common;
+            const writeEnabled = (): void => {
+                this.socket.extendObject(id, { common: { enabled: true } }).then(
+                    () => resolve(),
+                    () => resolve(),
+                );
+            };
+            if (!common?.enabled || !common.engine?.startsWith('system.adapter.')) {
+                if (!common?.enabled) {
+                    this.setPending(id, true);
                 }
-            },
-            () => {
-                clearTimeout(timer);
                 writeEnabled();
-            },
-        );
-    };
+                return;
+            }
+            const timer = setTimeout(writeEnabled, RESTART_ANSWER_TIMEOUT_MS);
+            this.socket.sendTo(common.engine.replace('system.adapter.', ''), 'restartScript', { script: id }).then(
+                (result?: { error?: string }) => {
+                    clearTimeout(timer);
+                    if (result?.error) {
+                        this.showJsError(result.error);
+                    }
+                    resolve();
+                },
+                () => {
+                    clearTimeout(timer);
+                    writeEnabled();
+                },
+            );
+        });
 
     showJsError(err: Error | string): void {
         this.setState({ errorText: err ? err.toString() : '' });
@@ -998,6 +1099,9 @@ export default class App extends GenericApp<AppProps, AppState> {
     onEnableDisable(id: string, enabled: boolean): void {
         if (this.scripts[id]?.type === 'script') {
             const common: ioBroker.ScriptCommon = this.scripts[id].common;
+            if (!!common.enabled !== enabled) {
+                this.setPending(id, enabled);
+            }
             common.enabled = enabled;
             common.expert = true;
             this.updateScript(id, id, common).catch(err => err !== 'canceled' && this.showJsError(err));
@@ -1329,6 +1433,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                         }
                     }}
                     onRestart={this.onRestart}
+                    pendingScripts={this.state.pendingScripts}
                     onOpen={id => this.onSelect(id)}
                     selected={
                         this.state.selected && this.scripts[this.state.selected]?.type === 'script'
@@ -1395,19 +1500,24 @@ export default class App extends GenericApp<AppProps, AppState> {
                     gutterClassName={this.logSplit.gutterClassName(this.state.themeType)}
                 >
                     {this.renderEditor()}
-                    <Log
+                    <div
                         key="log"
-                        verticalLayout={!this.state.logHorzLayout}
-                        onLayoutChange={() => this.toggleLogLayout()}
-                        editing={this.state.editing}
-                        socket={this.socket}
-                        selected={this.state.selected}
-                        onHideLog={() => {
-                            window.localStorage.setItem('App.hideLog', 'true');
-                            this.setState({ hideLog: true, resizing: true });
-                            setTimeout(() => this.setState({ resizing: false }), 300);
-                        }}
-                    />
+                        ref={this.logRef}
+                        style={styles.logPane}
+                    >
+                        <Log
+                            verticalLayout={!this.state.logHorzLayout}
+                            onLayoutChange={() => this.toggleLogLayout()}
+                            editing={this.state.editing}
+                            socket={this.socket}
+                            selected={this.state.selected}
+                            onHideLog={() => {
+                                window.localStorage.setItem('App.hideLog', 'true');
+                                this.setState({ hideLog: true, resizing: true });
+                                setTimeout(() => this.setState({ resizing: false }), 300);
+                            }}
+                        />
+                    </div>
                 </ReactSplit>
             );
         }
@@ -1427,7 +1537,10 @@ export default class App extends GenericApp<AppProps, AppState> {
                         setTimeout(() => this.setState({ resizing: false }), 300);
                     }}
                 >
-                    {this.state.menuOpened ? <IconMenuOpened /> : <IconMenuClosed />}
+                    <IconMenuArrow
+                        open={this.state.menuOpened}
+                        fontSize="inherit"
+                    />
                 </Box>
                 {this.state.message ? (
                     <DialogMessage
@@ -1490,6 +1603,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                     <div
                         style={styles.mainDiv}
                         key="menu"
+                        ref={this.menuRef}
                     >
                         <SideMenu
                             password={this.state.password}
@@ -1512,6 +1626,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                                 this.setState({ themeName, themeType }, () => this.toggleTheme(themeName));
                             }}
                             runningInstances={this.state.runningInstances}
+                            pendingScripts={this.state.pendingScripts}
                             onExpertModeChange={(expertMode: boolean): void => this.onExpertModeChange(expertMode)}
                             onDelete={this.onDelete.bind(this)}
                             onAddNew={this.onAddNew.bind(this)}

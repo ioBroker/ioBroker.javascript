@@ -23,7 +23,6 @@ import {
 import {
     MoreVert as IconMore,
     ContentCopy as IconCopy,
-    Delete as IconDelete,
     Input as IconDoEdit,
     Close as IconClear,
     FormatClear as IconClose,
@@ -41,16 +40,21 @@ import {
     Lock as IconProtected,
 } from '@mui/icons-material';
 
-import {
-    FaFolder as IconFolder,
-    FaFolderOpen as IconFolderOpened,
-    FaFileExport as IconExport,
-    FaFileImport as IconImport,
-} from 'react-icons/fa';
+import { FaFileExport as IconExport, FaFileImport as IconImport } from 'react-icons/fa';
 
 import { red, green, yellow } from '@mui/material/colors';
 
-import { type AdminConnection, I18n, type IobTheme, type ThemeName, Utils, IconExpert } from '@iobroker/gui-components';
+import {
+    type AdminConnection,
+    I18n,
+    type IobTheme,
+    type ThemeName,
+    Utils,
+    IconExpertMode,
+    IconFolder,
+    IconPlayPause,
+    IconTrash,
+} from '@iobroker/gui-components';
 
 import ImgJS from './assets/js.svg';
 import ImgBlockly from './assets/blockly.svg';
@@ -66,6 +70,7 @@ import DialogError from './Dialogs/Error';
 import DialogAdapterDebug from './Dialogs/AdapterDebug';
 import type { ScriptType } from '@/types';
 import { decryptText, encryptText } from './Components/crypto';
+import { flash, growAllIn, shrinkOut } from './Components/Motion';
 
 const MENU_ITEM_HEIGHT = 48;
 const COLOR_RUN = green[400];
@@ -76,6 +81,12 @@ const COMMON_ID = `${ROOT_ID}.common`;
 const GLOBAL_ID = `${ROOT_ID}.global`;
 const NARROW_WIDTH = 350;
 const LEVEL_PADDING = 16;
+/** More rows than this appear and disappear at once: a long animation of hundreds of rows is no help */
+const MAX_ANIMATED_ROWS = 150;
+/** A new script or folder lights up in this color */
+const COLOR_FRESH = 'rgba(76, 175, 80, 0.45)';
+/** A script, which got a problem, lights up in this color */
+const COLOR_PROBLEM_FLASH = 'rgba(255, 193, 7, 0.55)';
 
 /** Width of an `IconButton size="medium"` at the end of a row: 24px icon plus 2 * 8px padding */
 const BUTTON_WIDTH = 40;
@@ -102,6 +113,10 @@ const styles: Record<string, any> = {
     iconButtonsDisabled: {
         filter: 'grayscale(100%)',
         opacity: 0.5,
+    },
+    /** The start/stop button fades into the color of the new state */
+    colorFade: {
+        transition: 'color 0.4s ease, background-color 150ms',
     },
     toolbarSearch: {
         width: 'calc(100% - 105px)',
@@ -519,6 +534,8 @@ interface SideDrawerProps {
     instanceHosts: Record<number, string>;
     scripts: Record<string, ioBroker.ScriptObject | ioBroker.ChannelObject>;
     runningInstances: Record<string, boolean>;
+    /** Scripts that were started or stopped and are not confirmed by their instance yet: the wanted `enabled` */
+    pendingScripts?: Record<string, boolean>;
     expertMode: boolean;
     themeName: ThemeName;
     width: number;
@@ -580,6 +597,12 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
     private problemsTimer: ReturnType<typeof setTimeout> | null;
     private readonly onProblemUpdatedBound: (id: string, state: ioBroker.State | null | undefined) => void;
     private parent: string | null = null;
+    /** The list of the scripts: its rows grow when they appear and shrink when a folder is closed */
+    private readonly listRef = React.createRef<HTMLUListElement>();
+    /** The IDs of the rows after the last render; rows that are new grow to their height */
+    private renderedRows: Set<string> | null = null;
+    /** Folders whose rows shrink right now, before the folder is closed */
+    private readonly folding = new Set<string>();
 
     constructor(props: SideDrawerProps) {
         super(props);
@@ -668,7 +691,51 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
         }
     }
 
+    /** The rendered rows of the list; `prefix` selects the rows of the scripts and folders in a folder */
+    getRows(prefix?: string): HTMLElement[] {
+        const rows = this.listRef.current
+            ? Array.from(this.listRef.current.querySelectorAll<HTMLElement>('[data-id]'))
+            : [];
+        return prefix ? rows.filter(row => row.dataset.id!.startsWith(prefix)) : rows;
+    }
+
+    componentDidUpdate(_prevProps: SideDrawerProps, prevState: SideDrawerState): void {
+        const rows = this.getRows();
+        const previous = this.renderedRows;
+        this.renderedRows = new Set(rows.map(row => row.dataset.id!));
+        // In the reorder mode, the rows are wrapped for drag and drop and are new each time
+        if (!previous || this.state.reorder || prevState.reorder) {
+            return;
+        }
+
+        // rows that appeared - of an opened folder, a new script, after the search - grow to their height
+        const appeared = rows.filter(row => !previous.has(row.dataset.id!));
+        if (appeared.length && appeared.length <= MAX_ANIMATED_ROWS) {
+            growAllIn(appeared, 'y');
+        }
+
+        // a new script or folder lights up
+        if (prevState.listItems !== this.state.listItems && prevState.listItems.length > 1) {
+            const known = new Set(prevState.listItems.map(item => item.id));
+            appeared.filter(row => !known.has(row.dataset.id!)).forEach(row => flash(row, COLOR_FRESH, 1600));
+        }
+
+        // a script that got a problem lights up
+        if (prevState.problems !== this.state.problems) {
+            this.state.problems
+                .filter(id => !prevState.problems.includes(id))
+                .forEach(id =>
+                    flash(
+                        rows.find(row => row.dataset.id === id),
+                        COLOR_PROBLEM_FLASH,
+                        1600,
+                    ),
+                );
+        }
+    }
+
     componentDidMount(): void {
+        this.renderedRows = new Set(this.getRows().map(row => row.dataset.id!));
         this.readProblems(() => {
             this.props.instances.forEach(instance => {
                 void this.props.socket.subscribeState(
@@ -950,21 +1017,40 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
         if (id === ROOT_ID) {
             return;
         }
+        if (this.folding.has(id)) {
+            return;
+        }
+        const pos = this.state.expanded.indexOf(id);
+        if (pos !== -1 && !this.state.reorder) {
+            // the rows of the folder shrink first, then the folder is closed
+            this.collapse([id], this.getRows(`${id}.`));
+            return;
+        }
         const expanded = [...this.state.expanded];
-        const newState: Partial<SideDrawerState> = { expanded };
-        const pos = expanded.indexOf(id);
         if (pos !== -1) {
             expanded.splice(pos, 1);
-            if (this.state.selected && this.state.selected.startsWith(`${id}.`)) {
-                newState.selected = id;
-                window.localStorage && window.localStorage.setItem('SideMenu.selected', id);
-            }
         } else {
             expanded.push(id);
             expanded.sort();
         }
         this.setState({ expanded });
         this.saveExpanded(expanded);
+    }
+
+    /**
+     * Closes the folders. Their rows shrink to nothing first (if not too many), then they are removed.
+     *
+     * @param ids The folders to close
+     * @param rows The rows that disappear with them
+     */
+    collapse(ids: string[], rows: HTMLElement[]): void {
+        ids.forEach(id => this.folding.add(id));
+        const animations = shrinkOut(rows.length <= MAX_ANIMATED_ROWS ? rows : [], 'y', () => {
+            ids.forEach(id => this.folding.delete(id));
+            const expanded = this.state.expanded.filter(id => !ids.includes(id));
+            this.setState({ expanded }, () => animations.forEach(animation => animation.cancel()));
+            this.saveExpanded(expanded);
+        });
     }
 
     renderItemButtonsOnEnd(
@@ -975,8 +1061,11 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
             return null;
         }
         if (item.type !== 'folder') {
-            let color: string = item.enabled ? COLOR_RUN : COLOR_PAUSE;
-            if (item.enabled && this.state.problems.includes(item.id)) {
+            // started or stopped, but not confirmed by the instance yet: the button shows already the new state
+            const pending = this.props.pendingScripts?.[item.id];
+            const running = pending ?? item.enabled;
+            let color: string = running ? COLOR_RUN : COLOR_PAUSE;
+            if (running && this.state.problems.includes(item.id)) {
                 color = COLOR_PROBLEM;
             }
 
@@ -986,17 +1075,21 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
                         e.stopPropagation();
                         this.props.onEnableDisable && this.props.onEnableDisable(item.id, !item.enabled);
                     }}
-                    title={item.enabled ? I18n.t('Pause script') : I18n.t('Run script')}
+                    title={running ? I18n.t('Pause script') : I18n.t('Run script')}
                     disabled={this.props.debugMode}
                     key="startStop"
                     style={{
                         ...styles.iconButtons,
+                        ...styles.colorFade,
                         ...(this.props.debugMode ? styles.iconButtonsDisabled : undefined),
                         color,
                     }}
                     size="medium"
                 >
-                    {item.enabled ? <IconPause /> : <IconPlay />}
+                    <IconPlayPause
+                        running={running}
+                        pending={pending !== undefined}
+                    />
                 </IconButton>,
                 this.state.width > NARROW_WIDTH ? (
                     <IconButton
@@ -1007,7 +1100,7 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
                         onClick={e => this.onDelete(item, e)}
                         size="medium"
                     >
-                        <IconDelete />
+                        <IconTrash open={this.state.deleting === item.id} />
                     </IconButton>
                 ) : null,
                 <IconButton
@@ -1032,7 +1125,7 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
                     onClick={e => this.onDelete(item, e)}
                     size="medium"
                 >
-                    <IconDelete />
+                    <IconTrash open={this.state.deleting === item.id} />
                 </IconButton>
             );
         }
@@ -1316,6 +1409,7 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
         return (
             <ListItem
                 key={item.id}
+                data-id={item.id}
                 style={combinedStyle}
                 sx={item.id === this.state.selected && !reorder ? styles.selected : undefined}
                 className={Utils.clsx(
@@ -1331,17 +1425,12 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
                 ) : null}
                 <ListItemIcon style={styles.listItemIcon}>
                     {item.type === 'folder' ? (
-                        reorder || isExpanded ? (
-                            <IconFolderOpened
-                                style={iconStyle}
-                                onClick={e => !reorder && this.onToggle(item.id, e)}
-                            />
-                        ) : (
-                            <IconFolder
-                                style={iconStyle}
-                                onClick={e => !reorder && this.onToggle(item.id, e)}
-                            />
-                        )
+                        <IconFolder
+                            open={reorder || isExpanded}
+                            fontSize={20}
+                            style={iconStyle}
+                            onClick={e => !reorder && this.onToggle(item.id, e)}
+                        />
                     ) : (
                         <img
                             style={iconStyle}
@@ -1467,6 +1556,7 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
                 dense
                 disablePadding
                 sx={styles.mainList}
+                ref={this.listRef}
             >
                 {result}
             </List>
@@ -1615,7 +1705,7 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
                             );
                         }}
                     >
-                        <IconDelete style={{ ...styles.iconDropdownMenu, color: 'red' }} />
+                        <IconTrash style={{ ...styles.iconDropdownMenu, color: 'red' }} />
                         {I18n.t('Delete')}
                     </MenuItem>
                 ) : null}
@@ -1632,8 +1722,13 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
                         );
                     }}
                 >
-                    <IconExpert
-                        style={{ ...styles.iconDropdownMenu, color: this.state.expertMode ? 'orange' : 'inherit' }}
+                    <IconExpertMode
+                        active={this.state.expertMode}
+                        style={{
+                            ...styles.iconDropdownMenu,
+                            ...styles.colorFade,
+                            color: this.state.expertMode ? 'orange' : 'inherit',
+                        }}
                     />
                     {I18n.t('Expert mode')}
                 </MenuItem>
@@ -1992,8 +2087,12 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
     }
 
     onCollapseAll(): void {
-        this.setState({ expanded: [] });
-        this.saveExpanded([]);
+        // all rows below the first level disappear
+        const nested = new Set(this.state.listItems.filter(item => item.parent !== ROOT_ID).map(item => item.id));
+        this.collapse(
+            [...this.state.expanded],
+            this.state.reorder ? [] : this.getRows().filter(row => nested.has(row.dataset.id!)),
+        );
     }
 
     onExpandAll(): void {

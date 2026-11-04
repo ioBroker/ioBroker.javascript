@@ -3,20 +3,27 @@ import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
 
 import { SplitSizes } from '../splitSizes';
 
-import { Tabs, Tab, Toolbar, LinearProgress, IconButton, Badge, Box } from '@mui/material';
+import { Tabs, Tab, Toolbar, LinearProgress, IconButton, Box } from '@mui/material';
 
 import {
     MdClose as IconClose,
-    MdPlayArrow as IconRun,
-    MdPause as IconPause,
     MdArrowForward as IconNext,
     MdArrowDownward as IconStep,
     MdArrowUpward as IconOut,
-    MdRefresh as IconRestart,
     MdWarning as IconException,
 } from 'react-icons/md';
 
-import { type AdminConnection, I18n, type IobTheme, type ThemeName, type ThemeType } from '@iobroker/gui-components';
+import {
+    type AdminConnection,
+    I18n,
+    type IobTheme,
+    type ThemeName,
+    type ThemeType,
+    IconPlayPause,
+    IconRefresh,
+} from '@iobroker/gui-components';
+
+import { BouncingBadge } from '../Motion';
 
 import DialogError from '../../Dialogs/Error';
 import Editor from './Editor';
@@ -52,6 +59,10 @@ const styles: Record<string, any> = {
     },
     buttonPause: {
         color: 'orange',
+    },
+    /** The resume/pause button fades into the color of the new state */
+    colorFade: {
+        transition: 'color 0.4s ease, background-color 150ms',
     },
     buttonRestart: {
         color: 'darkgreen',
@@ -677,31 +688,27 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
                     title={I18n.t('Restart')}
                     size="medium"
                 >
-                    <IconRestart />
+                    {/* turns until the script is started again */}
+                    <IconRefresh
+                        loading={this.state.starting}
+                        showDone={false}
+                    />
                 </IconButton>
-                {!this.state.finished && this.state.paused ? (
+                {!this.state.finished ? (
+                    // paused: the play symbol resumes; running: the pause symbol; they turn into each other
                     <IconButton
-                        style={styles.buttonRun}
+                        style={{
+                            ...(this.state.paused ? styles.buttonRun : styles.buttonPause),
+                            ...styles.colorFade,
+                        }}
                         disabled={disabled}
-                        onClick={() => this.onResume()}
-                        title={I18n.t('Resume execution')}
+                        onClick={() => (this.state.paused ? this.onResume() : this.onPause())}
+                        title={this.state.paused ? I18n.t('Resume execution') : I18n.t('Pause execution')}
                         size="medium"
                     >
-                        <IconRun />
+                        <IconPlayPause running={!this.state.paused} />
                     </IconButton>
-                ) : (
-                    !this.state.finished && (
-                        <IconButton
-                            disabled={disabled}
-                            style={styles.buttonPause}
-                            onClick={() => this.onPause()}
-                            title={I18n.t('Pause execution')}
-                            size="medium"
-                        >
-                            <IconPause />
-                        </IconButton>
-                    )
-                )}
+                ) : null}
                 {!this.state.finished && (
                     <IconButton
                         style={styles.buttonNext}
@@ -882,30 +889,30 @@ class Debugger extends React.Component<DebuggerProps, DebuggerState> {
         let _console;
         if (this.state.logErrors) {
             _console = (
-                <Badge
+                <BouncingBadge
                     badgeContent={this.state.logErrors}
                     color="error"
                 >
                     <span>{I18n.t('Console')}</span>
-                </Badge>
+                </BouncingBadge>
             );
         } else if (this.state.logWarnings) {
             _console = (
-                <Badge
+                <BouncingBadge
                     badgeContent={this.state.logWarnings}
                     color="secondary"
                 >
                     <span>{I18n.t('Console')}</span>
-                </Badge>
+                </BouncingBadge>
             );
         } else if (this.state.logs) {
             _console = (
-                <Badge
+                <BouncingBadge
                     badgeContent={this.state.logs}
                     color="default"
                 >
                     <span>{I18n.t('Console')}</span>
-                </Badge>
+                </BouncingBadge>
             );
         } else {
             _console = I18n.t('Console');

@@ -3,14 +3,14 @@ import React from 'react';
 import { Box, IconButton } from '@mui/material';
 
 import {
-    MdDeleteForever as IconDelete,
     MdVerticalAlignBottom as IconBottom,
     MdContentCopy as IconCopy,
     MdVisibilityOff as IconHide,
 } from 'react-icons/md';
 
-import { type AdminConnection, I18n, type IobTheme, Utils } from '@iobroker/gui-components';
+import { type AdminConnection, I18n, type IobTheme, Utils, IconTrash, IconResult } from '@iobroker/gui-components';
 import type { LogMessage } from '@/types';
+import { BouncingBadge, GrowIn } from './Components/Motion';
 
 // replace later with MdHorizontalSplit and MdVerticalSplit
 const IconVerticalSplit =
@@ -160,10 +160,19 @@ interface LogState {
     goBottom: boolean;
     selected: string | null;
     editing: string[];
+    /** Lines of the selected script that came in, while the log does not follow the new lines */
+    unseen: number;
+    /** After copying, a check mark replaces the copy symbol for a moment; counts the copies */
+    copied: number;
 }
+
+/** How long the check mark after copying stays */
+const COPIED_MARK_MS = 1_500;
 
 class Log extends React.Component<LogProps, LogState> {
     private readonly messagesEnd: React.RefObject<HTMLDivElement | null>;
+
+    private copiedTimer: ReturnType<typeof setTimeout> | null = null;
 
     constructor(props: LogProps) {
         super(props);
@@ -172,6 +181,8 @@ class Log extends React.Component<LogProps, LogState> {
             goBottom: true,
             selected: null,
             editing: this.props.editing || [],
+            unseen: 0,
+            copied: 0,
         };
         this.messagesEnd = React.createRef<HTMLDivElement>();
     }
@@ -201,6 +212,7 @@ class Log extends React.Component<LogProps, LogState> {
             <Box
                 component="tr"
                 key={`tr_${row.ts}_${row.message.substring(row.message.length - 10)}`}
+                className="iob-js-log-line"
                 sx={styles[row.severity]}
             >
                 <td style={styles.trFrom}>{row.from}</td>
@@ -253,7 +265,11 @@ class Log extends React.Component<LogProps, LogState> {
         gText[selected] = text;
         allLines[selected] = lines;
 
-        this.setState({ lines: allLines });
+        if (!this.state.goBottom && selected === this.state.selected) {
+            this.setState({ lines: allLines, unseen: this.state.unseen + 1 });
+        } else {
+            this.setState({ lines: allLines });
+        }
     };
 
     componentDidMount(): void {
@@ -262,6 +278,10 @@ class Log extends React.Component<LogProps, LogState> {
 
     componentWillUnmount(): void {
         this.props.socket.unregisterLogHandler(this.logHandler);
+        if (this.copiedTimer) {
+            clearTimeout(this.copiedTimer);
+            this.copiedTimer = null;
+        }
     }
 
     componentDidUpdate(): void {
@@ -280,6 +300,7 @@ class Log extends React.Component<LogProps, LogState> {
                 gText[selected] = gText[selected] || [];
             }
             newState.selected = selected;
+            newState.unseen = 0;
             changed = true;
         }
 
@@ -304,6 +325,14 @@ class Log extends React.Component<LogProps, LogState> {
 
     onCopy(): void {
         Utils.copyToClipboard((gText[this.state.selected as string] || []).join('\n'));
+        if (this.copiedTimer) {
+            clearTimeout(this.copiedTimer);
+        }
+        this.copiedTimer = setTimeout(() => {
+            this.copiedTimer = null;
+            this.setState({ copied: 0 });
+        }, COPIED_MARK_MS);
+        this.setState({ copied: this.state.copied + 1 });
     }
 
     clearLog(): void {
@@ -314,7 +343,7 @@ class Log extends React.Component<LogProps, LogState> {
         if (gText[this.state.selected as string]) {
             gText[this.state.selected as string] = [];
         }
-        this.setState({ lines: allLines });
+        this.setState({ lines: allLines, unseen: 0 });
     }
 
     renderLogList(lines: (React.JSX.Element | null)[] | null): React.JSX.Element {
@@ -360,29 +389,56 @@ class Log extends React.Component<LogProps, LogState> {
                 >
                     <IconButton
                         style={styles.iconButtons}
-                        onClick={() => this.setState({ goBottom: !this.state.goBottom })}
+                        // following the new lines again shows them all
+                        onClick={() => this.setState({ goBottom: !this.state.goBottom, unseen: 0 })}
                         color={this.state.goBottom ? 'secondary' : undefined}
                         size="medium"
                     >
-                        <IconBottom />
+                        {/* while the log does not follow, the number of the new lines is shown */}
+                        <BouncingBadge
+                            badgeContent={this.state.goBottom ? 0 : this.state.unseen}
+                            color="warning"
+                            max={999}
+                        >
+                            <IconBottom />
+                        </BouncingBadge>
                     </IconButton>
                     {lines?.length ? (
-                        <IconButton
-                            style={styles.iconButtons}
-                            onClick={() => this.clearLog()}
-                            size="medium"
+                        <GrowIn
+                            key="delete"
+                            axis="y"
                         >
-                            <IconDelete />
-                        </IconButton>
+                            <IconButton
+                                style={styles.iconButtons}
+                                onClick={() => this.clearLog()}
+                                size="medium"
+                            >
+                                <IconTrash fontSize="inherit" />
+                            </IconButton>
+                        </GrowIn>
                     ) : null}
                     {lines?.length ? (
-                        <IconButton
-                            style={styles.iconButtons}
-                            onClick={() => this.onCopy()}
-                            size="medium"
+                        <GrowIn
+                            key="copy"
+                            axis="y"
+                            delay={40}
                         >
-                            <IconCopy />
-                        </IconButton>
+                            <IconButton
+                                style={styles.iconButtons}
+                                onClick={() => this.onCopy()}
+                                size="medium"
+                            >
+                                {this.state.copied ? (
+                                    <IconResult
+                                        type="success"
+                                        replay={this.state.copied}
+                                        fontSize="inherit"
+                                    />
+                                ) : (
+                                    <IconCopy />
+                                )}
+                            </IconButton>
+                        </GrowIn>
                     ) : null}
                     {this.props.onLayoutChange ? (
                         <IconButton
