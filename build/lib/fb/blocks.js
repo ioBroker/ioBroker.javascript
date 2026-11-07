@@ -11,6 +11,8 @@ exports.toBool = toBool;
 exports.toNum = toNum;
 exports.div = div;
 exports.mux = mux;
+exports.curvePoints = curvePoints;
+exports.charCurve = charCurve;
 exports.toReal = toReal;
 exports.toInt = toInt;
 exports.toTime = toTime;
@@ -44,6 +46,51 @@ function div(a, b) {
 function mux(k, ...values) {
     const index = Math.round(toNum(k));
     return values[Number.isFinite(index) ? Math.max(0, Math.min(values.length - 1, index)) : 0];
+}
+/**
+ * The points of CHARCURVE that are numbers, in the order of X. Two points with the same X keep the
+ * order they were given in - they make a step.
+ */
+function curvePoints(xs, ys) {
+    const points = [];
+    for (let i = 0; i < Math.min(xs.length, ys.length); i++) {
+        const x = toNum(xs[i]);
+        const y = toNum(ys[i]);
+        if (Number.isFinite(x) && Number.isFinite(y)) {
+            points.push({ x, y });
+        }
+    }
+    // a stable sort, so a step stays as it was entered
+    return points.sort((a, b) => a.x - b.x);
+}
+/**
+ * CHARCURVE: the value of the characteristic curve through the points `xs[i]`/`ys[i]` at `input` -
+ * on the straight line between the two points around it. Before the first point and beyond the last
+ * one it stays at their Y, so the outer points set the limits. The order of the points does not
+ * matter. Without a valid point, or for an input that is no number, it gives 0.
+ */
+function charCurve(input, xs, ys) {
+    const x = toNum(input);
+    const points = curvePoints(xs, ys);
+    if (!points.length || !Number.isFinite(x)) {
+        return 0;
+    }
+    if (x <= points[0].x) {
+        return points[0].y;
+    }
+    const last = points[points.length - 1];
+    if (x >= last.x) {
+        return last.y;
+    }
+    for (let i = 1; i < points.length; i++) {
+        const b = points[i];
+        // the point before is at or left of x, so b.x - a.x is never 0 here
+        if (x < b.x) {
+            const a = points[i - 1];
+            return a.y + ((x - a.x) * (b.y - a.y)) / (b.x - a.x);
+        }
+    }
+    return last.y;
 }
 /** A number of TO_REAL: a decimal comma counts as a point, what is no number gives 0 */
 function toReal(value) {

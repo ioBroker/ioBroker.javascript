@@ -10,7 +10,7 @@
 export const FB_FORMAT = 1;
 
 /** Version of the block library and of the runtime module the generated code needs */
-export const FB_RUNTIME_VERSION = '1.6.0';
+export const FB_RUNTIME_VERSION = '1.7.0';
 
 /** Name under which the generated code requires the runtime module */
 export const FB_RUNTIME_MODULE = '@iobroker/fb-runtime';
@@ -192,11 +192,17 @@ export interface FbBlockDef {
      * `n` inputs `<prefix>1` to `<prefix>n` after the fixed ones; `n` is the parameter `inputs` of the
      * block - `count` when a block is placed, `min` if not given. With `start` the numbers begin there,
      * like `IN0` of MUX.
+     *
+     * With `paired`, each number gives one input of every prefix: `X1, Y1, X2, Y2, ...` for the points
+     * of CHARCURVE, and `n` counts the pairs. `step` raises the default from one number to the next,
+     * so the points of a new block do not all lie on top of each other.
      */
     extensible?: {
         prefix: string;
+        paired?: string[];
         type: FbPinType;
         default: FbValue;
+        step?: number;
         min: number;
         max: number;
         count?: number;

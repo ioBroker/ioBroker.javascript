@@ -437,6 +437,16 @@ exports.FB_LIBRARY = [
         code: '{I}.run({SP}, {PV}, {KP}, {TN}, {TV}, {YMIN}, {YMAX}, {RST}, dt, firstScan, ' +
             '{HOLD}, {MAN}, {YMAN}, {DB}, {INV}); {Y} = {I}.Y;',
     },
+    {
+        // characteristic curve, like a heating curve: OUT on the straight lines through the points
+        // X1/Y1 ... Xn/Yn; before the first point and beyond the last one, OUT stays at their Y
+        type: 'CHARCURVE',
+        category: 'control',
+        inputs: [{ id: 'IN', type: 'REAL', default: 0 }],
+        outputs: [{ id: 'OUT', type: 'REAL' }],
+        extensible: { prefix: 'X', paired: ['Y'], type: 'REAL', default: 0, step: 10, min: 2, max: 10 },
+        code: '{OUT} = fb.charCurve({IN}, [{X*:, }], [{Y*:, }]);',
+    },
     // ---- ioBroker
     {
         type: 'STATE_IN',

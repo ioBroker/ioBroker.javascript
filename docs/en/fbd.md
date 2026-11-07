@@ -21,7 +21,8 @@ Add a new script and choose **Function block diagram**. The editor has three par
   takes one link. `Delete` removes what is selected.
 - **Properties** (right): **Properties** shows the settings of the selected block in parts that open and close -
   general (instance name, type, a comment), parameters, inputs and, for timers, flip-flops, edges and control blocks,
-  a **preview**: a timing diagram of the block with its values. **Documentation** describes the block and its pins.
+  a **preview**: a timing diagram of the block with its values, the curve for `CHARCURVE`. **Documentation**
+  describes the block and its pins.
   With nothing selected: the settings of the diagram, and the keys.
 
 A block shows what matters right in it: the state it reads or writes, the value of a `CONST`, and the values of the
@@ -111,7 +112,7 @@ diagram saved with this version; a diagram saved before can already be forced an
 | Selection  | `SEL`, `MUX`, `LIMIT`                                            |
 | Arithmetic | `ADD`, `SUB`, `MUL`, `DIV`, `MIN`, `MAX`, `ROUND`                |
 | Conversion | `TO_BOOL`, `TO_INT`, `TO_REAL`, `TO_TIME`, `TO_STRING`, `CONCAT` |
-| Control    | `HYST`, `RAMP`, `PT1`, `PID`                                     |
+| Control    | `HYST`, `RAMP`, `PT1`, `PID`, `CHARCURVE`                        |
 | Calendar   | `CLOCK`, `TIMEWINDOW`, `SCHEDULE`, `ASTRO`                       |
 | Messages   | `LOG`, `NOTIFY`, `SENDTO`                                         |
 | Expert     | `JS`                                                             |
@@ -149,6 +150,12 @@ The control blocks:
   While `Y` is held or given, the integral part follows it, so the controller goes on from there without a jump
   when it takes over again - without an integral part (`TN` 0) `Y` jumps to the P part. `MAN` goes before `RST`,
   `RST` before `HOLD` and the dead band.
+- `CHARCURVE` - characteristic curve, like a heating curve: `OUT` lies on the straight lines through the points
+  `X1`/`Y1` to `Xn`/`Yn` (2 to 10 points). Before the first point and beyond the last one, `OUT` stays at their
+  `Y`, so two points are enough: `X1 = -10, Y1 = 70, X2 = 20, Y2 = 30` gives 70 below -10, 30 above 20 and 50
+  at 5. The order of the points does not matter; two points with the same `X` make a step. The points are inputs:
+  enter them in the properties, or connect them, e.g. to move the curve with a state. The properties show the
+  curve; a new point is placed behind the last one, so it does not change the curve until it is moved.
 
 `RAMP`, `PT1` and `PID` depend on time: a diagram with them runs cyclically.
 
