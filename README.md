@@ -30,6 +30,9 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Added: script functions `readDir`, `fileExists`, `chmodFile` and `chownFile` for files in the DB, and `chmodObject` and `chownObject` to change the access rights and the owner of objects and states (only with the option "Enable command setObject"), each with an `...Async` variant
+
 ### 10.4.10 (2026-11-04)
 * (@GermanBluefox) Fixed: the unsaved changes of the open scripts were lost, when the list of scripts or the log was hidden or shown again (#1739)
 * (@GermanBluefox) Added: animated icons in the editor (`@iobroker/gui-components` 10.3.16) - start/stop morphs between play and pause and shows a ring until the instance confirmed it, the restart button turns until the script is restarted, folders open with an animation, animated delete, menu arrow and expert mode symbols, a check mark after saving and copying

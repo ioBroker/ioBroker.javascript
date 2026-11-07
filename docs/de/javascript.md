@@ -35,6 +35,8 @@
     - [existsObject](#existsobject)
     - [extendObject](#extendobject)
     - [deleteObject](#deleteobject)
+    - [chmodObject](#chmodobject)
+    - [chownObject](#chownobject)
     - [getIdByName](#getidbyname)
     - [getEnums](#getenums)
     - [createState](#createstate)
@@ -61,6 +63,10 @@
     - [writeFile](#writefile)
     - [delFile](#delfile)
     - [renameFile](#renamefile)
+    - [readDir](#readdir)
+    - [fileExists](#fileexists)
+    - [chmodFile](#chmodfile)
+    - [chownFile](#chownfile)
     - [onFile](#onfile)
     - [offFile](#offfile)
     - [onStop](#onstop)
@@ -948,6 +954,44 @@ Verwendung z. B. so:
 deleteObject('javascript.0.createdState');
 ```
 
+### chmodObject
+```js
+chmodObject(id, objectMode, stateMode, (error, acl) => {});
+```
+
+Ändert die Zugriffsrechte eines Objekts und des Werts seines States. Dieses Kommando steht nur zur Verfügung, wenn in den Einstellungen des Adapters *Kommando "setObject" erlauben* aktiviert ist. Im Debug-Modus wird es nicht ausgeführt.
+
+- `objectMode` - Rechte auf das Objekt. `null` lässt sie unverändert.
+- `stateMode` - Rechte auf den Wert des States, nur bei Objekten vom Typ `state`. Kann weggelassen werden.
+
+Die Rechte werden wie bei `chmod` unter Linux geschrieben, aber hexadezimal: `0x664` oder `'664'`. Die erste Ziffer gilt für den Besitzer, die zweite für die Besitzergruppe, die dritte für alle anderen; 4 bedeutet Lesen, 2 Schreiben. Ein dezimales `664` wird abgelehnt.
+
+Der Callback bekommt die neue ACL des Objekts. Besitzer und Gruppe ändert `chownObject`.
+
+```js
+// Besitzer und Gruppe dürfen das Objekt ändern, den Wert schreiben darf nur der Besitzer
+await chmodObjectAsync('0_userdata.0.myState', 0x664, 0x644);
+
+// Nur die Rechte auf den Wert ändern
+chmodObject('0_userdata.0.myState', null, '640');
+```
+
+### chownObject
+```js
+chownObject(id, owner, ownerGroup, (error, acl) => {});
+```
+
+Ändert Besitzer und Besitzergruppe eines Objekts. Sie gelten auch für den Wert seines States. Dieses Kommando steht nur zur Verfügung, wenn in den Einstellungen des Adapters *Kommando "setObject" erlauben* aktiviert ist. Im Debug-Modus wird es nicht ausgeführt.
+
+- `owner` - der Benutzer, z. B. `'admin'` oder `'system.user.admin'`
+- `ownerGroup` - die Gruppe, z. B. `'user'` oder `'system.group.user'`. Kann weggelassen werden, dann wird die erste Gruppe genommen, in der der Benutzer Mitglied ist.
+
+Der Callback bekommt die neue ACL des Objekts.
+
+```js
+await chownObjectAsync('0_userdata.0.myState', 'myuser', 'user');
+```
+
 *Hinweis: Die Option `isRecursive` ist nur mit js-controller >= 2.2.x verfügbar*
 
 ### getIdByName
@@ -1533,6 +1577,62 @@ renameFile(adapter, oldName, newName, (error) => {});
 Benennt eine Datei oder ein Verzeichnis um. oldName ist der Name der Datei oder des Verzeichnisses in der DB, der in newName umbenannt wird.
 
 Der alternative Name dieser Methode ist `rename`
+
+### readDir
+```js
+readDir(adapter, path, (error, entries) => {});
+```
+
+Liest den Inhalt eines Verzeichnisses in der DB. Das Argument *adapter* kann weggelassen werden, dann wird `0_userdata.0` verwendet. `''` oder `'/'` ist das Wurzelverzeichnis.
+
+Jeder Eintrag hat `file` (den Namen), `isDir`, `stats` (z. B. `size`), `acl`, `modifiedAt` und `createdAt`.
+
+```js
+const entries = await readDirAsync('vis-2.0', '/main');
+for (const entry of entries) {
+    log(`${entry.file}${entry.isDir ? '/' : ''}`);
+}
+```
+
+### fileExists
+```js
+fileExists(adapter, fileName, (error, exists) => {});
+```
+
+Prüft, ob eine Datei in der DB existiert. Das Argument *adapter* kann weggelassen werden, dann wird `0_userdata.0` verwendet.
+
+```js
+if (await fileExistsAsync('0_userdata.0', '/backups/settings.json')) {
+    log('Backup vorhanden');
+}
+```
+
+### chmodFile
+```js
+chmodFile(adapter, path, mode, (error, processed) => {});
+```
+
+Ändert die Zugriffsrechte einer Datei oder aller Dateien in einem Verzeichnis. Ist *adapter* `null`, wird `0_userdata.0` verwendet. Im Debug-Modus wird es nicht ausgeführt.
+
+Die Rechte werden wie bei `chmodObject` geschrieben: `0x644` oder `'644'`. Der Callback bekommt die geänderten Dateien mit ihrer neuen `acl`.
+
+```js
+chmodFile('vis-2.0', '/main/vis-views.json', 0x644);
+const processed = await chmodFileAsync('0_userdata.0', '/private', '600');
+```
+
+### chownFile
+```js
+chownFile(adapter, path, owner, ownerGroup, (error, processed) => {});
+```
+
+Ändert Besitzer und Besitzergruppe einer Datei oder aller Dateien in einem Verzeichnis. Ist *adapter* `null`, wird `0_userdata.0` verwendet. Im Debug-Modus wird es nicht ausgeführt.
+
+`owner` und `ownerGroup` werden wie bei `chownObject` angegeben; `ownerGroup` kann weggelassen werden. Der Callback bekommt die geänderten Dateien mit ihrer neuen `acl`.
+
+```js
+await chownFileAsync('0_userdata.0', '/private', 'myuser', 'user');
+```
 
 ### onFile
 ```js

@@ -36,6 +36,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FORBIDDEN_CHARS = void 0;
 exports.withCallerStack = withCallerStack;
 exports.normalizeStateDefault = normalizeStateDefault;
+exports.parseAclMode = parseAclMode;
+exports.formatAclMode = formatAclMode;
+exports.normalizeAclUser = normalizeAclUser;
+exports.normalizeAclGroup = normalizeAclGroup;
 exports.isValidPattern = isValidPattern;
 exports.pattern2RegEx = pattern2RegEx;
 exports.isExactId = isExactId;
@@ -107,6 +111,57 @@ function normalizeStateDefault(common) {
         return;
     }
     common.def = JSON.stringify(common.def);
+}
+/**
+ * Turns access rights as a script gives them into the number an ACL stores.
+ *
+ * Rights are written like for `chmod`, but as hex: `0x664`, `'664'` or `'0x664'`.
+ * Every digit must be 0-7, so a decimal `664` (= 0x298) is rejected instead of being stored as nonsense.
+ *
+ * @param mode The rights as number or string
+ * @returns The rights or null if they are not valid
+ */
+function parseAclMode(mode) {
+    let num;
+    if (typeof mode === 'number') {
+        num = mode;
+    }
+    else if (typeof mode === 'string' && /^(0x)?[0-7]{1,3}$/i.test(mode.trim())) {
+        num = parseInt(mode.trim(), 16);
+    }
+    else {
+        return null;
+    }
+    if (!Number.isInteger(num) || num < 0 || num > 0x777 || /[89a-f]/.test(num.toString(16))) {
+        return null;
+    }
+    return num;
+}
+/**
+ * Shows access rights in a log line as they are meant: 0x664 and not 1636
+ *
+ * @param mode The rights as the script gave them
+ */
+function formatAclMode(mode) {
+    return typeof mode === 'number' && Number.isInteger(mode) && mode >= 0
+        ? `0x${mode.toString(16)}`
+        : JSON.stringify(mode);
+}
+/**
+ * Completes a user name to the ID of the user object: `admin` -> `system.user.admin`
+ *
+ * @param user Short name or ID of the user
+ */
+function normalizeAclUser(user) {
+    return user.startsWith('system.user.') ? user : `system.user.${user}`;
+}
+/**
+ * Completes a group name to the ID of the group object: `user` -> `system.group.user`
+ *
+ * @param group Short name or ID of the group
+ */
+function normalizeAclGroup(group) {
+    return group.startsWith('system.group.') ? group : `system.group.${group}`;
 }
 // Pre-compiled RegExp constants for formatTimeDiff – avoids recompiling on every call
 const FTD_TEST_D = /(?<!\\)[DTД]/;
@@ -217,6 +272,110 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
         });
         context.logError(name, 'Error in callback:', e);
         context.debugMode && console.log(`error$$${name}$$Exception in callback: ${e}`, Date.now());
+    }
+    /** Calls a callback of the script; an exception thrown there is reported as an error of the script */
+    function callScriptCallback(callback, ...args) {
+        if (typeof callback === 'function') {
+            try {
+                callback.apply(sandbox, args);
+            }
+            catch (err) {
+                errorInCallback(err);
+            }
+        }
+    }
+    /**
+     * Hands an error to the callback of the script. Without a callback it is logged, as nobody would see it otherwise.
+     *
+     * js-controller reports some errors as plain strings, the script always gets an Error.
+     *
+     * @param call The call as it is logged, e.g. `chmodFile(adapter=vis.0, path=/main)`
+     * @param err The error
+     * @param callback The callback of the script
+     */
+    function reportError(call, err, callback) {
+        const error = err instanceof Error ? err : new Error(String(err));
+        if (typeof callback === 'function') {
+            callScriptCallback(callback, error);
+        }
+        else {
+            sandbox.log(`${call}: ${error.message}`, 'error');
+        }
+    }
+    /**
+     * Checks owner and group for chownFile and chownObject and completes them to IDs.
+     * Without a group, the first group of the user is taken - like js-controller does.
+     *
+     * @param owner Short name or ID of the user
+     * @param ownerGroup Short name or ID of the group
+     */
+    async function resolveAclOwner(owner, ownerGroup) {
+        if (typeof owner !== 'string' || !owner) {
+            throw new Error('owner must be a user, e.g. "admin" or "system.user.admin"');
+        }
+        const ownerId = normalizeAclUser(owner);
+        const userObj = await adapter.getForeignObjectAsync(ownerId);
+        if (userObj?.type !== 'user') {
+            throw new Error(`User "${ownerId}" does not exist`);
+        }
+        if (ownerGroup !== undefined && ownerGroup !== null && ownerGroup !== '') {
+            if (typeof ownerGroup !== 'string') {
+                throw new Error('ownerGroup must be a group, e.g. "user" or "system.group.user"');
+            }
+            const groupId = normalizeAclGroup(ownerGroup);
+            const groupObj = await adapter.getForeignObjectAsync(groupId);
+            if (groupObj?.type !== 'group') {
+                throw new Error(`Group "${groupId}" does not exist`);
+            }
+            return { owner: ownerId, ownerGroup: groupId };
+        }
+        const groups = await adapter.getObjectViewAsync('system', 'group', {
+            startkey: 'system.group.',
+            endkey: 'system.group.\u9999',
+        });
+        // the key of this view is the name of the group, not its ID
+        const group = groups.rows.find(row => row.value?.common?.members?.includes(ownerId));
+        if (!group?.value?._id) {
+            throw new Error(`User "${ownerId}" belongs to no group`);
+        }
+        return { owner: ownerId, ownerGroup: group.value._id };
+    }
+    /**
+     * Changes parts of the ACL of an object for chmodObject and chownObject.
+     *
+     * The complete ACL is written: an object without ACL gets the defaults of the system first,
+     * because extendObject would otherwise store just the changed fields.
+     *
+     * @param id ID of the object
+     * @param change The ACL fields to change
+     * @returns The new ACL
+     */
+    async function changeObjectAcl(id, change) {
+        if (typeof id !== 'string' || !id) {
+            throw new Error('id must be the ID of an object');
+        }
+        const obj = await adapter.getForeignObjectAsync(id);
+        if (!obj) {
+            throw new Error(`Object "${id}" does not exist`);
+        }
+        if (change.state !== undefined && obj.type !== 'state') {
+            throw new Error(`Object "${id}" is of type "${obj.type}" and has no state rights`);
+        }
+        const systemConfig = await adapter.getForeignObjectAsync('system.config');
+        const acl = {
+            owner: 'system.user.admin',
+            ownerGroup: 'system.group.administrator',
+            object: 0x664,
+            state: 0x664,
+            ...(systemConfig?.common?.defaultNewAcl || {}),
+        };
+        delete acl.file;
+        Object.assign(acl, obj.acl || {}, change);
+        if (obj.type !== 'state') {
+            delete acl.state;
+        }
+        await adapter.extendForeignObjectAsync(id, { acl });
+        return acl;
     }
     function subscribePattern(script, pattern) {
         if (adapter.config.subscribe) {
@@ -2832,6 +2991,22 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                 }
             }
         },
+        // This function will be overloaded later if the modification of objects is allowed
+        chmodObject: function (_id, _objectMode, stateMode, callback) {
+            if (typeof stateMode === 'function') {
+                callback = stateMode;
+            }
+            sandbox.log('Function "chmodObject" is not allowed. Use adapter settings to allow it.', 'error');
+            callScriptCallback(callback, new Error('Function "chmodObject" is not allowed. Use adapter settings to allow it.'));
+        },
+        // This function will be overloaded later if the modification of objects is allowed
+        chownObject: function (_id, _owner, ownerGroup, callback) {
+            if (typeof ownerGroup === 'function') {
+                callback = ownerGroup;
+            }
+            sandbox.log('Function "chownObject" is not allowed. Use adapter settings to allow it.', 'error');
+            callScriptCallback(callback, new Error('Function "chownObject" is not allowed. Use adapter settings to allow it.'));
+        },
         getEnums: function (enumName) {
             const result = [];
             // an enum name is a plain name, not a pattern - see #2239
@@ -4206,6 +4381,98 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
         renameFile: function (_adapter, oldName, newName, callback) {
             return sandbox.rename(_adapter, oldName, newName, callback);
         },
+        readDir: function (_adapter, path, callback) {
+            if (typeof path === 'function') {
+                callback = path;
+                path = _adapter;
+                _adapter = '0_userdata.0';
+            }
+            _adapter = _adapter || '0_userdata.0';
+            path = path || '';
+            const call = `readDir(adapter=${_adapter}, path=${path})`;
+            if (typeof callback !== 'function') {
+                sandbox.log(`${call}: no callback`, 'error');
+                return;
+            }
+            if (sandbox.verbose) {
+                sandbox.log(call, 'info');
+            }
+            try {
+                adapter.readDir(_adapter, path, (err, entries) => err ? reportError(call, err, callback) : callScriptCallback(callback, null, entries || []));
+            }
+            catch (err) {
+                reportError(call, err, callback);
+            }
+        },
+        fileExists: function (_adapter, fileName, callback) {
+            if (typeof fileName === 'function') {
+                callback = fileName;
+                fileName = _adapter;
+                _adapter = '0_userdata.0';
+            }
+            _adapter = _adapter || '0_userdata.0';
+            const call = `fileExists(adapter=${_adapter}, fileName=${fileName})`;
+            if (typeof callback !== 'function') {
+                sandbox.log(`${call}: no callback`, 'error');
+                return;
+            }
+            if (sandbox.verbose) {
+                sandbox.log(call, 'info');
+            }
+            try {
+                adapter.fileExists(_adapter, fileName, (err, exists) => err ? reportError(call, err, callback) : callScriptCallback(callback, null, !!exists));
+            }
+            catch (err) {
+                reportError(call, err, callback);
+            }
+        },
+        chmodFile: function (_adapter, path, mode, callback) {
+            const adapterName = _adapter || '0_userdata.0';
+            const call = `chmodFile(adapter=${adapterName}, path=${path}, mode=${formatAclMode(mode)})`;
+            const modeNum = parseAclMode(mode);
+            if (modeNum === null) {
+                return reportError(call, new Error('mode must be like 0x644 or "644"'), callback);
+            }
+            if (debug) {
+                sandbox.log(`${call} - ${words._('was not executed, while debug mode is active')}`, 'warn');
+                setImmediate(() => callScriptCallback(callback, null, []));
+                return;
+            }
+            if (sandbox.verbose) {
+                sandbox.log(call, 'info');
+            }
+            try {
+                adapter.chmodFile(adapterName, path, { mode: modeNum }, (err, processed) => err ? reportError(call, err, callback) : callScriptCallback(callback, null, processed || []));
+            }
+            catch (err) {
+                reportError(call, err, callback);
+            }
+        },
+        chownFile: function (_adapter, path, owner, ownerGroup, callback) {
+            if (typeof ownerGroup === 'function') {
+                callback = ownerGroup;
+                ownerGroup = undefined;
+            }
+            const adapterName = _adapter || '0_userdata.0';
+            const call = `chownFile(adapter=${adapterName}, path=${path}, owner=${owner}${ownerGroup ? `, ownerGroup=${ownerGroup}` : ''})`;
+            if (debug) {
+                sandbox.log(`${call} - ${words._('was not executed, while debug mode is active')}`, 'warn');
+                setImmediate(() => callScriptCallback(callback, null, []));
+                return;
+            }
+            if (sandbox.verbose) {
+                sandbox.log(call, 'info');
+            }
+            void (async () => {
+                try {
+                    const acl = await resolveAclOwner(owner, ownerGroup);
+                    adapter.chownFile(adapterName, path, acl, (err, processed) => err ? reportError(call, err, callback) : callScriptCallback(callback, null, processed || []));
+                }
+                catch (err) {
+                    reportError(call, err, callback);
+                }
+            })();
+        },
         getHistory: function (instance, options, callback) {
             if ((0, tools_1.isObject)(instance)) {
                 callback = options;
@@ -4907,6 +5174,24 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
         renameFileAsync: function (_adapter, _oldName, _newName) {
             return Promise.reject(new Error('Not implemented'));
         },
+        readDirAsync: function (_adapter, _path) {
+            return Promise.reject(new Error('Not implemented'));
+        },
+        fileExistsAsync: function (_adapter, _fileName) {
+            return Promise.reject(new Error('Not implemented'));
+        },
+        chmodFileAsync: function (_adapter, _path, _mode) {
+            return Promise.reject(new Error('Not implemented'));
+        },
+        chownFileAsync: function (_adapter, _path, _owner, _ownerGroup) {
+            return Promise.reject(new Error('Not implemented'));
+        },
+        chmodObjectAsync: function (_id, _objectMode, _stateMode) {
+            return Promise.reject(new Error('Not implemented'));
+        },
+        chownObjectAsync: function (_id, _owner, _ownerGroup) {
+            return Promise.reject(new Error('Not implemented'));
+        },
         getHistoryAsync: function (_instance, _options) {
             return Promise.reject(new Error('Not implemented'));
         },
@@ -5029,6 +5314,58 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
                 adapter.delForeignObject(id, { recursive: isRecursive }, callback);
             }
         };
+        sandbox.chmodObject = function (id, objectMode, stateMode, callback) {
+            if (typeof stateMode === 'function') {
+                callback = stateMode;
+                stateMode = undefined;
+            }
+            const call = `chmodObject(id=${id}, objectMode=${formatAclMode(objectMode)}${stateMode !== undefined && stateMode !== null ? `, stateMode=${formatAclMode(stateMode)}` : ''})`;
+            const change = {};
+            if (objectMode !== undefined && objectMode !== null) {
+                const mode = parseAclMode(objectMode);
+                if (mode === null) {
+                    return reportError(call, new Error('objectMode must be like 0x664 or "664"'), callback);
+                }
+                change.object = mode;
+            }
+            if (stateMode !== undefined && stateMode !== null) {
+                const mode = parseAclMode(stateMode);
+                if (mode === null) {
+                    return reportError(call, new Error('stateMode must be like 0x664 or "664"'), callback);
+                }
+                change.state = mode;
+            }
+            if (change.object === undefined && change.state === undefined) {
+                return reportError(call, new Error('neither objectMode nor stateMode given'), callback);
+            }
+            if (debug) {
+                sandbox.log(`${call} - ${words._('was not executed, while debug mode is active')}`, 'warn');
+                setImmediate(() => callScriptCallback(callback, null));
+                return;
+            }
+            if (sandbox.verbose) {
+                sandbox.log(call, 'info');
+            }
+            void changeObjectAcl(id, change).then(acl => callScriptCallback(callback, null, acl), (err) => reportError(call, err, callback));
+        };
+        sandbox.chownObject = function (id, owner, ownerGroup, callback) {
+            if (typeof ownerGroup === 'function') {
+                callback = ownerGroup;
+                ownerGroup = undefined;
+            }
+            const call = `chownObject(id=${id}, owner=${owner}${ownerGroup ? `, ownerGroup=${ownerGroup}` : ''})`;
+            if (debug) {
+                sandbox.log(`${call} - ${words._('was not executed, while debug mode is active')}`, 'warn');
+                setImmediate(() => callScriptCallback(callback, null));
+                return;
+            }
+            if (sandbox.verbose) {
+                sandbox.log(call, 'info');
+            }
+            void resolveAclOwner(owner, ownerGroup)
+                .then(ownerAcl => changeObjectAcl(id, ownerAcl))
+                .then(acl => callScriptCallback(callback, null, acl), (err) => reportError(call, err, callback));
+        };
     }
     // promisify methods on the sandbox
     sandbox.existsStateAsync = (0, tools_1.promisify)(sandbox.existsState);
@@ -5046,6 +5383,12 @@ function sandBox(script, name, verbose, debug, context, logCollector) {
     sandbox.delFileAsync = (0, tools_1.promisify)(sandbox.delFile);
     sandbox.renameAsync = (0, tools_1.promisify)(sandbox.rename);
     sandbox.renameFileAsync = (0, tools_1.promisify)(sandbox.renameFile);
+    sandbox.readDirAsync = (0, tools_1.promisify)(sandbox.readDir);
+    sandbox.fileExistsAsync = (0, tools_1.promisify)(sandbox.fileExists);
+    sandbox.chmodFileAsync = (0, tools_1.promisify)(sandbox.chmodFile);
+    sandbox.chownFileAsync = (0, tools_1.promisify)(sandbox.chownFile);
+    sandbox.chmodObjectAsync = (0, tools_1.promisify)(sandbox.chmodObject);
+    sandbox.chownObjectAsync = (0, tools_1.promisify)(sandbox.chownObject);
     sandbox.getHistoryAsync = (0, tools_1.promisify)(sandbox.getHistory);
     sandbox.httpGetAsync = (0, tools_1.promisify)(sandbox.httpGet);
     sandbox.httpPostAsync = (0, tools_1.promisify)(sandbox.httpPost);

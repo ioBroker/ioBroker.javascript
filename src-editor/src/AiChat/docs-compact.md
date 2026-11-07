@@ -152,6 +152,12 @@ Merge-update object. E.g. `extendObject('system.adapter.sayit.0', {common: {enab
 ## deleteObject(id, [isRecursive], callback)
 Delete object (and state value if type=state). `isRecursive` deletes children too.
 
+## chmodObject(id, objectMode, [stateMode], [callback])
+Change access rights of the object and of its state value. Rights in hex like chmod: `0x664` or `'664'` (decimal 664 is rejected); `null` keeps them. `callback(err, acl)`. Requires "Enable setObject" option.
+
+## chownObject(id, owner, [ownerGroup], [callback])
+Change owner/owner group of an object (applies to the state value too). `'admin'` = `'system.user.admin'`, `'user'` = `'system.group.user'`. Without group: first group of the user. `callback(err, acl)`. Requires "Enable setObject" option.
+
 ## getIdByName(name, [alwaysArray])
 Returns ID(s) for object with given name. Returns array if multiple or if `alwaysArray` is true.
 
@@ -241,6 +247,18 @@ Delete file or directory from DB. Alias: `unlink`.
 
 ## renameFile(adapter, oldName, newName, callback)
 Rename file or directory in DB. Alias: `rename`.
+
+## readDir(adapter, path, callback)
+List a directory in DB. `callback(error, entries)`, entry: `{file, isDir, stats, acl, modifiedAt, createdAt}`. Default adapter: `0_userdata.0`.
+
+## fileExists(adapter, fileName, callback)
+Check if a file exists in DB. `callback(error, exists)`. Default adapter: `0_userdata.0`.
+
+## chmodFile(adapter, path, mode, [callback])
+Change access rights of a file or of all files in a directory. Rights like chmodObject (`0x644` or `'644'`). `callback(error, processedFiles)`.
+
+## chownFile(adapter, path, owner, [ownerGroup], [callback])
+Change owner/owner group of a file or of all files in a directory. Names like chownObject. `callback(error, processedFiles)`.
 
 ## onFile(id, fileName, withFile, callback)
 Subscribe to file changes. `id`: meta object ID (e.g. 'vis.0'). `fileName`: name or glob pattern.

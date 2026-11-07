@@ -597,6 +597,60 @@ export type SandboxType = {
     renameAsync: (adapter: string, oldName: string, newName?: string) => Promise<void>;
     renameFile: (adapter: string, oldName: string, newName: string, callback?: (err?: Error | null) => void) => void;
     renameFileAsync: (adapter: string, oldName: string, newName?: string) => Promise<void>;
+    readDir: (
+        adapter: string,
+        path: string | ((err: Error | null, entries?: ioBroker.ReadDirResult[]) => void),
+        callback?: (err: Error | null, entries?: ioBroker.ReadDirResult[]) => void,
+    ) => void;
+    readDirAsync: (adapter: string, path?: string) => Promise<ioBroker.ReadDirResult[]>;
+    fileExists: (
+        adapter: string,
+        fileName: string | ((err: Error | null, exists?: boolean) => void),
+        callback?: (err: Error | null, exists?: boolean) => void,
+    ) => void;
+    fileExistsAsync: (adapter: string, fileName?: string) => Promise<boolean>;
+    chmodFile: (
+        adapter: string | null,
+        path: string,
+        mode: number | string,
+        callback?: (err: Error | null, processed?: ioBroker.ChownFileResult[]) => void,
+    ) => void;
+    chmodFileAsync: (
+        adapter: string | null,
+        path: string,
+        mode: number | string,
+    ) => Promise<ioBroker.ChownFileResult[]>;
+    chownFile: (
+        adapter: string | null,
+        path: string,
+        owner: string,
+        ownerGroup?: string | ((err: Error | null, processed?: ioBroker.ChownFileResult[]) => void),
+        callback?: (err: Error | null, processed?: ioBroker.ChownFileResult[]) => void,
+    ) => void;
+    chownFileAsync: (
+        adapter: string | null,
+        path: string,
+        owner: string,
+        ownerGroup?: string,
+    ) => Promise<ioBroker.ChownFileResult[]>;
+    chmodObject: (
+        id: string,
+        objectMode: number | string | null,
+        stateMode?: number | string | null | ((err: Error | null, acl?: ioBroker.StateACL) => void),
+        callback?: (err: Error | null, acl?: ioBroker.StateACL) => void,
+    ) => void;
+    chmodObjectAsync: (
+        id: string,
+        objectMode: number | string | null,
+        stateMode?: number | string | null,
+    ) => Promise<ioBroker.StateACL>;
+    chownObject: (
+        id: string,
+        owner: string,
+        ownerGroup?: string | ((err: Error | null, acl?: ioBroker.StateACL) => void),
+        callback?: (err: Error | null, acl?: ioBroker.StateACL) => void,
+    ) => void;
+    chownObjectAsync: (id: string, owner: string, ownerGroup?: string) => Promise<ioBroker.StateACL>;
     getHistory: (
         instance: string | (ioBroker.GetHistoryOptions & { id: string; timeout?: number | string }),
         options:

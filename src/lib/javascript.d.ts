@@ -3246,6 +3246,123 @@ declare global {
     function renameFile(id: string, oldName: string, newName: string, callback: ErrorCallback): void;
     function renameFileAsync(id: string, oldName: string, newName: string): Promise<void>;
 
+    /**
+     * Reads the content of a directory.
+     *
+     * @param id Name of the root directory, e.g. "vis.0". Without it, "0_userdata.0" is used.
+     * @param path Path of the directory, e.g. "/main". "" or "/" is the root directory.
+     * @param callback Gets the files and subdirectories of the directory
+     */
+    function readDir(
+        id: string,
+        path: string,
+        callback: (err: Error | null, entries?: iobJS.ReadDirResult[]) => void,
+    ): void;
+    function readDir(path: string, callback: (err: Error | null, entries?: iobJS.ReadDirResult[]) => void): void;
+    function readDirAsync(id: string, path: string): Promise<iobJS.ReadDirResult[]>;
+    function readDirAsync(path: string): Promise<iobJS.ReadDirResult[]>;
+
+    /**
+     * Checks if a file exists.
+     *
+     * @param id Name of the root directory, e.g. "vis.0". Without it, "0_userdata.0" is used.
+     * @param name File name
+     * @param callback Gets true if the file exists
+     */
+    function fileExists(id: string, name: string, callback: (err: Error | null, exists?: boolean) => void): void;
+    function fileExists(name: string, callback: (err: Error | null, exists?: boolean) => void): void;
+    function fileExistsAsync(id: string, name: string): Promise<boolean>;
+    function fileExistsAsync(name: string): Promise<boolean>;
+
+    /**
+     * Changes the access rights of a file, or of all files in a directory.
+     *
+     * @param id Name of the root directory, e.g. "vis.0". null means "0_userdata.0".
+     * @param path File or directory, e.g. "/main/vis-views.json" or "/main/*"
+     * @param mode Access rights as hex, like for chmod: 0x644 or "644"
+     * @param callback Gets the changed files
+     */
+    function chmodFile(
+        id: string | null,
+        path: string,
+        mode: number | string,
+        callback?: (err: Error | null, processed?: iobJS.ChownFileResult[]) => void,
+    ): void;
+    function chmodFileAsync(id: string | null, path: string, mode: number | string): Promise<iobJS.ChownFileResult[]>;
+
+    /**
+     * Changes owner and owner group of a file, or of all files in a directory.
+     *
+     * @param id Name of the root directory, e.g. "vis.0". null means "0_userdata.0".
+     * @param path File or directory, e.g. "/main/vis-views.json" or "/main/*"
+     * @param owner User, e.g. "admin" or "system.user.admin"
+     * @param ownerGroup Group, e.g. "administrator" or "system.group.administrator". Without it, the first group of the user is taken.
+     * @param callback Gets the changed files
+     */
+    function chownFile(
+        id: string | null,
+        path: string,
+        owner: string,
+        ownerGroup?: string,
+        callback?: (err: Error | null, processed?: iobJS.ChownFileResult[]) => void,
+    ): void;
+    function chownFile(
+        id: string | null,
+        path: string,
+        owner: string,
+        callback?: (err: Error | null, processed?: iobJS.ChownFileResult[]) => void,
+    ): void;
+    function chownFileAsync(
+        id: string | null,
+        path: string,
+        owner: string,
+        ownerGroup?: string,
+    ): Promise<iobJS.ChownFileResult[]>;
+
+    /**
+     * Changes the access rights of an object and of its state.
+     * Only available if "Enable command setObject" is activated in the instance settings.
+     *
+     * @param id ID of the object
+     * @param objectMode Access rights to the object as hex, like for chmod: 0x664 or "664". null keeps them.
+     * @param stateMode Access rights to the value of the state (only for objects of type "state"). Omitted or null keeps them.
+     * @param callback Gets the new ACL of the object
+     */
+    function chmodObject(
+        id: string,
+        objectMode: number | string | null,
+        stateMode?: number | string | null,
+        callback?: (err: Error | null, acl?: iobJS.StateACL) => void,
+    ): void;
+    function chmodObject(
+        id: string,
+        objectMode: number | string | null,
+        callback?: (err: Error | null, acl?: iobJS.StateACL) => void,
+    ): void;
+    function chmodObjectAsync(
+        id: string,
+        objectMode: number | string | null,
+        stateMode?: number | string | null,
+    ): Promise<iobJS.StateACL>;
+
+    /**
+     * Changes owner and owner group of an object (they apply to its state, too).
+     * Only available if "Enable command setObject" is activated in the instance settings.
+     *
+     * @param id ID of the object
+     * @param owner User, e.g. "admin" or "system.user.admin"
+     * @param ownerGroup Group, e.g. "administrator" or "system.group.administrator". Without it, the first group of the user is taken.
+     * @param callback Gets the new ACL of the object
+     */
+    function chownObject(
+        id: string,
+        owner: string,
+        ownerGroup?: string,
+        callback?: (err: Error | null, acl?: iobJS.StateACL) => void,
+    ): void;
+    function chownObject(id: string, owner: string, callback?: (err: Error | null, acl?: iobJS.StateACL) => void): void;
+    function chownObjectAsync(id: string, owner: string, ownerGroup?: string): Promise<iobJS.StateACL>;
+
     function getHistory(instance: any, options: any, callback: any): any;
     function getHistoryAsync(instance: any, options: any): Promise<any>;
 
