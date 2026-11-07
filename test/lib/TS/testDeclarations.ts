@@ -83,3 +83,38 @@ const mailLogin = SECRETS['My Mail Account'].login;
 assertTrue<Equals<typeof mailLogin, string | undefined>>();
 const anyField = SECRETS.CameraPassword.somethingElse;
 assertTrue<Equals<typeof anyField, string | number | boolean | undefined>>();
+
+// File functions and ACL of files and objects
+readDir('vis.0', '/main', (err, entries) => {
+    assertTrue<Equals<typeof err, Error | null>>();
+    assertTrue<Equals<typeof entries, iobJS.ReadDirResult[] | undefined>>();
+});
+readDir('/backups', (err, entries) => {
+    assertTrue<Equals<typeof entries, iobJS.ReadDirResult[] | undefined>>();
+});
+fileExists('vis.0', '/main/vis-views.json', (err, exists) => {
+    assertTrue<Equals<typeof exists, boolean | undefined>>();
+});
+chmodFile('vis.0', '/main/*', 0x644);
+chownFile('vis.0', '/main/*', 'admin', (err, processed) => {
+    assertTrue<Equals<typeof processed, iobJS.ChownFileResult[] | undefined>>();
+});
+chownFile(null, '/main/*', 'admin', 'administrator');
+chmodObject('0_userdata.0.test', 0x664, '660', (err, acl) => {
+    assertTrue<Equals<typeof acl, iobJS.StateACL | undefined>>();
+});
+chmodObject('0_userdata.0.test', null, 0x660);
+chownObject('0_userdata.0.test', 'admin', (err, acl) => {
+    assertTrue<Equals<typeof acl, iobJS.StateACL | undefined>>();
+});
+(async () => {
+    const entries = await readDirAsync('vis.0', '/main');
+    assertTrue<Equals<typeof entries, iobJS.ReadDirResult[]>>();
+    const exists = await fileExistsAsync('/backups/a.json');
+    assertTrue<Equals<typeof exists, boolean>>();
+    const processed = await chmodFileAsync('vis.0', '/main/*', '644');
+    assertTrue<Equals<typeof processed, iobJS.ChownFileResult[]>>();
+    const acl = await chownObjectAsync('0_userdata.0.test', 'admin', 'administrator');
+    assertTrue<Equals<typeof acl.state, number>>();
+    await chmodObjectAsync('0_userdata.0.test', 0x664);
+})();

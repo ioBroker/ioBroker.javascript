@@ -35,6 +35,8 @@
     - [existsObject](#existsObject)
     - [extendObject](#extendobject)
     - [deleteObject](#deleteobject)
+    - [chmodObject](#chmodobject)
+    - [chownObject](#chownobject)
     - [getIdByName](#getidbyname)
     - [getEnums](#getenums)
     - [createState](#createstate)
@@ -61,6 +63,10 @@
     - [writeFile](#writefile)
     - [delFile](#delFile)
     - [renameFile](#renameFile)
+    - [readDir](#readdir)
+    - [fileExists](#fileexists)
+    - [chmodFile](#chmodfile)
+    - [chownFile](#chownfile)
     - [onFile](#onFile)
     - [offFile](#offFile)
     - [onStop](#onstop)
@@ -943,6 +949,44 @@ Delete an object from DB by ID. If the object has type `state`, the state value 
 
 Additional parameter `isRecursive` could be provided, so all children of given ID will be deleted. Very dangerous!
 
+### chmodObject
+```js
+chmodObject(id, objectMode, stateMode, (error, acl) => {});
+```
+
+Change the access rights of an object and of the value of its state. This command is only available if `Enable command "setObject"` is activated in the adapter's settings. It is not executed in debug mode.
+
+- `objectMode` - rights to the object. `null` keeps them.
+- `stateMode` - rights to the value of the state, only for objects of type `state`. It can be omitted.
+
+The rights are written like for `chmod` in Linux, but in hex: `0x664` or `'664'`. The first digit is for the owner, the second for the owner group, the third for everybody else; 4 means read, 2 write. A decimal `664` is rejected.
+
+The callback gets the new ACL of the object. Use `chownObject` to change owner and owner group.
+
+```js
+// The owner and the group may change the object, but only the owner may write the value
+await chmodObjectAsync('0_userdata.0.myState', 0x664, 0x644);
+
+// Change only the rights to the value
+chmodObject('0_userdata.0.myState', null, '640');
+```
+
+### chownObject
+```js
+chownObject(id, owner, ownerGroup, (error, acl) => {});
+```
+
+Change owner and owner group of an object. They apply to the value of its state, too. This command is only available if `Enable command "setObject"` is activated in the adapter's settings. It is not executed in debug mode.
+
+- `owner` - the user, e.g. `'admin'` or `'system.user.admin'`
+- `ownerGroup` - the group, e.g. `'user'` or `'system.group.user'`. It can be omitted, then the first group the user is a member of is taken.
+
+The callback gets the new ACL of the object.
+
+```js
+await chownObjectAsync('0_userdata.0.myState', 'myuser', 'user');
+```
+
 Use it like this:
 ```js
 // Delete state
@@ -1535,6 +1579,62 @@ renameFile(adapter, oldName, newName, (error) => {});
 Rename file or directory. oldName is the name of file or directory in DB and is renamed to newName.
 
 The alternative name of this method is `rename`
+
+### readDir
+```js
+readDir(adapter, path, (error, entries) => {});
+```
+
+Read the content of a directory in DB. Argument *adapter* can be omitted, then `0_userdata.0` is used. `''` or `'/'` is the root directory.
+
+Every entry has `file` (the name), `isDir`, `stats` (e.g. `size`), `acl`, `modifiedAt` and `createdAt`.
+
+```js
+const entries = await readDirAsync('vis-2.0', '/main');
+for (const entry of entries) {
+    log(`${entry.file}${entry.isDir ? '/' : ''}`);
+}
+```
+
+### fileExists
+```js
+fileExists(adapter, fileName, (error, exists) => {});
+```
+
+Check if a file exists in DB. Argument *adapter* can be omitted, then `0_userdata.0` is used.
+
+```js
+if (await fileExistsAsync('0_userdata.0', '/backups/settings.json')) {
+    log('Backup exists');
+}
+```
+
+### chmodFile
+```js
+chmodFile(adapter, path, mode, (error, processed) => {});
+```
+
+Change the access rights of a file, or of all files in a directory. If *adapter* is `null`, `0_userdata.0` is used. It is not executed in debug mode.
+
+The rights are written like for `chmodObject`: `0x644` or `'644'`. The callback gets the changed files with their new `acl`.
+
+```js
+chmodFile('vis-2.0', '/main/vis-views.json', 0x644);
+const processed = await chmodFileAsync('0_userdata.0', '/private', '600');
+```
+
+### chownFile
+```js
+chownFile(adapter, path, owner, ownerGroup, (error, processed) => {});
+```
+
+Change owner and owner group of a file, or of all files in a directory. If *adapter* is `null`, `0_userdata.0` is used. It is not executed in debug mode.
+
+`owner` and `ownerGroup` are given like for `chownObject`; `ownerGroup` can be omitted. The callback gets the changed files with their new `acl`.
+
+```js
+await chownFileAsync('0_userdata.0', '/private', 'myuser', 'user');
+```
 
 ### onFile
 ```js

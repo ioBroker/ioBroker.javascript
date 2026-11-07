@@ -1,1 +1,0 @@
-import{or as e,qn as t}from"./_virtual_mf___mfe_internal__iobroker_javascript__mf_owner__167145040919167__loadShare___mf_0_iobroker_mf_1_gui_mf_2_components__loadShare__.js-CWhMn-El.js";var n=t(e(`path`,{d:`M2.01 21 23 12 2.01 3 2 10l15 2-15 2z`}),`Send`);export{n as t};
