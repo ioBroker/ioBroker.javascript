@@ -30,7 +30,7 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 10.5.0 (2026-11-07)
 * (@GermanBluefox) Added: script functions `readDir`, `fileExists`, `chmodFile` and `chownFile` for files in the DB, and `chmodObject` and `chownObject` to change the access rights and the owner of objects and states (only with the option "Enable command setObject"), each with an `...Async` variant
 * (@GermanBluefox) Added: function block diagrams - block `CHARCURVE` (characteristic curve, e.g. a heating curve): `OUT` on the straight lines through 2 to 10 points `X1`/`Y1` ... `Xn`/`Yn`, kept at the Y of the outer points beyond them; the points are inputs, so they can be connected too, and the properties show the curve (#2433)
 
@@ -58,11 +58,6 @@ Executes JavaScript, TypeScript Scripts.
 ### 10.4.7 (2026-10-23)
 * (@GermanBluefox) Fixed: the AI chat did not see the open script when it was a Blockly script, and an outdated version of it after unsaved edits; the open script is now always the context when no other script is mentioned
 * (@GermanBluefox) Fixed: the code mode of the AI chat ignored the open script and wrote an unrelated new script for a request like "turn on the logs in the script"
-
-### 10.4.6 (2026-10-19)
-* (@GermanBluefox) Fixed: false "Cannot redeclare block-scoped variable" (TS2451) warnings for `const`s that are declared in several scripts
-* (@GermanBluefox) Fixed: `subscribeObject()`/`onObject()` and the rule trigger "On object change" never fired for a pattern with `*`
-* (@GermanBluefox) Fixed: a change of a TypeScript script could be ignored after its compilation result could not be stored
 
 ## License
 The MIT License (MIT)
