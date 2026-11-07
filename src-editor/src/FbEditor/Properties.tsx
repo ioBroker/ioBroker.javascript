@@ -40,6 +40,7 @@ import {
     getBlockDef,
     getInputCount,
     getInputs,
+    setInputCount,
     getOutputs,
     createBlockInfo,
     resolvePinType,
@@ -56,10 +57,9 @@ import {
 } from '@fb-core';
 
 import { parseValue } from './BlockNode';
-import Preview from './Preview';
+import Preview, { hasPreview as hasBlockPreview } from './Preview';
 import type { FbEdge, FbNode } from './convert';
 import { LiveText } from './online';
-import { previewOf } from './timing';
 
 /** A user block that another diagram of the installation defines */
 export interface FbLibraryEntry {
@@ -719,7 +719,7 @@ function BlockProperties(
     const inputs = getInputs(block, def);
     const user = def.user;
     const newest = user ? props.library[user.type] : undefined;
-    const hasPreview = !!previewOf(block, def);
+    const hasPreview = hasBlockPreview(block, def);
 
     return (
         <>
@@ -813,13 +813,13 @@ function BlockProperties(
                 >
                     {(def.params || []).map(renderParam)}
                     {def.extensible ? (
-                        <Row label={I18n.t('fbd_param_inputs')}>
+                        <Row label={I18n.t(def.extensible.paired ? 'fbd_param_points' : 'fbd_param_inputs')}>
                             <TextField
                                 select
                                 size="small"
                                 fullWidth
                                 value={getInputCount(block, def)}
-                                onChange={event => setParam('inputs', Number(event.target.value))}
+                                onChange={event => onBlockChange(setInputCount(block, def, Number(event.target.value)))}
                             >
                                 {Array.from(
                                     { length: def.extensible.max - def.extensible.min + 1 },
@@ -926,6 +926,7 @@ function BlockProperties(
                     <Preview
                         block={block}
                         def={def}
+                        connected={connectedInputs}
                     />
                 </Section>
             ) : null}
@@ -1074,7 +1075,7 @@ function Documentation(props: PropertiesProps): React.JSX.Element {
                     {pinRows(outputs)}
                 </Section>
             ) : null}
-            {previewOf(block, def) ? (
+            {hasBlockPreview(block, def) ? (
                 <Section
                     id="preview"
                     title={I18n.t('fbd_section_preview')}

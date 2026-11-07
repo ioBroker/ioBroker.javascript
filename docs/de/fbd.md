@@ -22,7 +22,8 @@ Ein neues Skript hinzufügen und **Funktionsplan** wählen. Der Editor hat drei 
   Anschluss losgelassen, steht oben, warum. Ein Eingang nimmt genau eine Verbindung. `Entf` löscht das Ausgewählte.
 - **Eigenschaften** (rechts): **Eigenschaften** zeigt die Einstellungen des gewählten Bausteins in Abschnitten, die
   auf- und zuklappen - Allgemein (Instanzname, Typ, ein Kommentar), Parameter, Eingänge und bei Timern, Flipflops,
-  Flanken und Regelungsbausteinen eine **Vorschau**: ein Zeitdiagramm des Bausteins mit seinen Werten.
+  Flanken und Regelungsbausteinen eine **Vorschau**: ein Zeitdiagramm des Bausteins mit seinen Werten, bei
+  `CHARCURVE` die Kennlinie.
   **Dokumentation** beschreibt den Baustein und seine Anschlüsse. Ist nichts gewählt: die Einstellungen des Plans
   und die Tastenkürzel.
 
@@ -121,7 +122,7 @@ wurde; ein älterer lässt sich schon erzwingen und anhalten.
 | Auswahl    | `SEL`, `MUX`, `LIMIT`                                            |
 | Arithmetik | `ADD`, `SUB`, `MUL`, `DIV`, `MIN`, `MAX`, `ROUND`                |
 | Umwandlung | `TO_BOOL`, `TO_INT`, `TO_REAL`, `TO_TIME`, `TO_STRING`, `CONCAT` |
-| Regelung   | `HYST`, `RAMP`, `PT1`, `PID`                                     |
+| Regelung   | `HYST`, `RAMP`, `PT1`, `PID`, `CHARCURVE`                        |
 | Kalender   | `CLOCK`, `TIMEWINDOW`, `SCHEDULE`, `ASTRO`                       |
 | Meldungen  | `LOG`, `NOTIFY`, `SENDTO`                                         |
 | Experte    | `JS`                                                             |
@@ -162,6 +163,13 @@ Die Regelungsbausteine:
   Solange `Y` gehalten oder vorgegeben wird, zieht der I-Anteil mit; der Regler macht danach ohne Sprung von dort
   aus weiter - ohne I-Anteil (`TN` 0) springt `Y` auf den P-Anteil. `MAN` geht vor `RST`, `RST` vor `HOLD` und der
   Totzone.
+- `CHARCURVE` - Kennlinie, z. B. eine Heizkurve: `OUT` liegt auf den Geraden durch die Stützpunkte `X1`/`Y1` bis
+  `Xn`/`Yn` (2 bis 10 Punkte). Vor dem ersten und hinter dem letzten Punkt bleibt `OUT` bei deren `Y`, daher
+  reichen zwei Punkte: `X1 = -10, Y1 = 70, X2 = 20, Y2 = 30` ergibt 70 unter -10, 30 über 20 und 50 bei 5. Die
+  Reihenfolge der Punkte ist egal; zwei Punkte mit gleichem `X` ergeben eine Stufe. Die Punkte sind Eingänge: In
+  den Eigenschaften eintragen oder verbinden, z. B. um die Kurve über einen Datenpunkt zu verschieben. Die
+  Eigenschaften zeigen die Kurve; ein neuer Punkt kommt hinter den letzten und ändert die Kurve erst, wenn er
+  verschoben wird.
 
 `RAMP`, `PT1` und `PID` hängen von der Zeit ab: Ein Plan mit ihnen läuft zyklisch.
 

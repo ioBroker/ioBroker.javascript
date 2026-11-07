@@ -55,7 +55,7 @@ export function resolvePinType(block: FbBlock, type: FbPinType, def?: FbBlockDef
     return type;
 }
 
-/** Number of inputs of an extensible block */
+/** Number of inputs of an extensible block - of pairs, like the points of CHARCURVE, if it has `paired` */
 export function getInputCount(block: FbBlock, def: FbBlockDef): number {
     if (!def.extensible) {
         return def.inputs.length;
@@ -96,13 +96,52 @@ export function getInputs(block: FbBlock, def = getBlockDef(block.type)): FbPin[
     }
     const inputs: FbPin[] = def.inputs.map(pin => toPin(block, def, pin));
     if (def.extensible) {
-        const { prefix, type, default: defaultValue, start = 1 } = def.extensible;
+        const { prefix, paired = [], type, default: defaultValue, step, start = 1 } = def.extensible;
         const count = getInputCount(block, def);
         for (let i = start; i < start + count; i++) {
-            inputs.push(toPin(block, def, { id: `${prefix}${i}`, type, default: defaultValue }));
+            const value = step && typeof defaultValue === 'number' ? defaultValue + step * (i - start) : defaultValue;
+            for (const each of [prefix, ...paired]) {
+                inputs.push(toPin(block, def, { id: `${each}${i}`, type, default: value }));
+            }
         }
     }
     return inputs;
+}
+
+/**
+ * The block with another number of extensible inputs. New pairs that have no values yet go on behind
+ * the last one: the first value of the pair by the distance of the last two, the others as the last
+ * pair has them - so a new point of CHARCURVE lies beyond the last one and does not change the curve.
+ */
+export function setInputCount(block: FbBlock, def: FbBlockDef, count: number): FbBlock {
+    const params: Record<string, FbValue> = { ...block.params, inputs: count };
+    const extensible = def.extensible;
+    if (extensible?.paired?.length) {
+        const { prefix, paired, start = 1, step } = extensible;
+        const before = getInputs(block, def);
+        const value = (id: string): number => {
+            const number = Number(params[id] ?? before.find(pin => pin.id === id)?.default);
+            return Number.isFinite(number) ? number : 0;
+        };
+        const old = getInputCount(block, def);
+        const added = getInputCount({ ...block, params }, def);
+        for (let i = start + old; i < start + added; i++) {
+            if (params[`${prefix}${i}`] !== undefined) {
+                // the user had this pair already - it comes back as it was
+                continue;
+            }
+            // the pair with the largest first value, and the one before it in that order
+            const pairs = Array.from({ length: i - start }, (_, n) => start + n).sort(
+                (a, b) => value(`${prefix}${a}`) - value(`${prefix}${b}`),
+            );
+            const last = pairs[pairs.length - 1];
+            const lastX = value(`${prefix}${last}`);
+            const gap = pairs.length > 1 ? lastX - value(`${prefix}${pairs[pairs.length - 2]}`) : 0;
+            params[`${prefix}${i}`] = lastX + (gap > 0 ? gap : step || 1);
+            paired.forEach(each => (params[`${each}${i}`] = value(`${each}${last}`)));
+        }
+    }
+    return { ...block, params };
 }
 
 /** Number of outputs of a block with a variable number of them */

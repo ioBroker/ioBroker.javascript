@@ -1163,6 +1163,123 @@ describe('FBD: selection', () => {
     });
 });
 
+describe('FBD: characteristic curve', () => {
+    // the heating curve of issue #2433: 70 °C up to -10 °C outside, 30 °C from 20 °C on
+    const xs = [-50, -10, 20, 50];
+    const ys = [70, 70, 30, 30];
+
+    it('interpolates between the points and stays at the outer ones', () => {
+        assert.equal(runtime.charCurve(-10, xs, ys), 70);
+        assert.equal(runtime.charCurve(20, xs, ys), 30);
+        assert.equal(runtime.charCurve(5, xs, ys), 50);
+        assert.ok(Math.abs(runtime.charCurve(10, xs, ys) - 43.333) < 0.001);
+        assert.equal(runtime.charCurve(-80, xs, ys), 70, 'before the first point its Y');
+        assert.equal(runtime.charCurve(99, xs, ys), 30, 'beyond the last point its Y');
+        // two points are enough: the outer ones set the limits
+        assert.equal(runtime.charCurve(-30, [-10, 20], [70, 30]), 70);
+        assert.equal(runtime.charCurve(5, [-10, 20], [70, 30]), 50);
+        assert.equal(runtime.charCurve(40, [-10, 20], [70, 30]), 30);
+    });
+
+    it('takes the points in the order of X', () => {
+        assert.equal(runtime.charCurve(5, [20, -10], [30, 70]), 50);
+        assert.deepEqual(runtime.curvePoints([20, -10, 5], [30, 70, 1]), [
+            { x: -10, y: 70 },
+            { x: 5, y: 1 },
+            { x: 20, y: 30 },
+        ]);
+    });
+
+    it('makes a step of two points with the same X', () => {
+        const stepXs = [0, 10, 10, 20];
+        const stepYs = [0, 0, 100, 100];
+        assert.equal(runtime.charCurve(9.9, stepXs, stepYs), 0);
+        assert.equal(runtime.charCurve(10, stepXs, stepYs), 100);
+        assert.equal(runtime.charCurve(15, stepXs, stepYs), 100);
+    });
+
+    it('ignores points that are no numbers and gives 0 without any', () => {
+        assert.equal(runtime.charCurve(5, [-10, NaN, 20], [70, 50, 30]), 50);
+        assert.equal(runtime.charCurve(5, [], []), 0);
+        assert.equal(runtime.charCurve(NaN, xs, ys), 0);
+        assert.equal(runtime.charCurve('5', xs, ys), 50, 'a number as text');
+    });
+
+    it('has a pair of inputs X and Y per point', () => {
+        const d = diagram();
+        const def = fb.getBlockDef('CHARCURVE');
+        const curve = d.add('CHARCURVE', 0, 0);
+        assert.equal(curve.params.inputs, 2);
+        assert.deepEqual(
+            fb.getInputs(curve, def).map(pin => `${pin.id}=${pin.default}`),
+            ['IN=0', 'X1=0', 'Y1=0', 'X2=10', 'Y2=10'],
+            'the points of a new block lie apart',
+        );
+        curve.params.inputs = 4;
+        assert.deepEqual(
+            fb.getInputs(curve, def).map(pin => pin.id),
+            ['IN', 'X1', 'Y1', 'X2', 'Y2', 'X3', 'Y3', 'X4', 'Y4'],
+        );
+        curve.params.inputs = 50;
+        assert.equal(fb.getInputCount(curve, def), 10, 'at most 10 points');
+    });
+
+    it('adds new points behind the last one, so the curve stays as it is', () => {
+        const def = fb.getBlockDef('CHARCURVE');
+        const curve = { id: 'b1', type: 'CHARCURVE', name: 'c', pos: [0, 0], params: { inputs: 2, X1: 20, Y1: 30, X2: -10, Y2: 70 } };
+        const more = fb.setInputCount(curve, def, 4);
+        assert.equal(more.params.inputs, 4);
+        assert.deepEqual(
+            [more.params.X3, more.params.Y3, more.params.X4, more.params.Y4],
+            [50, 30, 80, 30],
+            'beyond the point with the largest X, by the distance of the last two',
+        );
+        const values = block => {
+            const pins = fb.getInputs(block, def);
+            const of = prefix => pins.filter(pin => pin.id.startsWith(prefix)).map(pin => block.params[pin.id] ?? pin.default);
+            return [-30, 0, 15, 60, 100].map(x => runtime.charCurve(x, of('X'), of('Y')));
+        };
+        assert.deepEqual(values(more), values(curve));
+        assert.deepEqual(curve.params, { inputs: 2, X1: 20, Y1: 30, X2: -10, Y2: 70 }, 'the block itself is not changed');
+
+        // fewer points keep the values, more points bring them back
+        const fewer = fb.setInputCount(more, def, 2);
+        assert.equal(fb.setInputCount({ ...fewer, params: { ...fewer.params, X3: 33 } }, def, 3).params.X3, 33);
+
+        // a new block: the default points 0/0 and 10/10, the third one at 20/10
+        const fresh = fb.setInputCount({ ...curve, params: { inputs: 2 } }, def, 3);
+        assert.deepEqual([fresh.params.X3, fresh.params.Y3], [20, 10]);
+    });
+
+    it('runs a heating curve in a diagram, with a point from a state', async () => {
+        const d = diagram();
+        const outside = d.add('STATE_IN', 0, 0, { oid: 'x.0.outside', type: 'REAL' });
+        const warmest = d.add('STATE_IN', 0, 100, { oid: 'x.0.warmest', type: 'REAL' });
+        const curve = d.add('CHARCURVE', 200, 0, { inputs: 2, X1: -10, Y1: 70, X2: 20, Y2: 30 });
+        const out = d.add('STATE_OUT', 400, 0, { oid: 'x.0.flow' });
+        d.link(outside, 'Q', curve, 'IN');
+        d.link(warmest, 'Q', curve, 'X2');
+        d.link(curve, 'OUT', out, 'IN');
+        const { source, analysis } = fb.generateSource(d.graph);
+        assert.deepEqual(errors(analysis), []);
+        assert.ok(source.includes("fb.charCurve(S['b1.Q'], [-10, S['b2.Q']], [70, 30])"), source);
+
+        const last = writes => Object.fromEntries(writes.map(write => [write.id, write.val]));
+        const sandbox = runInSandbox(source, { 'x.0.outside': 5, 'x.0.warmest': 20 });
+        await wait(50);
+        assert.deepEqual(last(sandbox.writes), { 'x.0.flow': 50 });
+        sandbox.set('x.0.outside', -20);
+        await wait(50);
+        assert.deepEqual(last(sandbox.writes), { 'x.0.flow': 70 });
+        // the warm end of the curve moves: 30 °C only from 30 °C outside on
+        sandbox.set('x.0.outside', 10);
+        sandbox.set('x.0.warmest', 30);
+        await wait(50);
+        assert.deepEqual(last(sandbox.writes), { 'x.0.flow': 50 });
+        sandbox.stop();
+    });
+});
+
 describe('FBD: LOG', () => {
     it('writes a line on a rising edge, or when the value changes', () => {
         const edge = runtime.LOG();
