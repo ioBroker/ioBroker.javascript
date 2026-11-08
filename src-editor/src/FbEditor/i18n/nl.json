@@ -196,6 +196,7 @@
     "fbd_key_step": "Eén blok verder (online)",
     "fbd_key_back": "Terug uit een instantie",
     "fbd_doc_double_click": "Dubbelklikken op een instantie van een eigen blok toont die van binnen; op een verbindingsmarkering springt het naar het andere uiteinde.",
+    "fbd_doc_reconnect": "Een verbinding kan bij haar ingang worden vastgepakt en naar een andere ingang worden gesleept; in het lege vlak losgelaten wordt ze verwijderd.",
     "fbd_doc_stateful": "Onthoudt zijn toestand van cyclus tot cyclus",
     "fbd_doc_time": "Hangt af van de tijd - een diagram ermee draait cyclisch",
     "fbd_instance": "Instantie",

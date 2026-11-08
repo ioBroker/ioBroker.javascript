@@ -196,6 +196,7 @@
     "fbd_key_step": "Un bloc plus loin (en ligne)",
     "fbd_key_back": "Sortir d'une instance",
     "fbd_doc_double_click": "Un double clic sur une instance d'un bloc personnel la montre de l'intérieur ; sur une marque de liaison, il saute à l'autre extrémité.",
+    "fbd_doc_reconnect": "Une liaison peut être saisie à son entrée et glissée vers une autre entrée ; lâchée dans le vide, elle est supprimée.",
     "fbd_doc_stateful": "Garde son état d'un cycle à l'autre",
     "fbd_doc_time": "Dépend du temps - un schéma qui le contient tourne cycliquement",
     "fbd_instance": "Instance",

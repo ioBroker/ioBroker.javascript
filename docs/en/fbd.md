@@ -39,6 +39,10 @@ Editing works as usual: `Ctrl+Z` / `Ctrl+Y` (or the buttons of the toolbar) undo
 and `Ctrl+V` copy, cut and paste the selected blocks with the links between them - also into another diagram. Pasted
 blocks get new IDs, and new names where the old ones are taken.
 
+**Moving a link**: a link can be taken at its input end and dragged to another input - it keeps its output, its
+connection mark and its label, the same checks apply as for a new link (a CONST takes the type of the new input). A
+link dragged into empty space is deleted. Either is one step for `Ctrl+Z`.
+
 The bar above the canvas shows the diagram (and the path into an instance) and has the tools:
 
 - the zoom: smaller, the zoom (a click: 100 %), larger

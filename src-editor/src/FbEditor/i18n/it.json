@@ -196,6 +196,7 @@
     "fbd_key_step": "Un blocco avanti (online)",
     "fbd_key_back": "Esci da un'istanza",
     "fbd_doc_double_click": "Un doppio clic su un'istanza di un blocco proprio la mostra dall'interno; su un marcatore di collegamento salta all'altra estremità.",
+    "fbd_doc_reconnect": "Un collegamento si può prendere al suo ingresso e trascinare su un altro ingresso; trascinato nel vuoto, viene eliminato.",
     "fbd_doc_stateful": "Ricorda il suo stato da un ciclo all'altro",
     "fbd_doc_time": "Dipende dal tempo - uno schema che lo contiene gira ciclicamente",
     "fbd_instance": "Istanza",

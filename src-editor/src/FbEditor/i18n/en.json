@@ -196,6 +196,7 @@
     "fbd_key_step": "One block on (online)",
     "fbd_key_back": "Back out of an instance",
     "fbd_doc_double_click": "A double click on an instance of an own block shows it from inside; on a connection mark it jumps to the other end.",
+    "fbd_doc_reconnect": "A link can be taken at its input and dragged to another input; dragged into empty space, it is deleted.",
     "fbd_doc_stateful": "Remembers its state from one cycle to the next",
     "fbd_doc_time": "Depends on time - a diagram with it runs cyclically",
     "fbd_instance": "Instance",

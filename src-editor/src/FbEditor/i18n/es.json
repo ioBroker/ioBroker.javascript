@@ -196,6 +196,7 @@
     "fbd_key_step": "Un bloque más (en línea)",
     "fbd_key_back": "Salir de una instancia",
     "fbd_doc_double_click": "Un doble clic en una instancia de un bloque propio la muestra por dentro; en una marca de conexión salta al otro extremo.",
+    "fbd_doc_reconnect": "Una conexión se puede tomar por su entrada y arrastrar a otra entrada; arrastrada al vacío, se elimina.",
     "fbd_doc_stateful": "Recuerda su estado de un ciclo al siguiente",
     "fbd_doc_time": "Depende del tiempo; un diagrama con él se ejecuta cíclicamente",
     "fbd_instance": "Instancia",

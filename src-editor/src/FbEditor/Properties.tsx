@@ -1021,6 +1021,7 @@ function Documentation(props: PropertiesProps): React.JSX.Element {
                     </Row>
                 ))}
                 <div className="fb-row-hint">{I18n.t('fbd_doc_double_click')}</div>
+                <div className="fb-row-hint">{I18n.t('fbd_doc_reconnect')}</div>
             </Section>
         );
     }
