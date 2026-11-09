@@ -379,11 +379,15 @@ export class Pt1Block {
  *   puts out YMAN instead. Meanwhile the integral part follows, so Y goes on from there without a
  *   jump when the controller takes over again - without an integral part (TN 0) it jumps to the P part.
  *
+ * - RUN is true while the controller works, that is, none of MAN, RST and HOLD is true - also in the
+ *   dead band, where Y stays. It came with runtime 1.8; code of older versions does not read it.
+ *
  * Priority: MAN, then RST, then HOLD, then the dead band. The arguments after `firstScan` came with
  * runtime 1.6; code of older versions leaves them out.
  */
 export class PidBlock {
     Y = 0;
+    RUN = false;
     private integral = 0;
     private derivative = 0;
     private lastPV = 0;
@@ -408,6 +412,7 @@ export class PidBlock {
         const high = Math.max(YMIN, YMAX);
         const error = INV ? PV - SP : SP - PV;
         const proportional = KP * error;
+        this.RUN = !MAN && !RST && !HOLD;
 
         if (MAN || (!RST && (HOLD || (DB > 0 && Math.abs(SP - PV) <= DB)))) {
             // Y is given or held; the integral part follows it for a smooth take-over

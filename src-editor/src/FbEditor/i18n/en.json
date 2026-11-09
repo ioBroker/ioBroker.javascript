@@ -112,7 +112,7 @@
     "fbd_desc_HYST": "Two-point switch: Q becomes true when IN rises above HIGH and false when it falls below LOW",
     "fbd_desc_RAMP": "Ramp: OUT follows IN, by at most UP per second upwards and DOWN per second downwards (0: no limit)",
     "fbd_desc_PT1": "Low pass of the first order (PT1): OUT follows IN with the time constant T",
-    "fbd_desc_PID": "PID controller: set point SP, process value PV, output Y between YMIN and YMAX; TN or TV 0 leaves that part out. HOLD and the dead band DB keep Y, MAN puts out YMAN, INV reverses the direction (cooling)",
+    "fbd_desc_PID": "PID controller: set point SP, process value PV, output Y between YMIN and YMAX; TN or TV 0 leaves that part out. HOLD and the dead band DB keep Y, MAN puts out YMAN, INV reverses the direction (cooling). RUN is true while none of MAN, RST and HOLD is true",
     "fbd_desc_CHARCURVE": "Characteristic curve, e.g. a heating curve: OUT lies on the straight lines through the points X1/Y1 ... Xn/Yn; before the first and beyond the last point it stays at their Y",
     "fbd_curve_no_points": "No point with numbers",
     "fbd_curve_connected": "connected - the value comes when the diagram runs",
