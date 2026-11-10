@@ -2013,4 +2013,132 @@ describe('FBD: layout and connection marks', () => {
         });
         assert.deepEqual(odd.links[0], { id: 'l2', from: ['a', 'Q'], to: ['b', 'IN'] });
     });
+
+    /** Where each block is after the layout - the pinned ones where they were */
+    function arranged(graph, positions) {
+        const at = {};
+        for (const block of graph.blocks) {
+            at[block.id] = positions[block.id] || block.pos;
+        }
+        return at;
+    }
+
+    /** No two blocks on each other, the gap between them included */
+    function assertApart(graph, at) {
+        const boxes = graph.blocks.map(block => {
+            const def = fb.getBlockDef(block.type);
+            const rows = Math.max(fb.getInputs(block, def).length, fb.getOutputs(block, def).length, 1);
+            const [x, y] = at[block.id];
+            return {
+                id: block.id,
+                x,
+                y,
+                right: x + 160,
+                bottom: y + 22 + (def.params?.length ? 18 : 0) + rows * 20 + 6,
+            };
+        });
+        for (let i = 0; i < boxes.length; i++) {
+            for (let j = i + 1; j < boxes.length; j++) {
+                const a = boxes[i];
+                const b = boxes[j];
+                const side = a.x < b.right && b.x < a.right;
+                const above = a.y < b.bottom && b.y < a.bottom;
+                assert.ok(!(side && above), `${a.id} and ${b.id} lie on each other`);
+            }
+        }
+    }
+
+    it('leaves pinned blocks where they are and puts the others level with them', () => {
+        const d = diagram();
+        const input = d.add('STATE_IN', 0, 0, { oid: 'x.0.in', type: 'BOOL' });
+        const not = d.add('NOT', 500, 300);
+        const output = d.add('STATE_OUT', 0, 600, { oid: 'x.0.out' });
+        d.link(input, 'Q', not, 'IN');
+        d.link(not, 'OUT', output, 'IN');
+        not.pinned = true;
+
+        const positions = fb.layoutGraph(d.graph);
+        assert.deepEqual(
+            Object.keys(positions).sort(),
+            [input.id, output.id].sort(),
+            'no position for the pinned block',
+        );
+        const at = arranged(d.graph, positions);
+        // the columns go from the pinned one: 160 wide and 100 between
+        assert.equal(at[input.id][0], 240);
+        assert.equal(at[output.id][0], 760);
+        assert.equal(pinY(d.graph, at, input.id, 'Q', 'out'), pinY(d.graph, at, not.id, 'IN', 'in'));
+        assert.equal(pinY(d.graph, at, not.id, 'OUT', 'out'), pinY(d.graph, at, output.id, 'IN', 'in'));
+    });
+
+    it('keeps the other blocks off a pinned one', () => {
+        const d = diagram();
+        const input = d.add('STATE_IN', 0, 0, { oid: 'x.0.in', type: 'BOOL' });
+        const not1 = d.add('NOT', 260, 0);
+        const not2 = d.add('NOT', 600, 400);
+        const out1 = d.add('STATE_OUT', 520, 0, { oid: 'x.0.out1' });
+        const out2 = d.add('STATE_OUT', 900, 400, { oid: 'x.0.out2' });
+        d.link(input, 'Q', not1, 'IN');
+        d.link(input, 'Q', not2, 'IN');
+        d.link(not1, 'OUT', out1, 'IN');
+        d.link(not2, 'OUT', out2, 'IN');
+        input.pinned = true;
+        not1.pinned = true;
+
+        const at = arranged(d.graph, fb.layoutGraph(d.graph));
+        assert.equal(at[not2.id][0], 260, 'in the column of the pinned block');
+        assert.deepEqual(at[not1.id], [260, 0]);
+        assertApart(d.graph, at);
+    });
+
+    it('puts a block between two pinned columns without room off both of them', () => {
+        const d = diagram();
+        const a = d.add('STATE_IN', 0, 0, { oid: 'x.0.a', type: 'BOOL' });
+        const b = d.add('NOT', 260, 0);
+        const c = d.add('STATE_OUT', 520, 0, { oid: 'x.0.c' });
+        // added afterwards: the pinned output is one column further to the right now
+        const added = d.add('NOT', 300, 300);
+        const other = d.add('STATE_OUT', 0, 300, { oid: 'x.0.other' });
+        d.link(a, 'Q', b, 'IN');
+        d.link(b, 'OUT', added, 'IN');
+        d.link(added, 'OUT', c, 'IN');
+        d.link(added, 'OUT', other, 'IN');
+        for (const block of [a, b, c]) {
+            block.pinned = true;
+        }
+
+        const at = arranged(d.graph, fb.layoutGraph(d.graph));
+        assert.deepEqual(
+            [at[a.id], at[b.id], at[c.id]],
+            [
+                [0, 0],
+                [260, 0],
+                [520, 0],
+            ],
+        );
+        assertApart(d.graph, at);
+    });
+
+    it('moves nothing when all blocks are pinned', () => {
+        const d = diagram();
+        const input = d.add('STATE_IN', 300, 300, { oid: 'x.0.in', type: 'BOOL' });
+        const output = d.add('STATE_OUT', 0, 0, { oid: 'x.0.out' });
+        d.link(input, 'Q', output, 'IN');
+        input.pinned = true;
+        output.pinned = true;
+        assert.deepEqual(fb.layoutGraph(d.graph), {});
+    });
+
+    it('keeps the pin of a block in the diagram', () => {
+        const d = diagram();
+        const input = d.add('STATE_IN', 0, 0, { oid: 'x.0.in', type: 'BOOL' });
+        const output = d.add('STATE_OUT', 300, 0, { oid: 'x.0.out' });
+        d.link(input, 'Q', output, 'IN');
+        input.pinned = true;
+        const { source, analysis } = fb.generateSource(d.graph);
+        assert.deepEqual(errors(analysis), []);
+        const parsed = fb.parseGraph(source);
+        assert.equal(parsed.blocks.find(block => block.id === input.id).pinned, true);
+        assert.equal(parsed.blocks.find(block => block.id === output.id).pinned, undefined);
+    });
 });

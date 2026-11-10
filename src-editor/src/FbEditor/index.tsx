@@ -1306,11 +1306,36 @@ function FbCanvas(
         [getNode, getNodes, getEdges, setNodes],
     );
 
+    /** Pins a block for the automatic layout or lets it go - with it all selected blocks, if it is one of them */
+    const pinBlock = useCallback(
+        (blockId: string, pinned: boolean) => {
+            const all = !!getNode(blockId)?.selected;
+            setNodes(current =>
+                current.map(node => {
+                    if (
+                        node.type !== 'fbBlock' ||
+                        (node.id !== blockId && !(all && node.selected)) ||
+                        !!node.data.block.pinned === pinned
+                    ) {
+                        return node;
+                    }
+                    const block: FbBlock = { ...node.data.block, pinned };
+                    if (!pinned) {
+                        delete block.pinned;
+                    }
+                    return { ...node, data: { block } };
+                }),
+            );
+        },
+        [getNode, setNodes],
+    );
+
     const actions = useMemo(
         (): BlockActions => ({
             change: onBlockChange,
             select: selectBlock,
             duplicate: duplicateBlock,
+            pin: pinBlock,
             remove: blockId => void deleteElements({ nodes: [{ id: blockId }] }),
             openInstance: blockId => {
                 const node = getNode(blockId);
@@ -1319,7 +1344,7 @@ function FbCanvas(
                 }
             },
         }),
-        [onBlockChange, selectBlock, duplicateBlock, deleteElements, getNode, openInstance],
+        [onBlockChange, selectBlock, duplicateBlock, pinBlock, deleteElements, getNode, openInstance],
     );
 
     /** The states of the diagram, for the palette */

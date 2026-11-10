@@ -533,6 +533,28 @@
     color: var(--fb-text);
 }
 
+/*
+ * the pin: always there on a pinned block, on the others only under the mouse or when selected -
+ * while it cannot be seen, it takes no clicks (a tap on a touch screen would pin the block unseen)
+ */
+.fb-editor .fb-block-pin {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+}
+
+.fb-editor .fb-block:hover .fb-block-pin,
+.fb-editor .fb-block.fb-selected .fb-block-pin,
+.fb-editor .fb-block-pin:focus-visible,
+.fb-editor .fb-block-pin.fb-pinned {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.fb-editor .fb-block-pin.fb-pinned {
+    color: var(--fb-accent);
+}
+
 .fb-editor .fb-block-title {
     display: flex;
     align-items: center;

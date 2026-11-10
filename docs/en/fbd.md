@@ -28,7 +28,8 @@ Add a new script and choose **Function block diagram**. The editor has three par
 A block shows what matters right in it: the state it reads or writes, the value of a `CONST`, and the values of the
 inputs that are not connected - these can be changed right there: a click switches a BOOL, anything else is typed in
 and taken with `Enter`. In the head of a block, the gear shows its properties, the menu `⋮` duplicates or deletes it
-(online also: breakpoint; for an own block: inside view).
+(online also: breakpoint; for an own block: inside view). The pin left of the gear (under the mouse or on the
+selected block) pins it, see **Arrange automatically**.
 
 Problems are listed at the bottom of the canvas; a click selects the block. A diagram with errors can be saved, but
 its script does not run - it logs the errors instead.
@@ -44,6 +45,11 @@ The bar above the canvas shows the diagram (and the path into an instance) and h
 - the zoom: smaller, the zoom (a click: 100 %), larger
 - **Arrange automatically** puts the blocks in columns along the data flow: inputs on the left, outputs on the
   right, each block level with the blocks it is linked to. Comments stay where they are. `Ctrl+Z` takes it back.
+  **Pinned** blocks stay where they are: their column goes where they are, and the other blocks are level with them,
+  but never on them. So a diagram can be arranged once, made readable by hand and pinned - blocks added later are
+  then arranged around it. A block is pinned with the pin in its head, in the menu `⋮` or in its properties; with
+  several blocks selected, the pin pins or unpins all of them. A pinned block can still be moved by hand, and copies
+  are not pinned.
 - **Find in the diagram** (`Ctrl+F`) finds blocks by instance name, type, state ID or other parameter, comments by
   their text. `Enter` goes to the next match, `Shift+Enter` to the one before, `Esc` closes the search.
 - **Grid** on or off (with it, blocks snap to it), and links as curves or at right angles as in CFC - both are kept
