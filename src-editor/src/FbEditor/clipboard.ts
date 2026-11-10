@@ -87,7 +87,10 @@ export function pasteNodes(
             name = createId(`${name.replace(/_\d+$/, '')}_`, usedNames);
         }
         usedNames.add(name);
-        return { ...block, id, name, pos: [block.pos[0] + offset, block.pos[1] + offset] as [number, number] };
+        const pasted: FbBlock = { ...block, id, name, pos: [block.pos[0] + offset, block.pos[1] + offset] };
+        // a copy is not pinned: it lies beside or on the original, where the layout has to move it away
+        delete pasted.pinned;
+        return pasted;
     });
 
     const comments = copy.comments.map(comment => {

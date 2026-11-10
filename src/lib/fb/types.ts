@@ -57,6 +57,8 @@ export interface FbBlock {
     /** A note of the user on this block */
     comment?: string;
     pos: [number, number];
+    /** Stays where it is when the diagram is arranged automatically - it can still be moved by hand */
+    pinned?: boolean;
     /** Position in the execution order, written back by the generator */
     order?: number;
     /** Parameters, and the values of inputs that are not connected */

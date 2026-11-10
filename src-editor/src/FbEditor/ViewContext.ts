@@ -39,6 +39,8 @@ export interface BlockActions {
     select: (blockId: string) => void;
     duplicate: (blockId: string) => void;
     remove: (blockId: string) => void;
+    /** Pins a block for the automatic layout, or lets it go - all selected blocks, if it is one of them */
+    pin: (blockId: string, pinned: boolean) => void;
     /** Shows an instance of a user block from inside */
     openInstance: (blockId: string) => void;
 }

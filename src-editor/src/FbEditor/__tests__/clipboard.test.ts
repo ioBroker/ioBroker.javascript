@@ -36,6 +36,20 @@ describe('FbEditor: copy and paste', () => {
         expect(getClipboard()).toEqual(copy);
     });
 
+    it('pastes a pinned block as a block that is not pinned', () => {
+        const { nodes, edges } = sample();
+        const pinned = nodes.map(node =>
+            node.type === 'fbBlock' && node.id === 'b2'
+                ? { ...node, data: { block: { ...node.data.block, pinned: true } } }
+                : node,
+        );
+        const copy = copySelection(select(pinned, ['b2']), edges)!;
+        expect(copy.blocks[0].pinned).toBe(true);
+        const pasted = pasteNodes(copy, pinned, edges, 40);
+        const block = pasted.nodes[0].type === 'fbBlock' ? pasted.nodes[0].data.block : null;
+        expect(block).not.toHaveProperty('pinned');
+    });
+
     it('copies nothing without a selection', () => {
         const { nodes, edges } = sample();
         expect(copySelection(nodes, edges)).toBeNull();

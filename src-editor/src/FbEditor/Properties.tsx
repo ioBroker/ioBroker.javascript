@@ -760,6 +760,22 @@ function BlockProperties(
                         }}
                     />
                 </Row>
+                <Row
+                    label={I18n.t('fbd_pinned')}
+                    hint={I18n.t('fbd_pin_hint')}
+                >
+                    <Switch
+                        size="small"
+                        checked={!!block.pinned}
+                        onChange={event => {
+                            const next: FbBlock = { ...block, pinned: true };
+                            if (!event.target.checked) {
+                                delete next.pinned;
+                            }
+                            onBlockChange(next);
+                        }}
+                    />
+                </Row>
                 {user ? (
                     <Box className="fb-row-actions">
                         {newest && newest.user.version > user.version ? (
@@ -1020,6 +1036,7 @@ function Documentation(props: PropertiesProps): React.JSX.Element {
                         <Typography variant="body2">{I18n.t(text)}</Typography>
                     </Row>
                 ))}
+                <div className="fb-row-hint">{I18n.t('fbd_doc_pinned')}</div>
                 <div className="fb-row-hint">{I18n.t('fbd_doc_double_click')}</div>
                 <div className="fb-row-hint">{I18n.t('fbd_doc_reconnect')}</div>
             </Section>

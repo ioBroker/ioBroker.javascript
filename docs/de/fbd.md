@@ -31,7 +31,8 @@ Ein Baustein zeigt das Wichtige direkt in sich: den Datenpunkt, den er liest ode
 und die Werte der Eingänge, die nicht verbunden sind - sie lassen sich gleich dort ändern: Ein Klick schaltet ein
 BOOL um, alles andere wird eingetippt und mit `Enter` übernommen. Im Kopf eines Bausteins zeigt das Zahnrad seine
 Eigenschaften, das Menü `⋮` dupliziert oder löscht ihn (online auch: Haltepunkt; bei einem eigenen Baustein:
-Innenansicht).
+Innenansicht). Die Pin-Nadel links vom Zahnrad (unter der Maus oder am ausgewählten Baustein) fixiert ihn, siehe
+**Automatisch anordnen**.
 
 Probleme stehen unten auf der Fläche; ein Klick wählt den Baustein aus. Ein Plan mit Fehlern lässt sich speichern,
 sein Skript läuft aber nicht, sondern meldet die Fehler im Protokoll.
@@ -54,7 +55,12 @@ Die Leiste über der Fläche zeigt den Plan (und den Pfad in eine Instanz hinein
 - den Zoom: kleiner, der Zoom (ein Klick: 100 %), größer
 - **Automatisch anordnen** stellt die Bausteine in Spalten entlang des Datenflusses auf: Eingänge links, Ausgänge
   rechts, jeder Baustein auf der Höhe der Bausteine, mit denen er verbunden ist. Kommentare bleiben, wo sie sind.
-  `Strg+Z` nimmt es zurück.
+  `Strg+Z` nimmt es zurück. **Fixierte** Bausteine bleiben, wo sie sind: Ihre Spalte richtet sich nach ihnen, die
+  anderen Bausteine stellen sich auf ihre Höhe, aber nie auf sie. So lässt sich ein Plan einmal anordnen, von Hand
+  lesbar zurechtrücken und fixieren; später hinzugekommene Bausteine kommen dann um die fixierten herum. Fixiert wird
+  mit der Pin-Nadel im Kopf des Bausteins, im Menü `⋮` oder in den Eigenschaften; sind mehrere Bausteine ausgewählt,
+  fixiert oder löst die Nadel alle. Von Hand lässt sich ein fixierter Baustein weiter verschieben, und Kopien sind
+  nicht fixiert.
 - **Im Plan suchen** (`Strg+F`) findet Bausteine nach Instanzname, Typ, Datenpunkt oder anderem Parameter, Kommentare
   nach ihrem Text. `Enter` geht zum nächsten Treffer, `Umschalt+Enter` zum vorigen, `Esc` schließt die Suche.
 - **Raster** an oder aus (mit Raster rasten die Bausteine ein), und Verbindungen als Kurven oder rechtwinklig wie in
