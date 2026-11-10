@@ -799,7 +799,7 @@
     outline-offset: 1px;
 }
 
-/* the value of an analog link, in the middle of it */
+/* the value of an analog link, at the input it leads to */
 .fb-editor .fb-live-label {
     font-family: monospace;
     font-size: 10px;

@@ -69,7 +69,7 @@ springt zum anderen Ende. Nur die Darstellung ändert sich, die Verbindung wirkt
 ## Onlineansicht
 
 **Online** (rechts in der Leiste über der Fläche) zeigt die Werte des laufenden Plans: an jedem Ausgang,
-BOOL-Leitungen grün (`TRUE`) oder grau (`FALSE`), andere Leitungen mit ihrem Wert in der Mitte. Neben oder unter dem
+BOOL-Leitungen grün (`TRUE`) oder grau (`FALSE`), andere Leitungen mit ihrem Wert am Eingang, zu dem sie führen. Neben oder unter dem
 Knopf stehen:
 
 - der Zykluszähler - er bleibt stehen, wenn der Plan nicht mehr rechnet
