@@ -6,6 +6,8 @@ import {
     ContentCopy as IconDuplicate,
     Delete as IconDelete,
     MoreVert as IconMore,
+    PushPin as IconPinned,
+    PushPinOutlined as IconPin,
     Settings as IconSettings,
     StickyNote2 as IconNote,
     Adjust as IconBreakpoint,
@@ -321,6 +323,9 @@ function BlockNode({ id, data, selected }: NodeProps<BlockNodeType>): React.JSX.
         action();
     };
 
+    const pinned = !!block.pinned;
+    const pinTitle = `${I18n.t(pinned ? 'fbd_unpin' : 'fbd_pin')}\n${I18n.t('fbd_pin_hint')}`;
+
     return (
         <div
             className={`fb-block${selected ? ' fb-selected' : ''}${hasError ? ' fb-error' : ''}${next ? ' fb-next' : ''}`}
@@ -349,6 +354,17 @@ function BlockNode({ id, data, selected }: NodeProps<BlockNodeType>): React.JSX.
                 {block.comment ? <IconNote className="fb-block-note" /> : null}
                 {actions ? (
                     <>
+                        <button
+                            type="button"
+                            className={`fb-block-action fb-block-pin nodrag${pinned ? ' fb-pinned' : ''}`}
+                            title={pinTitle}
+                            onClick={event => {
+                                event.stopPropagation();
+                                actions.pin(id, !pinned);
+                            }}
+                        >
+                            {pinned ? <IconPinned /> : <IconPin />}
+                        </button>
                         <button
                             type="button"
                             className="fb-block-action nodrag"
@@ -498,6 +514,15 @@ function BlockNode({ id, data, selected }: NodeProps<BlockNodeType>): React.JSX.
                             </ListItemText>
                         </MenuItem>
                     ) : null}
+                    <MenuItem
+                        onClick={menuAction(() => actions.pin(id, !pinned))}
+                        title={I18n.t('fbd_pin_hint')}
+                    >
+                        <ListItemIcon>
+                            {pinned ? <IconPin fontSize="small" /> : <IconPinned fontSize="small" />}
+                        </ListItemIcon>
+                        <ListItemText>{I18n.t(pinned ? 'fbd_unpin' : 'fbd_pin')}</ListItemText>
+                    </MenuItem>
                     <MenuItem onClick={menuAction(() => actions.duplicate(id))}>
                         <ListItemIcon>
                             <IconDuplicate fontSize="small" />

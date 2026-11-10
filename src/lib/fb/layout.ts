@@ -6,6 +6,9 @@
  * A layered layout in the manner of Sugiyama, kept small: columns by the longest path, the order in a
  * column by the positions of the neighbours, and the positions by the mean of what the blocks of a
  * column want, without overlaps. Links that lead back (feedback) do not count.
+ *
+ * Pinned blocks (`block.pinned`) stay where they are. Their column goes where they are, and the other
+ * blocks are as level with them as with any other block, but never on them.
  */
 import { analyzeGraph } from './analyze';
 import { getInputs, getOutputs } from './graph';
@@ -40,6 +43,8 @@ const GAP_Y = 30;
 const GRID = 10;
 /** Rounds from one side to the other and back */
 const PASSES = 4;
+/** Blocks that are closer side by side than this count as one above the other */
+const MARGIN_X = 20;
 
 interface Item {
     id: string;
@@ -79,11 +84,45 @@ function clusterHeight(cluster: Cluster): number {
 }
 
 /**
- * New positions for the blocks of a diagram, by ID. The comments stay where they are; the top left
- * corner of the blocks stays where it was.
+ * The left edge of each column with blocks: side by side, each as wide as its widest block. A column
+ * with pinned blocks is where the leftmost of them is, and the columns without go on either side of it.
+ */
+function placeColumns(columns: string[][], items: Map<string, Item>, pinned: Set<string>, left: number): number[] {
+    const used = columns.map((_ids, i) => i).filter(i => columns[i].length);
+    const step = (i: number): number =>
+        Math.round((Math.max(...columns[i].map(id => items.get(id)!.width)) + GAP_X) / GRID) * GRID;
+    const anchor = (i: number): number | undefined => {
+        const xs = columns[i].filter(id => pinned.has(id)).map(id => items.get(id)!.block.pos[0]);
+        return xs.length ? Math.min(...xs) : undefined;
+    };
+    const x: number[] = [];
+    const first = used.findIndex(i => anchor(i) !== undefined);
+    if (first === -1) {
+        let next = Math.round(left / GRID) * GRID;
+        for (const i of used) {
+            x[i] = next;
+            next += step(i);
+        }
+        return x;
+    }
+    x[used[first]] = anchor(used[first])!;
+    for (let k = first - 1; k >= 0; k--) {
+        x[used[k]] = x[used[k + 1]] - step(used[k]);
+    }
+    for (let k = first + 1; k < used.length; k++) {
+        x[used[k]] = anchor(used[k]) ?? x[used[k - 1]] + step(used[k - 1]);
+    }
+    return x;
+}
+
+/**
+ * New positions for the blocks of a diagram, by ID - not for pinned blocks, which stay where they are.
+ * The comments stay where they are too; without pinned blocks the top left corner of the blocks stays
+ * where it was.
  */
 export function layoutGraph(graph: FbGraph, options: FbLayoutOptions = {}): Record<string, [number, number]> {
-    if (!graph.blocks.length) {
+    const pinned = new Set(graph.blocks.filter(block => block.pinned).map(block => block.id));
+    if (pinned.size === graph.blocks.length) {
         return {};
     }
     const analysis = analyzeGraph(graph);
@@ -164,21 +203,92 @@ export function layoutGraph(graph: FbGraph, options: FbLayoutOptions = {}): Reco
         .sort((a, b) => a.pos[1] - b.pos[1] || a.pos[0] - b.pos[0])
         .forEach(block => columns[column.get(block.id)!].push(block.id));
 
+    const left = Math.min(...graph.blocks.map(block => block.pos[0]));
+    const top = Math.min(...graph.blocks.map(block => block.pos[1]));
+    const columnX = placeColumns(columns, items, pinned, left);
+
+    // Without pinned blocks the layout starts at 0 and goes to the top of the blocks at the end. With
+    // them it works where the blocks are, as the pinned ones stay there - and the others start where
+    // they are, so blocks added beside the pinned ones stay near where they were put.
+    const anchored = pinned.size > 0;
     const y = new Map<string, number>();
     for (const ids of columns) {
-        let top = 0;
+        let next = 0;
         for (const id of ids) {
-            y.set(id, top);
-            top += items.get(id)!.height + GAP_Y;
+            if (anchored) {
+                y.set(id, items.get(id)!.block.pos[1]);
+            } else {
+                y.set(id, next);
+                next += items.get(id)!.height + GAP_Y;
+            }
         }
     }
 
+    /** From the left to the right edge of a block */
+    const spanX = (id: string): [number, number] => {
+        const item = items.get(id)!;
+        const x = pinned.has(id) ? item.block.pos[0] : columnX[column.get(id)!];
+        return [x, x + item.width];
+    };
+    /** With the gap between them */
+    const overlaps = (at: number, height: number, span: [number, number]): boolean =>
+        at < span[1] + GAP_Y && span[0] < at + height + GAP_Y;
+
+    /**
+     * Moves the blocks of a column, from the top down, off the blocks they would lie on: the pinned
+     * ones, and those of other columns that are this close side by side (where pinned blocks leave no
+     * room between two columns). A block goes above such a block if it fits there and is nearer to where
+     * it wanted to be, else below - where new parts of a diagram usually go.
+     */
+    const avoid = (order: string[]): void => {
+        const own = new Set(order);
+        let free = -Infinity;
+        for (const id of order) {
+            const height = items.get(id)!.height;
+            const [x1, x2] = spanX(id);
+            const blockers: [number, number][] = [];
+            for (const other of items.values()) {
+                if (other.id === id || own.has(other.id)) {
+                    continue;
+                }
+                const [o1, o2] = spanX(other.id);
+                if (o1 < x2 + MARGIN_X && x1 < o2 + MARGIN_X) {
+                    blockers.push([y.get(other.id)!, y.get(other.id)! + other.height]);
+                }
+            }
+            blockers.sort((a, b) => a[0] - b[0]);
+            const wanted = y.get(id)!;
+            let at = Math.max(wanted, free);
+            for (;;) {
+                const hit = blockers.find(span => overlaps(at, height, span));
+                if (!hit) {
+                    break;
+                }
+                const above = hit[0] - GAP_Y - height;
+                const below = hit[1] + GAP_Y;
+                if (
+                    above >= free &&
+                    Math.abs(above - wanted) < Math.abs(below - wanted) &&
+                    !blockers.some(span => overlaps(above, height, span))
+                ) {
+                    at = above;
+                    break;
+                }
+                at = below;
+            }
+            y.set(id, at);
+            free = at + height + GAP_Y;
+        }
+    };
+
     /**
      * Places the blocks of a column where they want to be, without overlaps: blocks that would
-     * overlap form a group, which sits at the mean of what its blocks want.
+     * overlap form a group, which sits at the mean of what its blocks want. Pinned blocks stay.
      */
     const place = (ids: string[], want: (id: string) => number | null): void => {
-        const wishes = ids
+        const movable = anchored ? ids.filter(id => !pinned.has(id)) : ids;
+        const fixed = anchored ? ids.filter(id => pinned.has(id)) : [];
+        const wishes = movable
             .map((id, i) => ({ id, i, want: want(id) ?? y.get(id)! }))
             .sort((a, b) => a.want - b.want || a.i - b.i);
         const clusters: Cluster[] = [];
@@ -204,15 +314,20 @@ export function layoutGraph(graph: FbGraph, options: FbLayoutOptions = {}): Reco
                 clusters.pop();
             }
         }
-        ids.length = 0;
+        const order: string[] = [];
         for (const cluster of clusters) {
-            let top = cluster.top;
+            let next = cluster.top;
             cluster.ids.forEach((id, i) => {
-                y.set(id, top);
-                top += cluster.heights[i] + GAP_Y;
-                ids.push(id);
+                y.set(id, next);
+                next += cluster.heights[i] + GAP_Y;
+                order.push(id);
             });
         }
+        if (anchored) {
+            avoid(order);
+        }
+        ids.length = 0;
+        ids.push(...order, ...fixed);
     };
 
     const mean = (values: number[]): number | null =>
@@ -224,6 +339,10 @@ export function layoutGraph(graph: FbGraph, options: FbLayoutOptions = {}): Reco
     const fromRight = (id: string): number | null =>
         mean((outgoing.get(id) || []).map(link => y.get(link.to[0])! + inputY(link) - outputY(link)));
 
+    if (anchored) {
+        // off the pinned blocks from the start - a diagram of one column has no rounds
+        columns.forEach(ids => place(ids, () => null));
+    }
     for (let pass = 0; pass < PASSES; pass++) {
         for (let i = 1; i < columns.length; i++) {
             place(columns[i], fromLeft);
@@ -237,21 +356,15 @@ export function layoutGraph(graph: FbGraph, options: FbLayoutOptions = {}): Reco
         place(columns[i], fromLeft);
     }
 
-    // the columns side by side, each as wide as its widest block
-    const left = Math.min(...graph.blocks.map(block => block.pos[0]));
-    const top = Math.min(...graph.blocks.map(block => block.pos[1]));
     const minY = Math.min(...y.values());
     const positions: Record<string, [number, number]> = {};
-    let x = Math.round(left / GRID) * GRID;
-    for (const ids of columns) {
-        if (!ids.length) {
-            continue;
-        }
+    columns.forEach((ids, i) => {
         for (const id of ids) {
-            // not on the grid vertically: a link between pins at different heights would get a kink
-            positions[id] = [x, Math.round(top + y.get(id)! - minY)];
+            if (!pinned.has(id)) {
+                // not on the grid vertically: a link between pins at different heights would get a kink
+                positions[id] = [columnX[i], Math.round(anchored ? y.get(id)! : top + y.get(id)! - minY)];
+            }
         }
-        x += Math.round((Math.max(...ids.map(id => items.get(id)!.width)) + GAP_X) / GRID) * GRID;
-    }
+    });
     return positions;
 }

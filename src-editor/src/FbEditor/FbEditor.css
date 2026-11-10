@@ -533,6 +533,23 @@
     color: var(--fb-text);
 }
 
+/* the pin: always there on a pinned block, on the others only under the mouse or when selected */
+.fb-editor .fb-block-pin {
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.fb-editor .fb-block:hover .fb-block-pin,
+.fb-editor .fb-block.fb-selected .fb-block-pin,
+.fb-editor .fb-block-pin:focus-visible {
+    opacity: 1;
+}
+
+.fb-editor .fb-block-pin.fb-pinned {
+    opacity: 1;
+    color: var(--fb-accent);
+}
+
 .fb-editor .fb-block-title {
     display: flex;
     align-items: center;
