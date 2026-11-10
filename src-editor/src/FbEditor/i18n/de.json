@@ -112,7 +112,7 @@
     "fbd_desc_HYST": "Zweipunktschalter: Q wird wahr, wenn IN über HIGH steigt, und falsch, wenn IN unter LOW fällt",
     "fbd_desc_RAMP": "Rampe: OUT folgt IN, um höchstens UP pro Sekunde aufwärts und DOWN pro Sekunde abwärts (0: unbegrenzt)",
     "fbd_desc_PT1": "Tiefpass erster Ordnung (PT1): OUT folgt IN mit der Zeitkonstante T",
-    "fbd_desc_PID": "PID-Regler: Sollwert SP, Istwert PV, Stellgröße Y zwischen YMIN und YMAX; TN oder TV 0 lässt den Anteil weg. HOLD und die Totzone DB halten Y, MAN gibt YMAN aus, INV kehrt den Wirksinn um (Kühlen)",
+    "fbd_desc_PID": "PID-Regler: Sollwert SP, Istwert PV, Stellgröße Y zwischen YMIN und YMAX; TN oder TV 0 lässt den Anteil weg. HOLD und die Totzone DB halten Y, MAN gibt YMAN aus, INV kehrt den Wirksinn um (Kühlen). RUN ist true, solange weder MAN, RST noch HOLD aktiv ist",
     "fbd_desc_CHARCURVE": "Kennlinie, z. B. Heizkurve: OUT liegt auf den Geraden durch die Stützpunkte X1/Y1 ... Xn/Yn; vor dem ersten und hinter dem letzten Punkt bleibt OUT bei deren Y",
     "fbd_curve_no_points": "Kein Stützpunkt mit Zahlen",
     "fbd_curve_connected": "verbunden - der Wert kommt, wenn der Plan läuft",

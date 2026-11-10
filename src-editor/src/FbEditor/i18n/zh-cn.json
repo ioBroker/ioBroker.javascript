@@ -112,7 +112,7 @@
     "fbd_desc_HYST": "两点开关：IN 高于 HIGH 时 Q 为真，低于 LOW 时 Q 为假",
     "fbd_desc_RAMP": "斜坡：OUT 跟随 IN，每秒最多上升 UP、下降 DOWN（0：不限制）",
     "fbd_desc_PT1": "一阶低通（PT1）：OUT 以时间常数 T 跟随 IN",
-    "fbd_desc_PID": "PID 控制器：设定值 SP，过程值 PV，输出 Y 介于 YMIN 与 YMAX 之间；TN 或 TV 为 0 时不含该部分。HOLD 与死区 DB 保持 Y，MAN 输出 YMAN，INV 反转作用方向（制冷）",
+    "fbd_desc_PID": "PID 控制器：设定值 SP，过程值 PV，输出 Y 介于 YMIN 与 YMAX 之间；TN 或 TV 为 0 时不含该部分。HOLD 与死区 DB 保持 Y，MAN 输出 YMAN，INV 反转作用方向（制冷）。MAN、RST、HOLD 均未激活时 RUN 为 true",
     "fbd_desc_CHARCURVE": "特性曲线（例如供暖曲线）：OUT 位于经过点 X1/Y1 ... Xn/Yn 的折线上；在第一个点之前和最后一个点之后保持为该点的 Y",
     "fbd_curve_no_points": "没有数值有效的点",
     "fbd_curve_connected": "已连接 - 值在图运行时得到",
