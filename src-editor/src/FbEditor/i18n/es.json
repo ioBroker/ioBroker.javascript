@@ -112,7 +112,7 @@
     "fbd_desc_HYST": "Interruptor de dos puntos: Q se vuelve verdadero cuando IN sube por encima de HIGH y falso cuando baja de LOW",
     "fbd_desc_RAMP": "Rampa: OUT sigue a IN, como máximo UP por segundo hacia arriba y DOWN por segundo hacia abajo (0: sin límite)",
     "fbd_desc_PT1": "Paso bajo de primer orden (PT1): OUT sigue a IN con la constante de tiempo T",
-    "fbd_desc_PID": "Regulador PID: consigna SP, valor de proceso PV, salida Y entre YMIN y YMAX; TN o TV en 0 omite esa parte. HOLD y la banda muerta DB mantienen Y, MAN entrega YMAN, INV invierte el sentido (refrigeración)",
+    "fbd_desc_PID": "Regulador PID: consigna SP, valor de proceso PV, salida Y entre YMIN y YMAX; TN o TV en 0 omite esa parte. HOLD y la banda muerta DB mantienen Y, MAN entrega YMAN, INV invierte el sentido (refrigeración). RUN es true mientras ninguno de MAN, RST y HOLD esté activo",
     "fbd_desc_CHARCURVE": "Curva característica, p. ej. curva de calefacción: OUT está en las rectas que pasan por los puntos X1/Y1 ... Xn/Yn; antes del primer punto y después del último se queda en su Y",
     "fbd_curve_no_points": "Ningún punto con números",
     "fbd_curve_connected": "conectado - el valor llega cuando se ejecuta el diagrama",

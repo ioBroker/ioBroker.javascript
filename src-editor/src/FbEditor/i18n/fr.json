@@ -112,7 +112,7 @@
     "fbd_desc_HYST": "Commutateur à deux points : Q devient vrai quand IN dépasse HIGH et faux quand il descend sous LOW",
     "fbd_desc_RAMP": "Rampe : OUT suit IN, d'au plus UP par seconde vers le haut et DOWN par seconde vers le bas (0 : sans limite)",
     "fbd_desc_PT1": "Passe-bas du premier ordre (PT1) : OUT suit IN avec la constante de temps T",
-    "fbd_desc_PID": "Régulateur PID : consigne SP, valeur mesurée PV, sortie Y entre YMIN et YMAX ; TN ou TV à 0 supprime cette part. HOLD et la zone morte DB maintiennent Y, MAN sort YMAN, INV inverse le sens d’action (refroidissement)",
+    "fbd_desc_PID": "Régulateur PID : consigne SP, valeur mesurée PV, sortie Y entre YMIN et YMAX ; TN ou TV à 0 supprime cette part. HOLD et la zone morte DB maintiennent Y, MAN sort YMAN, INV inverse le sens d’action (refroidissement). RUN est true tant qu’aucun de MAN, RST et HOLD n’est actif",
     "fbd_desc_CHARCURVE": "Courbe caractéristique, p. ex. courbe de chauffe : OUT se trouve sur les droites passant par les points X1/Y1 ... Xn/Yn ; avant le premier point et après le dernier, il reste à leur Y",
     "fbd_curve_no_points": "Aucun point avec des nombres",
     "fbd_curve_connected": "connecté - la valeur arrive lorsque le diagramme s'exécute",

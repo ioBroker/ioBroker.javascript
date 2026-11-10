@@ -152,6 +152,8 @@ The control blocks:
   - `HOLD` keeps `Y` as it is, like while something is switched over that the controller should not react to.
   - `DB` is a dead band: while `PV` is no further than `DB` from `SP`, `Y` stays as it is. `0` switches it off.
   - `MAN` puts out `YMAN` instead (manual mode).
+  - The output `RUN` is `TRUE` while the controller works, that is, none of `MAN`, `RST` and `HOLD` is active; in the
+    dead band `RUN` stays `TRUE`.
 
   While `Y` is held or given, the integral part follows it, so the controller goes on from there without a jump
   when it takes over again - without an integral part (`TN` 0) `Y` jumps to the P part. `MAN` goes before `RST`,
