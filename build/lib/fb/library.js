@@ -431,11 +431,15 @@ exports.FB_LIBRARY = [
             // reverse acting, e = PV - SP: Y rises while PV is above SP, for cooling
             { id: 'INV', type: 'BOOL', param: true, default: false },
         ],
-        outputs: [{ id: 'Y', type: 'REAL' }],
+        outputs: [
+            { id: 'Y', type: 'REAL' },
+            // came with runtime 1.8: true while the controller works - none of MAN, RST and HOLD is true
+            { id: 'RUN', type: 'BOOL' },
+        ],
         stateful: true,
         timeDependent: true,
         code: '{I}.run({SP}, {PV}, {KP}, {TN}, {TV}, {YMIN}, {YMAX}, {RST}, dt, firstScan, ' +
-            '{HOLD}, {MAN}, {YMAN}, {DB}, {INV}); {Y} = {I}.Y;',
+            '{HOLD}, {MAN}, {YMAN}, {DB}, {INV}); {Y} = {I}.Y; {RUN} = {I}.RUN;',
     },
     {
         // characteristic curve, like a heating curve: OUT on the straight lines through the points
