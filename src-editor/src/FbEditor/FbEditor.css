@@ -723,6 +723,11 @@
     stroke-dasharray: 3 2;
 }
 
+/* a link taken by its input pin: while it is moved, the line of the drag stands for it */
+.fb-editor .react-flow__edge.fb-link-taken {
+    visibility: hidden;
+}
+
 /* an inverted input: the circle of IEC 61131-3 */
 .fb-editor .fb-inverted {
     position: absolute;

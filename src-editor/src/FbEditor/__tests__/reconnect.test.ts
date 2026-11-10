@@ -2,7 +2,17 @@ import { describe, expect, it } from 'vitest';
 
 import { createBlock, createGraph } from '@fb-core';
 
-import { isInputTaken, letGoLink, linksFrom, moveLink, refuseLink, retypeConst } from '../connect';
+import {
+    LET_GO_DISTANCE,
+    isDraggedAway,
+    isInputTaken,
+    letGoLink,
+    linkInto,
+    linksFrom,
+    moveLink,
+    refuseLink,
+    retypeConst,
+} from '../connect';
 import type { FbEdge } from '../convert';
 
 function block(type: string): ReturnType<typeof createBlock> {
@@ -82,5 +92,20 @@ describe('FbEditor: a link is moved with its input end to another input', () => 
         const edges = sample();
         expect(letGoLink(edges, 'l1', false)).toEqual([edges[1]]);
         expect(letGoLink(edges, 'l1', true)).toBe(edges);
+    });
+
+    it('is only deleted when it was dragged away - a shaky click on it keeps it', () => {
+        const at = { x: 100, y: 200 };
+        expect(isDraggedAway(at, { x: 101, y: 201 })).toBe(false);
+        expect(isDraggedAway(at, { x: 100 + LET_GO_DISTANCE, y: 200 })).toBe(false);
+        expect(isDraggedAway(at, { x: 100 + LET_GO_DISTANCE + 1, y: 200 })).toBe(true);
+        expect(isDraggedAway(at, { x: 70, y: 170 })).toBe(true);
+    });
+
+    it('is found by the input it leads into, to take it there', () => {
+        const edges = sample();
+        expect(linkInto(edges, 'AND1', 'IN2')).toBe(edges[1]);
+        expect(linkInto(edges, 'AND2', 'IN1')).toBeUndefined();
+        expect(linkInto(edges, 'NOT1', 'OUT'), 'not by an output').toBeUndefined();
     });
 });

@@ -100,12 +100,33 @@ export function moveLink<E extends LinkEnds>(
     return edges.map(edge => (edge.id === id ? { ...edge, target, targetHandle } : edge));
 }
 
+/** The link that leads into an input, if it has one */
+export function linkInto<E extends LinkEnds>(
+    edges: E[],
+    target: string,
+    targetHandle: string | null | undefined,
+): E | undefined {
+    return edges.find(edge => edge.target === target && edge.targetHandle === targetHandle);
+}
+
+/**
+ * How far, in pixels on the screen, the input end of a link has to be dragged to delete it when it is
+ * let go where no input is: a click on the link, a little shaky, starts a drag already
+ */
+export const LET_GO_DISTANCE = 30;
+
+/** Whether the input end of a link let go at `to` was dragged away from `from`, where it was taken */
+export function isDraggedAway(from: { x: number; y: number }, to: { x: number; y: number }): boolean {
+    return Math.hypot(to.x - from.x, to.y - from.y) > LET_GO_DISTANCE;
+}
+
 /**
  * The links after the input end of one was let go: on a pin, the link is where the pin left it -
- * moved, or as it was if the pin refused it; anywhere else it is deleted.
+ * moved, or as it was if the pin refused it - and so it is when it was hardly moved (`keep`); anywhere
+ * else it is deleted.
  */
-export function letGoLink<E extends LinkEnds>(edges: E[], id: string, onPin: boolean): E[] {
-    return onPin ? edges : edges.filter(edge => edge.id !== id);
+export function letGoLink<E extends LinkEnds>(edges: E[], id: string, keep: boolean): E[] {
+    return keep ? edges : edges.filter(edge => edge.id !== id);
 }
 
 /** A value in another type, as far as it goes: `"5s"` as TIME is 5000, `"abc"` as REAL is 0 */
