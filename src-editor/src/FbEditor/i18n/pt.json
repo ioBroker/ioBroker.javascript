@@ -201,6 +201,7 @@
     "fbd_key_step": "Um bloco adiante (online)",
     "fbd_key_back": "Sair de uma instância",
     "fbd_doc_double_click": "Um clique duplo numa instância de um bloco próprio mostra-a por dentro; numa marca de ligação salta para a outra ponta.",
+    "fbd_doc_reconnect": "Uma ligação pode ser agarrada na sua entrada e arrastada para outra entrada; largada no vazio, é eliminada.",
     "fbd_doc_stateful": "Lembra o seu estado de um ciclo para o outro",
     "fbd_doc_time": "Depende do tempo - um diagrama com ele corre ciclicamente",
     "fbd_instance": "Instância",

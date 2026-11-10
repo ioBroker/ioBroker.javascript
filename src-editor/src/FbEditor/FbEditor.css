@@ -731,6 +731,25 @@
     background: var(--fb-pin);
 }
 
+/* the input end of a link, to take it to another input: shown when the link is hovered or selected */
+.fb-editor .react-flow__edgeupdater {
+    cursor: grab;
+    fill: none;
+    stroke: none;
+}
+
+.fb-editor .react-flow__edge:hover .react-flow__edgeupdater,
+.fb-editor .react-flow__edge.selected .react-flow__edgeupdater {
+    stroke: var(--fb-pin);
+    stroke-width: 1.5;
+    stroke-dasharray: 3 2;
+}
+
+/* a link taken by its input pin: while it is moved, the line of the drag stands for it */
+.fb-editor .react-flow__edge.fb-link-taken {
+    visibility: hidden;
+}
+
 /* an inverted input: the circle of IEC 61131-3 */
 .fb-editor .fb-inverted {
     position: absolute;

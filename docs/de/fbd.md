@@ -44,6 +44,12 @@ wiederholen, `Strg+C`, `Strg+X` und `Strg+V` kopieren, schneiden aus und fügen 
 Verbindungen zwischen ihnen ein - auch in einen anderen Plan. Eingefügte Bausteine bekommen neue IDs und, wo der
 alte Name vergeben ist, neue Namen.
 
+**Verbindung umhängen**: Eine Verbindung lässt sich an ihrem Eingang anfassen - am verbundenen Eingang selbst oder
+kurz davor - und auf einen anderen Eingang ziehen. Sie behält ihren Ausgang, ihre Verbindungsmarke und ihren Namen, und
+es gelten dieselben Prüfungen wie für eine neue Verbindung (eine CONST nimmt den Typ des neuen Eingangs an). Wird sie
+dort losgelassen, wo kein Eingang ist, wird sie gelöscht; ein bloßer Klick auf sie löscht nichts. Beides ist ein
+Schritt für `Strg+Z`.
+
 Die Leiste über der Fläche zeigt den Plan (und den Pfad in eine Instanz hinein) und hat die Werkzeuge:
 
 - den Zoom: kleiner, der Zoom (ein Klick: 100 %), größer

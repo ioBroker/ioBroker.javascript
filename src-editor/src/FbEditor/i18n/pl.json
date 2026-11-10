@@ -201,6 +201,7 @@
     "fbd_key_step": "O jeden blok dalej (online)",
     "fbd_key_back": "Wyjdź z instancji",
     "fbd_doc_double_click": "Dwuklik na instancji własnego bloku pokazuje ją od środka; na znaczniku połączenia przechodzi do drugiego końca.",
+    "fbd_doc_reconnect": "Połączenie można chwycić przy wejściu i przeciągnąć na inne wejście; upuszczone w pustym miejscu zostaje usunięte.",
     "fbd_doc_stateful": "Pamięta swój stan z cyklu na cykl",
     "fbd_doc_time": "Zależy od czasu - schemat z nim działa cyklicznie",
     "fbd_instance": "Instancja",

@@ -24,6 +24,7 @@ import {
     type Connection,
     type IsValidConnection,
     type OnConnectEnd,
+    type OnConnectStart,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -52,7 +53,6 @@ import {
     getBlockDef,
     getInputs,
     getOutputs,
-    isCompatible,
     layoutGraph,
     mergeUserBlocks,
     parseGraph,
@@ -75,14 +75,24 @@ import './i18n';
 import BlockIcon from './BlockIcon';
 import BlockNode, { BLOCK_METRICS, formatValue } from './BlockNode';
 import CommentNode from './CommentNode';
-import LinkEdge from './LinkEdge';
+import LinkEdge, { LinkLine } from './LinkEdge';
 import OnlinePanel from './OnlinePanel';
 import Palette, { DRAG_TYPE, type PaletteVariable } from './Palette';
 import Properties, { type FbLibraryEntry } from './Properties';
 import SearchPanel from './SearchPanel';
 import InstanceView, { InstanceProperties, instancePath, stepInto, type InstanceStep } from './InstanceView';
 import { copySelection, getClipboard, pasteNodes } from './clipboard';
-import { convertValue, retypeConst } from './connect';
+import {
+    convertValue,
+    isDraggedAway,
+    isInputTaken,
+    letGoLink,
+    linkInto,
+    linksFrom,
+    moveLink,
+    refuseLink,
+    retypeConst,
+} from './connect';
 import {
     CATEGORY_COLORS,
     COMMENT_DEFAULT_SIZE,
@@ -107,7 +117,8 @@ import {
 // Outside the component: new objects at every render would mount all nodes again
 const nodeTypes = { fbBlock: BlockNode, fbComment: CommentNode };
 const edgeTypes = { fbLink: LinkEdge };
-const defaultEdgeOptions = { type: 'fbLink' as const };
+// a link is taken at its input end to move it to another input - it stays at its output
+const defaultEdgeOptions = { type: 'fbLink' as const, reconnectable: 'target' as const };
 const deleteKeys = ['Delete', 'Backspace'];
 const snapGrid: [number, number] = [10, 10];
 
@@ -228,6 +239,36 @@ function assemble(
 /** A graph as `assemble()` compares it: the version of the block does not count */
 function contentOf(graph: FbGraph): string {
     return JSON.stringify(graph.block ? { ...graph, block: { ...graph.block, version: 0 } } : graph);
+}
+
+/** Where a pointer is on the screen - for a touch, where it was let go */
+function pointOf(event: MouseEvent | TouchEvent | React.MouseEvent): { x: number; y: number } {
+    if ('changedTouches' in event && event.changedTouches.length) {
+        return { x: event.changedTouches[0].clientX, y: event.changedTouches[0].clientY };
+    }
+    if ('clientX' in event) {
+        return { x: event.clientX, y: event.clientY };
+    }
+    return { x: 0, y: 0 };
+}
+
+/** Why a link was not made, as the notice says it */
+function refusalText(
+    refused: 'type' | 'const' | 'taken',
+    source: FbBlock,
+    target: FbBlock,
+    output: FbPin,
+    input: FbPin,
+): string {
+    const pin = `${target.name}.${input.id}`;
+    if (refused === 'taken') {
+        return I18n.t('fbd_link_refused_taken', pin);
+    }
+    if (refused === 'const') {
+        // it would have taken the type, but it feeds other inputs already
+        return I18n.t('fbd_link_refused_const', source.name, input.type, pin);
+    }
+    return I18n.t('fbd_link_refused_type', output.type, input.type, pin);
 }
 
 function issueText(issue: FbIssue): string {
@@ -548,9 +589,20 @@ function FbCanvas(
         return () => clearTimeout(timer);
     }, [notice]);
 
+    /** The link taken at its input end, while it is moved to another input - and where it was taken */
+    const moving = useRef<FbEdge | null>(null);
+    const takenAt = useRef<{ x: number; y: number } | null>(null);
     /**
-     * The two pins of a link: the blocks, their pins, and the type a CONST takes for it - see
-     * `retypeConst()`. `null` if one of them is no pin of a block.
+     * A link taken by its input pin itself, while it is dragged: it is moved like one taken just before
+     * the input. React Flow starts a new link there, so it is moved when that one ends.
+     */
+    const grabbed = useRef<{ edge: FbEdge; at: { x: number; y: number } } | null>(null);
+
+    /**
+     * The two pins of a link: the blocks, their pins, the type a CONST takes for it - see
+     * `retypeConst()` - and why it is not made - see `refuseLink()`. `null` if one of them is no pin
+     * of a block. `except`: a link on its way to another input, by default the one taken just before
+     * its input.
      */
     const describeLink = useCallback(
         (
@@ -558,6 +610,7 @@ function FbCanvas(
             sourceHandle: string | null | undefined,
             targetId: string,
             targetHandle: string | null | undefined,
+            except: string | undefined = moving.current?.id,
         ) => {
             const source = getNode(sourceId);
             const target = getNode(targetId);
@@ -577,16 +630,19 @@ function FbCanvas(
             if (!output || !input) {
                 return null;
             }
-            // the inputs the output feeds already: they have to take a new type as well
-            const others = getEdges()
-                .filter(edge => edge.source === sourceId && edge.sourceHandle === sourceHandle)
-                .map(edge => inputOf(edge)?.type || 'ANY');
+            // the inputs the output feeds already: they have to take a new type as well - but not the
+            // one a moved link leaves
+            const edges = getEdges();
+            const others = linksFrom(edges, sourceId, sourceHandle, except).map(edge => inputOf(edge)?.type || 'ANY');
+            // an input takes one signal
+            const taken = isInputTaken(edges, targetId, targetHandle, except);
             return {
                 source: source.data.block,
                 target: target.data.block,
                 output,
                 input,
                 retype: retypeConst(source.data.block, output.type, input.type, others),
+                refused: refuseLink(source.data.block, output.type, input.type, others, taken),
             };
         },
         [getNode, getEdges],
@@ -600,27 +656,15 @@ function FbCanvas(
                 connection.target,
                 connection.targetHandle,
             );
-            if (!link || (!isCompatible(link.output.type, link.input.type) && !link.retype)) {
-                return false;
-            }
-            // an input takes one signal
-            return !getEdges().some(
-                edge => edge.target === connection.target && edge.targetHandle === connection.targetHandle,
-            );
+            return !!link && !link.refused;
         },
-        [describeLink, getEdges],
+        [describeLink],
     );
 
-    const onConnect = useCallback(
-        (connection: Connection) => {
-            const link = describeLink(
-                connection.source,
-                connection.sourceHandle,
-                connection.target,
-                connection.targetHandle,
-            );
+    /** A CONST linked to an input of another type takes that type, and its value as far as it goes */
+    const retypeSource = useCallback(
+        (link: ReturnType<typeof describeLink>): void => {
             if (link?.retype) {
-                // the CONST takes the type of the input, and its value as far as it goes
                 const { source, retype } = link;
                 const value = convertValue(source.params?.value, retype);
                 const changed = { ...source, params: { ...source.params, type: retype, value } };
@@ -639,6 +683,15 @@ function FbCanvas(
                     warning: false,
                 });
             }
+        },
+        [setNodes],
+    );
+
+    const onConnect = useCallback(
+        (connection: Connection) => {
+            retypeSource(
+                describeLink(connection.source, connection.sourceHandle, connection.target, connection.targetHandle),
+            );
             setEdges(current =>
                 addEdge<FbEdge>(
                     {
@@ -653,12 +706,89 @@ function FbCanvas(
                 ),
             );
         },
-        [describeLink, setNodes, setEdges],
+        [describeLink, retypeSource, setEdges],
+    );
+
+    /**
+     * A drag from an input that has a link takes that link, to move it to another input: it is hidden
+     * meanwhile, and `LinkLine` draws it from its output. React Flow calls this also when a link is
+     * taken just before its input - then with the output it comes from.
+     */
+    const onConnectStart: OnConnectStart = useCallback(
+        (event, params) => {
+            grabbed.current = null;
+            if (params.handleType !== 'target' || !params.nodeId) {
+                return;
+            }
+            const edge = linkInto(getEdges(), params.nodeId, params.handleId);
+            if (edge) {
+                grabbed.current = { edge, at: pointOf(event) };
+                setEdges(current =>
+                    current.map(item => (item.id === edge.id ? { ...item, className: 'fb-link-taken' } : item)),
+                );
+            }
+        },
+        [getEdges, setEdges],
+    );
+
+    /**
+     * A link taken by its input pin let go: on another input it moves there, if the input takes it -
+     * else it stays and the notice says why; where no input is it is deleted, unless it was hardly moved.
+     */
+    const letGoGrabbed = useCallback(
+        (
+            taken: { edge: FbEdge; at: { x: number; y: number } },
+            event: MouseEvent | TouchEvent,
+            to: Parameters<OnConnectEnd>[1]['toHandle'],
+        ) => {
+            const { edge } = taken;
+            // drawn again, wherever it is now
+            const settle = (change: (edges: FbEdge[]) => FbEdge[] = edges => edges): void =>
+                setEdges(current =>
+                    change(
+                        current.map(item => {
+                            if (item.id !== edge.id) {
+                                return item;
+                            }
+                            const plain = { ...item };
+                            delete plain.className;
+                            return plain;
+                        }),
+                    ),
+                );
+            if (!to) {
+                settle(edges => letGoLink(edges, edge.id, !isDraggedAway(taken.at, pointOf(event))));
+                return;
+            }
+            // an output, or the input it comes from: it stays
+            if (to.type !== 'target' || (to.nodeId === edge.target && to.id === edge.targetHandle)) {
+                settle();
+                return;
+            }
+            const link = describeLink(edge.source, edge.sourceHandle, to.nodeId, to.id, edge.id);
+            if (!link || link.refused) {
+                if (link?.refused) {
+                    const { source, target, output, input } = link;
+                    setNotice({ text: refusalText(link.refused, source, target, output, input), warning: true });
+                }
+                settle();
+                return;
+            }
+            retypeSource(link);
+            settle(edges => moveLink(edges, edge.id, to.nodeId, to.id) || edges);
+        },
+        [describeLink, retypeSource, setEdges],
     );
 
     /** A link let go on a pin that does not take it: says why, instead of doing nothing without a word */
     const onConnectEnd: OnConnectEnd = useCallback(
-        (_event, state) => {
+        (event, state) => {
+            const taken = grabbed.current;
+            if (taken) {
+                grabbed.current = null;
+                letGoGrabbed(taken, event, state.toHandle);
+                return;
+            }
             if (state.isValid !== false || !state.fromHandle || !state.toHandle) {
                 return;
             }
@@ -671,23 +801,68 @@ function FbCanvas(
                 return;
             }
             const link = describeLink(from.nodeId, from.id, to.nodeId, to.id);
-            if (!link) {
+            if (!link?.refused) {
                 return;
             }
             const { source, target, output, input } = link;
-            const pin = `${target.name}.${input.id}`;
-            let text: string;
-            if (isCompatible(output.type, input.type) || link.retype) {
-                text = I18n.t('fbd_link_refused_taken', pin);
-            } else if (source.type === 'CONST' && input.type !== 'ANY') {
-                // it would have taken the type, but it feeds other inputs already
-                text = I18n.t('fbd_link_refused_const', source.name, input.type, pin);
-            } else {
-                text = I18n.t('fbd_link_refused_type', output.type, input.type, pin);
-            }
-            setNotice({ text, warning: true });
+            setNotice({ text: refusalText(link.refused, source, target, output, input), warning: true });
         },
-        [describeLink],
+        [describeLink, letGoGrabbed],
+    );
+
+    /** A link taken just before its input: until it is let go, its input counts as free */
+    const onReconnectStart = useCallback((event: React.MouseEvent, edge: FbEdge) => {
+        moving.current = edge;
+        takenAt.current = pointOf(event);
+    }, []);
+
+    /**
+     * A link let go on another input that takes it: it comes from the same output and leads there
+     * now - with its connection mark, its label. A CONST takes the type of the new input as with a
+     * new link; the inversion belongs to the input and stays there. One step to undo, as all goes
+     * into the diagram at once.
+     */
+    const onReconnect = useCallback(
+        (edge: FbEdge, connection: Connection) => {
+            // only the input end moves
+            if (connection.source !== edge.source || connection.sourceHandle !== edge.sourceHandle) {
+                return;
+            }
+            const link = describeLink(
+                connection.source,
+                connection.sourceHandle,
+                connection.target,
+                connection.targetHandle,
+            );
+            const moved = moveLink(getEdges(), edge.id, connection.target, connection.targetHandle);
+            if (!link || link.refused || !moved) {
+                // refused: the link stays where it was
+                return;
+            }
+            retypeSource(link);
+            setEdges(moved);
+        },
+        [describeLink, getEdges, retypeSource, setEdges],
+    );
+
+    /**
+     * A link let go where no input is, is deleted - unless it was hardly moved, like on a click on it.
+     * On a pin that does not take it, it stays; `onConnectEnd()`, which React Flow calls before, says why.
+     */
+    const onReconnectEnd = useCallback(
+        (
+            event: MouseEvent | TouchEvent,
+            edge: FbEdge,
+            _handleType: 'source' | 'target',
+            state: Parameters<OnConnectEnd>[1],
+        ) => {
+            const from = takenAt.current;
+            moving.current = null;
+            takenAt.current = null;
+            const keep = !!state.toHandle || !from || !isDraggedAway(from, pointOf(event));
+            setEdges(current => letGoLink(current, edge.id, keep));
+        },
+        [setEdges],
     );
 
     /** A double click on an instance of a user block shows it from inside */
@@ -1486,7 +1661,12 @@ function FbCanvas(
                                 onNodesChange={onNodesChange}
                                 onEdgesChange={onEdgesChange}
                                 onConnect={onConnect}
+                                onConnectStart={onConnectStart}
                                 onConnectEnd={onConnectEnd}
+                                connectionLineComponent={LinkLine}
+                                onReconnectStart={onReconnectStart}
+                                onReconnect={onReconnect}
+                                onReconnectEnd={onReconnectEnd}
                                 onEdgeDoubleClick={onEdgeDoubleClick}
                                 onNodeDoubleClick={onNodeDoubleClick}
                                 isValidConnection={isValidConnection}

@@ -201,6 +201,7 @@
     "fbd_key_step": "Einen Baustein weiter (online)",
     "fbd_key_back": "Aus einer Instanz zurück",
     "fbd_doc_double_click": "Ein Doppelklick auf eine Instanz eines eigenen Bausteins zeigt sie von innen; auf einer Verbindungsmarke springt er zum anderen Ende.",
+    "fbd_doc_reconnect": "Eine Verbindung lässt sich am Eingang anfassen und auf einen anderen Eingang ziehen; ins Leere gezogen wird sie gelöscht.",
     "fbd_doc_stateful": "Merkt sich seinen Zustand von Zyklus zu Zyklus",
     "fbd_doc_time": "Hängt von der Zeit ab - ein Plan mit ihm läuft zyklisch",
     "fbd_instance": "Instanz",

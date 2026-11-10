@@ -1,7 +1,17 @@
 import React, { memo, useContext, useEffect, useRef } from 'react';
-import { getBezierPath, getSmoothStepPath, type EdgeProps } from '@xyflow/react';
+import {
+    ConnectionLineType,
+    Position,
+    getBezierPath,
+    getSmoothStepPath,
+    useEdges,
+    useInternalNode,
+    type ConnectionLineComponentProps,
+    type EdgeProps,
+} from '@xyflow/react';
 
-import { TYPE_COLORS, type FbEdge } from './convert';
+import { linkInto } from './connect';
+import { TYPE_COLORS, type FbEdge, type FbNode } from './convert';
 import { FbViewContext } from './ViewContext';
 import { LIVE_FALSE, LIVE_TRUE, SignalBusContext, formatLive } from './online';
 
@@ -192,6 +202,49 @@ function LinkEdge({
                 />
             ) : null}
         </g>
+    );
+}
+
+/**
+ * The line while a link is drawn. A link taken by its input pin, to move it to another input, comes
+ * from its output as when it is taken just before the input: the output stays, the input end moves.
+ */
+export function LinkLine(props: ConnectionLineComponentProps<FbNode>): React.JSX.Element {
+    const { fromHandle, fromX, fromY, toX, toY, fromPosition, toPosition } = props;
+    const edges = useEdges<FbEdge>();
+    const taken = fromHandle.type === 'target' ? linkInto(edges, fromHandle.nodeId, fromHandle.id) : undefined;
+    const source = useInternalNode<FbNode>(taken?.source || '');
+    const output = taken && source?.internals.handleBounds?.source?.find(handle => handle.id === taken.sourceHandle);
+    const ends =
+        output && source
+            ? {
+                  sourceX: source.internals.positionAbsolute.x + output.x + output.width,
+                  sourceY: source.internals.positionAbsolute.y + output.y + output.height / 2,
+                  sourcePosition: Position.Right,
+                  targetX: toX,
+                  targetY: toY,
+                  targetPosition: Position.Left,
+              }
+            : {
+                  sourceX: fromX,
+                  sourceY: fromY,
+                  sourcePosition: fromPosition,
+                  targetX: toX,
+                  targetY: toY,
+                  targetPosition: toPosition,
+              };
+    // as React Flow draws it
+    const [path] =
+        props.connectionLineType === ConnectionLineType.Bezier
+            ? getBezierPath(ends)
+            : getSmoothStepPath({ ...ends, borderRadius: 0 });
+    return (
+        <path
+            d={path}
+            fill="none"
+            className="react-flow__connection-path"
+            style={props.connectionLineStyle}
+        />
     );
 }
 

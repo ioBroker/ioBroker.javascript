@@ -201,6 +201,7 @@
     "fbd_key_step": "前进一个功能块（在线）",
     "fbd_key_back": "退出实例",
     "fbd_doc_double_click": "双击自定义功能块的实例可从内部查看；双击连接标记会跳到另一端。",
+    "fbd_doc_reconnect": "可以在输入端抓住连接并拖到另一个输入；拖到空白处则删除该连接。",
     "fbd_doc_stateful": "在周期之间保持状态",
     "fbd_doc_time": "依赖时间——包含它的图会周期运行",
     "fbd_instance": "实例",
