@@ -53,7 +53,7 @@ function Mark(props: {
  *
  * A link that leads back in the execution order carries the value of the previous cycle; as usual
  * in CFC it is drawn as a double line. Online, a BOOL link shows its value in its color, any other
- * link as a label. A link marked as a connection mark is not drawn through the diagram, but as a
+ * link as a label at the input of its target. A link marked as a connection mark is not drawn through the diagram, but as a
  * named mark at both ends.
  *
  * The paths are drawn here and not with `BaseEdge`, which passes no `ref` on: the online view
@@ -79,7 +79,7 @@ function LinkEdge({
     const label = useRef<SVGTextElement>(null);
     const info = view.links[id];
     const type = info?.type || 'ANY';
-    const [path, labelX, labelY] =
+    const [path] =
         view.linkStyle === 'orthogonal'
             ? getSmoothStepPath({
                   sourceX,
@@ -95,7 +95,7 @@ function LinkEdge({
     const color = info?.error ? '#f44336' : TYPE_COLORS[type];
     const width = selected ? 3 : 2;
     const mark = !!data?.mark;
-    // on a short link the label would cover the value at the output it comes from
+    // on a short link the label would stand right next to the value at the output it comes from
     const labeled = !mark && type !== 'BOOL' && Math.abs(targetX - sourceX) + Math.abs(targetY - sourceY) > 120;
 
     useEffect(
@@ -195,9 +195,9 @@ function LinkEdge({
             {labeled ? (
                 <text
                     ref={label}
-                    x={labelX}
-                    y={labelY - 5}
-                    textAnchor="middle"
+                    x={targetX - 6}
+                    y={targetY - 5}
+                    textAnchor="end"
                     className="fb-live-label"
                 />
             ) : null}

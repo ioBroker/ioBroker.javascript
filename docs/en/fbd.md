@@ -63,7 +63,7 @@ the link works the same.
 ## Online view
 
 **Online** (on the right of the bar above the canvas) shows the values of the running diagram: at every output, BOOL
-links in green (`TRUE`) or grey (`FALSE`), other links with their value in the middle. Next to the button, or under
+links in green (`TRUE`) or grey (`FALSE`), other links with their value at the input they lead to. Next to the button, or under
 it:
 
 - the cycle count - it stands still when the diagram stopped running
