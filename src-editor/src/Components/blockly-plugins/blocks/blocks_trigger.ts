@@ -1257,13 +1257,26 @@ export function install(): void {
     };
 
     // --- onEnumMembers -----------------------------------------------------------
-    Blockly.Trigger.blocks['onEnumMembers'] = '<block type="onEnumMembers">' + '</block>';
+    Blockly.Trigger.blocks['onEnumMembers'] =
+        '<block type="onEnumMembers">' +
+        '  <field name="CONDITION">ne</field>' +
+        '  <field name="ACK_CONDITION"></field>' +
+        '</block>';
 
     Blocks['onEnumMembers'] = {
         init: function (this: Block): void {
             this.appendDummyInput().appendField(translate('onEnumMembers'));
 
             this.appendDummyInput('OID').appendField(new FieldOID(translate('select_id'), 'enum'), 'OID');
+
+            this.appendDummyInput('CONDITION').appendField(
+                new FieldDropdown(conditionOptions().filter(([, value]) => value !== 'any')),
+                'CONDITION',
+            );
+
+            this.appendDummyInput('ACK_CONDITION')
+                .appendField(translate('on_ack'))
+                .appendField(new FieldDropdown(ackConditionOptions()), 'ACK_CONDITION');
 
             this.appendStatementInput('STATEMENT').setCheck(null);
 
@@ -1284,12 +1297,35 @@ export function install(): void {
 
     javascriptGenerator.forBlock['onEnumMembers'] = function (block: Block): string {
         const fObjId = block.getFieldValue('OID');
+        const conditionValue = block.getFieldValue('CONDITION');
+        const fAckCondition = block.getFieldValue('ACK_CONDITION');
         const statement = javascriptGenerator.statementToCode(block, 'STATEMENT');
         const objectName = objectNameById(fObjId);
+        const filters: string[] = [];
+        if (conditionValue === 'true' || conditionValue === 'false') {
+            filters.push(`obj.state.val !== ${conditionValue}`);
+        } else if (conditionValue !== 'ne') {
+            const operator =
+                conditionValue === 'gt'
+                    ? '>'
+                    : conditionValue === 'ge'
+                      ? '>='
+                      : conditionValue === 'lt'
+                        ? '<'
+                        : conditionValue === 'le'
+                          ? '<='
+                          : undefined;
+            if (operator) {
+                filters.push(`!((obj.state.val ?? 0) ${operator} (obj.oldState.val ?? 0))`);
+            }
+        }
+        if (fAckCondition) {
+            filters.push(`obj.state.ack !== ${fAckCondition}`);
+        }
 
         return (
             `onEnumMembers('${fObjId}'${objectName ? ` /* ${objectName} */` : ''}, async (obj) => {\n` +
-            `${valuePrelude()}${statement}});\n`
+            `${filters.length ? `  if (${filters.join(' || ')}) return;\n` : ''}${valuePrelude()}${statement}});\n`
         );
     };
 }

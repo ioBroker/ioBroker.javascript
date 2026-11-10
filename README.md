@@ -28,8 +28,10 @@ Executes JavaScript, TypeScript Scripts.
 <!--
   ### **WORK IN PROGRESS**
 -->
-
 ## Changelog
+### **WORK IN PROGRESS**
+- (Voodoo2man) Added: Blockly category selection for member IDs and change/ack filters to the enum trigger (#1960)
+
 ### 10.5.1 (2026-11-10)
 * (@GermanBluefox) Added: function block diagrams - blocks can be pinned (pin button on the block, its menu or the properties): "Arrange automatically" leaves them where they are and arranges the other blocks around them (#2443)
 * (@GermanBluefox) Added: function block diagrams - a link can be moved to another input by dragging its connected input; let go where no input is, it is deleted - a mere click on it keeps it (#2438)

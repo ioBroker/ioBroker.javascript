@@ -428,6 +428,32 @@
         "uk": "Ідентифікатори від Selector",
         "zh-cn": "选择器中的 Id"
     },
+    "get_enum_members": {
+        "en": "IDs from category",
+        "de": "IDs aus Kategorie",
+        "ru": "Идентификаторы из категории",
+        "pt": "IDs da categoria",
+        "nl": "IDs uit categorie",
+        "fr": "IDs de la catégorie",
+        "it": "ID dalla categoria",
+        "es": "IDs de la categoría",
+        "pl": "ID z kategorii",
+        "uk": "Ідентифікатори з категорії",
+        "zh-cn": "类别中的 ID"
+    },
+    "get_enum_members_tooltip": {
+        "en": "Returns the IDs of all objects in the selected category as an array",
+        "de": "Gibt die IDs aller Objekte in der ausgewählten Kategorie als Array zurück",
+        "ru": "Возвращает массив идентификаторов всех объектов выбранной категории",
+        "pt": "Retorna os IDs de todos os objetos na categoria selecionada como um array",
+        "nl": "Geeft de IDs van alle objecten in de geselecteerde categorie als array terug",
+        "fr": "Renvoie les IDs de tous les objets de la catégorie sélectionnée sous forme de tableau",
+        "it": "Restituisce come array gli ID di tutti gli oggetti nella categoria selezionata",
+        "es": "Devuelve como array los IDs de todos los objetos de la categoría seleccionada",
+        "pl": "Zwraca jako tablicę identyfikatory wszystkich obiektów w wybranej kategorii",
+        "uk": "Повертає масив ідентифікаторів усіх об'єктів у вибраній категорії",
+        "zh-cn": "以数组形式返回所选类别中所有对象的 ID"
+    },
     "exec": {
         "en": "exec",
         "de": "exec",

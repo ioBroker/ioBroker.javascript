@@ -1,0 +1,10 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="debug">
+    <field name="Severity">info</field>
+    <value name="TEXT">
+      <block type="get_enum_members">
+        <field name="OID">enum.rooms.living_room</field>
+      </block>
+    </value>
+  </block>
+</xml>
