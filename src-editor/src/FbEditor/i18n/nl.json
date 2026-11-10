@@ -112,7 +112,7 @@
     "fbd_desc_HYST": "Tweepuntsschakelaar: Q wordt waar als IN boven HIGH stijgt en onwaar als IN onder LOW daalt",
     "fbd_desc_RAMP": "Helling: OUT volgt IN, met hoogstens UP per seconde omhoog en DOWN per seconde omlaag (0: onbeperkt)",
     "fbd_desc_PT1": "Laagdoorlaatfilter van de eerste orde (PT1): OUT volgt IN met de tijdconstante T",
-    "fbd_desc_PID": "PID-regelaar: gewenste waarde SP, proceswaarde PV, uitgang Y tussen YMIN en YMAX; TN of TV 0 laat dat deel weg. HOLD en de dode zone DB houden Y vast, MAN geeft YMAN af, INV keert de werkrichting om (koelen)",
+    "fbd_desc_PID": "PID-regelaar: gewenste waarde SP, proceswaarde PV, uitgang Y tussen YMIN en YMAX; TN of TV 0 laat dat deel weg. HOLD en de dode zone DB houden Y vast, MAN geeft YMAN af, INV keert de werkrichting om (koelen). RUN is true zolang MAN, RST en HOLD geen van alle actief zijn",
     "fbd_desc_CHARCURVE": "Karakteristiek, bijv. een stooklijn: OUT ligt op de rechte lijnen door de punten X1/Y1 ... Xn/Yn; vóór het eerste en na het laatste punt blijft het op hun Y",
     "fbd_curve_no_points": "Geen punt met getallen",
     "fbd_curve_connected": "verbonden - de waarde komt wanneer het schema draait",

@@ -31,7 +31,8 @@ Executes JavaScript, TypeScript Scripts.
 
 ## Changelog
 ### **WORK IN PROGRESS**
-* (@GermanBluefox) FBD: a connected input can be dragged to move the link to another input (#2438)
+* (@GermanBluefox) Added: function block diagrams - a link can be moved to another input by dragging its connected input; let go where no input is, it is deleted - a mere click on it keeps it (#2438)
+* (@GermanBluefox) Added: function block diagrams - the `PID` block has the output `RUN`: `TRUE` while the controller works, i.e. none of `MAN`, `RST` and `HOLD` is active (#2440)
 
 ### 10.5.0 (2026-11-07)
 * (@GermanBluefox) Added: script functions `readDir`, `fileExists`, `chmodFile` and `chownFile` for files in the DB, and `chmodObject` and `chownObject` to change the access rights and the owner of objects and states (only with the option "Enable command setObject"), each with an `...Async` variant

@@ -1025,6 +1025,22 @@ describe('FBD: control blocks', () => {
         assert.equal(p.Y, 12);
     });
 
+    it('tells with RUN whether the PID controller works (#2440)', () => {
+        const pid = runtime.PID();
+        pid.run(10, 4, 2, 0, 0, 0, 100, false, 0, true);
+        assert.equal(pid.RUN, true, 'controls');
+        pid.run(10, 9.8, 2, 0, 0, 0, 100, false, 1000, false, false, false, 0, 0.5);
+        assert.equal(pid.RUN, true, 'in the dead band');
+        pid.run(10, 4, 2, 0, 0, 0, 100, false, 1000, false, true);
+        assert.equal(pid.RUN, false, 'HOLD');
+        pid.run(10, 4, 2, 0, 0, 0, 100, false, 1000, false, false, true, 50);
+        assert.equal(pid.RUN, false, 'MAN');
+        pid.run(10, 4, 2, 0, 0, 0, 100, true, 1000, false);
+        assert.equal(pid.RUN, false, 'RST');
+        pid.run(10, 4, 2, 0, 0, 0, 100, false, 1000, false);
+        assert.equal(pid.RUN, true, 'controls again');
+    });
+
     it('passes HOLD and INV of a PID in a diagram', async () => {
         const d = diagram();
         const temp = d.add('STATE_IN', 0, 0, { oid: 'x.0.temp', type: 'REAL' });

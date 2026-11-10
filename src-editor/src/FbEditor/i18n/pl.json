@@ -112,7 +112,7 @@
     "fbd_desc_HYST": "Przełącznik dwupołożeniowy: Q staje się prawdą, gdy IN wzrośnie powyżej HIGH, i fałszem, gdy spadnie poniżej LOW",
     "fbd_desc_RAMP": "Rampa: OUT podąża za IN, najwyżej o UP na sekundę w górę i DOWN na sekundę w dół (0: bez ograniczenia)",
     "fbd_desc_PT1": "Filtr dolnoprzepustowy pierwszego rzędu (PT1): OUT podąża za IN ze stałą czasową T",
-    "fbd_desc_PID": "Regulator PID: wartość zadana SP, wartość procesu PV, wyjście Y między YMIN a YMAX; TN lub TV równe 0 pomija ten człon. HOLD i strefa martwa DB utrzymują Y, MAN podaje YMAN, INV odwraca kierunek działania (chłodzenie)",
+    "fbd_desc_PID": "Regulator PID: wartość zadana SP, wartość procesu PV, wyjście Y między YMIN a YMAX; TN lub TV równe 0 pomija ten człon. HOLD i strefa martwa DB utrzymują Y, MAN podaje YMAN, INV odwraca kierunek działania (chłodzenie). RUN jest true, dopóki żadne z MAN, RST i HOLD nie jest aktywne",
     "fbd_desc_CHARCURVE": "Charakterystyka, np. krzywa grzewcza: OUT leży na odcinkach prostych przez punkty X1/Y1 ... Xn/Yn; przed pierwszym i za ostatnim punktem pozostaje na ich Y",
     "fbd_curve_no_points": "Brak punktu z liczbami",
     "fbd_curve_connected": "połączone - wartość pojawi się podczas działania schematu",

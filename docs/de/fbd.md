@@ -165,6 +165,8 @@ Die Regelungsbausteine:
   - `DB` ist eine Totzone: Solange `PV` höchstens `DB` von `SP` entfernt ist, bleibt `Y`, wie es ist. `0` schaltet
     sie ab.
   - `MAN` gibt stattdessen `YMAN` aus (Handbetrieb).
+  - Der Ausgang `RUN` ist `TRUE`, solange der Regler arbeitet, also weder `MAN`, `RST` noch `HOLD` aktiv ist; in der
+    Totzone bleibt `RUN` `TRUE`.
 
   Solange `Y` gehalten oder vorgegeben wird, zieht der I-Anteil mit; der Regler macht danach ohne Sprung von dort
   aus weiter - ohne I-Anteil (`TN` 0) springt `Y` auf den P-Anteil. `MAN` geht vor `RST`, `RST` vor `HOLD` und der
