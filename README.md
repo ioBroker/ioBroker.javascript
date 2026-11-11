@@ -30,7 +30,7 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 10.5.3 (2026-11-11)
 * (@GermanBluefox) Fixed: the cursor of the script editor jumped to the start of the script after the first typed character (when nothing else had updated the editor since the script was opened) and after saving
 
 ### 10.5.2 (2026-11-11)
@@ -55,12 +55,6 @@ Executes JavaScript, TypeScript Scripts.
 * (@GermanBluefox) Added: the history dialog can be maximized (button or double click on its title); the width of the version list and the border between the two sides of the diff can be dragged; buttons jump from change to change; "Take over into the editor" is disabled for a version that is the same as the editor
 * (@GermanBluefox) Changed: the diffs (history, unsaved changes, AI suggestions) scroll to the first change and show changed indentation too
 * (@GermanBluefox) Updated packages
-
-### 10.4.9 (2026-11-02)
-* (@GermanBluefox) Fixed: the restart button of the editor did nothing for a running script since 10.4.7 (#2423)
-* (@GermanBluefox) Added: OpenRouter, if it is chosen in the system-wide AI settings of admin (`@iobroker/ai-core` 0.0.6, `@iobroker/ai-gui` 0.0.5)
-* (@GermanBluefox) Added: function block diagrams - selection blocks `SEL`, `MUX` and `LIMIT`; the `PID` block got `HOLD`, a dead band `DB`, a manual mode (`MAN`, `YMAN`) and `INV` to reverse its direction
-* (@GermanBluefox) Changed: function block diagrams - `RST` of the `PID` block puts out `Y` = 0 (or the limit nearest to it) instead of the P part (#2426)
 
 ## License
 The MIT License (MIT)
