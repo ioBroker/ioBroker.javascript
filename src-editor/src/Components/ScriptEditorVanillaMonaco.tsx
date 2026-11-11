@@ -144,7 +144,11 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
     constructor(props: ScriptEditorProps) {
         super(props);
         this.state = {
-            name: 'current',
+            // The script that is shown from the start. With a placeholder here, the first update of the
+            // properties took the script as a newly selected one and set its code anew - Monaco then puts
+            // the cursor to 1:1. If that update was the user's first keystroke, everything typed after it
+            // went to the start of the script.
+            name: props.name,
             isDark: props.isDark || false,
             language: props.language || 'javascript',
             readOnly: props.readOnly || false,
@@ -1383,9 +1387,12 @@ class ScriptEditor extends React.Component<ScriptEditorProps, ScriptEditorState>
             (nextProps.code !== this.originalCode || nextProps.code !== this.editor.getValue())
         ) {
             this.originalCode = nextProps.code || '';
-            this.editor.setValue(this.originalCode);
-            this.showDecorators();
-            this.location && this.scrollToLineIfNeeded(this.location.lineNumber + 1);
+            // After saving, the editor holds this code already: setValue() would only move the cursor to 1:1
+            if (this.originalCode !== this.editor.getValue()) {
+                this.editor.setValue(this.originalCode);
+                this.showDecorators();
+                this.location && this.scrollToLineIfNeeded(this.location.lineNumber + 1);
+            }
         }
 
         if (nextProps.searchText !== this.lastSearch) {
