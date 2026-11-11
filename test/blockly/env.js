@@ -145,7 +145,12 @@ function createBlocklyEnvironment() {
     window.systemLang = 'en';
     window.MSG = new Proxy({}, { get: (_target, key) => String(key) });
     // field_oid.js resolves state names and icons through the editor's object cache
-    window.main = { objects: {}, getObject: (_id, cb) => cb && cb(null, null) };
+    window.main = {
+        objects: {
+            'enum.rooms.living_room': { type: 'enum', common: { name: 'Living room', members: [] } },
+        },
+        getObject: (_id, cb) => cb && cb(null, null),
+    };
 
     const runFile = file => {
         const script = window.document.createElement('script');
