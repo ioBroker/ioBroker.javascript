@@ -1,7 +1,8 @@
 <!-- The trigger blocks in the states their toolbox entries never reach:
      `on_ext` with several object IDs (its mutator), a condition other than "ne" and an ack filter,
      a named schedule together with the block that clears it (whose dropdown otherwise falls back
-     to "unnamed"), an astro trigger with a shift, and `onFile` with the file content requested. -->
+  to "unnamed"), an astro trigger with a shift, `onEnumMembers` with an ack filter, and `onFile`
+  with the file content requested. -->
 <xml xmlns="https://developers.google.com/blockly/xml">
   <block type="on_ext">
     <mutation items="3"></mutation>
@@ -43,6 +44,65 @@
         <value name="TEXT">
           <shadow type="text">
             <field name="TEXT">switched off</field>
+          </shadow>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="onEnumMembers">
+    <field name="OID">enum.rooms.living_room</field>
+    <field name="CONDITION">false</field>
+    <field name="ACK_CONDITION">false</field>
+    <statement name="STATEMENT">
+      <block type="debug">
+        <field name="Severity">info</field>
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">unacknowledged update</field>
+          </shadow>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="onEnumMembers">
+    <field name="OID">enum.rooms.living_room</field>
+    <field name="CONDITION">gt</field>
+    <field name="ACK_CONDITION">true</field>
+    <statement name="STATEMENT">
+      <block type="debug">
+        <field name="Severity">info</field>
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">increased</field>
+          </shadow>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="onEnumMembers">
+    <field name="OID">enum.rooms.living_room</field>
+    <field name="CONDITION">ne</field>
+    <field name="ACK_CONDITION">true</field>
+    <statement name="STATEMENT">
+      <block type="debug">
+        <field name="Severity">info</field>
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">acknowledged change</field>
+          </shadow>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="onEnumMembers">
+    <field name="OID">enum.rooms.living_room</field>
+    <field name="CONDITION">false</field>
+    <statement name="STATEMENT">
+      <block type="debug">
+        <field name="Severity">info</field>
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">boolean update</field>
           </shadow>
         </value>
       </block>
