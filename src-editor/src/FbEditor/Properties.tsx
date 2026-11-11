@@ -696,7 +696,13 @@ function BlockProperties(
             <Row
                 key={param.id}
                 label={label}
-                hint={param.id.endsWith('Offset') ? I18n.t('fbd_offset_hint') : undefined}
+                hint={
+                    param.id.endsWith('Offset')
+                        ? I18n.t('fbd_offset_hint')
+                        : block.type === 'STATE_OUT' && param.id === 'enforce'
+                          ? I18n.t('fbd_enforce_hint')
+                          : undefined
+                }
             >
                 {type === 'BOOL' ? (
                     <Switch

@@ -11,7 +11,7 @@ exports.FB_USER_PREFIX = exports.FB_RUNTIME_MODULE = exports.FB_RUNTIME_VERSION 
 /** Version of the graph format - raised only when an older graph cannot be read as it is */
 exports.FB_FORMAT = 1;
 /** Version of the block library and of the runtime module the generated code needs */
-exports.FB_RUNTIME_VERSION = '1.8.0';
+exports.FB_RUNTIME_VERSION = '1.9.0';
 /** Name under which the generated code requires the runtime module */
 exports.FB_RUNTIME_MODULE = '@iobroker/fb-runtime';
 /** Types of user blocks start with this, e.g. `@userFb/shutter` */

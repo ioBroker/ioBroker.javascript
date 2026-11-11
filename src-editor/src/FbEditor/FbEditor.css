@@ -479,6 +479,32 @@
     box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.45);
 }
 
+/* online: the state a STATE_OUT writes holds another value - somebody else changed it */
+.fb-editor .fb-block.fb-deviates:not(.fb-error) {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.45);
+}
+
+.fb-editor .fb-state-deviation {
+    flex-shrink: 0;
+    margin-left: 6px;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: #1f1300;
+    background: #f59e0b;
+}
+
+/* STATE_OUT with "Enforce value" */
+.fb-editor .fb-state-enforce {
+    flex-shrink: 0;
+    margin-right: 4px;
+    font-size: 14px;
+    color: var(--fb-text-dim);
+}
+
 /* paused in front of this block */
 .fb-editor .fb-block.fb-next {
     box-shadow: 0 0 0 3px #fde047;

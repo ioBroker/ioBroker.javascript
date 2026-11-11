@@ -153,6 +153,8 @@ interface Snapshot {
     full?: boolean;
     error?: { message: string; blockId?: string } | null;
     debug?: FbDebugStatus;
+    /** The states of STATE_OUT blocks somebody else changed, with what they hold - since runtime 1.9 */
+    deviations?: Record<string, unknown>;
 }
 
 export type OnlineStatus =
@@ -208,6 +210,11 @@ export function useOnline(options: {
     onError: (error: { message: string; blockId?: string } | null) => void;
     /** Forced values, breakpoints, paused - when it changed; `null` when the online view ends */
     onDebug: (debug: FbDebugStatus | null) => void;
+    /**
+     * The states of STATE_OUT blocks that hold another value than the diagram wrote, with that value -
+     * when it changed; `null` when the online view ends
+     */
+    onDeviations?: (deviations: Record<string, unknown> | null) => void;
 }): void {
     const { active, socket, instance, scriptId, bus, path } = options;
     // the callbacks may change at every render - they must not restart the subscription
@@ -292,6 +299,9 @@ export function useOnline(options: {
                 paused = snapshot.debug.paused;
                 callbacks.current.onDebug(snapshot.debug);
             }
+            if (snapshot.deviations) {
+                callbacks.current.onDeviations?.(snapshot.deviations);
+            }
             // not only by the timer: a browser slows the timers of a tab in the background down
             report();
         };
@@ -316,6 +326,7 @@ export function useOnline(options: {
             bus.clear();
             callbacks.current.onError(null);
             callbacks.current.onDebug(null);
+            callbacks.current.onDeviations?.(null);
         };
     }, [active, socket, instance, scriptId, bus]);
 }

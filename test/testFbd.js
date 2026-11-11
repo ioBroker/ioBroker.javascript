@@ -439,6 +439,115 @@ describe('FBD: fb-runtime', () => {
         assert.deepEqual(writes, [1, 3], 'the last value is written when the time is over');
     });
 
+    /** A runtime without a diagram: the writes, the logs - and `changed()`, somebody else setting the state */
+    function outputRuntime() {
+        const writes = [];
+        const logs = [];
+        const rt = runtime.runtime(
+            {
+                setState: (id, val) => writes.push(val),
+                setTimeout: (callback, ms) => setTimeout(callback, ms),
+                clearTimeout: timer => clearTimeout(timer),
+                log: (message, severity) => logs.push({ message, severity }),
+                onStop: () => {},
+            },
+            '1.9.0',
+        );
+        return { rt, writes, logs, changed: (val, from) => rt.outputChanged('x.0.out', { val, from }) };
+    }
+
+    it('writes a state somebody else changed back with "Write the value back", at most once a second', async function () {
+        this.timeout(5000);
+        const d = diagram();
+        const input = d.add('STATE_IN', 0, 0, { oid: 'x.0.temperature', type: 'REAL' });
+        const gt = d.add('GT', 200, 0, { IN2: 25 });
+        const output = d.add('STATE_OUT', 400, 0, { oid: 'x.0.fan', enforce: true });
+        d.link(input, 'Q', gt, 'IN1');
+        d.link(gt, 'OUT', output, 'IN');
+        const source = fb.generateSource(d.graph).source;
+        assert.match(source, /rt\.output\("x\.0\.fan", S\[[^\]]+\], false, 0, true\);/);
+
+        const sandbox = runInSandbox(source, { 'x.0.temperature': 30, 'x.0.fan': false });
+        await wait(30);
+        assert.deepEqual(
+            sandbox.writes.map(write => write.val),
+            [true],
+        );
+
+        // changed by hand right after the diagram wrote it: back after a second
+        sandbox.set('x.0.fan', false);
+        await wait(100);
+        assert.equal(sandbox.writes.length, 1, 'not at once after the last write');
+        await wait(1000);
+        assert.deepEqual(
+            sandbox.writes.map(write => write.val),
+            [true, true],
+        );
+
+        // a second later: back at once - also in the event mode, where no cycle would come
+        await wait(1000);
+        sandbox.set('x.0.fan', false);
+        await wait(60);
+        assert.deepEqual(
+            sandbox.writes.map(write => write.val),
+            [true, true, true],
+        );
+        sandbox.stop();
+        assert.deepEqual(sandbox.logs, []);
+    });
+
+    it('leaves a state somebody else changed as it is without "Write the value back"', async () => {
+        const { rt, writes, changed } = outputRuntime();
+        rt.output('x.0.out', true, false, 0);
+        changed(false, 'system.adapter.admin.0');
+        rt.output('x.0.out', true, false, 0);
+        assert.deepEqual(writes, [true]);
+        assert.deepEqual(rt.deviations(), { 'x.0.out': false });
+        // the diagram writes again when its value changes
+        rt.output('x.0.out', false, false, 0);
+        assert.deepEqual(writes, [true, false]);
+        assert.deepEqual(rt.deviations(), {});
+    });
+
+    it('counts a state of another type with the same number as the same value', () => {
+        const { rt, writes, changed } = outputRuntime();
+        rt.output('x.0.out', true, false, 0, true);
+        changed(1);
+        assert.deepEqual(rt.deviations(), {});
+        rt.output('x.0.out', 21, false, 0, true);
+        changed('21');
+        rt.output('x.0.out', 21, false, 0, true);
+        assert.deepEqual(writes, [true, 21], 'nothing to correct');
+        changed('22');
+        assert.deepEqual(rt.deviations(), { 'x.0.out': '22' });
+    });
+
+    it('leaves a correction out when the state has the value again before it is due', async () => {
+        const { rt, writes, changed } = outputRuntime();
+        rt.output('x.0.out', 5, false, 0, true);
+        rt.outputs.get('x.0.out').ts = Date.now() - 900;
+        changed(7);
+        rt.output('x.0.out', 5, false, 0, true);
+        changed(5);
+        await wait(200);
+        assert.deepEqual(writes, [5]);
+    });
+
+    it('reports a state that is set back again and again, once', () => {
+        const { rt, writes, logs, changed } = outputRuntime();
+        rt.output('x.0.out', 100, false, 0, true);
+        for (let i = 0; i < 12; i++) {
+            // the dimmer only goes up to 99 - and a second has gone by
+            changed(99, 'system.adapter.dimmer.0');
+            rt.outputs.get('x.0.out').ts -= 1000;
+            rt.output('x.0.out', 100, false, 0, true);
+        }
+        assert.equal(writes.length, 13);
+        assert.equal(logs.length, 1);
+        assert.equal(logs[0].severity, 'warn');
+        assert.match(logs[0].message, /x\.0\.out.*system\.adapter\.dimmer\.0/);
+    });
+
     it('reports a value that is no number once and uses 0', () => {
         const logs = [];
         const rt = runtime.runtime({ log: (message, severity) => logs.push(severity), onStop: () => {} }, '1.0.0');
@@ -508,6 +617,35 @@ describe('FBD: online view', () => {
         watch.viewer = 2;
         await wait(300);
         assert.equal(watch.snapshots[watch.snapshots.length - 1].full, true);
+        sandbox.stop();
+    });
+
+    it('tells which written states somebody else changed, with what they hold', async () => {
+        const { d } = fanDiagram();
+        const watch = watchedModule();
+        const sandbox = runInSandbox(
+            fb.generateSource(d.graph).source,
+            { 'x.0.temperature': 30, 'x.0.fan': true },
+            watch,
+        );
+        await wait(300);
+        assert.deepEqual(watch.snapshots[0].deviations, {}, 'with everything, also when there is none');
+
+        sandbox.set('x.0.fan', false);
+        await wait(300);
+        const last = () => watch.snapshots[watch.snapshots.length - 1];
+        assert.deepEqual(last().deviations, { 'x.0.fan': false });
+        assert.deepEqual(sandbox.writes, [], 'without "Write the value back" the state stays as it is');
+
+        // the next snapshot does not repeat it
+        sandbox.set('x.0.temperature', 31);
+        await wait(300);
+        assert.equal('deviations' in last(), false);
+
+        // the diagram writes the state again: it holds what the diagram wrote
+        sandbox.set('x.0.temperature', 20);
+        await wait(300);
+        assert.deepEqual(last().deviations, {});
         sandbox.stop();
     });
 
@@ -1242,7 +1380,13 @@ describe('FBD: characteristic curve', () => {
 
     it('adds new points behind the last one, so the curve stays as it is', () => {
         const def = fb.getBlockDef('CHARCURVE');
-        const curve = { id: 'b1', type: 'CHARCURVE', name: 'c', pos: [0, 0], params: { inputs: 2, X1: 20, Y1: 30, X2: -10, Y2: 70 } };
+        const curve = {
+            id: 'b1',
+            type: 'CHARCURVE',
+            name: 'c',
+            pos: [0, 0],
+            params: { inputs: 2, X1: 20, Y1: 30, X2: -10, Y2: 70 },
+        };
         const more = fb.setInputCount(curve, def, 4);
         assert.equal(more.params.inputs, 4);
         assert.deepEqual(
@@ -1252,11 +1396,16 @@ describe('FBD: characteristic curve', () => {
         );
         const values = block => {
             const pins = fb.getInputs(block, def);
-            const of = prefix => pins.filter(pin => pin.id.startsWith(prefix)).map(pin => block.params[pin.id] ?? pin.default);
+            const of = prefix =>
+                pins.filter(pin => pin.id.startsWith(prefix)).map(pin => block.params[pin.id] ?? pin.default);
             return [-30, 0, 15, 60, 100].map(x => runtime.charCurve(x, of('X'), of('Y')));
         };
         assert.deepEqual(values(more), values(curve));
-        assert.deepEqual(curve.params, { inputs: 2, X1: 20, Y1: 30, X2: -10, Y2: 70 }, 'the block itself is not changed');
+        assert.deepEqual(
+            curve.params,
+            { inputs: 2, X1: 20, Y1: 30, X2: -10, Y2: 70 },
+            'the block itself is not changed',
+        );
 
         // fewer points keep the values, more points bring them back
         const fewer = fb.setInputCount(more, def, 2);
