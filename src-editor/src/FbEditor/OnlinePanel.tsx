@@ -32,6 +32,9 @@ interface OnlinePanelProps {
     /** How the online view stands, as the runtime reported it last */
     debug: FbDebugStatus | null;
     onDebug: (debug: FbDebugStatus | null) => void;
+    /** The states of STATE_OUT blocks somebody else changed, as the runtime reported them last */
+    deviations: Record<string, unknown> | null;
+    onDeviations: (deviations: Record<string, unknown> | null) => void;
     onCommand: (command: FbDebugCommand) => void;
     /** What a command could not do, for a moment */
     commandError: string | null;
@@ -96,11 +99,13 @@ export default function OnlinePanel(props: OnlinePanelProps): React.JSX.Element 
         onStatus,
         onError: props.onError,
         onDebug: props.onDebug,
+        onDeviations: props.onDeviations,
     });
 
     const { text, color } = statusText(status, debug, props.nameOf);
     const forced = debug ? Object.keys(debug.forced).length : 0;
     const breakpoints = debug?.breakpoints.length || 0;
+    const deviations = active && running && props.deviations ? Object.keys(props.deviations).length : 0;
     // the runtime answered: the diagram runs and can be steered
     const steerable = active && running && !!debug;
 
@@ -138,6 +143,17 @@ export default function OnlinePanel(props: OnlinePanelProps): React.JSX.Element 
                 >
                     {I18n.t('fbd_debug_remove_all')}
                 </Button>
+            </Typography>
+        ) : null,
+        deviations ? (
+            <Typography
+                key="deviations"
+                variant="caption"
+                color="warning"
+                component="div"
+                title={I18n.t('fbd_deviation_hint')}
+            >
+                {I18n.t('fbd_deviation_count', deviations)}
             </Typography>
         ) : null,
         props.commandError ? (

@@ -11,6 +11,7 @@ import {
     Settings as IconSettings,
     StickyNote2 as IconNote,
     Adjust as IconBreakpoint,
+    LockOutlined as IconEnforce,
     ZoomIn as IconInside,
 } from '@mui/icons-material';
 
@@ -34,7 +35,7 @@ import {
 
 import BlockIcon from './BlockIcon';
 import { CATEGORY_COLORS, TYPE_COLORS, type BlockNode as BlockNodeType } from './convert';
-import { LiveValue } from './online';
+import { LiveValue, formatLive } from './online';
 import { FbViewContext } from './ViewContext';
 
 /** Head bar with the instance name, and the line with the type under it */
@@ -185,6 +186,11 @@ function BlockNode({ id, data, selected }: NodeProps<BlockNodeType>): React.JSX.
     const breakpoint = debug.breakpoints.has(id);
     // paused in front of this block
     const next = debug.at === id;
+    // online: the state the block writes holds another value - somebody else changed it
+    const oid = block.type === 'STATE_OUT' && block.params?.oid ? String(block.params.oid) : '';
+    const deviates = !!oid && Object.prototype.hasOwnProperty.call(view.deviations, oid);
+    const actual = deviates ? formatLive(view.deviations[oid], 'ANY') : '';
+    const enforce = block.type === 'STATE_OUT' && block.params?.enforce === true;
 
     const setParam = actions
         ? (param: string, value: FbValue): void =>
@@ -198,9 +204,11 @@ function BlockNode({ id, data, selected }: NodeProps<BlockNodeType>): React.JSX.
           : I18n.t('Unknown block type %s', block.type);
     const title = runtimeError
         ? I18n.t('fbd_runtime_error', runtimeError)
-        : block.comment
-          ? `${block.comment}\n\n${description}`
-          : description;
+        : deviates
+          ? `${I18n.t(enforce ? 'fbd_deviation_enforced' : 'fbd_deviation', actual)}\n\n${description}`
+          : block.comment
+            ? `${block.comment}\n\n${description}`
+            : description;
 
     const renderDetail = (): React.JSX.Element => {
         if (def?.user) {
@@ -307,14 +315,23 @@ function BlockNode({ id, data, selected }: NodeProps<BlockNodeType>): React.JSX.
             // a block for every type, like SEL or MUX: the one it works with
             return <span className="fb-inline fb-inline-wide">{resolvePinType(block, { param: 'type' }, def)}</span>;
         }
-        const oid = block.params?.oid ? String(block.params.oid) : '';
+        const state = block.params?.oid ? String(block.params.oid) : '';
         return (
-            <span
-                className={`fb-inline fb-inline-wide${oid ? '' : ' fb-inline-empty'}`}
-                title={oid}
-            >
-                {oid || I18n.t('fbd_no_state')}
-            </span>
+            <>
+                {enforce ? (
+                    <IconEnforce
+                        className="fb-state-enforce"
+                        titleAccess={I18n.t('fbd_param_enforce')}
+                    />
+                ) : null}
+                <span
+                    className={`fb-inline fb-inline-wide${state ? '' : ' fb-inline-empty'}`}
+                    title={state}
+                >
+                    {state || I18n.t('fbd_no_state')}
+                </span>
+                {deviates ? <span className="fb-state-deviation">{actual}</span> : null}
+            </>
         );
     };
 
@@ -328,7 +345,7 @@ function BlockNode({ id, data, selected }: NodeProps<BlockNodeType>): React.JSX.
 
     return (
         <div
-            className={`fb-block${selected ? ' fb-selected' : ''}${hasError ? ' fb-error' : ''}${next ? ' fb-next' : ''}`}
+            className={`fb-block${selected ? ' fb-selected' : ''}${hasError ? ' fb-error' : ''}${deviates ? ' fb-deviates' : ''}${next ? ' fb-next' : ''}`}
             style={{ '--fb-cat': color } as React.CSSProperties}
             title={title}
         >
