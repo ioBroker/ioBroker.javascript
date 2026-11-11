@@ -65,6 +65,11 @@ export interface FbView {
     userBlocks: Record<string, FbUserBlock>;
     debug: DebugView;
     /**
+     * Online: the states of STATE_OUT blocks that hold another value than the diagram wrote, with
+     * the value they hold - by ID
+     */
+    deviations: Record<string, unknown>;
+    /**
      * In front of the signal keys of the online view: empty for the diagram, the path of the
      * instance and a `/` inside an instance of a user block, like `b3/b7/`
      */
@@ -81,6 +86,8 @@ export const NO_DEBUG: DebugView = {
     forced: new Set(),
     toggleBreakpoint: () => {},
 };
+
+export const NO_DEVIATIONS: Record<string, unknown> = {};
 
 /**
  * The view of a diagram after an analysis. `userBlocks`: the user blocks it may use, if not its own
@@ -130,6 +137,7 @@ export function buildView(
         runtimeError: null,
         userBlocks,
         debug: NO_DEBUG,
+        deviations: NO_DEVIATIONS,
         prefix: '',
         linkStyle: 'curved',
     };
@@ -143,6 +151,7 @@ export const FbViewContext = createContext<FbView>({
     runtimeError: null,
     userBlocks: {},
     debug: NO_DEBUG,
+    deviations: NO_DEVIATIONS,
     prefix: '',
     linkStyle: 'curved',
 });

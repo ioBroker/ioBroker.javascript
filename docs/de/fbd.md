@@ -81,6 +81,9 @@ Knopf stehen:
 - der Zykluszähler - er bleibt stehen, wenn der Plan nicht mehr rechnet
 - eine Warnung, wenn keine Daten kommen (das Skript läuft nicht, oder seine Instanz ist gestoppt)
 - ein Hinweis, wenn der Plan nach dem Speichern geändert wurde: Die Werte gehören zur gespeicherten Fassung
+- ein Hinweis, wenn Datenpunkte von `STATE_OUT`-Bausteinen einen anderen Wert haben, als der Plan geschrieben hat -
+  jemand anderes hat sie geändert. Diese Bausteine sind orange umrandet und zeigen den Wert des Datenpunkts neben
+  seiner ID; der Tooltip erklärt es
 
 Schlägt ein Zyklus fehl, wird der Baustein, dessen Code fehlschlug, rot umrandet und der Fehler unten links
 aufgeführt; auch das Protokoll nennt den Baustein (`Error in the function block diagram in block b7: ...`).
@@ -221,7 +224,13 @@ der Plan sofort, und gleich danach noch einmal, um den Impuls zu beenden.
   der noch seinen ersten Namen hat, bekommt den Namen des Datenpunkts. Den Typ kann man danach anders setzen; neu
   übernommen wird er erst mit der nächsten ID.
 - `STATE_OUT` schreibt einen Datenpunkt nur, wenn sich der Wert ändert. `Mindestzeit zwischen zwei
-  Schreibvorgängen` begrenzt, wie oft er schreibt; der letzte Wert wird geschrieben, wenn die Zeit um ist.
+  Schreibvorgängen` begrenzt, wie oft er schreibt; der letzte Wert wird geschrieben, wenn die Zeit um ist. Ändert
+  jemand anderes den Datenpunkt (VIS, ein anderes Skript, von Hand), bleibt er so, bis sich der Wert im Plan ändert -
+  die Onlineansicht zeigt das an. Mit `Wert zurückschreiben` schreibt der Baustein seinen Wert dann gleich zurück,
+  höchstens einmal pro Sekunde, wie eine SPS, die ihre Ausgänge in jedem Zyklus schreibt - aber nur, wenn wirklich
+  etwas abweicht. Ein Schloss im Baustein zeigt die Einstellung. Nicht für Datenpunkte, die ein Adapter selbst
+  anpasst (ein Dimmer, der 100 % als 99 % bestätigt): Plan und Adapter würden den Wert abwechselnd schreiben; nach
+  zehn Korrekturen in einer Minute steht eine Warnung im Protokoll.
 - `CONST` ist ein Wert des gewählten Typs. Mit einem Eingang anderen Typs verbunden, übernimmt er dessen Typ und
   behält seinen Wert, soweit es geht (`"0"` wird für eine `TIME` zu 0 ms) - außer er speist schon andere Eingänge,
   die den neuen Typ nicht nehmen.

@@ -107,6 +107,7 @@ import { findNodes } from './search';
 import {
     FbViewContext,
     NO_DEBUG,
+    NO_DEVIATIONS,
     buildView,
     type BlockActions,
     type DebugView,
@@ -346,6 +347,8 @@ function FbCanvas(
     const [runtimeError, setRuntimeError] = useState<FbView['runtimeError']>(null);
     /** How the online view stands, as the runtime answered last; `null` while offline */
     const [debug, setDebug] = useState<FbDebugStatus | null>(null);
+    /** Online: the states of STATE_OUT blocks somebody else changed, with what they hold */
+    const [deviations, setDeviations] = useState<Record<string, unknown> | null>(null);
     const [commandError, setCommandError] = useState<string | null>(null);
     /** The search in the diagram, while it is open. `focus` counts Ctrl+F, to get the focus back */
     const [search, setSearch] = useState<{ text: string; index: number; focus: number } | null>(null);
@@ -1546,8 +1549,17 @@ function FbCanvas(
 
     // the copies of the user blocks straight from the state: a block placed just now needs its pins at once
     const shownView = useMemo(
-        () => ({ ...view, runtimeError, userBlocks, debug: debugView, actions, linkStyle }),
-        [view, runtimeError, userBlocks, debugView, actions, linkStyle],
+        () => ({
+            ...view,
+            runtimeError,
+            userBlocks,
+            debug: debugView,
+            // the diagram of a block writes no states
+            deviations: (online && !blockInfo && deviations) || NO_DEVIATIONS,
+            actions,
+            linkStyle,
+        }),
+        [view, runtimeError, userBlocks, debugView, online, blockInfo, deviations, actions, linkStyle],
     );
 
     return (
@@ -1640,6 +1652,8 @@ function FbCanvas(
                                             onError={setRuntimeError}
                                             debug={debug}
                                             onDebug={setDebug}
+                                            deviations={deviations}
+                                            onDeviations={setDeviations}
                                             onCommand={runDebug}
                                             commandError={commandError}
                                             nameOf={nameOf}

@@ -59,6 +59,32 @@ exports.version = types_1.FB_RUNTIME_VERSION;
 const COLLECT_MS = 20;
 /** A cycle that took longer than the interval this many times in a row is reported once */
 const OVERRUN_CYCLES = 10;
+/** A state set back by somebody else is corrected at most this often - not to race an adapter */
+const CORRECT_MS = 1000;
+/** So many corrections within a minute are reported */
+const CONTESTED_COUNT = 10;
+const CONTESTED_MS = 60_000;
+/**
+ * Whether a state holds what the diagram wrote. A state of another type than the signal counts as
+ * the same with the same number: 1 for `true`, "21" for 21.
+ */
+function sameValue(a, b) {
+    if (a === b || ((a === null || a === undefined) && (b === null || b === undefined))) {
+        return true;
+    }
+    if (typeof a === typeof b) {
+        return typeof a === 'number' && Number.isNaN(a) && Number.isNaN(b);
+    }
+    const number = (value) => typeof value === 'boolean'
+        ? Number(value)
+        : typeof value === 'number'
+            ? value
+            : typeof value === 'string' && value.trim() !== ''
+                ? Number(value)
+                : NaN;
+    const x = number(a);
+    return !Number.isNaN(x) && x === number(b);
+}
 /** Snapshots for the online view come at most this often */
 const PUBLISH_MS = 250;
 /** ... and at least this often, even without a change */
@@ -113,6 +139,7 @@ class FbRuntime {
     sent = null;
     sentError = 'null';
     sentDebug = '';
+    sentDeviations = '';
     sentPaths = '';
     viewer = 0;
     lastPublish = 0;
@@ -167,16 +194,21 @@ class FbRuntime {
     }
     /**
      * Writes a state, but only when the value changed. With `minInterval`, writes of one state are
-     * at least that many ms apart; the last value is written when the time is over.
+     * at least that many ms apart; the last value is written when the time is over. With `enforce`
+     * (since 1.9), a state somebody else changed gets the value of the diagram back, at most once a
+     * second - an SPS writes its outputs in every cycle.
      */
-    output(id, value, ack, minInterval) {
-        const output = this.outputs.get(id) || { value: undefined, ts: 0 };
+    output(id, value, ack, minInterval, enforce) {
+        const output = this.outputs.get(id) || { value: undefined, ts: 0, actual: undefined };
         this.outputs.set(id, output);
+        output.enforce = !!enforce;
+        // the state holds another value than the diagram wrote, and shall have it back
+        const correct = output.enforce && !output.pending && !sameValue(output.actual, output.value);
         const target = output.pending ? output.pending.value : output.value;
-        if (value === target) {
+        if (value === target && !correct) {
             return;
         }
-        if (value === output.value) {
+        if (value === output.value && !correct) {
             // back to what was written last: nothing is left to write
             output.pending = undefined;
             if (output.timer) {
@@ -185,18 +217,66 @@ class FbRuntime {
             }
             return;
         }
-        const wait = minInterval > 0 ? output.ts + minInterval - Date.now() : 0;
+        let wait = minInterval > 0 ? output.ts + minInterval - Date.now() : 0;
+        const correction = value === output.value;
+        if (correction) {
+            // an adapter that sets the state back each time is not raced
+            wait = Math.max(wait, output.ts + CORRECT_MS - Date.now());
+        }
         if (wait <= 0) {
-            this.write(id, output, value, ack);
+            this.write(id, output, value, ack, correction);
             return;
         }
-        output.pending = { value, ack };
+        output.pending = { value, ack, correction };
         output.timer ||= this.sandbox.setTimeout(() => {
             output.timer = null;
-            if (output.pending) {
-                this.write(id, output, output.pending.value, output.pending.ack);
+            const pending = output.pending;
+            // a correction is left out when the state has the value again meanwhile
+            if (pending && !(pending.correction && sameValue(output.actual, output.value))) {
+                this.write(id, output, pending.value, pending.ack, pending.correction);
+            }
+            else {
+                output.pending = undefined;
             }
         }, wait);
+    }
+    /** The state of a STATE_OUT changed - written by the diagram, or by somebody else */
+    outputChanged(id, state) {
+        const output = this.outputs.get(id);
+        if (!output) {
+            return;
+        }
+        output.actual = state?.val;
+        if (sameValue(output.actual, output.value)) {
+            return;
+        }
+        output.changedBy = state?.from;
+        // the next cycle writes the value back - in the event mode, it comes for it
+        if (output.enforce && this.scanned) {
+            this.collect();
+        }
+    }
+    /** Counts the corrections of a state: when they do not end, an adapter may set it back each time */
+    countCorrection(id, output) {
+        const now = Date.now();
+        if (!output.corrections || now - output.corrections.since > CONTESTED_MS) {
+            output.corrections = { since: now, count: 0 };
+        }
+        output.corrections.count++;
+        if (output.corrections.count >= CONTESTED_COUNT && !output.contested) {
+            output.contested = true;
+            this.sandbox.log(`STATE_OUT "${id}": the state is set to another value again and again${output.changedBy ? ` (by ${output.changedBy})` : ''} - the diagram writes its value back each time, as "Write the value back" is on`, 'warn');
+        }
+    }
+    /** The states of STATE_OUT blocks that hold another value than the diagram wrote, with that value */
+    deviations() {
+        const deviations = {};
+        for (const [id, output] of this.outputs) {
+            if (!sameValue(output.actual, output.value)) {
+                deviations[id] = output.actual ?? null;
+            }
+        }
+        return deviations;
     }
     /**
      * SCHEDULE: whether the time of the cron pattern came since the last cycle. The first call has the
@@ -264,12 +344,17 @@ class FbRuntime {
         }
         this.sandbox.registerNotification?.(instance.text, category === 'alert');
     }
-    write(id, output, value, ack) {
+    write(id, output, value, ack, correction = false) {
         if (output.timer) {
             this.sandbox.clearTimeout(output.timer);
             output.timer = null;
         }
+        if (correction) {
+            this.countCorrection(id, output);
+        }
         output.value = value;
+        // until the subscription says something else
+        output.actual = value;
         output.ts = Date.now();
         output.pending = undefined;
         this.sandbox.setState(id, value, ack);
@@ -327,7 +412,10 @@ class FbRuntime {
         const { inputs, outputs, mode, ms } = this.options;
         await Promise.all([
             ...inputs.map(async (id) => this.values.set(id, (await this.read(id))?.val)),
-            ...outputs.map(async (id) => this.outputs.set(id, { value: (await this.read(id))?.val, ts: 0 })),
+            ...outputs.map(async (id) => {
+                const value = (await this.read(id))?.val;
+                this.outputs.set(id, { value, ts: 0, actual: value });
+            }),
         ]);
         if (this.stopped) {
             return;
@@ -338,6 +426,11 @@ class FbRuntime {
                 this.badInputs.delete(id);
                 this.collect();
             });
+        }
+        // the outputs too: whether they hold what the diagram wrote - for the online view, and for
+        // the option "Write the value back"
+        for (const id of outputs) {
+            this.sandbox.on({ id, change: 'ne' }, event => this.outputChanged(id, event.state));
         }
         this.lastRun = Date.now();
         this.run(true);
@@ -742,7 +835,10 @@ class FbRuntime {
         const status = this.status();
         const debug = JSON.stringify(status);
         const debugChanged = full || debug !== this.sentDebug;
-        if (!changed && !errorChanged && !debugChanged && now - this.lastPublish < HEARTBEAT_MS) {
+        const deviations = this.deviations();
+        const deviationsKey = JSON.stringify(deviations);
+        const deviationsChanged = full || deviationsKey !== this.sentDeviations;
+        if (!changed && !errorChanged && !debugChanged && !deviationsChanged && now - this.lastPublish < HEARTBEAT_MS) {
             return;
         }
         const snapshot = { ts: now, cycle: this.cycles, mode: this.options.mode };
@@ -759,6 +855,10 @@ class FbRuntime {
         if (debugChanged) {
             snapshot.debug = status;
             this.sentDebug = debug;
+        }
+        if (deviationsChanged) {
+            snapshot.deviations = deviations;
+            this.sentDeviations = deviationsKey;
         }
         this.lastPublish = now;
         this.hooks.publish(snapshot);

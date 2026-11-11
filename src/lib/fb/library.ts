@@ -487,8 +487,10 @@ export const FB_LIBRARY: FbBlockDef[] = [
             { id: 'ack', type: 'BOOL', default: false },
             // at most one write per this many ms - the last value is written when it is over
             { id: 'minInterval', type: 'TIME', default: 0 },
+            // came with runtime 1.9: when somebody else changes the state, the value is written back
+            { id: 'enforce', type: 'BOOL', default: false },
         ],
-        code: 'rt.output({$oid}, {IN}, {$ack}, {$minInterval});',
+        code: 'rt.output({$oid}, {IN}, {$ack}, {$minInterval}, {$enforce});',
     },
     {
         type: 'CONST',
