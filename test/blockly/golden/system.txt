@@ -45,7 +45,7 @@ on({ id: 'Object ID 1', change: 'ne' }, (obj) => {
 getAttr(getObject('Object ID'), 'attribute1');
 
 ===== get_enum_members [Blockly.System.blocks] =====
-getObject('select ID')?.common?.members || [];
+(getObject('select ID')?.common?.members || []).filter(id => getObject(id)?.type === 'state');
 
 ===== get_object [Blockly.System.blocks] =====
 getObject('select ID');

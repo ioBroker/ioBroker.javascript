@@ -30,7 +30,7 @@ Executes JavaScript, TypeScript Scripts.
 -->
 ## Changelog
 ### **WORK IN PROGRESS**
-- (Voodoo2man) Added: Blockly category selection for member IDs and change/ack filters to the enum trigger (#1960)
+* (@Voodoo2man) Added: Blockly category selection for member IDs and change/ack filters to the enum trigger (#1960)
 
 ### 10.5.1 (2026-11-10)
 * (@GermanBluefox) Added: function block diagrams - blocks can be pinned (pin button on the block, its menu or the properties): "Arrange automatically" leaves them where they are and arranges the other blocks around them (#2443)

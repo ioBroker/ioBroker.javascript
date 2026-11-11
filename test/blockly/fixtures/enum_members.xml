@@ -4,6 +4,7 @@
     <value name="TEXT">
       <block type="get_enum_members">
         <field name="OID">enum.rooms.living_room</field>
+        <field name="STATES_ONLY">TRUE</field>
       </block>
     </value>
   </block>

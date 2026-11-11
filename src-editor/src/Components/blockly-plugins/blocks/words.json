@@ -442,17 +442,30 @@
         "zh-cn": "类别中的 ID"
     },
     "get_enum_members_tooltip": {
-        "en": "Returns the IDs of all objects in the selected category as an array",
-        "de": "Gibt die IDs aller Objekte in der ausgewählten Kategorie als Array zurück",
-        "ru": "Возвращает массив идентификаторов всех объектов выбранной категории",
-        "pt": "Retorna os IDs de todos os objetos na categoria selecionada como um array",
-        "nl": "Geeft de IDs van alle objecten in de geselecteerde categorie als array terug",
-        "fr": "Renvoie les IDs de tous les objets de la catégorie sélectionnée sous forme de tableau",
-        "it": "Restituisce come array gli ID di tutti gli oggetti nella categoria selezionata",
-        "es": "Devuelve como array los IDs de todos los objetos de la categoría seleccionada",
-        "pl": "Zwraca jako tablicę identyfikatory wszystkich obiektów w wybranej kategorii",
-        "uk": "Повертає масив ідентифікаторів усіх об'єктів у вибраній категорії",
-        "zh-cn": "以数组形式返回所选类别中所有对象的 ID"
+        "en": "Returns direct members of the selected category as an array. By default, only states are included; uncheck the option to include all member types. Nested enums are not expanded.",
+        "de": "Gibt direkte Mitglieder der ausgewählten Kategorie als Array zurück. Standardmäßig werden nur Zustände eingeschlossen; deaktivieren Sie die Option, um alle Mitgliedstypen einzuschließen. Verschachtelte Enums werden nicht aufgelöst.",
+        "ru": "Возвращает прямые элементы выбранной категории в виде массива. По умолчанию включаются только состояния; снимите флажок, чтобы включить все типы элементов. Вложенные перечисления не раскрываются.",
+        "pt": "Retorna os membros diretos da categoria selecionada como um array. Por padrão, inclui apenas estados; desmarque a opção para incluir todos os tipos de membros. Enumerações aninhadas não são expandidas.",
+        "nl": "Geeft directe leden van de geselecteerde categorie als array terug. Standaard worden alleen toestanden opgenomen; schakel de optie uit om alle typen leden op te nemen. Geneste enums worden niet uitgebreid.",
+        "fr": "Renvoie les membres directs de la catégorie sélectionnée sous forme de tableau. Par défaut, seuls les états sont inclus ; décochez l'option pour inclure tous les types de membres. Les énumérations imbriquées ne sont pas développées.",
+        "it": "Restituisce i membri diretti della categoria selezionata come array. Per impostazione predefinita include solo gli stati; deseleziona l'opzione per includere tutti i tipi di membri. Le enumerazioni annidate non vengono espanse.",
+        "es": "Devuelve los miembros directos de la categoría seleccionada como array. De forma predeterminada, solo se incluyen estados; desmarca la opción para incluir todos los tipos de miembros. Las enumeraciones anidadas no se expanden.",
+        "pl": "Zwraca bezpośrednie elementy wybranej kategorii jako tablicę. Domyślnie uwzględniane są tylko stany; odznacz opcję, aby uwzględnić wszystkie typy elementów. Zagnieżdżone enumy nie są rozwijane.",
+        "uk": "Повертає безпосередні елементи вибраної категорії як масив. Типово включаються лише стани; зніміть прапорець, щоб включити всі типи елементів. Вкладені переліки не розгортаються.",
+        "zh-cn": "以数组形式返回所选类别的直接成员。默认仅包含状态；取消勾选以包含所有成员类型。不会展开嵌套枚举。"
+    },
+    "get_enum_members_states_only": {
+        "en": "states only",
+        "de": "nur Zustände",
+        "ru": "только состояния",
+        "pt": "apenas estados",
+        "nl": "alleen toestanden",
+        "fr": "états uniquement",
+        "it": "solo stati",
+        "es": "solo estados",
+        "pl": "tylko stany",
+        "uk": "лише стани",
+        "zh-cn": "仅状态"
     },
     "exec": {
         "en": "exec",

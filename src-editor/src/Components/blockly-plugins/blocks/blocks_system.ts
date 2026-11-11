@@ -1135,7 +1135,9 @@ export function install(): void {
         init: function (this: Block): void {
             this.appendDummyInput()
                 .appendField(translate('get_enum_members'))
-                .appendField(new FieldOID(translate('select_id'), 'enum'), 'OID');
+                .appendField(new FieldOID(translate('select_id'), 'enum'), 'OID')
+                .appendField(new FieldCheckbox('TRUE'), 'STATES_ONLY')
+                .appendField(translate('get_enum_members_states_only'));
 
             this.setInputsInline(true);
             this.setOutput(true, 'Array');
@@ -1147,6 +1149,11 @@ export function install(): void {
     };
 
     javascriptGenerator.forBlock['get_enum_members'] = function (block: Block): [string, Order] {
-        return [`getObject(${quote(block.getFieldValue('OID'))})?.common?.members || []`, Order.ATOMIC];
+        const members = `getObject(${quote(block.getFieldValue('OID'))})?.common?.members || []`;
+        const result = isTrue(block.getFieldValue('STATES_ONLY'))
+            ? `(${members}).filter(id => getObject(id)?.type === 'state')`
+            : members;
+
+        return [result, Order.ATOMIC];
     };
 }
