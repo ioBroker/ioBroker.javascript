@@ -1269,8 +1269,9 @@ export function install(): void {
 
             this.appendDummyInput('OID').appendField(new FieldOID(translate('select_id'), 'enum'), 'OID');
 
+            // onEnumMembers reports changed values only: "any" cannot be done, "ge"/"le" would be the same as "gt"/"lt"
             this.appendDummyInput('CONDITION').appendField(
-                new FieldDropdown(conditionOptions().filter(([, value]) => value !== 'any')),
+                new FieldDropdown(conditionOptions().filter(([, value]) => !['any', 'ge', 'le'].includes(value))),
                 'CONDITION',
             );
 
@@ -1304,20 +1305,9 @@ export function install(): void {
         const filters: string[] = [];
         if (conditionValue === 'true' || conditionValue === 'false') {
             filters.push(`obj.state.val !== ${conditionValue}`);
-        } else if (conditionValue !== 'ne') {
-            const operator =
-                conditionValue === 'gt'
-                    ? '>'
-                    : conditionValue === 'ge'
-                      ? '>='
-                      : conditionValue === 'lt'
-                        ? '<'
-                        : conditionValue === 'le'
-                          ? '<='
-                          : undefined;
-            if (operator) {
-                filters.push(`!((obj.state.val ?? 0) ${operator} (obj.oldState.val ?? 0))`);
-            }
+        } else if (conditionValue === 'gt' || conditionValue === 'lt') {
+            const operator = conditionValue === 'gt' ? '>' : '<';
+            filters.push(`!((obj.state.val ?? 0) ${operator} (obj.oldState.val ?? 0))`);
         }
         if (fAckCondition) {
             filters.push(`obj.state.ack !== ${fAckCondition}`);
