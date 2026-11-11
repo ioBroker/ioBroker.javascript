@@ -1128,4 +1128,32 @@ export function install(): void {
     javascriptGenerator.forBlock['selector'] = function (block: Block): [string, Order] {
         return [`Array.prototype.slice.apply($(${quote(block.getFieldValue('TEXT'))}))`, Order.ATOMIC];
     };
+
+    Blockly.System.blocks['get_enum_members'] = '<block type="get_enum_members"></block>';
+
+    Blocks['get_enum_members'] = {
+        init: function (this: Block): void {
+            this.appendDummyInput()
+                .appendField(translate('get_enum_members'))
+                .appendField(new FieldOID(translate('select_id'), 'enum'), 'OID')
+                .appendField(new FieldCheckbox('TRUE'), 'STATES_ONLY')
+                .appendField(translate('get_enum_members_states_only'));
+
+            this.setInputsInline(true);
+            this.setOutput(true, 'Array');
+
+            this.setColour(Blockly.System.HUE);
+
+            this.setTooltip(translate('get_enum_members_tooltip'));
+        },
+    };
+
+    javascriptGenerator.forBlock['get_enum_members'] = function (block: Block): [string, Order] {
+        const members = `getObject(${quote(block.getFieldValue('OID'))})?.common?.members || []`;
+        const result = isTrue(block.getFieldValue('STATES_ONLY'))
+            ? `(${members}).filter(id => getObject(id)?.type === 'state')`
+            : members;
+
+        return [result, Order.ATOMIC];
+    };
 }
