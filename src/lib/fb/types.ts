@@ -10,7 +10,7 @@
 export const FB_FORMAT = 1;
 
 /** Version of the block library and of the runtime module the generated code needs */
-export const FB_RUNTIME_VERSION = '1.8.0';
+export const FB_RUNTIME_VERSION = '1.9.0';
 
 /** Name under which the generated code requires the runtime module */
 export const FB_RUNTIME_MODULE = '@iobroker/fb-runtime';

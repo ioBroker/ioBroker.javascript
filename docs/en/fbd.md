@@ -75,6 +75,8 @@ it:
 - the cycle count - it stands still when the diagram stopped running
 - a warning when no data comes (the script does not run, or its instance is stopped)
 - a hint when the diagram was changed after saving: the values belong to the saved version
+- a hint when states of `STATE_OUT` blocks hold another value than the diagram wrote - somebody else changed them.
+  Those blocks are framed in orange and show the value of the state next to its ID; the tooltip explains it
 
 When a cycle fails, the block whose code failed is framed in red and the error is listed at the bottom left; the
 log names the block too (`Error in the function block diagram in block b7: ...`).
@@ -206,7 +208,12 @@ diagram runs at once, and once more right after it to end the pulse.
   or typed - the type is taken from the object of the state, and a block that still has its first name is named
   after the state. The type can be set differently afterwards; it is taken again only with the next ID.
 - `STATE_OUT` writes a state only when the value changes. `Minimum time between writes` limits how often it
-  writes; the last value is written when the time is over.
+  writes; the last value is written when the time is over. When somebody else changes the state (VIS, another
+  script, by hand), it stays like that until the value in the diagram changes - the online view shows it. With
+  `Write the value back`, the block writes its value back at once instead, at most once a second, like a PLC that
+  writes its outputs in every cycle - but only when something really differs. A lock in the block shows the setting.
+  Not for states that an adapter adjusts itself (a dimmer that confirms 100 % as 99 %): diagram and adapter would
+  write the value in turn; after ten corrections within a minute, a warning is logged.
 - `CONST` is a value of the chosen type. Linked to an input of another type, it takes the type of the input and
   keeps its value as far as it goes (`"0"` becomes 0 ms for a `TIME`) - unless it feeds other inputs already that
   the new type would not fit.
