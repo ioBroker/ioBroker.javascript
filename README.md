@@ -30,6 +30,9 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Editor: log lines are kept when the script list or the log is hidden/shown (#2462)
+
 ### 10.5.3 (2026-11-11)
 * (@GermanBluefox) Fixed: the cursor of the script editor jumped to the start of the script after the first typed character (when nothing else had updated the editor since the script was opened) and after saving
 
