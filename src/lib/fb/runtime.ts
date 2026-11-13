@@ -166,15 +166,29 @@ const CONTESTED_COUNT = 10;
 const CONTESTED_MS = 60_000;
 
 /**
+ * Numbers this close, relative to their size, count as the same. Adapters like esphome keep a value
+ * as float32 - 11.768 comes back as 11.76799964904785.
+ */
+const NUMBER_TOLERANCE = 1e-6;
+
+function nearlyEqual(x: number, y: number): boolean {
+    return (
+        x === y ||
+        (Number.isNaN(x) && Number.isNaN(y)) ||
+        Math.abs(x - y) <= NUMBER_TOLERANCE * Math.max(1, Math.abs(x), Math.abs(y))
+    );
+}
+
+/**
  * Whether a state holds what the diagram wrote. A state of another type than the signal counts as
- * the same with the same number: 1 for `true`, "21" for 21.
+ * the same with the same number: 1 for `true`, "21" for 21. Numbers within `NUMBER_TOLERANCE` too.
  */
 function sameValue(a: unknown, b: unknown): boolean {
     if (a === b || ((a === null || a === undefined) && (b === null || b === undefined))) {
         return true;
     }
     if (typeof a === typeof b) {
-        return typeof a === 'number' && Number.isNaN(a) && Number.isNaN(b);
+        return typeof a === 'number' && nearlyEqual(a, b as number);
     }
     const number = (value: unknown): number =>
         typeof value === 'boolean'
@@ -185,7 +199,7 @@ function sameValue(a: unknown, b: unknown): boolean {
                 ? Number(value)
                 : NaN;
     const x = number(a);
-    return !Number.isNaN(x) && x === number(b);
+    return !Number.isNaN(x) && nearlyEqual(x, number(b));
 }
 
 /** Snapshots for the online view come at most this often */
