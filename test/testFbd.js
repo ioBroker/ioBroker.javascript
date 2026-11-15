@@ -522,6 +522,33 @@ describe('FBD: fb-runtime', () => {
         assert.deepEqual(rt.deviations(), { 'x.0.out': '22' });
     });
 
+    it('counts a number the state holds as float32 only as the same value (#2461)', () => {
+        const { rt, writes, logs, changed } = outputRuntime();
+        rt.output('x.0.out', 11.768, false, 0, true);
+        // esphome keeps the value as float32
+        changed(11.76799964904785);
+        assert.deepEqual(rt.deviations(), {});
+        changed('11.76799964904785');
+        assert.deepEqual(rt.deviations(), {});
+        rt.output('x.0.out', 1, false, 0, true);
+        changed(1.1);
+        assert.deepEqual(rt.deviations(), { 'x.0.out': 1.1 });
+        assert.deepEqual(writes, [11.768, 1]);
+        assert.deepEqual(logs, []);
+    });
+
+    it('does not write a value back the state holds as float32 only (#2461)', () => {
+        const { rt, writes, logs, changed } = outputRuntime();
+        rt.output('x.0.out', 11.768, false, 0, true);
+        for (let i = 0; i < 12; i++) {
+            changed(11.76799964904785, 'system.adapter.esphome.0');
+            rt.outputs.get('x.0.out').ts -= 1000;
+            rt.output('x.0.out', 11.768, false, 0, true);
+        }
+        assert.deepEqual(writes, [11.768]);
+        assert.deepEqual(logs, [], 'not reported as contested');
+    });
+
     it('leaves a correction out when the state has the value again before it is due', async () => {
         const { rt, writes, changed } = outputRuntime();
         rt.output('x.0.out', 5, false, 0, true);
