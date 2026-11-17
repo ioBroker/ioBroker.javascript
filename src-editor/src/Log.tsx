@@ -145,6 +145,17 @@ function paddingMs(ms: number): string {
 }
 
 const gText: Record<string, string[]> = {};
+/**
+ * The log lines of the edited scripts. They are kept outside the component, because the component is
+ * created anew, when the script list or the log is hidden and shown again (#2462)
+ */
+const gLines: Record<string, React.JSX.Element[]> = {};
+/** IDs of the edited scripts - only their messages are collected */
+let gEditing: string[] = [];
+/** The socket, where the log handler is registered */
+let gSocket: AdminConnection | null = null;
+/** Mounted log components, which want to know about the new lines (the ID of the script is given) */
+const gListeners = new Set<(id: string) => void>();
 
 interface LogProps {
     selected: string | null;
@@ -156,7 +167,8 @@ interface LogProps {
 }
 
 interface LogState {
-    lines: Record<string, React.JSX.Element[]>;
+    /** Counts the incoming lines, to render them (the lines themselves are in `gLines`) */
+    linesVersion: number;
     goBottom: boolean;
     selected: string | null;
     editing: string[];
@@ -177,7 +189,7 @@ class Log extends React.Component<LogProps, LogState> {
     constructor(props: LogProps) {
         super(props);
         this.state = {
-            lines: {},
+            linesVersion: 0,
             goBottom: true,
             selected: null,
             editing: this.props.editing || [],
@@ -229,9 +241,9 @@ class Log extends React.Component<LogProps, LogState> {
         this.messagesEnd?.current?.scrollIntoView({ behavior: 'smooth' });
     }
 
-    logHandler = (message: LogMessage): void => {
-        const allLines = this.state.lines;
-        const scripts = this.state.editing.filter(id => message.message.includes(id));
+    /** Collects the lines in `gLines`/`gText`, independent of the mounted component */
+    static logHandler = (message: LogMessage): void => {
+        const scripts = gEditing.filter(id => message.message.includes(id));
         let selected: string | null = null;
         if (!scripts.length) {
             return;
@@ -247,7 +259,7 @@ class Log extends React.Component<LogProps, LogState> {
             return;
         }
 
-        const lines: React.JSX.Element[] = allLines[selected] || [];
+        const lines: React.JSX.Element[] = gLines[selected] || [];
         const text: string[] = gText[selected] || [];
 
         lines.push(Log.generateLine(message, selected));
@@ -263,21 +275,56 @@ class Log extends React.Component<LogProps, LogState> {
             text.splice(0, cut);
         }
         gText[selected] = text;
-        allLines[selected] = lines;
+        gLines[selected] = lines;
 
-        if (!this.state.goBottom && selected === this.state.selected) {
-            this.setState({ lines: allLines, unseen: this.state.unseen + 1 });
+        const id: string = selected;
+        gListeners.forEach(listener => listener(id));
+    };
+
+    /**
+     * Collects the log lines independent of the component, so they are collected even while the log is hidden.
+     * Registers the handler only once per socket.
+     */
+    static attach(socket: AdminConnection): void {
+        if (gSocket === socket) {
+            return;
+        }
+        gSocket?.unregisterLogHandler(Log.logHandler);
+        gSocket = socket;
+        socket.registerLogHandler(Log.logHandler);
+    }
+
+    /** Sets the edited scripts: only their messages are collected, the lines of the closed scripts are deleted */
+    static setEditing(editing: string[] | undefined): void {
+        gEditing = editing ? [...editing] : [];
+
+        for (const id in gText) {
+            if (Object.prototype.hasOwnProperty.call(gText, id)) {
+                if (!gEditing.includes(id)) {
+                    delete gText[id];
+                    delete gLines[id];
+                }
+            }
+        }
+    }
+
+    onNewLine = (id: string): void => {
+        if (!this.state.goBottom && id === this.state.selected) {
+            this.setState({ linesVersion: this.state.linesVersion + 1, unseen: this.state.unseen + 1 });
         } else {
-            this.setState({ lines: allLines });
+            this.setState({ linesVersion: this.state.linesVersion + 1 });
         }
     };
 
     componentDidMount(): void {
-        this.props.socket.registerLogHandler(this.logHandler);
+        Log.attach(this.props.socket);
+        gListeners.add(this.onNewLine);
+        // the lines collected while the log was hidden are shown at once
+        this.state.goBottom && this.scrollToBottom();
     }
 
     componentWillUnmount(): void {
-        this.props.socket.unregisterLogHandler(this.logHandler);
+        gListeners.delete(this.onNewLine);
         if (this.copiedTimer) {
             clearTimeout(this.copiedTimer);
             this.copiedTimer = null;
@@ -294,9 +341,8 @@ class Log extends React.Component<LogProps, LogState> {
 
         if (props.selected !== state.selected) {
             const selected = props.selected;
-            const allLines = state.lines;
             if (selected) {
-                allLines[selected] = allLines[selected] || [];
+                gLines[selected] = gLines[selected] || [];
                 gText[selected] = gText[selected] || [];
             }
             newState.selected = selected;
@@ -307,16 +353,7 @@ class Log extends React.Component<LogProps, LogState> {
         if (JSON.stringify(props.editing) !== JSON.stringify(state.editing)) {
             const editing = JSON.parse(JSON.stringify(props.editing));
             changed = true;
-            const allLines = state.lines;
-
-            for (const id in gText) {
-                if (Object.prototype.hasOwnProperty.call(gText, id)) {
-                    if (!editing.includes(id)) {
-                        delete gText[id];
-                        delete allLines[id];
-                    }
-                }
-            }
+            Log.setEditing(editing);
 
             newState.editing = editing;
         }
@@ -336,14 +373,13 @@ class Log extends React.Component<LogProps, LogState> {
     }
 
     clearLog(): void {
-        const allLines = this.state.lines;
-        if (allLines[this.state.selected as string]) {
-            allLines[this.state.selected as string] = [];
+        if (gLines[this.state.selected as string]) {
+            gLines[this.state.selected as string] = [];
         }
         if (gText[this.state.selected as string]) {
             gText[this.state.selected as string] = [];
         }
-        this.setState({ lines: allLines, unseen: 0 });
+        this.setState({ linesVersion: this.state.linesVersion + 1, unseen: 0 });
     }
 
     renderLogList(lines: (React.JSX.Element | null)[] | null): React.JSX.Element {
@@ -380,7 +416,7 @@ class Log extends React.Component<LogProps, LogState> {
     }
 
     render(): React.JSX.Element {
-        const lines = this.state.selected ? this.state.lines[this.state.selected] : null;
+        const lines = this.state.selected ? gLines[this.state.selected] : null;
         return (
             <div style={styles.logBox}>
                 <div

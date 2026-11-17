@@ -30,6 +30,9 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Editor: log lines are kept when the script list or the log is hidden/shown (#2462)
+
 ### 10.5.4 (2026-11-15)
 * (@GermanBluefox) Function block diagrams: a STATE_OUT is no longer shown as deviating when the state holds the value with float precision only (#2461)
 

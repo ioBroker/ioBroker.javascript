@@ -431,6 +431,8 @@ export default class App extends GenericApp<AppProps, AppState> {
     onConnectionReady(): void {
         window.systemLang = this.socket.systemLang;
         Object.keys(this.pending).forEach(id => this.clearPending(id));
+        // the log lines are collected, even if the log is hidden (#2462)
+        Log.attach(this.socket);
         this.setState(
             {
                 ready: false,
@@ -578,6 +580,10 @@ export default class App extends GenericApp<AppProps, AppState> {
         }
         if (prevState.hideLog && !this.state.hideLog) {
             reveal(this.logRef.current, this.state.logHorzLayout ? 'right' : 'bottom');
+        }
+        // the log collects the lines of the edited scripts even while it is hidden
+        if (prevState.editing !== this.state.editing) {
+            Log.setEditing(this.state.editing);
         }
     }
 
