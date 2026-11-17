@@ -33,6 +33,9 @@ Executes JavaScript, TypeScript Scripts.
 ### **WORK IN PROGRESS**
 * (@GermanBluefox) Editor: log lines are kept when the script list or the log is hidden/shown (#2462)
 
+### 10.5.4 (2026-11-15)
+* (@GermanBluefox) Function block diagrams: a STATE_OUT is no longer shown as deviating when the state holds the value with float precision only (#2461)
+
 ### 10.5.3 (2026-11-11)
 * (@GermanBluefox) Fixed: the cursor of the script editor jumped to the start of the script after the first typed character (when nothing else had updated the editor since the script was opened) and after saving
 
@@ -49,15 +52,6 @@ Executes JavaScript, TypeScript Scripts.
 ### 10.5.0 (2026-11-07)
 * (@GermanBluefox) Added: script functions `readDir`, `fileExists`, `chmodFile` and `chownFile` for files in the DB, and `chmodObject` and `chownObject` to change the access rights and the owner of objects and states (only with the option "Enable command setObject"), each with an `...Async` variant
 * (@GermanBluefox) Added: function block diagrams - block `CHARCURVE` (characteristic curve, e.g. a heating curve): `OUT` on the straight lines through 2 to 10 points `X1`/`Y1` ... `Xn`/`Yn`, kept at the Y of the outer points beyond them; the points are inputs, so they can be connected too, and the properties show the curve (#2433)
-
-### 10.4.10 (2026-11-04)
-* (@GermanBluefox) Fixed: the unsaved changes of the open scripts were lost, when the list of scripts or the log was hidden or shown again (#1739)
-* (@GermanBluefox) Added: animated icons in the editor (`@iobroker/gui-components` 10.3.16) - start/stop morphs between play and pause and shows a ring until the instance confirmed it, the restart button turns until the script is restarted, folders open with an animation, animated delete, menu arrow and expert mode symbols, a check mark after saving and copying
-* (@GermanBluefox) Added: more animations in the editor - the rows of a folder grow and shrink when it is opened and closed, new scripts light up, the colors of the start/stop buttons fade, the Save/Diff/Cancel buttons and new tabs grow to their width, closed tabs shrink, new log lines slide in, the side menu and the log slide in when they are opened, badges jump when their number grows
-* (@GermanBluefox) Added: the log shows the number of new lines, while it does not follow them
-* (@GermanBluefox) Added: the history dialog can be maximized (button or double click on its title); the width of the version list and the border between the two sides of the diff can be dragged; buttons jump from change to change; "Take over into the editor" is disabled for a version that is the same as the editor
-* (@GermanBluefox) Changed: the diffs (history, unsaved changes, AI suggestions) scroll to the first change and show changed indentation too
-* (@GermanBluefox) Updated packages
 
 ## License
 The MIT License (MIT)
