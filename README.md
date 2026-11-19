@@ -34,7 +34,7 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 10.6.1 (2026-11-19)
 * (@GermanBluefox) Version 10.6.0 was not published on npm, this release contains its changes
 
 ### 10.6.0 (2026-11-19)
@@ -48,10 +48,6 @@ Executes JavaScript, TypeScript Scripts.
 
 ### 10.5.3 (2026-11-11)
 * (@GermanBluefox) Fixed: the cursor of the script editor jumped to the start of the script after the first typed character (when nothing else had updated the editor since the script was opened) and after saving
-
-### 10.5.2 (2026-11-11)
-* (@GermanBluefox) Added: function block diagrams - the online view marks a `STATE_OUT` block whose state somebody else changed (VIS, another script, by hand) and shows the value the state holds; the new option "Write the value back" of `STATE_OUT` writes the value of the diagram back then, at most once a second (#2442)
-* (@Voodoo2man) Added: Blockly category selection for member IDs and change/ack filters to the enum trigger (#1960)
 
 ## License
 The MIT License (MIT)
