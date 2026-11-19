@@ -196,6 +196,10 @@
     ],
     "type": "logic",
     "messagebox": true,
+    "supportedMessages": {
+        "help": true,
+        "custom": true
+    },
     "logTransporter": true,
     "plugins": {
       "sentry": {

@@ -25,11 +25,18 @@ Executes JavaScript, TypeScript Scripts.
   - 🇩🇪 Hier kann man die Beschreibung von [Blockly](docs/de/blockly.md) finden. 
   - 🇷🇺 Описание по [blockly](docs/ru/blockly.md) можно найти [здесь](docs/ru/blockly.md).
 
+## Messages for scripts and AI agents
+
+`sendTo('javascript.0', 'help', {})` answers with a description of the messages (`toScript`, `execute`, `calcAstro`, script versions, ...) for AI agents (e.g. pi-agent) and script authors; the answer lists all commands with `write` (whether a command changes something).
+
 <!--
   ### **WORK IN PROGRESS**
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (@GermanBluefox) Added the message "help": a description of all messages for AI agents (e.g. pi-agent), and common.supportedMessages.help
+
 ### 10.5.5 (2026-11-17)
 * (@GermanBluefox) Editor: log lines are kept when the script list or the log is hidden/shown (#2462)
 

@@ -53,6 +53,7 @@ import { SecretsManager, isSecretId } from './lib/secrets';
 import type { FbDebugCommand, FbDebugStatus } from './lib/fb/types';
 import { AiBackend } from '@iobroker/ai-core';
 import { JS_AI_ALIASES, jsActiveAiSettings, jsAiSettings } from './lib/ai';
+import { COMMANDS, HELP } from './lib/help';
 import {
     addVersion,
     describeSource,
@@ -1428,6 +1429,14 @@ class JavaScript extends Adapter {
             return;
         }
         switch (obj?.command) {
+            case 'help': {
+                // a description of all messages for AI agents and scripts
+                if (obj.callback) {
+                    this.sendTo(obj.from, obj.command, { help: HELP, commands: COMMANDS }, obj.callback);
+                }
+                break;
+            }
+
             // process messageTo commands
             case 'toScript':
             case 'jsMessageBus':

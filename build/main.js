@@ -82,6 +82,7 @@ const nodeModulesManagement_1 = require("./lib/nodeModulesManagement");
 const secrets_1 = require("./lib/secrets");
 const ai_core_1 = require("@iobroker/ai-core");
 const ai_1 = require("./lib/ai");
+const help_1 = require("./lib/help");
 const scriptHistory_1 = require("./lib/scriptHistory");
 const eventObj_1 = require("./lib/eventObj");
 const scheduler_1 = require("./lib/scheduler");
@@ -1238,6 +1239,13 @@ class JavaScript extends adapter_core_1.Adapter {
             return;
         }
         switch (obj?.command) {
+            case 'help': {
+                // a description of all messages for AI agents and scripts
+                if (obj.callback) {
+                    this.sendTo(obj.from, obj.command, { help: help_1.HELP, commands: help_1.COMMANDS }, obj.callback);
+                }
+                break;
+            }
             // process messageTo commands
             case 'toScript':
             case 'jsMessageBus':
