@@ -1,4 +1,10 @@
 The newest change log is in README.md
+## 10.5.1 (2026-11-10)
+* (@GermanBluefox) Added: function block diagrams - blocks can be pinned (pin button on the block, its menu or the properties): "Arrange automatically" leaves them where they are and arranges the other blocks around them (#2443)
+* (@GermanBluefox) Added: function block diagrams - a link can be moved to another input by dragging its connected input; let go where no input is, it is deleted - a mere click on it keeps it (#2438)
+* (@GermanBluefox) Added: function block diagrams - the `PID` block has the output `RUN`: `TRUE` while the controller works, i.e. none of `MAN`, `RST` and `HOLD` is active (#2440)
+* (@GermanBluefox) Changed: function block diagrams - the online view shows the value of a link that is not BOOL at the input of the target block instead of in the middle of the link (#2444)
+
 ## 10.5.0 (2026-11-07)
 * (@GermanBluefox) Added: script functions `readDir`, `fileExists`, `chmodFile` and `chownFile` for files in the DB, and `chmodObject` and `chownObject` to change the access rights and the owner of objects and states (only with the option "Enable command setObject"), each with an `...Async` variant
 * (@GermanBluefox) Added: function block diagrams - block `CHARCURVE` (characteristic curve, e.g. a heating curve): `OUT` on the straight lines through 2 to 10 points `X1`/`Y1` ... `Xn`/`Yn`, kept at the Y of the outer points beyond them; the points are inputs, so they can be connected too, and the properties show the curve (#2433)

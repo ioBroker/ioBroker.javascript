@@ -34,7 +34,7 @@ Executes JavaScript, TypeScript Scripts.
 -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 10.6.0 (2026-11-19)
 * (@GermanBluefox) Added the message "help": a description of all messages for AI agents (e.g. pi-agent), and common.supportedMessages.help
 
 ### 10.5.5 (2026-11-17)
@@ -49,12 +49,6 @@ Executes JavaScript, TypeScript Scripts.
 ### 10.5.2 (2026-11-11)
 * (@GermanBluefox) Added: function block diagrams - the online view marks a `STATE_OUT` block whose state somebody else changed (VIS, another script, by hand) and shows the value the state holds; the new option "Write the value back" of `STATE_OUT` writes the value of the diagram back then, at most once a second (#2442)
 * (@Voodoo2man) Added: Blockly category selection for member IDs and change/ack filters to the enum trigger (#1960)
-
-### 10.5.1 (2026-11-10)
-* (@GermanBluefox) Added: function block diagrams - blocks can be pinned (pin button on the block, its menu or the properties): "Arrange automatically" leaves them where they are and arranges the other blocks around them (#2443)
-* (@GermanBluefox) Added: function block diagrams - a link can be moved to another input by dragging its connected input; let go where no input is, it is deleted - a mere click on it keeps it (#2438)
-* (@GermanBluefox) Added: function block diagrams - the `PID` block has the output `RUN`: `TRUE` while the controller works, i.e. none of `MAN`, `RST` and `HOLD` is active (#2440)
-* (@GermanBluefox) Changed: function block diagrams - the online view shows the value of a link that is not BOOL at the input of the target block instead of in the middle of the link (#2444)
 
 ## License
 The MIT License (MIT)
