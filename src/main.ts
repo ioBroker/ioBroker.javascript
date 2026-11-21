@@ -1236,6 +1236,7 @@ class JavaScript extends Adapter {
             // itself as soon as the connection to this process is gone. The shutdown must not be delayed by it.
             void this.debugStop();
             this.stopTimeSchedules();
+            this.mirror?.destroy();
             if (this.setStateCountCheckInterval) {
                 clearInterval(this.setStateCountCheckInterval);
                 this.setStateCountCheckInterval = null;
