@@ -18,6 +18,12 @@ import { isFbdSource } from './fb/graph';
 import { escapeRegExp } from './tools';
 
 const MODE_0777 = 511;
+/**
+ * Many editors save a file in several steps (truncate + write, or temp file + rename), so one save fires
+ * several watcher events. The file is read only when it was quiet for this time, so one save leads to one
+ * update of the script and one restart (#2467).
+ */
+export const FILE_CHANGE_DEBOUNCE_MS = 300;
 
 export class Mirror {
     private adapter: ioBroker.Adapter;
@@ -33,6 +39,8 @@ export class Mirror {
         error: (text: string) => void;
     };
     private watchedFolder: Record<string, FSWatcher> = {};
+    private watchedLinks: FSWatcher[] = [];
+    private changeTimers: Record<string, NodeJS.Timeout> = {};
     private readonly diskList: Record<string, { ts: number; source: string; name: string }>;
     private dbList: Record<string, ioBroker.BaseObject> = {};
     private ready = false;
@@ -117,11 +125,13 @@ export class Mirror {
                     const linkTarget = realpathSync(name);
 
                     this.log.info(`Watch symlinked file ${name} -> ${linkTarget}`);
-                    watch(linkTarget, (eventType /*, _filename*/) => {
-                        // Pretend the symlink source was changed.
-                        this.log.debug(`File ${name} ${eventType}`);
-                        this.onFileChange(eventType, name);
-                    });
+                    this.watchedLinks.push(
+                        watch(linkTarget, (eventType /*, _filename*/) => {
+                            // Pretend the symlink source was changed.
+                            this.log.debug(`File ${name} ${eventType}`);
+                            this.onFileChange(eventType, name);
+                        }),
+                    );
                 }
             });
         } catch (err: unknown) {
@@ -520,57 +530,20 @@ export class Mirror {
         const id = this._fileName2scriptId(file);
 
         if (exists && (event === 'change' || event === 'create')) {
-            try {
-                stats = stats || statSync(file);
-                const source = readFileSync(file).toString();
-                const ts = stats?.mtime.getTime() || 0;
-                this.diskList[id] = { ts, source, name: file };
-
-                if (this.dbList[id]) {
-                    if (this.dbList[id].common.source !== source) {
-                        this.dbList[id].common.source = source;
-                        this.dbList[id].ts = ts;
-                        this.log.debug(`Update script ${id} in DB`);
-                        this.dbList[id].from = this.from;
-                        /*
-                         * Only the source. Writing the whole cached object would carry everything
-                         * else in it back into the database as well, and a file says nothing about
-                         * whether its script is enabled or which instance runs it (#2396). Together
-                         * with the cache being kept in step above this holds even when the object
-                         * changes while a write is on its way.
-                         */
-                        void this.adapter.extendForeignObject(id, {
-                            common: { source },
-                        } as Partial<ioBroker.ScriptObject>);
-                    } else {
-                        this.dbList[id].ts = ts;
-                    }
-                } else {
-                    this.log.debug(`Create script ${id} in DB`);
-                    const parts = id.split('.');
-                    // new script
-                    this.dbList[id] = {
-                        _id: id,
-                        common: {
-                            name: parts.pop(),
-                            engineType: Mirror.detectType(file, source),
-                            source,
-                            enabled: false,
-                            engine: `system.adapter.${this.adapter.namespace}`,
-                            debug: false,
-                            verbose: false,
-                        },
-                        type: 'script',
-                        native: {},
-                        ts: ts,
-                    };
-                    this._checkIfAllFoldersAreExist(id, this.dbList);
-                    void this.adapter.setForeignObject(id, this.dbList[id] as ioBroker.Object);
-                }
-            } catch (err: unknown) {
-                this.log.error(`Cannot read file ${file}: ${err as Error}`);
+            // Read the file only when the editor is done with it - see FILE_CHANGE_DEBOUNCE_MS
+            if (this.changeTimers[file]) {
+                clearTimeout(this.changeTimers[file]);
             }
+            this.changeTimers[file] = setTimeout(() => {
+                delete this.changeTimers[file];
+                this._processFileChange(file, id);
+            }, FILE_CHANGE_DEBOUNCE_MS);
+            return;
         } else if (event === 'delete' || event === 'rename') {
+            if (this.changeTimers[file]) {
+                clearTimeout(this.changeTimers[file]);
+                delete this.changeTimers[file];
+            }
             // there is a bug: just after creation of a script on disk from ioBroker, "rename" event is generated!
             if (event === 'rename' && this.diskList[id] && Date.now() - this.diskList[id].ts < 200) {
                 console.log(`Interval: ${Date.now() - this.diskList[id].ts}`);
@@ -588,6 +561,86 @@ export class Mirror {
             }
         }
         this.adapter.setForeignState(this.lastSyncID, Date.now(), true);
+    }
+
+    /**
+     * Reads a changed file and takes its source over into the DB - once the file was quiet for FILE_CHANGE_DEBOUNCE_MS.
+     *
+     * @param file the changed file
+     * @param id the ID of its script
+     */
+    private _processFileChange(file: string, id: string): void {
+        if (!this.ready || !existsSync(file)) {
+            // the file is gone in the meantime - its "delete"/"rename" event takes care of it
+            return;
+        }
+        try {
+            const stats = statSync(file);
+            const source = readFileSync(file).toString();
+            const ts = stats?.mtime.getTime() || 0;
+            this.diskList[id] = { ts, source, name: file };
+
+            if (this.dbList[id]) {
+                if (this.dbList[id].common.source !== source) {
+                    this.dbList[id].common.source = source;
+                    this.dbList[id].ts = ts;
+                    this.log.debug(`Update script ${id} in DB`);
+                    this.dbList[id].from = this.from;
+                    /*
+                     * Only the source. Writing the whole cached object would carry everything
+                     * else in it back into the database as well, and a file says nothing about
+                     * whether its script is enabled or which instance runs it (#2396). Together
+                     * with the cache being kept in step above this holds even when the object
+                     * changes while a write is on its way.
+                     */
+                    void this.adapter.extendForeignObject(id, {
+                        common: { source },
+                    } as Partial<ioBroker.ScriptObject>);
+                } else {
+                    this.dbList[id].ts = ts;
+                }
+            } else {
+                this.log.debug(`Create script ${id} in DB`);
+                const parts = id.split('.');
+                // new script
+                this.dbList[id] = {
+                    _id: id,
+                    common: {
+                        name: parts.pop(),
+                        engineType: Mirror.detectType(file, source),
+                        source,
+                        enabled: false,
+                        engine: `system.adapter.${this.adapter.namespace}`,
+                        debug: false,
+                        verbose: false,
+                    },
+                    type: 'script',
+                    native: {},
+                    ts: ts,
+                };
+                this._checkIfAllFoldersAreExist(id, this.dbList);
+                void this.adapter.setForeignObject(id, this.dbList[id] as ioBroker.Object);
+            }
+        } catch (err: unknown) {
+            this.log.error(`Cannot read file ${file}: ${err as Error}`);
+        }
+        this.adapter.setForeignState(this.lastSyncID, Date.now(), true);
+    }
+
+    /** Stops all watchers and drops the changes that were not processed yet */
+    destroy(): void {
+        Object.values(this.changeTimers).forEach(timer => clearTimeout(timer));
+        this.changeTimers = {};
+        this.ready = false;
+        for (const watcher of [...Object.values(this.watchedFolder), ...this.watchedLinks]) {
+            try {
+                watcher.close();
+            } catch {
+                // ignore error
+            }
+        }
+        this.watchedFolder = {};
+        this.watchedLinks = [];
     }
 
     onObjectChange(id: string, obj: ioBroker.ScriptObject | null | undefined): void {
