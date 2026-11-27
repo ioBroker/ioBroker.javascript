@@ -3183,6 +3183,9 @@ class JavaScript extends adapter_core_1.Adapter {
                 obj.common.engineType === 'FBD') {
                 // Javascript
                 this.log.info(`${name}: start JavaScript (${obj.common.engineType})`);
+                if (obj.common.engineType === 'Blockly' && (0, tools_1.hasNaNDelay)(obj.common.source)) {
+                    this.log.warn(`${name}: a pause or a delay of this script is "NaN" ms, so it does not wait. The editor made "NaN" of a variable in the time field since version 10.1.0 - open the script in the editor and save it again (#2471)`);
+                }
                 let sourceFn = name;
                 if (webstormDebug) {
                     const fn = name.replace(/^script\.js\./, '').replace(/\./g, '/');

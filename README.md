@@ -36,6 +36,7 @@ Executes JavaScript, TypeScript Scripts.
 ## Changelog
 ### **WORK IN PROGRESS**
 * (@GermanBluefox) Version 10.6.0 was not published on npm, this release contains its changes
+* (@GermanBluefox) Fixed: a variable in the time field of the Blockly blocks "pause", "timeout" and "interval" became `NaN` since 10.1.0. The adapter warns about scripts saved that way (#2471)
 
 ### 10.6.0 (2026-11-19)
 * (@GermanBluefox) Added the message "help": a description of all messages for AI agents (e.g. pi-agent), and common.supportedMessages.help
