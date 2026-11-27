@@ -1134,6 +1134,52 @@ describe('FBD: control blocks', () => {
         assert.ok(pd.Y < -1, `the D part pulls down: ${pd.Y}`);
     });
 
+    it('starts at YMIN and keeps the integral part within the limits (#2470)', () => {
+        // YMIN 20: Y begins at 20 and rises at once, not only after the integral part has climbed from 0
+        const pi = runtime.PID();
+        pi.run(1, 0, 1, 1000, 0, 20, 100, false, 0, true);
+        assert.equal(pi.Y, 20);
+        pi.run(1, 0, 1, 1000, 0, 20, 100, false, 1000, false);
+        assert.equal(pi.Y, 21);
+        pi.run(1, 0, 1, 1000, 0, 20, 100, false, 1000, false);
+        assert.equal(pi.Y, 22);
+
+        // the same after RST
+        pi.run(1, 0, 1, 1000, 0, 20, 100, true, 1000, false);
+        assert.equal(pi.Y, 20);
+        pi.run(1, 0, 1, 1000, 0, 20, 100, false, 1000, false);
+        assert.equal(pi.Y, 20);
+        pi.run(1, 0, 1, 1000, 0, 20, 100, false, 1000, false);
+        assert.equal(pi.Y, 21);
+
+        // long at YMIN from above: Y leaves YMIN in the first cycle after the error turns
+        const low = runtime.PID();
+        low.run(0, 1, 1, 1000, 0, 20, 100, false, 0, true);
+        for (let i = 0; i < 50; i++) {
+            low.run(0, 1, 1, 1000, 0, 20, 100, false, 1000, false);
+        }
+        assert.equal(low.Y, 20);
+        low.run(2, 1, 1, 1000, 0, 20, 100, false, 1000, false);
+        assert.ok(low.Y > 20, `leaves YMIN at once: ${low.Y}`);
+
+        // long at YMAX: Y leaves YMAX in the first cycle after the error turns
+        const high = runtime.PID();
+        high.run(30, 0, 1, 1000, 0, 20, 100, false, 0, true);
+        for (let i = 0; i < 200; i++) {
+            high.run(30, 0, 1, 1000, 0, 20, 100, false, 1000, false);
+        }
+        assert.equal(high.Y, 100);
+        high.run(0, 1, 1, 1000, 0, 20, 100, false, 1000, false);
+        assert.ok(high.Y < 100, `leaves YMAX at once: ${high.Y}`);
+
+        // YMIN 0 and a start within the limits: as before
+        const zero = runtime.PID();
+        zero.run(1, 0, 1, 1000, 0, 0, 100, false, 0, true);
+        assert.equal(zero.Y, 1);
+        zero.run(1, 0, 1, 1000, 0, 0, 100, false, 1000, false);
+        assert.equal(zero.Y, 2);
+    });
+
     it('turns round, holds, has a dead band and a manual mode', () => {
         // the arguments after firstScan: HOLD, MAN, YMAN, DB, INV
         // INV: e = PV - SP, like a negative KP

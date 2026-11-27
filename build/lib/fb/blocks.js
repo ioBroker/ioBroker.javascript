@@ -374,9 +374,11 @@ exports.Pt1Block = Pt1Block;
  * - The derivative is taken from PV and not from e, so a new set point gives no kick. It is smoothed
  *   with a tenth of TV - a cycle that comes early because an input changed has a small `dt`, which
  *   would make it jump.
- * - Anti-windup: while Y is at a limit, the integral part does not grow further in that direction.
+ * - Anti-windup: the integral part is limited in every cycle so that P + I + D stays within YMIN..YMAX.
+ *   Y leaves a limit at once when the error turns.
  * - RST resets the controller: Y is 0 - or the limit nearest to it, when 0 is not between YMIN and
- *   YMAX - and the integral part starts from 0 again when RST is gone.
+ *   YMAX - and the integral part starts from 0 again when RST is gone. At the start and after RST the
+ *   controller begins at the limit (e.g. YMIN > 0), not at an internal value of 0 below it.
  * - INV turns the direction round: e = PV - SP, for cooling, as a negative KP would.
  * - Y stays as it is while HOLD is true, and while PV is no further than DB from SP (dead band). MAN
  *   puts out YMAN instead. Meanwhile the integral part follows, so Y goes on from there without a
@@ -427,20 +429,13 @@ class PidBlock {
             else {
                 this.derivative = 0;
             }
-            if (TN > 0) {
-                // anti-windup: the integral part grows up to where Y reaches a limit, not beyond
-                const next = this.integral + (KP * error * dt) / TN;
-                const rest = proportional + this.derivative;
-                if (next > this.integral) {
-                    this.integral = Math.min(next, Math.max(this.integral, high - rest));
-                }
-                else {
-                    this.integral = Math.max(next, Math.min(this.integral, low - rest));
-                }
-            }
-            else {
-                this.integral = 0;
-            }
+            this.integral = TN > 0 ? this.integral + (KP * error * dt) / TN : 0;
+        }
+        if (TN > 0) {
+            // anti-windup: the integral part goes no further than where Y reaches a limit, also at the
+            // start and after RST, so Y begins at the limit and leaves it at once when the error turns
+            const rest = proportional + this.derivative;
+            this.integral = Math.min(high - rest, Math.max(low - rest, this.integral));
         }
         this.lastPV = PV;
         this.Y = Math.min(high, Math.max(low, proportional + this.integral + this.derivative));
