@@ -35,6 +35,7 @@ import { FieldCRON } from './field_cron';
 import { FieldOID } from './field_oid';
 import {
     isTrue,
+    namedResourceOptions,
     namedResourceVariableModel,
     objectNameById,
     objectNameOf,
@@ -95,7 +96,7 @@ export function install(): void {
         }
 
         // BF(2020.05.16): for back compatibility. Remove it after 5 years
-        if (window.scripts.loading) {
+        if (window.scripts?.loading) {
             for (const v of workspace.getVariableMap().getVariablesOfType('')) {
                 if (!result.find(it => it[0] === v.getName())) {
                     result.push([v.getName(), v.getName()]);
@@ -829,11 +830,9 @@ export function install(): void {
             this.appendDummyInput('NAME')
                 .appendField(translate('schedule_clear'))
                 .appendField(
-                    new FieldDropdown(() =>
-                        window.scripts?.blocklyWorkspace
-                            ? getAllSchedules(window.scripts.blocklyWorkspace)
-                            : [],
-                    ),
+                    new FieldDropdown(function (this: FieldDropdown) {
+                        return namedResourceOptions(this, getAllSchedules);
+                    }),
                     'NAME',
                 );
 

@@ -149,7 +149,7 @@ export function install(): void {
 
                     this.appendValueInput('END_TIME');
 
-                    if (!window.scripts.loading) {
+                    if (window.scripts && !window.scripts.loading) {
                         const wp = this.workspace;
 
                         setTimeout(() => {

@@ -604,5 +604,8 @@
     "lines": "wierszy",
     "Delete this version": "Usuń tę wersję",
     "Delete the whole history": "Usuń całą historię",
-    "These scripts are not saved:": "Te skrypty nie są zapisane:"
+    "These scripts are not saved:": "Te skrypty nie są zapisane:",
+    "recipe_from_recipe": "Przeglądaj przepisy",
+    "recipe_bar_text": "Można też zacząć od gotowej automatyzacji i wybrać własne urządzenia",
+    "recipe_export_button": "Eksportuj jako przepis"
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
 import { SplitSizes } from './Components/splitSizes';
@@ -46,6 +46,9 @@ import { getScriptName, nameToFileName, scriptIdToZipFolder, zipPathToScript } f
 import type { ScriptType } from '@/types';
 import PasswordDialog from '@/Dialogs/Password';
 import { preloadFbEditor } from '@/FbEditor/preload';
+
+/** The recipes come in their own chunk, with Blockly */
+const RecipeDialog = React.lazy(() => import('@/Recipes/RecipeDialog'));
 
 /** The node, in which the editor lives; it fills the place of the editor in the layout like that place did */
 function createEditorHost(): HTMLDivElement {
@@ -205,6 +208,8 @@ interface AppState extends GenericAppState {
     aiEditorHelpers: Record<string, boolean>;
     confirm: string;
     importFile: boolean;
+    /** The dialog to create a script from a recipe */
+    showRecipes: boolean;
     message: string;
     searchText: string;
     hideLog: boolean;
@@ -453,6 +458,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                 aiEditorHelpers: {},
                 confirm: '',
                 importFile: false,
+                showRecipes: false,
                 message: '',
                 searchText: '',
                 hideLog: window.localStorage.getItem('App.hideLog') === 'true',
@@ -1516,6 +1522,35 @@ export default class App extends GenericApp<AppProps, AppState> {
         ) : null;
     }
 
+    renderRecipeDialog(): React.JSX.Element | null {
+        if (!this.state.showRecipes) {
+            return null;
+        }
+        // the instance the new script runs in: a running one, the catalog comes from it
+        const instanceId = Object.keys(this.state.runningInstances).find(id => this.state.runningInstances[id]) || '';
+        return (
+            <Suspense
+                key="recipes"
+                fallback={null}
+            >
+                <RecipeDialog
+                    socket={this.socket}
+                    theme={this.state.theme}
+                    themeType={this.state.themeType}
+                    instanceId={instanceId}
+                    existingIds={Object.keys(this.scripts)}
+                    onClose={id => {
+                        this.setState({ showRecipes: false });
+                        if (id) {
+                            // as after "Add new script": the list knows the script a moment later
+                            setTimeout(() => this.onSelect(id), 1000);
+                        }
+                    }}
+                />
+            </Suspense>
+        );
+    }
+
     renderMain(): React.JSX.Element {
         let content;
         if (this.state.debugMode || this.state.hideLog) {
@@ -1591,6 +1626,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                     />
                 ) : null}
                 {this.renderErrorDialog()}
+                {this.renderRecipeDialog()}
                 {this.state.importFile ? (
                     <DialogImportFile
                         key="dialogImportFile"
@@ -1671,6 +1707,7 @@ export default class App extends GenericApp<AppProps, AppState> {
                             onExpertModeChange={(expertMode: boolean): void => this.onExpertModeChange(expertMode)}
                             onDelete={this.onDelete.bind(this)}
                             onAddNew={this.onAddNew.bind(this)}
+                            onRecipes={() => this.setState({ showRecipes: true })}
                             onEnableDisable={this.onEnableDisable.bind(this)}
                             onExport={this.onExport.bind(this)}
                             width={500} // TODO: https://github.com/ioBroker/ioBroker.javascript/issues/1643

@@ -140,5 +140,7 @@
     "Low": "Low",
     "Medium": "Medium",
     "High": "High",
-    "optional": "optional"
+    "optional": "optional",
+    "Catalog of the recipes": "Catalog of the recipes",
+    "recipesUrl help": "URL of recipes.json with the ready-made automations of the script editor. Empty: the official catalog"
 }

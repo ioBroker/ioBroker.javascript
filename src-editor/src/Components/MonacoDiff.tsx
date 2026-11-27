@@ -25,6 +25,8 @@ export interface MonacoDiffProps {
     readOnly?: boolean;
     /** Shows above the diff how many changes there are, with buttons to jump from one change to the next */
     navigation?: boolean;
+    /** Wraps long lines, so that a change at the end of one is visible without scrolling sideways */
+    wordWrap?: boolean;
     ref?: React.Ref<MonacoDiffHandle>;
 }
 
@@ -69,6 +71,7 @@ const MonacoDiff: React.FC<MonacoDiffProps> = ({
     themeType,
     readOnly,
     navigation,
+    wordWrap,
     ref,
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -105,6 +108,7 @@ const MonacoDiff: React.FC<MonacoDiffProps> = ({
                     minimap: { enabled: false },
                     // a changed indentation is a change too: otherwise "No differences" for scripts that differ
                     ignoreTrimWhitespace: false,
+                    wordWrap: wordWrap ? 'on' : 'off',
                 });
                 diffEditorRef.current = diffEditor;
                 setMonaco(loaded);
@@ -116,7 +120,7 @@ const MonacoDiff: React.FC<MonacoDiffProps> = ({
             diffEditorRef.current = null;
             diffEditor?.dispose();
         };
-        // created once; theme and read-only are updated below
+        // created once; theme, read-only and the wrapping are updated below
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -126,8 +130,8 @@ const MonacoDiff: React.FC<MonacoDiffProps> = ({
     }, [monaco, themeType]);
 
     useEffect(() => {
-        diffEditorRef.current?.updateOptions({ readOnly: !!readOnly });
-    }, [monaco, readOnly]);
+        diffEditorRef.current?.updateOptions({ readOnly: !!readOnly, wordWrap: wordWrap ? 'on' : 'off' });
+    }, [monaco, readOnly, wordWrap]);
 
     useEffect(() => {
         const diffEditor = diffEditorRef.current;

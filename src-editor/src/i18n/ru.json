@@ -604,5 +604,8 @@
     "lines": "строк",
     "Delete this version": "Удалить эту версию",
     "Delete the whole history": "Удалить всю историю",
-    "These scripts are not saved:": "Эти скрипты не сохранены:"
+    "These scripts are not saved:": "Эти скрипты не сохранены:",
+    "recipe_from_recipe": "Просмотреть рецепты",
+    "recipe_bar_text": "Или начните с готовой автоматизации и выберите свои устройства",
+    "recipe_export_button": "Экспортировать как рецепт"
 }

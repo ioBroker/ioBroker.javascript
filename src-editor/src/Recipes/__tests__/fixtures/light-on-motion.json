@@ -1,0 +1,84 @@
+{
+    "$schema": "../schema/recipe.schema.json",
+    "id": "light-on-motion",
+    "version": "1.0.0",
+    "title": {
+        "en": "Light on motion",
+        "de": "Licht bei Bewegung"
+    },
+    "description": {
+        "en": "Switches lights on when a motion sensor detects motion, and off again after a delay without motion. With a brightness sensor only when it is darker than a threshold. The lights are only switched off if the recipe switched them on before.",
+        "de": "Schaltet Lampen ein, wenn ein Bewegungsmelder eine Bewegung erkennt, und nach einer Verzögerung ohne Bewegung wieder aus. Mit Helligkeitssensor nur, wenn es dunkler als eine Schwelle ist. Ausgeschaltet wird nur, wenn das Rezept vorher eingeschaltet hat."
+    },
+    "author": "GermanBluefox",
+    "tags": ["licht", "bewegung"],
+    "minJavascript": "8.0.0",
+    "inputs": {
+        "motion": {
+            "type": "device",
+            "deviceType": "motion",
+            "title": {
+                "en": "Motion sensor",
+                "de": "Bewegungsmelder"
+            }
+        },
+        "light": {
+            "type": "device",
+            "deviceType": ["light", "dimmer"],
+            "multiple": true,
+            "title": {
+                "en": "Lights",
+                "de": "Lampen"
+            }
+        },
+        "delay": {
+            "type": "duration",
+            "default": 120,
+            "min": 1,
+            "title": {
+                "en": "Switch off after no motion for",
+                "de": "Ausschalten nach keiner Bewegung für"
+            }
+        },
+        "brightness": {
+            "type": "state",
+            "role": "value.brightness",
+            "commonType": "number",
+            "optional": true,
+            "title": {
+                "en": "Brightness sensor",
+                "de": "Helligkeitssensor"
+            },
+            "description": {
+                "en": "If set, the lights are only switched on when it is darker than the threshold.",
+                "de": "Wenn gesetzt, werden die Lampen nur eingeschaltet, wenn es dunkler als die Schwelle ist."
+            }
+        },
+        "lux": {
+            "type": "number",
+            "default": 50,
+            "min": 0,
+            "unit": "lx",
+            "title": {
+                "en": "Brightness threshold",
+                "de": "Helligkeitsschwelle"
+            }
+        },
+        "level": {
+            "type": "number",
+            "default": 100,
+            "min": 1,
+            "max": 100,
+            "unit": "%",
+            "title": {
+                "en": "Level for dimmers",
+                "de": "Helligkeit für Dimmer"
+            },
+            "description": {
+                "en": "For dimmers that have no state of their own to switch them on.",
+                "de": "Für Dimmer, die keinen eigenen Datenpunkt zum Einschalten haben."
+            }
+        }
+    },
+    "blockly": "<xml xmlns=\"https://developers.google.com/blockly/xml\">\n  <variables>\n    <variable id=\"switchedOn\">switchedOn</variable>\n    <variable type=\"timeout\" id=\"offTimer\">offTimer</variable>\n{{#if brightness}}\n    <variable id=\"value\">value</variable>\n{{/if}}\n  </variables>\n  <block type=\"on\" x=\"10\" y=\"10\">\n    <field name=\"OID\">{{motion.ACTUAL}}</field>\n    <field name=\"CONDITION\">ne</field>\n    <field name=\"ACK_CONDITION\"></field>\n    <statement name=\"STATEMENT\">\n      <block type=\"controls_if\">\n        <mutation else=\"1\"></mutation>\n        <value name=\"IF0\">\n          <block type=\"on_source\">\n            <field name=\"ATTR\">state.val</field>\n          </block>\n        </value>\n        <statement name=\"DO0\">\n          <block type=\"timeouts_cleartimeout\">\n            <field name=\"NAME\">offTimer</field>\n            <next>\n{{#if brightness}}\n              <block type=\"get_value_async\">\n                <field name=\"ATTR\">val</field>\n                <field name=\"OID\">{{brightness}}</field>\n                <statement name=\"STATEMENT\">\n{{/if}}\n                  <block type=\"controls_if\">\n                    <value name=\"IF0\">\n{{#if brightness}}\n                      <block type=\"logic_compare\">\n                        <field name=\"OP\">LT</field>\n                        <value name=\"A\">\n                          <block type=\"variables_get\">\n                            <field name=\"VAR\" id=\"value\">value</field>\n                          </block>\n                        </value>\n                        <value name=\"B\">\n                          <block type=\"math_number\">\n                            <field name=\"NUM\">{{lux}}</field>\n                          </block>\n                        </value>\n                      </block>\n{{else}}\n                      <block type=\"logic_boolean\">\n                        <field name=\"BOOL\">TRUE</field>\n                      </block>\n{{/if}}\n                    </value>\n                    <statement name=\"DO0\">\n                      <block type=\"variables_set\">\n                        <field name=\"VAR\" id=\"switchedOn\">switchedOn</field>\n                        <value name=\"VALUE\">\n                          <block type=\"logic_boolean\">\n                            <field name=\"BOOL\">TRUE</field>\n                          </block>\n                        </value>\n                        <next>\n{{#each light}}\n{{#if light.ON_SET}}\n                          <block type=\"control\">\n                            <mutation delay_input=\"false\"></mutation>\n                            <field name=\"OID\">{{light.ON_SET}}</field>\n                            <field name=\"WITH_DELAY\">FALSE</field>\n                            <value name=\"VALUE\">\n                              <block type=\"logic_boolean\">\n                                <field name=\"BOOL\">TRUE</field>\n                              </block>\n                            </value>\n                          </block>\n{{else}}\n{{#if light.type == \"dimmer\"}}\n                          <block type=\"control\">\n                            <mutation delay_input=\"false\"></mutation>\n                            <field name=\"OID\">{{light.SET}}</field>\n                            <field name=\"WITH_DELAY\">FALSE</field>\n                            <value name=\"VALUE\">\n                              <block type=\"math_number\">\n                                <field name=\"NUM\">{{level}}</field>\n                              </block>\n                            </value>\n                          </block>\n{{else}}\n                          <block type=\"control\">\n                            <mutation delay_input=\"false\"></mutation>\n                            <field name=\"OID\">{{light.SET}}</field>\n                            <field name=\"WITH_DELAY\">FALSE</field>\n                            <value name=\"VALUE\">\n                              <block type=\"logic_boolean\">\n                                <field name=\"BOOL\">TRUE</field>\n                              </block>\n                            </value>\n                          </block>\n{{/if}}\n{{/if}}\n{{/each}}\n                        </next>\n                      </block>\n                    </statement>\n                  </block>\n{{#if brightness}}\n                </statement>\n              </block>\n{{/if}}\n            </next>\n          </block>\n        </statement>\n        <statement name=\"ELSE\">\n          <block type=\"controls_if\">\n            <value name=\"IF0\">\n              <block type=\"variables_get\">\n                <field name=\"VAR\" id=\"switchedOn\">switchedOn</field>\n              </block>\n            </value>\n            <statement name=\"DO0\">\n              <block type=\"timeouts_settimeout\">\n                <field name=\"NAME\">offTimer</field>\n                <field name=\"DELAY\">{{delay}}</field>\n                <field name=\"UNIT\">sec</field>\n                <statement name=\"STATEMENT\">\n                  <block type=\"variables_set\">\n                    <field name=\"VAR\" id=\"switchedOn\">switchedOn</field>\n                    <value name=\"VALUE\">\n                      <block type=\"logic_boolean\">\n                        <field name=\"BOOL\">FALSE</field>\n                      </block>\n                    </value>\n                    <next>\n{{#each light}}\n{{#if light.ON_SET}}\n                      <block type=\"control\">\n                        <mutation delay_input=\"false\"></mutation>\n                        <field name=\"OID\">{{light.ON_SET}}</field>\n                        <field name=\"WITH_DELAY\">FALSE</field>\n                        <value name=\"VALUE\">\n                          <block type=\"logic_boolean\">\n                            <field name=\"BOOL\">FALSE</field>\n                          </block>\n                        </value>\n                      </block>\n{{else}}\n{{#if light.type == \"dimmer\"}}\n                      <block type=\"control\">\n                        <mutation delay_input=\"false\"></mutation>\n                        <field name=\"OID\">{{light.SET}}</field>\n                        <field name=\"WITH_DELAY\">FALSE</field>\n                        <value name=\"VALUE\">\n                          <block type=\"math_number\">\n                            <field name=\"NUM\">0</field>\n                          </block>\n                        </value>\n                      </block>\n{{else}}\n                      <block type=\"control\">\n                        <mutation delay_input=\"false\"></mutation>\n                        <field name=\"OID\">{{light.SET}}</field>\n                        <field name=\"WITH_DELAY\">FALSE</field>\n                        <value name=\"VALUE\">\n                          <block type=\"logic_boolean\">\n                            <field name=\"BOOL\">FALSE</field>\n                          </block>\n                        </value>\n                      </block>\n{{/if}}\n{{/if}}\n{{/each}}\n                    </next>\n                  </block>\n                </statement>\n              </block>\n            </statement>\n          </block>\n        </statement>\n      </block>\n    </statement>\n  </block>\n</xml>\n"
+}
