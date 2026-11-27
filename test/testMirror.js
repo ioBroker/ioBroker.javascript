@@ -22,6 +22,9 @@ const canCreateSymlinks = (() => {
 
 const itWithSymlinks = canCreateSymlinks ? it : it.skip;
 
+/** Resolves once a changed file was taken over - see `FILE_CHANGE_DEBOUNCE_MS` */
+const afterDebounce = () => new Promise(resolve => setTimeout(resolve, Mirror.FILE_CHANGE_DEBOUNCE_MS + 100));
+
 /** How long a test waits for the change it is about before it gives up */
 const WAIT_FOR_CHANGE = 6000;
 /** How often the change is repeated while waiting - see `expectChangeTo` */
@@ -263,7 +266,7 @@ describe('Mirror', () => {
 
         afterEach(() => {
             for (const mirror of mirrors) {
-                Object.values(mirror.watchedFolder || {}).forEach(watcher => watcher.close());
+                mirror.destroy();
             }
             fs.rmSync(root, { recursive: true, force: true });
         });
@@ -271,6 +274,9 @@ describe('Mirror', () => {
         function createMirror() {
             const adapter = adapterStub();
             const mirror = new (Mirror.Mirror || Mirror)({ diskRoot: root, adapter, log: silentLog() });
+            // The events are fed in by the test only. The real watchers add their own ones, at a time of their
+            // choosing - on macOS the creation of the file arrived only after the test's own event.
+            mirror.destroy();
             mirrors.push(mirror);
             return { mirror, adapter };
         }
@@ -297,7 +303,7 @@ describe('Mirror', () => {
             );
         });
 
-        it('writes only the source back when the file changed', () => {
+        it('writes only the source back when the file changed', async () => {
             const { mirror, adapter } = createMirror();
             mirror.ready = true;
             mirror.dbList = { [ID]: script(ID, 'log(1);', { enabled: true, engine: 'system.adapter.javascript.2' }) };
@@ -308,6 +314,7 @@ describe('Mirror', () => {
             fs.writeFileSync(file, 'log(2);');
 
             mirror.onFileChange('change', file);
+            await afterDebounce();
 
             assert.ok(!adapter.written[ID], 'the whole object must not be written back');
             assert.deepEqual(
@@ -317,7 +324,7 @@ describe('Mirror', () => {
             );
         });
 
-        it('a stale cache can no longer disable a script or move it back', () => {
+        it('a stale cache can no longer disable a script or move it back', async () => {
             const { mirror, adapter } = createMirror();
             mirror.ready = true;
             // what the mirror read at start: disabled, on instance 0
@@ -335,12 +342,144 @@ describe('Mirror', () => {
             fs.mkdirSync(path.dirname(file), { recursive: true });
             fs.writeFileSync(file, '// a comment\nlog(1);');
             mirror.onFileChange('change', file);
+            await afterDebounce();
 
             // Neither through the write itself ...
             assert.ok(!adapter.written[ID], 'no full object write');
             // ... nor in the cache the next write would use
             assert.equal(mirror.dbList[ID].common.enabled, true);
             assert.equal(mirror.dbList[ID].common.engine, 'system.adapter.javascript.2');
+        });
+    });
+
+    /**
+     * Editors save a file in several steps, so one save fires several watcher events. Each of them used
+     * to update the script in the DB and so restart it (#2467).
+     */
+    describe('One save leads to one update (#2467)', () => {
+        let root = null;
+        let mirror = null;
+        let extended = [];
+        let deleted = [];
+
+        beforeEach(() => {
+            root = fs.mkdtempSync(path.join(os.tmpdir(), 'mirror-test-2467-'));
+            extended = [];
+            deleted = [];
+            mirror = new (Mirror.Mirror || Mirror)({
+                diskRoot: root,
+                adapter: {
+                    namespace: 'javascript.0',
+                    getObjectView: (_design, _search, _params, cb) => cb(null, { rows: [] }),
+                    getForeignObject: (_id, cb) => cb(null, null),
+                    getForeignState: (_id, cb) => cb(null, { val: 0 }),
+                    setForeignObject: (_id, _obj, cb) => cb && cb(null),
+                    extendForeignObject: (id, obj, cb) => {
+                        extended.push({ id, obj });
+                        cb && cb(null);
+                    },
+                    delForeignObject: (id, cb) => {
+                        deleted.push(id);
+                        cb && cb(null);
+                    },
+                    setForeignState: (_id, _val, _ack, cb) => cb && cb(null),
+                },
+                log: { log: () => {}, silly: () => {}, debug: () => {}, info: () => {}, warn: () => {}, error: () => {} },
+            });
+            // the events are fed in by the test only - the real watchers would add their own ones
+            mirror.destroy();
+            mirror.ready = true;
+            mirror.dbList = {
+                'script.js.Test': {
+                    _id: 'script.js.Test',
+                    type: 'script',
+                    common: { name: 'Test', source: 'log(1);', engineType: 'Javascript/js' },
+                    native: {},
+                },
+            };
+            mirror.diskList = {};
+        });
+
+        afterEach(() => {
+            mirror.destroy();
+            fs.rmSync(root, { recursive: true, force: true });
+        });
+
+        it('takes over only the final content of several changes in a row', async () => {
+            const file = path.join(root, 'Test.js').replace(/\\/g, '/');
+
+            // truncate + write, as many editors save
+            fs.writeFileSync(file, '');
+            mirror.onFileChange('change', file);
+            fs.writeFileSync(file, 'log(');
+            mirror.onFileChange('change', file);
+            fs.writeFileSync(file, 'log(2);');
+            mirror.onFileChange('change', file);
+
+            assert.equal(extended.length, 0, 'nothing is written before the file is quiet');
+            await afterDebounce();
+
+            assert.deepEqual(extended, [{ id: 'script.js.Test', obj: { common: { source: 'log(2);' } } }]);
+        });
+
+        it('does not update an unchanged source', async () => {
+            const file = path.join(root, 'Test.js').replace(/\\/g, '/');
+            fs.writeFileSync(file, 'log(1);');
+            mirror.onFileChange('change', file);
+            mirror.onFileChange('change', file);
+            await afterDebounce();
+
+            assert.equal(extended.length, 0);
+        });
+
+        it('deletes the script, not a pending change, when the file is gone', async () => {
+            const file = path.join(root, 'Test.js').replace(/\\/g, '/');
+            fs.writeFileSync(file, 'log(2);');
+            mirror.onFileChange('change', file);
+            fs.unlinkSync(file);
+            mirror.onFileChange('rename', file);
+            await afterDebounce();
+
+            assert.equal(extended.length, 0);
+            assert.deepEqual(deleted, ['script.js.Test']);
+            assert.ok(!mirror.dbList['script.js.Test']);
+            assert.deepEqual(mirror.changeTimers, {});
+        });
+
+        it('takes a "rename" of a file that is still there for a change', async () => {
+            // an editor that saves through a temporary file renames it over the old one
+            const file = path.join(root, 'Test.js').replace(/\\/g, '/');
+            fs.writeFileSync(file, 'log(2);');
+            mirror.onFileChange('rename', file);
+            await afterDebounce();
+
+            assert.deepEqual(deleted, []);
+            assert.deepEqual(extended, [{ id: 'script.js.Test', obj: { common: { source: 'log(2);' } } }]);
+        });
+
+        it('keeps the script when its file is gone only for a moment', async () => {
+            // an editor that moves the old version away first and writes the new one then
+            const file = path.join(root, 'Test.js').replace(/\\/g, '/');
+            fs.writeFileSync(file, 'log(1);');
+            fs.renameSync(file, `${file}~`);
+            mirror.onFileChange('rename', file);
+            fs.writeFileSync(file, 'log(2);');
+            mirror.onFileChange('rename', file);
+            await afterDebounce();
+
+            assert.deepEqual(deleted, []);
+            assert.deepEqual(extended, [{ id: 'script.js.Test', obj: { common: { source: 'log(2);' } } }]);
+        });
+
+        it('keeps the script when the whole mirror directory is gone', async () => {
+            // an unmounted share says nothing about the scripts in it
+            const file = path.join(root, 'Test.js').replace(/\\/g, '/');
+            fs.rmSync(root, { recursive: true, force: true });
+            mirror.onFileChange('rename', file);
+            await afterDebounce();
+
+            assert.deepEqual(deleted, []);
+            assert.ok(mirror.dbList['script.js.Test']);
         });
     });
 

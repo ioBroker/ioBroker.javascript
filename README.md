@@ -36,6 +36,8 @@ Executes JavaScript, TypeScript Scripts.
 ## Changelog
 ### **WORK IN PROGRESS**
 * (@GermanBluefox) Version 10.6.0 was not published on npm, this release contains its changes
+* (@GermanBluefox) Fixed multiple script restarts when a mirrored file is saved (#2467)
+* (@GermanBluefox) Fixed: a mirrored file saved by an editor through a temporary file no longer deletes its script
 
 ### 10.6.0 (2026-11-19)
 * (@GermanBluefox) Added the message "help": a description of all messages for AI agents (e.g. pi-agent), and common.supportedMessages.help
