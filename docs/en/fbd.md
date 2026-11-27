@@ -152,9 +152,12 @@ The control blocks:
   reached). Smooths a noisy value; it starts at `IN`.
 - `PID` - PID controller: set point `SP`, process value `PV`, output `Y` between `YMIN` and `YMAX`. `KP` is the gain,
   `TN` the reset time of the integral part, `TV` the derivative time; `TN` or `TV` of `0` leaves that part out.
-  While `Y` is at a limit, the integral part does not grow further (anti-windup); the derivative is taken from `PV`,
+  In every cycle the integral part is limited so that P + I + D stays between `YMIN` and `YMAX` (anti-windup): when
+  the error turns, `Y` leaves the limit at once. The derivative is taken from `PV`,
   so a new set point gives no kick. `RST` resets the controller: while it is `TRUE`, `Y` is `0` (or the limit nearest
-  to it, when `0` is not between `YMIN` and `YMAX`); afterwards the integral part starts from `0`.
+  to it, when `0` is not between `YMIN` and `YMAX`); afterwards the integral part starts from `0`. At the start and
+  after `RST` the controller begins at the limit: with `YMIN` > `0` it controls from `YMIN` on at once and does not
+  first climb from an internal value of `0` up to `YMIN`.
   - `INV` reverses the direction (e = `PV` - `SP`): `Y` rises while `PV` is above `SP`, as for a cooling.
   - `HOLD` keeps `Y` as it is, like while something is switched over that the controller should not react to.
   - `DB` is a dead band: while `PV` is no further than `DB` from `SP`, `Y` stays as it is. `0` switches it off.
