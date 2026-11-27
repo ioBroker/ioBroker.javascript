@@ -266,7 +266,7 @@ describe('Mirror', () => {
 
         afterEach(() => {
             for (const mirror of mirrors) {
-                Object.values(mirror.watchedFolder || {}).forEach(watcher => watcher.close());
+                mirror.destroy();
             }
             fs.rmSync(root, { recursive: true, force: true });
         });
@@ -274,6 +274,9 @@ describe('Mirror', () => {
         function createMirror() {
             const adapter = adapterStub();
             const mirror = new (Mirror.Mirror || Mirror)({ diskRoot: root, adapter, log: silentLog() });
+            // The events are fed in by the test only. The real watchers add their own ones, at a time of their
+            // choosing - on macOS the creation of the file arrived only after the test's own event.
+            mirror.destroy();
             mirrors.push(mirror);
             return { mirror, adapter };
         }
@@ -357,10 +360,12 @@ describe('Mirror', () => {
         let root = null;
         let mirror = null;
         let extended = [];
+        let deleted = [];
 
         beforeEach(() => {
             root = fs.mkdtempSync(path.join(os.tmpdir(), 'mirror-test-2467-'));
             extended = [];
+            deleted = [];
             mirror = new (Mirror.Mirror || Mirror)({
                 diskRoot: root,
                 adapter: {
@@ -371,6 +376,10 @@ describe('Mirror', () => {
                     setForeignObject: (_id, _obj, cb) => cb && cb(null),
                     extendForeignObject: (id, obj, cb) => {
                         extended.push({ id, obj });
+                        cb && cb(null);
+                    },
+                    delForeignObject: (id, cb) => {
+                        deleted.push(id);
                         cb && cb(null);
                     },
                     setForeignState: (_id, _val, _ack, cb) => cb && cb(null),
@@ -423,17 +432,54 @@ describe('Mirror', () => {
             assert.equal(extended.length, 0);
         });
 
-        it('drops a pending change when the file is deleted', async () => {
+        it('deletes the script, not a pending change, when the file is gone', async () => {
             const file = path.join(root, 'Test.js').replace(/\\/g, '/');
             fs.writeFileSync(file, 'log(2);');
             mirror.onFileChange('change', file);
             fs.unlinkSync(file);
-            mirror.adapter.delForeignObject = () => {};
-            mirror.onFileChange('delete', file);
+            mirror.onFileChange('rename', file);
             await afterDebounce();
 
             assert.equal(extended.length, 0);
+            assert.deepEqual(deleted, ['script.js.Test']);
+            assert.ok(!mirror.dbList['script.js.Test']);
             assert.deepEqual(mirror.changeTimers, {});
+        });
+
+        it('takes a "rename" of a file that is still there for a change', async () => {
+            // an editor that saves through a temporary file renames it over the old one
+            const file = path.join(root, 'Test.js').replace(/\\/g, '/');
+            fs.writeFileSync(file, 'log(2);');
+            mirror.onFileChange('rename', file);
+            await afterDebounce();
+
+            assert.deepEqual(deleted, []);
+            assert.deepEqual(extended, [{ id: 'script.js.Test', obj: { common: { source: 'log(2);' } } }]);
+        });
+
+        it('keeps the script when its file is gone only for a moment', async () => {
+            // an editor that moves the old version away first and writes the new one then
+            const file = path.join(root, 'Test.js').replace(/\\/g, '/');
+            fs.writeFileSync(file, 'log(1);');
+            fs.renameSync(file, `${file}~`);
+            mirror.onFileChange('rename', file);
+            fs.writeFileSync(file, 'log(2);');
+            mirror.onFileChange('rename', file);
+            await afterDebounce();
+
+            assert.deepEqual(deleted, []);
+            assert.deepEqual(extended, [{ id: 'script.js.Test', obj: { common: { source: 'log(2);' } } }]);
+        });
+
+        it('keeps the script when the whole mirror directory is gone', async () => {
+            // an unmounted share says nothing about the scripts in it
+            const file = path.join(root, 'Test.js').replace(/\\/g, '/');
+            fs.rmSync(root, { recursive: true, force: true });
+            mirror.onFileChange('rename', file);
+            await afterDebounce();
+
+            assert.deepEqual(deleted, []);
+            assert.ok(mirror.dbList['script.js.Test']);
         });
     });
 

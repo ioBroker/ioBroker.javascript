@@ -1,11 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Mirror = void 0;
+exports.Mirror = exports.FILE_CHANGE_DEBOUNCE_MS = void 0;
 const node_fs_1 = require("node:fs");
 const node_path_1 = require("node:path");
 const graph_1 = require("./fb/graph");
 const tools_1 = require("./tools");
 const MODE_0777 = 511;
+/**
+ * Many editors save a file in several steps (truncate + write, or temp file + rename), so one save fires
+ * several watcher events. The file is read only when it was quiet for this time, so one save leads to one
+ * update of the script and one restart (#2467).
+ */
+exports.FILE_CHANGE_DEBOUNCE_MS = 300;
 class Mirror {
     adapter;
     diskRoot;
@@ -13,6 +19,8 @@ class Mirror {
     lastSyncID;
     log;
     watchedFolder = {};
+    watchedLinks = [];
+    changeTimers = {};
     diskList;
     dbList = {};
     ready = false;
@@ -80,11 +88,11 @@ class Mirror {
                     }
                     const linkTarget = (0, node_fs_1.realpathSync)(name);
                     this.log.info(`Watch symlinked file ${name} -> ${linkTarget}`);
-                    (0, node_fs_1.watch)(linkTarget, (eventType /*, _filename*/) => {
+                    this.watchedLinks.push((0, node_fs_1.watch)(linkTarget, (eventType /*, _filename*/) => {
                         // Pretend the symlink source was changed.
                         this.log.debug(`File ${name} ${eventType}`);
                         this.onFileChange(eventType, name);
-                    });
+                    }));
                 }
             });
         }
@@ -376,7 +384,7 @@ class Mirror {
             }
         }
     }
-    onFileChange(event, file) {
+    onFileChange(_event, file) {
         if (!this.ready) {
             return;
         }
@@ -449,79 +457,159 @@ class Mirror {
             return;
         }
         const id = this._fileName2scriptId(file);
-        if (exists && (event === 'change' || event === 'create')) {
-            try {
-                stats = stats || (0, node_fs_1.statSync)(file);
-                const source = (0, node_fs_1.readFileSync)(file).toString();
-                const ts = stats?.mtime.getTime() || 0;
-                this.diskList[id] = { ts, source, name: file };
-                if (this.dbList[id]) {
-                    if (this.dbList[id].common.source !== source) {
-                        this.dbList[id].common.source = source;
-                        this.dbList[id].ts = ts;
-                        this.log.debug(`Update script ${id} in DB`);
-                        this.dbList[id].from = this.from;
-                        /*
-                         * Only the source. Writing the whole cached object would carry everything
-                         * else in it back into the database as well, and a file says nothing about
-                         * whether its script is enabled or which instance runs it (#2396). Together
-                         * with the cache being kept in step above this holds even when the object
-                         * changes while a write is on its way.
-                         */
-                        void this.adapter.extendForeignObject(id, {
-                            common: { source },
-                        });
-                    }
-                    else {
-                        this.dbList[id].ts = ts;
-                    }
+        /*
+         * What happened to the file is decided only once it was quiet for FILE_CHANGE_DEBOUNCE_MS, and not by
+         * the event: Node reports only "change" and "rename", and "rename" comes for a new file as much as for
+         * a deleted one - also for a file that an editor saves through a temporary file renamed over the old
+         * one. An editor that moves the old version away first even lets the file vanish for a moment. Taking
+         * every "rename" for a deletion removed scripts whose files were still there.
+         */
+        if (this.changeTimers[file]) {
+            clearTimeout(this.changeTimers[file]);
+        }
+        this.changeTimers[file] = setTimeout(() => {
+            delete this.changeTimers[file];
+            this._processFileChange(file, id);
+        }, exports.FILE_CHANGE_DEBOUNCE_MS);
+    }
+    /**
+     * Reads a file through one handle, so that its time and its source are of the same file even if it is
+     * replaced meanwhile.
+     *
+     * @param file the file to read
+     * @returns its source and modification time, or `null` if there is no such file
+     */
+    static _readScriptFile(file) {
+        let fd;
+        try {
+            fd = (0, node_fs_1.openSync)(file, 'r');
+        }
+        catch (err) {
+            if (err.code === 'ENOENT') {
+                return null;
+            }
+            throw err;
+        }
+        try {
+            return { ts: (0, node_fs_1.fstatSync)(fd).mtime.getTime(), source: (0, node_fs_1.readFileSync)(fd).toString() };
+        }
+        finally {
+            (0, node_fs_1.closeSync)(fd);
+        }
+    }
+    /**
+     * Takes a file over into the DB once it was quiet for FILE_CHANGE_DEBOUNCE_MS: its source if it is there,
+     * otherwise its deletion.
+     *
+     * @param file the changed file
+     * @param id the ID of its script
+     */
+    _processFileChange(file, id) {
+        if (!this.ready) {
+            return;
+        }
+        let content;
+        try {
+            content = Mirror._readScriptFile(file);
+        }
+        catch (err) {
+            this.log.error(`Cannot read file ${file}: ${err}`);
+            return;
+        }
+        if (!content) {
+            // gone for good, not only for a moment
+            this._processFileDelete(id);
+            this.adapter.setForeignState(this.lastSyncID, Date.now(), true);
+            return;
+        }
+        const { source, ts } = content;
+        try {
+            this.diskList[id] = { ts, source, name: file };
+            if (this.dbList[id]) {
+                if (this.dbList[id].common.source !== source) {
+                    this.dbList[id].common.source = source;
+                    this.dbList[id].ts = ts;
+                    this.log.debug(`Update script ${id} in DB`);
+                    this.dbList[id].from = this.from;
+                    /*
+                     * Only the source. Writing the whole cached object would carry everything
+                     * else in it back into the database as well, and a file says nothing about
+                     * whether its script is enabled or which instance runs it (#2396). Together
+                     * with the cache being kept in step above this holds even when the object
+                     * changes while a write is on its way.
+                     */
+                    void this.adapter.extendForeignObject(id, {
+                        common: { source },
+                    });
                 }
                 else {
-                    this.log.debug(`Create script ${id} in DB`);
-                    const parts = id.split('.');
-                    // new script
-                    this.dbList[id] = {
-                        _id: id,
-                        common: {
-                            name: parts.pop(),
-                            engineType: Mirror.detectType(file, source),
-                            source,
-                            enabled: false,
-                            engine: `system.adapter.${this.adapter.namespace}`,
-                            debug: false,
-                            verbose: false,
-                        },
-                        type: 'script',
-                        native: {},
-                        ts: ts,
-                    };
-                    this._checkIfAllFoldersAreExist(id, this.dbList);
-                    void this.adapter.setForeignObject(id, this.dbList[id]);
+                    this.dbList[id].ts = ts;
                 }
-            }
-            catch (err) {
-                this.log.error(`Cannot read file ${file}: ${err}`);
-            }
-        }
-        else if (event === 'delete' || event === 'rename') {
-            // there is a bug: just after creation of a script on disk from ioBroker, "rename" event is generated!
-            if (event === 'rename' && this.diskList[id] && Date.now() - this.diskList[id].ts < 200) {
-                console.log(`Interval: ${Date.now() - this.diskList[id].ts}`);
-                // 'rename' is ignored
-                this.log.debug(`Rename event for ${id} is ignored`);
             }
             else {
-                if (this.dbList[id]) {
-                    this.log.debug(`Delete script ${id} in DB`);
-                    delete this.dbList[id];
-                    this.adapter.delForeignObject(id);
-                }
-                if (this.diskList[id]) {
-                    delete this.diskList[id];
-                }
+                this.log.debug(`Create script ${id} in DB`);
+                const parts = id.split('.');
+                // new script
+                this.dbList[id] = {
+                    _id: id,
+                    common: {
+                        name: parts.pop(),
+                        engineType: Mirror.detectType(file, source),
+                        source,
+                        enabled: false,
+                        engine: `system.adapter.${this.adapter.namespace}`,
+                        debug: false,
+                        verbose: false,
+                    },
+                    type: 'script',
+                    native: {},
+                    ts: ts,
+                };
+                this._checkIfAllFoldersAreExist(id, this.dbList);
+                void this.adapter.setForeignObject(id, this.dbList[id]);
             }
         }
+        catch (err) {
+            this.log.error(`Cannot take over file ${file}: ${err}`);
+        }
         this.adapter.setForeignState(this.lastSyncID, Date.now(), true);
+    }
+    /**
+     * Deletes the script of a file that is gone.
+     *
+     * @param id the ID of the script
+     */
+    _processFileDelete(id) {
+        // As in removeScriptsInFolder(): a file that only *looks* gone because the whole mirror directory became
+        // unreachable (an unmounted share, a changed permission) must not take its script with it.
+        if (!(0, node_fs_1.existsSync)(this.diskRoot)) {
+            this.log.warn(`Mirror directory ${this.diskRoot} is not accessible - the script ${id} is kept in the database`);
+            return;
+        }
+        if (this.dbList[id]) {
+            this.log.debug(`Delete script ${id} in DB`);
+            delete this.dbList[id];
+            this.adapter.delForeignObject(id);
+        }
+        if (this.diskList[id]) {
+            delete this.diskList[id];
+        }
+    }
+    /** Stops all watchers and drops the changes that were not processed yet */
+    destroy() {
+        Object.values(this.changeTimers).forEach(timer => clearTimeout(timer));
+        this.changeTimers = {};
+        this.ready = false;
+        for (const watcher of [...Object.values(this.watchedFolder), ...this.watchedLinks]) {
+            try {
+                watcher.close();
+            }
+            catch {
+                // ignore error
+            }
+        }
+        this.watchedFolder = {};
+        this.watchedLinks = [];
     }
     onObjectChange(id, obj) {
         if (!this.dbList || !id || !this.ready) {
