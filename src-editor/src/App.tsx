@@ -46,6 +46,7 @@ import { getScriptName, nameToFileName, scriptIdToZipFolder, zipPathToScript } f
 import type { ScriptType } from '@/types';
 import PasswordDialog from '@/Dialogs/Password';
 import { preloadFbEditor } from '@/FbEditor/preload';
+import { blocksNeedReload } from '@/Components/blocklyAdapters';
 
 /** The node, in which the editor lives; it fills the place of the editor in the layout like that place did */
 function createEditorHost(): HTMLDivElement {
@@ -399,7 +400,8 @@ export default class App extends GenericApp<AppProps, AppState> {
                 }
             }
 
-            if (obj?.common?.blockly) {
+            // only a new or updated adapter brings other blocks - not an instance that is started or stopped (#2469)
+            if (blocksNeedReload(obj)) {
                 this.confirmCallback = result => result && window.location.reload();
                 newState.confirm = I18n.t('Some blocks were updated. Reload admin?');
                 changed = true;

@@ -23,6 +23,7 @@ import {
     migrateGenerators,
 } from './blockly-plugins';
 import { loadOwnBlocks } from './blockly-plugins/bridge';
+import { rememberLoadedBlocks } from './blocklyAdapters';
 import { getBlocklyTheme } from './blocklyTheme';
 
 let languageBlocklyLoaded = false;
@@ -227,6 +228,9 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
     }
 
     static loadCustomBlockly(adapters: Record<string, ioBroker.AdapterObject>, callback: () => void): void {
+        // so that the editor asks for a reload only when one of these really changes (#2469)
+        rememberLoadedBlocks(adapters);
+
         // get all adapters, that can have blockly
         const toLoad: string[] = [];
         for (const id in adapters) {
