@@ -10,7 +10,7 @@
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
         "@iobroker/ai-gui": "^0.0.5",
-        "@iobroker/gui-components": "^10.4.4",
+        "@iobroker/gui-components": "^10.4.8",
         "@iobroker/javascript-rules-dev": "^1.1.0",
         "@iobroker/type-detector": "^6.2.0",
         "@iobroker/types": "^7.2.5",
