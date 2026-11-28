@@ -18,7 +18,7 @@
         "@module-federation/vite": "^1.23.11",
         "@mui/icons-material": "^9.5.0",
         "@mui/material": "^9.5.0",
-        "@mui/x-date-pickers": "^9.17.0",
+        "@mui/x-date-pickers": "^9.18.0",
         "@sentry/browser": "^11.11.0",
         "@types/lodash": "^4.17.27",
         "@types/react": "^19.3.0",
