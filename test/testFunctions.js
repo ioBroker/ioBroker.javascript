@@ -1288,6 +1288,8 @@ describe('Test JS', function () {
                     count++;
                     assert.ok(state.ts - start >= 950);
                     assert.ok(state.ts - start < 1450);
+                    // a real change: lc is the time of the write, as with setState (#2503)
+                    assert.equal(state.lc, state.ts);
                 } else if (count === 1) {
                     // on state change by setState('changed', 5, true)
                     count++;
