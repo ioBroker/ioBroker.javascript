@@ -1,0 +1,1 @@
+import{Qn as e,dr as t}from"./_virtual_mf___mfe_internal__iobroker_javascript__mf_owner__251811387473981__loadShare___mf_0_iobroker_mf_1_gui_mf_2_components__loadShare__.js-DzyAxBfk.js";var n=e(t(`path`,{d:`M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z`}),`ExpandMore`);export{n as t};
