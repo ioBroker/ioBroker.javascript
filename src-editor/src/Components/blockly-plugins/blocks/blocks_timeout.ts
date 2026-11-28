@@ -13,7 +13,7 @@
  */
 import { Blocks, FieldDropdown, FieldTextInput, Names, type Block, type Field, type Workspace } from 'blockly/core';
 import { javascriptGenerator, Order } from 'blockly/javascript';
-import { namedResourceVariableModel, type NamedResourceVariableModel } from './helpers';
+import { namedResourceOptions, namedResourceVariableModel, type NamedResourceVariableModel } from './helpers';
 
 /** A block that owns a named timer */
 type TimerBlock = Block & {
@@ -132,7 +132,7 @@ export function install(): void {
         }
 
         // BF(2020.05.16) : for back compatibility. Remove it after 5 years
-        if (window.scripts.loading) {
+        if (window.scripts?.loading) {
             for (const v of workspace.getVariableMap().getVariablesOfType('')) {
                 if (!result.find(it => it[0] === v.getName())) {
                     result.push([v.getName(), v.getName()]);
@@ -162,9 +162,9 @@ export function install(): void {
     };
 
     const timerDropdown = (kind: TimerKind): FieldDropdown =>
-        new FieldDropdown(() =>
-            window.scripts?.blocklyWorkspace ? collectTimers(window.scripts.blocklyWorkspace, kind) : [],
-        );
+        new FieldDropdown(function (this: FieldDropdown) {
+            return namedResourceOptions(this, workspace => collectTimers(workspace, kind));
+        });
 
     // --- wait -----------------------------------------------------------
     Blockly.Timeouts.blocks['timeouts_wait'] =

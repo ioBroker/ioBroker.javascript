@@ -604,5 +604,8 @@
     "lines": "行",
     "Delete this version": "删除此版本",
     "Delete the whole history": "删除全部历史记录",
-    "These scripts are not saved:": "以下脚本尚未保存："
+    "These scripts are not saved:": "以下脚本尚未保存：",
+    "recipe_from_recipe": "浏览配方",
+    "recipe_bar_text": "或者从现成的自动化开始，并选择您的设备",
+    "recipe_export_button": "导出为配方"
 }

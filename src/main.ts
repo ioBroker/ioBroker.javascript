@@ -78,7 +78,8 @@ import {
     tsCompilerOptions,
     jsDeclarationCompilerOptions,
 } from './lib/typescriptSettings';
-import { hashSource, hasNaNDelay } from './lib/tools';
+import { getHttpRequestConfig, hashSource, hasNaNDelay } from './lib/tools';
+import { RecipeCatalog, RECIPES_CACHE_FILE } from './lib/recipes';
 import {
     resolveTypescriptLibs,
     resolveTypings,
@@ -345,6 +346,9 @@ const jsDeclarationServer = new LazyTsServer(
 
 class JavaScript extends Adapter {
     declare public config: JavaScriptAdapterConfig;
+
+    /** The catalog of the recipes for the editor, created with the first request */
+    private recipeCatalog: RecipeCatalog | null = null;
 
     private readonly context: JavascriptContext;
 
@@ -659,6 +663,30 @@ class JavaScript extends Adapter {
         };
 
         this.tsServer = new LazyTsServer(tsCompilerOptions, this.tsLog, TS_MEMORY_RELEASE_DELAY_MS);
+    }
+
+    /** The catalog of the recipes, see lib/recipes.ts */
+    private getRecipeCatalog(): RecipeCatalog {
+        this.recipeCatalog ||= new RecipeCatalog({
+            version: packageJson.version,
+            fetchText: async (url: string): Promise<string> => {
+                const response = await axios.default({
+                    ...getHttpRequestConfig(url, { timeout: 15000 }, this.config.allowSelfSignedCerts),
+                    method: 'get',
+                });
+                if (response.status !== 200) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                return typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
+            },
+            readCache: async (): Promise<string | null> =>
+                fileToString(await this.readFileAsync(this.namespace, RECIPES_CACHE_FILE)),
+            writeCache: async (text: string): Promise<void> => {
+                await this.ensureHistoryStorage();
+                await this.writeFileAsync(this.namespace, RECIPES_CACHE_FILE, text);
+            },
+        });
+        return this.recipeCatalog;
     }
 
     /**
@@ -1894,6 +1922,15 @@ class JavaScript extends Adapter {
                         );
                     }
                 })();
+                break;
+            }
+
+            case 'getRecipes': {
+                // The catalog of the recipes for the editor: from the URL of the settings, without
+                // internet the copy in the file storage of the instance
+                void this.getRecipeCatalog()
+                    .get(this.config.recipesUrl, !!obj.message?.force)
+                    .then(answer => obj.callback && this.sendTo(obj.from, obj.command, answer, obj.callback));
                 break;
             }
 

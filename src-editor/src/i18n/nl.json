@@ -604,5 +604,8 @@
     "lines": "regels",
     "Delete this version": "Deze versie verwijderen",
     "Delete the whole history": "Volledige geschiedenis verwijderen",
-    "These scripts are not saved:": "Deze scripts zijn niet opgeslagen:"
+    "These scripts are not saved:": "Deze scripts zijn niet opgeslagen:",
+    "recipe_from_recipe": "Recepten bekijken",
+    "recipe_bar_text": "Of begin met een kant-en-klare automatisering en kies uw apparaten",
+    "recipe_export_button": "Exporteren als recept"
 }

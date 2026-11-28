@@ -140,5 +140,7 @@
     "Low": "低",
     "Medium": "中",
     "High": "高",
-    "optional": "可选"
+    "optional": "可选",
+    "Catalog of the recipes": "配方目录",
+    "recipesUrl help": "包含脚本编辑器现成自动化的 recipes.json 的网址。留空：官方目录"
 }

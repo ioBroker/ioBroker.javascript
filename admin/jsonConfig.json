@@ -138,6 +138,18 @@
                     "md": 12,
                     "lg": 12,
                     "xl": 12
+                },
+                "recipesUrl": {
+                    "newLine": true,
+                    "type": "text",
+                    "label": "Catalog of the recipes",
+                    "help": "recipesUrl help",
+                    "placeholder": "https://iobroker.github.io/ioBroker.recipes/recipes.json",
+                    "xs": 12,
+                    "sm": 8,
+                    "md": 8,
+                    "lg": 8,
+                    "xl": 8
                 }
             }
         },

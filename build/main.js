@@ -88,6 +88,7 @@ const eventObj_1 = require("./lib/eventObj");
 const scheduler_1 = require("./lib/scheduler");
 const typescriptSettings_1 = require("./lib/typescriptSettings");
 const tools_1 = require("./lib/tools");
+const recipes_1 = require("./lib/recipes");
 const typescriptTools_1 = require("./lib/typescriptTools");
 const crypto_1 = require("./lib/crypto");
 /**
@@ -276,6 +277,8 @@ const jsDeclarationServer = new lazyTsServer_1.LazyTsServer(typescriptSettings_1
  * the compiled source was just updated
  */
 class JavaScript extends adapter_core_1.Adapter {
+    /** The catalog of the recipes for the editor, created with the first request */
+    recipeCatalog = null;
     context;
     errorLogFunction = {
         error: (msg) => console.error(msg),
@@ -535,6 +538,28 @@ class JavaScript extends adapter_core_1.Adapter {
             secrets: this.secretsManager.secrets,
         };
         this.tsServer = new lazyTsServer_1.LazyTsServer(typescriptSettings_1.tsCompilerOptions, this.tsLog, TS_MEMORY_RELEASE_DELAY_MS);
+    }
+    /** The catalog of the recipes, see lib/recipes.ts */
+    getRecipeCatalog() {
+        this.recipeCatalog ||= new recipes_1.RecipeCatalog({
+            version: packageJson.version,
+            fetchText: async (url) => {
+                const response = await axios.default({
+                    ...(0, tools_1.getHttpRequestConfig)(url, { timeout: 15000 }, this.config.allowSelfSignedCerts),
+                    method: 'get',
+                });
+                if (response.status !== 200) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                return typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
+            },
+            readCache: async () => (0, scriptHistory_1.fileToString)(await this.readFileAsync(this.namespace, recipes_1.RECIPES_CACHE_FILE)),
+            writeCache: async (text) => {
+                await this.ensureHistoryStorage();
+                await this.writeFileAsync(this.namespace, recipes_1.RECIPES_CACHE_FILE, text);
+            },
+        });
+        return this.recipeCatalog;
     }
     /**
      * Make sure the instance has a file area, which is where the script history lives.
@@ -1577,6 +1602,14 @@ class JavaScript extends adapter_core_1.Adapter {
                         this.sendTo(obj.from, obj.command, { error: `Cannot delete: ${e instanceof Error ? e.message : String(e)}` }, obj.callback);
                     }
                 })();
+                break;
+            }
+            case 'getRecipes': {
+                // The catalog of the recipes for the editor: from the URL of the settings, without
+                // internet the copy in the file storage of the instance
+                void this.getRecipeCatalog()
+                    .get(this.config.recipesUrl, !!obj.message?.force)
+                    .then(answer => obj.callback && this.sendTo(obj.from, obj.command, answer, obj.callback));
                 break;
             }
             case 'getIoBrokerDataDir': {

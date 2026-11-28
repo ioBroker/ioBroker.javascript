@@ -594,7 +594,8 @@
     "tsExperimentalDecorators": false,
     "tsEmitDecoratorMetadata": false,
     "tsRemoveComments": false,
-    "tsSkipLibCheck": false
+    "tsSkipLibCheck": false,
+    "recipesUrl": ""
   },
   "encryptedNative": [
     "gptKey",

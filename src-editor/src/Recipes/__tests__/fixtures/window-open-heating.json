@@ -1,0 +1,56 @@
+{
+    "$schema": "../schema/recipe.schema.json",
+    "id": "window-open-heating",
+    "version": "1.0.0",
+    "title": {
+        "en": "Lower the heating while a window is open",
+        "de": "Heizung absenken bei offenem Fenster"
+    },
+    "description": {
+        "en": "Lowers the target temperature of a thermostat when a window or door stays open longer than a set time, and restores the previous temperature when it is closed again.",
+        "de": "Senkt die Solltemperatur eines Thermostats ab, wenn ein Fenster oder eine Tür länger als eine eingestellte Zeit offen ist, und stellt die vorherige Temperatur wieder her, sobald es geschlossen wird."
+    },
+    "author": "GermanBluefox",
+    "tags": ["heizung", "fenster"],
+    "minJavascript": "8.0.0",
+    "inputs": {
+        "window": {
+            "type": "device",
+            "deviceType": ["window", "windowTilt", "door"],
+            "title": {
+                "en": "Window or door",
+                "de": "Fenster oder Tür"
+            }
+        },
+        "thermostat": {
+            "type": "device",
+            "deviceType": "thermostat",
+            "title": {
+                "en": "Thermostat",
+                "de": "Thermostat"
+            }
+        },
+        "delay": {
+            "type": "duration",
+            "default": 300,
+            "min": 0,
+            "title": {
+                "en": "Lower after the window is open for",
+                "de": "Absenken, wenn das Fenster offen ist seit"
+            }
+        },
+        "temperature": {
+            "type": "number",
+            "default": 12,
+            "min": 5,
+            "max": 30,
+            "step": 0.5,
+            "unit": "°C",
+            "title": {
+                "en": "Lowered temperature",
+                "de": "Abgesenkte Temperatur"
+            }
+        }
+    },
+    "blockly": "<xml xmlns=\"https://developers.google.com/blockly/xml\">\n  <variables>\n    <variable id=\"savedTemperature\">savedTemperature</variable>\n    <variable type=\"timeout\" id=\"lowerTimer\">lowerTimer</variable>\n    <variable id=\"value\">value</variable>\n  </variables>\n  <block type=\"on\" x=\"10\" y=\"10\">\n    <field name=\"OID\">{{window.ACTUAL}}</field>\n    <field name=\"CONDITION\">ne</field>\n    <field name=\"ACK_CONDITION\"></field>\n    <statement name=\"STATEMENT\">\n      <block type=\"controls_if\">\n        <mutation else=\"1\"></mutation>\n        <value name=\"IF0\">\n          <block type=\"on_source\">\n            <field name=\"ATTR\">state.val</field>\n          </block>\n        </value>\n        <statement name=\"DO0\">\n          <block type=\"controls_if\">\n            <value name=\"IF0\">\n              <block type=\"logic_compare\">\n                <field name=\"OP\">EQ</field>\n                <value name=\"A\">\n                  <block type=\"variables_get\">\n                    <field name=\"VAR\" id=\"savedTemperature\">savedTemperature</field>\n                  </block>\n                </value>\n                <value name=\"B\">\n                  <block type=\"logic_null\"></block>\n                </value>\n              </block>\n            </value>\n            <statement name=\"DO0\">\n              <block type=\"timeouts_cleartimeout\">\n                <field name=\"NAME\">lowerTimer</field>\n                <next>\n                  <block type=\"timeouts_settimeout\">\n                    <field name=\"NAME\">lowerTimer</field>\n                    <field name=\"DELAY\">{{delay}}</field>\n                    <field name=\"UNIT\">sec</field>\n                    <statement name=\"STATEMENT\">\n                      <block type=\"get_value_async\">\n                        <field name=\"ATTR\">val</field>\n                        <field name=\"OID\">{{thermostat.SET}}</field>\n                        <statement name=\"STATEMENT\">\n                          <block type=\"variables_set\">\n                            <field name=\"VAR\" id=\"savedTemperature\">savedTemperature</field>\n                            <value name=\"VALUE\">\n                              <block type=\"variables_get\">\n                                <field name=\"VAR\" id=\"value\">value</field>\n                              </block>\n                            </value>\n                            <next>\n                              <block type=\"control\">\n                                <mutation delay_input=\"false\"></mutation>\n                                <field name=\"OID\">{{thermostat.SET}}</field>\n                                <field name=\"WITH_DELAY\">FALSE</field>\n                                <value name=\"VALUE\">\n                                  <block type=\"math_number\">\n                                    <field name=\"NUM\">{{temperature}}</field>\n                                  </block>\n                                </value>\n                              </block>\n                            </next>\n                          </block>\n                        </statement>\n                      </block>\n                    </statement>\n                  </block>\n                </next>\n              </block>\n            </statement>\n          </block>\n        </statement>\n        <statement name=\"ELSE\">\n          <block type=\"timeouts_cleartimeout\">\n            <field name=\"NAME\">lowerTimer</field>\n            <next>\n              <block type=\"controls_if\">\n                <value name=\"IF0\">\n                  <block type=\"logic_compare\">\n                    <field name=\"OP\">NEQ</field>\n                    <value name=\"A\">\n                      <block type=\"variables_get\">\n                        <field name=\"VAR\" id=\"savedTemperature\">savedTemperature</field>\n                      </block>\n                    </value>\n                    <value name=\"B\">\n                      <block type=\"logic_null\"></block>\n                    </value>\n                  </block>\n                </value>\n                <statement name=\"DO0\">\n                  <block type=\"control\">\n                    <mutation delay_input=\"false\"></mutation>\n                    <field name=\"OID\">{{thermostat.SET}}</field>\n                    <field name=\"WITH_DELAY\">FALSE</field>\n                    <value name=\"VALUE\">\n                      <block type=\"variables_get\">\n                        <field name=\"VAR\" id=\"savedTemperature\">savedTemperature</field>\n                      </block>\n                    </value>\n                    <next>\n                      <block type=\"variables_set\">\n                        <field name=\"VAR\" id=\"savedTemperature\">savedTemperature</field>\n                        <value name=\"VALUE\">\n                          <block type=\"logic_null\"></block>\n                        </value>\n                      </block>\n                    </next>\n                  </block>\n                </statement>\n              </block>\n            </next>\n          </block>\n        </statement>\n      </block>\n    </statement>\n  </block>\n</xml>\n"
+}
