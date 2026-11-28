@@ -67,7 +67,7 @@
     "@iobroker/eslint-config": "^2.3.4",
     "@iobroker/plugin-sentry": "^3.2.1",
     "@iobroker/testing": "^6.3.1",
-    "@tsconfig/node22": "^22.0.6",
+    "@tsconfig/node22": "^22.0.7",
     "@types/node-schedule": "^2.1.8",
     "@types/nodemailer": "^8.0.2",
     "@types/request": "^2.48.13",
