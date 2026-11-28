@@ -4,7 +4,7 @@
     "private": true,
     "type": "module",
     "dependencies": {
-        "@blockly/field-colour": "^13.4.0",
+        "@blockly/field-colour": "^13.5.0",
         "@blockly/field-multilineinput": "^13.4.0",
         "@devbookhq/splitter": "^1.4.2",
         "@emotion/react": "^11.14.0",
