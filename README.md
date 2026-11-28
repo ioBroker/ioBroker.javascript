@@ -35,6 +35,7 @@ Executes JavaScript, TypeScript Scripts.
 
 ## Changelog
 ### **WORK IN PROGRESS**
+* (@GermanBluefox) Fixed `setStateChanged()` writing a real change with `lc` from the time of the call and `ts` from the time of the write, which differed by up to seconds under load, so e.g. influxdb with `changesOnly` did not store the value. Now `lc` = `ts` on a real change, as with `setState()` (#2503)
 * (@GermanBluefox) Version 10.6.0 was not published on npm, this release contains its changes
 
 ### 10.6.0 (2026-11-19)

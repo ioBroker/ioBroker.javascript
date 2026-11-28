@@ -797,6 +797,9 @@ export function sandBox(
             }
         }
 
+        // `lc` given by the script, before prepareStateObject() fills it in
+        const givenLc = stateNotNull !== null && typeof stateNotNull === 'object' ? stateNotNull.lc : undefined;
+
         let stateAsObject: ioBroker.State;
         // modify state here, to make it available in callback
         if (stateNotNull === null || typeof stateNotNull !== 'object' || stateNotNull.val === undefined) {
@@ -888,8 +891,12 @@ export function sandBox(
                             errHandler(null, 'setForeignStateCached');
                         }
                     } else {
-                        // adapter doesn't hold all states, or it has not cached then we will simply call setForeignStateChanged
-                        adapter.setForeignStateChanged(id, { ...stateAsObject, ts: undefined }, err =>
+                        // adapter doesn't hold all states, or it has not cached then we will simply call setForeignStateChanged.
+                        // `ts` and `lc` of prepareStateObject() are from the time of this call, but js-controller reads the
+                        // old state first and sets `ts` only when it writes. An `lc` from here would differ from `ts` on a
+                        // real change (influxdb with changesOnly skips such a value), so the states DB computes it,
+                        // unless the script gave one (#2503)
+                        adapter.setForeignStateChanged(id, { ...stateAsObject, ts: undefined, lc: givenLc }, err =>
                             errHandler(err, 'setForeignStateChanged'),
                         );
                     }
