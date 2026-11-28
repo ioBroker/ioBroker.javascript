@@ -1,1 +1,0 @@
-import{Yn as e,cr as t}from"./_virtual_mf___mfe_internal__iobroker_javascript__mf_owner__254853914160576__loadShare___mf_0_iobroker_mf_1_gui_mf_2_components__loadShare__.js-BY1PAUta.js";var n=e(t(`path`,{d:`M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z`}),`ChevronRight`);export{n as t};

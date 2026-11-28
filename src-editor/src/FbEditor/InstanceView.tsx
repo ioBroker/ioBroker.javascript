@@ -111,7 +111,7 @@ function InstanceCanvas(props: InstanceViewProps): React.JSX.Element | null {
                 nodesConnectable={false}
                 edgesReconnectable={false}
                 deleteKeyCode={null}
-                colorMode={dark ? 'dark' : 'light'}
+                forceColorMode={dark ? 'dark' : 'light'}
                 fitView
                 fitViewOptions={{ maxZoom: 1.2 }}
                 minZoom={0.2}
