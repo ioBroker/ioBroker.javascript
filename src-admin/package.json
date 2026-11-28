@@ -14,7 +14,7 @@
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
         "@iobroker/gui-components": "^10.4.4",
-        "@iobroker/json-config": "^10.1.18",
+        "@iobroker/json-config": "^10.1.24",
         "@module-federation/runtime": "^2.9.3",
         "@module-federation/vite": "^1.23.11",
         "@mui/icons-material": "^9.5.0",
