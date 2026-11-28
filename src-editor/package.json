@@ -29,7 +29,7 @@
         "blockly": "^13.4.0",
         "jszip": "^3.10.2",
         "moment": "^2.31.0",
-        "monaco-editor": "~0.57.0",
+        "monaco-editor": "~0.58.0",
         "openai": "^7.53.0",
         "react": "^19.3.1",
         "react-bem-helper": "^1.4.1",
