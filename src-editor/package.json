@@ -25,7 +25,7 @@
         "@types/react-dom": "^19.3.0",
         "@types/reactour": "^1.18.5",
         "@vitejs/plugin-react": "^6.2.1",
-        "@xyflow/react": "^12.12.1",
+        "@xyflow/react": "^13.0.2",
         "blockly": "^13.4.0",
         "jszip": "^3.10.2",
         "moment": "^2.31.0",
