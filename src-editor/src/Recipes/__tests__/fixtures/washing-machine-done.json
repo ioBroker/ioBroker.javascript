@@ -1,0 +1,72 @@
+{
+    "$schema": "../schema/recipe.schema.json",
+    "id": "washing-machine-done",
+    "version": "1.0.0",
+    "title": {
+        "en": "Washing machine is done",
+        "de": "Waschmaschine ist fertig"
+    },
+    "description": {
+        "en": "Sends a message when the power of a washing machine stays below a threshold for a set time after it was running. The message goes to the log and, if chosen, into a state, for example telegram.0.communicate.response.",
+        "de": "Meldet, wenn die Leistung einer Waschmaschine nach dem Waschen für eine eingestellte Zeit unter einer Schwelle bleibt. Die Nachricht steht im Log und auf Wunsch in einem Datenpunkt, zum Beispiel telegram.0.communicate.response."
+    },
+    "author": "GermanBluefox",
+    "tags": ["waschmaschine", "benachrichtigung", "energie"],
+    "minJavascript": "8.0.0",
+    "inputs": {
+        "power": {
+            "type": "state",
+            "role": "value.power",
+            "commonType": "number",
+            "title": {
+                "en": "Power of the washing machine",
+                "de": "Leistung der Waschmaschine"
+            }
+        },
+        "threshold": {
+            "type": "number",
+            "default": 5,
+            "min": 0,
+            "unit": "W",
+            "title": {
+                "en": "Running above",
+                "de": "Läuft oberhalb von"
+            }
+        },
+        "duration": {
+            "type": "duration",
+            "default": 180,
+            "min": 1,
+            "title": {
+                "en": "Done after below the threshold for",
+                "de": "Fertig nach unter der Schwelle für"
+            }
+        },
+        "message": {
+            "type": "string",
+            "default": {
+                "en": "The washing machine is done.",
+                "de": "Die Waschmaschine ist fertig."
+            },
+            "title": {
+                "en": "Message",
+                "de": "Nachricht"
+            }
+        },
+        "notifyState": {
+            "type": "state",
+            "commonType": "string",
+            "write": true,
+            "optional": true,
+            "title": {
+                "en": "Also write the message to",
+                "de": "Nachricht zusätzlich schreiben in"
+            },
+            "description": {
+                "en": "A state that sends what is written to it, for example telegram.0.communicate.response.",
+                "de": "Ein Datenpunkt, der versendet, was hineingeschrieben wird, zum Beispiel telegram.0.communicate.response."
+            }
+        }
+    },
+    "blockly": "<xml xmlns=\"https://developers.google.com/blockly/xml\">\n  <variables>\n    <variable id=\"running\">running</variable>\n    <variable type=\"timeout\" id=\"doneTimer\">doneTimer</variable>\n  </variables>\n  <block type=\"on\" x=\"10\" y=\"10\">\n    <field name=\"OID\">{{power}}</field>\n    <field name=\"CONDITION\">ne</field>\n    <field name=\"ACK_CONDITION\"></field>\n    <statement name=\"STATEMENT\">\n      <block type=\"controls_if\">\n        <mutation elseif=\"1\"></mutation>\n        <value name=\"IF0\">\n          <block type=\"logic_compare\">\n            <field name=\"OP\">GT</field>\n            <value name=\"A\">\n              <block type=\"on_source\">\n                <field name=\"ATTR\">state.val</field>\n              </block>\n            </value>\n            <value name=\"B\">\n              <block type=\"math_number\">\n                <field name=\"NUM\">{{threshold}}</field>\n              </block>\n            </value>\n          </block>\n        </value>\n        <statement name=\"DO0\">\n          <block type=\"variables_set\">\n            <field name=\"VAR\" id=\"running\">running</field>\n            <value name=\"VALUE\">\n              <block type=\"logic_boolean\">\n                <field name=\"BOOL\">TRUE</field>\n              </block>\n            </value>\n            <next>\n              <block type=\"timeouts_cleartimeout\">\n                <field name=\"NAME\">doneTimer</field>\n              </block>\n            </next>\n          </block>\n        </statement>\n        <value name=\"IF1\">\n          <block type=\"logic_operation\">\n            <field name=\"OP\">AND</field>\n            <value name=\"A\">\n              <block type=\"variables_get\">\n                <field name=\"VAR\" id=\"running\">running</field>\n              </block>\n            </value>\n            <value name=\"B\">\n              <block type=\"logic_compare\">\n                <field name=\"OP\">EQ</field>\n                <value name=\"A\">\n                  <block type=\"timeouts_gettimeout\">\n                    <field name=\"NAME\">doneTimer</field>\n                  </block>\n                </value>\n                <value name=\"B\">\n                  <block type=\"logic_null\"></block>\n                </value>\n              </block>\n            </value>\n          </block>\n        </value>\n        <statement name=\"DO1\">\n          <block type=\"timeouts_settimeout\">\n            <field name=\"NAME\">doneTimer</field>\n            <field name=\"DELAY\">{{duration}}</field>\n            <field name=\"UNIT\">sec</field>\n            <statement name=\"STATEMENT\">\n              <block type=\"variables_set\">\n                <field name=\"VAR\" id=\"running\">running</field>\n                <value name=\"VALUE\">\n                  <block type=\"logic_boolean\">\n                    <field name=\"BOOL\">FALSE</field>\n                  </block>\n                </value>\n                <next>\n                  <block type=\"debug\">\n                    <field name=\"Severity\">warn</field>\n                    <value name=\"TEXT\">\n                      <block type=\"text\">\n                        <field name=\"TEXT\">{{message}}</field>\n                      </block>\n                    </value>\n{{#if notifyState}}\n                    <next>\n                      <block type=\"control\">\n                        <mutation delay_input=\"false\"></mutation>\n                        <field name=\"OID\">{{notifyState}}</field>\n                        <field name=\"WITH_DELAY\">FALSE</field>\n                        <value name=\"VALUE\">\n                          <block type=\"text\">\n                            <field name=\"TEXT\">{{message}}</field>\n                          </block>\n                        </value>\n                      </block>\n                    </next>\n{{/if}}\n                  </block>\n                </next>\n              </block>\n            </statement>\n          </block>\n        </statement>\n      </block>\n    </statement>\n  </block>\n</xml>\n"
+}

@@ -140,5 +140,7 @@
     "Low": "Laag",
     "Medium": "Gemiddeld",
     "High": "Hoog",
-    "optional": "optioneel"
+    "optional": "optioneel",
+    "Catalog of the recipes": "Catalogus van de recepten",
+    "recipesUrl help": "URL van recipes.json met de kant-en-klare automatiseringen van de scripteditor. Leeg: de officiële catalogus"
 }

@@ -557,6 +557,8 @@ interface SideDrawerProps {
     ) => void;
     onDebugInstance: (data: { instance: string; adapter: string }) => void;
     changedScripts: { [id: string]: boolean };
+    /** Opens the recipes, from "Add new script" */
+    onRecipes?: () => void;
 }
 
 interface SideDrawerState {
@@ -2361,6 +2363,14 @@ export default class SideDrawer extends React.Component<SideDrawerProps, SideDra
             this.state.choosingType ? (
                 <DialogAddNewScript
                     key="dialog-script-type"
+                    onRecipes={
+                        this.props.onRecipes
+                            ? () => {
+                                  this.setState({ choosingType: false });
+                                  this.props.onRecipes!();
+                              }
+                            : undefined
+                    }
                     onClose={type => {
                         const newState: Partial<SideDrawerState> = { choosingType: false };
                         if (type) {

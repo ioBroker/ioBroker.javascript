@@ -604,5 +604,8 @@
     "lines": "рядків",
     "Delete this version": "Видалити цю версію",
     "Delete the whole history": "Видалити всю історію",
-    "These scripts are not saved:": "Ці скрипти не збережено:"
+    "These scripts are not saved:": "Ці скрипти не збережено:",
+    "recipe_from_recipe": "Переглянути рецепти",
+    "recipe_bar_text": "Або почніть із готової автоматизації та виберіть свої пристрої",
+    "recipe_export_button": "Експортувати як рецепт"
 }

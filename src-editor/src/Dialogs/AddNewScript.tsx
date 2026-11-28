@@ -15,7 +15,7 @@ import {
     Typography,
 } from '@mui/material';
 
-import { Cancel as IconCancel, OpenInNew as IconDoc } from '@mui/icons-material';
+import { Cancel as IconCancel, MenuBook as IconRecipe, OpenInNew as IconDoc } from '@mui/icons-material';
 
 import { I18n } from '@iobroker/gui-components';
 
@@ -50,6 +50,8 @@ const TILE_MIN_WIDTH = 200;
 
 interface DialogAddNewProps {
     onClose: (type?: ScriptType) => void;
+    /** Opens the recipes instead: ready-made Blockly scripts */
+    onRecipes?: () => void;
 }
 
 export default function DialogAddNew(props: DialogAddNewProps): React.JSX.Element {
@@ -123,6 +125,28 @@ export default function DialogAddNew(props: DialogAddNewProps): React.JSX.Elemen
         >
             <DialogTitle id="add-new-script-title">{I18n.t('Add new script')}</DialogTitle>
             <DialogContent>
+                {props.onRecipes ? (
+                    <Card
+                        variant="outlined"
+                        sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 1.5, mb: 2, mt: 1 }}
+                    >
+                        <IconRecipe color="primary" />
+                        <Typography
+                            variant="body2"
+                            sx={{ flex: 1 }}
+                        >
+                            {I18n.t('recipe_bar_text')}
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<IconRecipe />}
+                            onClick={props.onRecipes}
+                        >
+                            {I18n.t('recipe_from_recipe')}
+                        </Button>
+                    </Card>
+                ) : null}
                 <Box
                     sx={{
                         display: 'grid',
