@@ -50,7 +50,7 @@
     "jszip": "^3.10.2",
     "node-inspect": "^2.0.0",
     "node-schedule": "2.1.2",
-    "nodemailer": "^10.3.1",
+    "nodemailer": "^10.6.1",
     "prettier": "^3.9.10",
     "semver": "^7.8.6",
     "suncalc2": "^1.8.1",
