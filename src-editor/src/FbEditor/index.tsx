@@ -1692,7 +1692,7 @@ function FbCanvas(
                                 deleteKeyCode={deleteKeys}
                                 snapToGrid={grid}
                                 snapGrid={snapGrid}
-                                colorMode={dark ? 'dark' : 'light'}
+                                forceColorMode={dark ? 'dark' : 'light'}
                                 fitView
                                 fitViewOptions={{ maxZoom: 1.2 }}
                                 minZoom={0.2}
