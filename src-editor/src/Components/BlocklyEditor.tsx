@@ -27,6 +27,7 @@ import { getBlocklyTheme } from './blocklyTheme';
 
 let languageBlocklyLoaded = false;
 let languageOwnLoaded = false;
+let languagesLoading: Promise<void> | null = null;
 let blocksLoading: Promise<void> | null = null;
 let blocksLoaded = false;
 let toolboxText: string | null = null;
@@ -356,25 +357,41 @@ class BlocklyEditor extends React.Component<BlocklyEditorProps, BlocklyEditorSta
         }
     }
 
+    /**
+     * Loads the texts of Blockly and of the ioBroker blocks in the language of the user. Also used
+     * without an editor, by the recipes. Safe to call more than once.
+     */
+    static loadLanguagesAsync(): Promise<void> {
+        languagesLoading ||= Promise.all([
+            languageBlocklyLoaded
+                ? Promise.resolve()
+                : BlocklyEditor.applyBlocklyMessages(`google-blockly/msg/js/${I18n.getLanguage()}.js`).then(() => {
+                      languageBlocklyLoaded = true;
+                  }),
+            languageOwnLoaded
+                ? Promise.resolve()
+                : new Promise<void>(resolve => {
+                      const fileCustom = window.document.createElement('script');
+                      fileCustom.setAttribute('type', 'text/javascript');
+                      fileCustom.setAttribute('src', `google-blockly/own/msg/${I18n.getLanguage()}.js`);
+                      fileCustom.onload = () => {
+                          languageOwnLoaded = true;
+                          resolve();
+                      };
+                      fileCustom.onerror = () => resolve();
+                      window.document.getElementsByTagName('head')[0].appendChild(fileCustom);
+                  }),
+        ]).then(() => {
+            // what failed is tried again the next time
+            if (!languageBlocklyLoaded || !languageOwnLoaded) {
+                languagesLoading = null;
+            }
+        });
+        return languagesLoading;
+    }
+
     loadLanguages(): void {
-        // load blockly language
-        if (!languageBlocklyLoaded) {
-            void BlocklyEditor.applyBlocklyMessages(`google-blockly/msg/js/${I18n.getLanguage()}.js`).then(() => {
-                languageBlocklyLoaded = true;
-                this.setState({ languageBlocklyLoaded });
-            });
-        }
-        if (!languageOwnLoaded) {
-            const fileCustom = window.document.createElement('script');
-            fileCustom.setAttribute('type', 'text/javascript');
-            fileCustom.setAttribute('src', `google-blockly/own/msg/${I18n.getLanguage()}.js`);
-            // most browsers
-            fileCustom.onload = () => {
-                languageOwnLoaded = true;
-                this.setState({ languageOwnLoaded });
-            };
-            window.document.getElementsByTagName('head')[0].appendChild(fileCustom);
-        }
+        void BlocklyEditor.loadLanguagesAsync().then(() => this.setState({ languageBlocklyLoaded, languageOwnLoaded }));
     }
 
     onResize(): void {

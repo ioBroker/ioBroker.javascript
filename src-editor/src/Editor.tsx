@@ -49,6 +49,7 @@ import {
     MdUndo as IconUndo,
     MdRedo as IconRedo,
     MdHelpOutline as IconHelp,
+    MdMenuBook as IconRecipe,
 } from 'react-icons/md';
 
 import {
@@ -95,6 +96,8 @@ import type { AstroTimes, ScriptType } from './types';
 import Connecting from './Components/Connecting';
 import { decryptText, encryptText } from './Components/crypto';
 import { loadFbEditor } from './FbEditor/preload';
+import { getScriptName } from './scriptNames';
+import type { ScriptRecipe } from './Recipes/types';
 
 import type BlocklyEditorImport from './Components/BlocklyEditor';
 import type { FbEditorApi } from './FbEditor';
@@ -112,6 +115,9 @@ const AiChatPanel = React.lazy(() => import('./AiChat/AiChatPanel'));
 const AiDiffView = React.lazy(() => import('./AiChat/AiDiffView'));
 const DialogDiff = React.lazy(() => import('./Dialogs/Diff'));
 const DialogHistory = React.lazy(() => import('./Dialogs/History'));
+const RecipeDialog = React.lazy(() => import('./Recipes/RecipeDialog'));
+const RecipeBanner = React.lazy(() => import('./Recipes/RecipeBanner'));
+const RecipeExportDialog = React.lazy(() => import('./Recipes/ExportDialog'));
 // the tour of the Rules editor
 const Tour = React.lazy(() => import('reactour'));
 const FbEditor = React.lazy(loadFbEditor);
@@ -332,6 +338,10 @@ interface EditorState {
     showDiff: boolean;
     /** The list of saved versions of the selected script */
     showHistory: boolean;
+    /** The dialog to update the script to the newest version of its recipe */
+    showRecipeUpdate: boolean;
+    /** The XML of the script for "Export as recipe" */
+    recipeExportXml: string | null;
     showScript: boolean;
     showAstro: boolean;
     /** The API documentation is open; `word` is the identifier that was under the cursor */
@@ -500,6 +510,8 @@ class Editor extends React.Component<EditorProps, EditorState> {
             showCron: false,
             showDiff: false,
             showHistory: false,
+            showRecipeUpdate: false,
+            recipeExportXml: null,
             showDebugMenu: false,
             showScript: false,
             showSelectId: false,
@@ -2028,6 +2040,19 @@ class Editor extends React.Component<EditorProps, EditorState> {
 
                     {this.state.blockly && !this.state.showCompiledCode && (
                         <IconButton
+                            key="recipeExport"
+                            aria-label="Export as recipe"
+                            title={I18n.t('recipe_export_button')}
+                            style={styles.toolbarButtons}
+                            onClick={() => this.setState({ recipeExportXml: this.getBlocklyXml() })}
+                            size="medium"
+                        >
+                            <IconRecipe />
+                        </IconButton>
+                    )}
+
+                    {this.state.blockly && !this.state.showCompiledCode && (
+                        <IconButton
                             key="check"
                             aria-label="Check code"
                             title={I18n.t('Check blocks')}
@@ -2502,19 +2527,118 @@ class Editor extends React.Component<EditorProps, EditorState> {
                     </Suspense>
                 );
 
-                return this.renderWithAiChat(blocklyEditor, chat, 'Editor.aiBlocklyChatSizes', 'blocklyEditorDiv');
+                return this.withRecipeBanner(
+                    this.renderWithAiChat(blocklyEditor, chat, 'Editor.aiBlocklyChatSizes', 'blocklyEditorDiv'),
+                );
             }
 
-            return (
+            return this.withRecipeBanner(
                 <Box
                     sx={styles.editorDiv}
                     key="blocklyEditorDiv"
                 >
                     {blocklyEditor}
-                </Box>
+                </Box>,
             );
         }
         return null;
+    }
+
+    /** The javascript instance to ask, like system.adapter.javascript.0: the one of the script, if it runs */
+    getRecipeInstance(): string {
+        const engine = this.scripts[this.state.selected]?.engine;
+        if (engine && this.state.runningInstances[engine]) {
+            return engine;
+        }
+        return Object.keys(this.state.runningInstances).find(i => this.state.runningInstances[i]) || '';
+    }
+
+    /** The Blockly XML of the open script, with the changes that are not saved yet */
+    getBlocklyXml(): string {
+        try {
+            const xml = this.blocklyEditorRef.current?.getWorkspaceXml();
+            if (xml) {
+                return xml;
+            }
+        } catch {
+            // from the source then
+        }
+        const marker = '\n%%BLOCKLY_XML%%\n';
+        const code = this.getAiBlocklyCode();
+        return code.slice(code.indexOf(marker) + marker.length);
+    }
+
+    /** A script made from a recipe gets a line over the editor: which recipe, update, detach */
+    withRecipeBanner(editor: React.JSX.Element): React.JSX.Element {
+        const id = this.state.selected;
+        const info = (this.props.objects[id]?.common as ioBroker.ScriptCommon & { recipe?: ScriptRecipe })?.recipe;
+        const instanceId = this.getRecipeInstance();
+        if (!info?.id || !instanceId) {
+            return editor;
+        }
+        return (
+            <React.Fragment key="blocklyWithRecipe">
+                <Suspense fallback={null}>
+                    <RecipeBanner
+                        socket={this.props.socket}
+                        instanceId={instanceId}
+                        scriptId={id}
+                        info={info}
+                        changed={!!this.state.changed[id]}
+                        onUpdate={() => this.setState({ showRecipeUpdate: true })}
+                    />
+                </Suspense>
+                {editor}
+            </React.Fragment>
+        );
+    }
+
+    getRecipeDialogs(): React.JSX.Element | null {
+        const id = this.state.selected;
+        const instanceId = this.getRecipeInstance();
+        if (this.state.recipeExportXml !== null && instanceId) {
+            return (
+                <Suspense
+                    key="recipeExport"
+                    fallback={<Connecting />}
+                >
+                    <RecipeExportDialog
+                        socket={this.props.socket}
+                        instanceId={instanceId}
+                        xml={this.state.recipeExportXml}
+                        scriptName={getScriptName(id, this.props.objects[id], I18n.getLanguage())}
+                        onClose={() => this.setState({ recipeExportXml: null })}
+                    />
+                </Suspense>
+            );
+        }
+        const common = this.props.objects[id]?.common as
+            (ioBroker.ScriptCommon & { recipe?: ScriptRecipe }) | undefined;
+        if (!this.state.showRecipeUpdate || !instanceId || !common?.recipe) {
+            return null;
+        }
+        return (
+            <Suspense
+                key="recipeUpdate"
+                fallback={<Connecting />}
+            >
+                <RecipeDialog
+                    socket={this.props.socket}
+                    theme={this.props.theme}
+                    themeType={this.state.themeType}
+                    instanceId={instanceId}
+                    existingIds={Object.keys(this.props.objects)}
+                    update={{ id, common: common as ioBroker.ScriptCommon & { recipe: ScriptRecipe } }}
+                    onClose={(updatedId, source) => {
+                        if (updatedId && source !== undefined && this.scripts[updatedId]) {
+                            // the editor keeps its own copy of the source: it gets the new one, unchanged
+                            this.scripts[updatedId].source = source;
+                        }
+                        this.setState({ showRecipeUpdate: false });
+                    }}
+                />
+            </Suspense>
+        );
     }
 
     getFbdEditor(): React.JSX.Element | null {
@@ -3249,6 +3373,7 @@ class Editor extends React.Component<EditorProps, EditorState> {
             this.getAstroDialog(),
             this.getDiffDialog(),
             this.getHistoryDialog(),
+            this.getRecipeDialogs(),
             this.getDocumentationDialog(),
             this.getDebugMenu(),
             this.getToast(),

@@ -1,7 +1,7 @@
 /**
  * Helpers shared by the converted block modules.
  */
-import type { Block, Connection } from 'blockly/core';
+import type { Block, Connection, Field, Workspace } from 'blockly/core';
 import { javascriptGenerator } from 'blockly/javascript';
 
 /**
@@ -266,4 +266,23 @@ export type NamedResourceVariableModel = {
  */
 export function namedResourceVariableModel(name: string, type: string): NamedResourceVariableModel {
     return { getId: () => name, getName: () => name, getType: () => type, name, type };
+}
+
+/**
+ * The dropdown options of a block that picks one of the named timers or schedules of the script.
+ * They come from the workspace of the block itself: a read-only preview (AI chat, recipes) has its
+ * own blocks, and no editor may be open at all. A block in the toolbox, or one not placed yet, lists
+ * those of the editor. Never empty: a dropdown without options throws, and the block is lost.
+ *
+ * @param field The dropdown, `this` of its menu generator
+ * @param collect Gets the options from a workspace
+ */
+export function namedResourceOptions(
+    field: Field,
+    collect: (workspace: Workspace) => [string, string][],
+): [string, string][] {
+    const own = field.getSourceBlock()?.workspace;
+    const workspace = own && !own.isFlyout ? own : window.scripts?.blocklyWorkspace;
+    const options = workspace ? collect(workspace) : [];
+    return options.length ? options : [['', '']];
 }

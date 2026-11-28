@@ -20,6 +20,8 @@ Executes JavaScript, TypeScript Scripts.
 - 🇩🇪 [Benutzung](docs/de/usage.md)
 - 🇺🇸 [Function block diagrams](docs/en/fbd.md)
 - 🇩🇪 [Funktionspläne](docs/de/fbd.md)
+- 🇺🇸 [Recipes: ready-made automations](docs/en/recipes.md)
+- 🇩🇪 [Rezepte: fertige Automationen](docs/de/recipes.md)
 - Blockly
   - 🇺🇸 Here you can find the description of [blockly](docs/en/blockly.md). 
   - 🇩🇪 Hier kann man die Beschreibung von [Blockly](docs/de/blockly.md) finden. 
@@ -36,6 +38,7 @@ Executes JavaScript, TypeScript Scripts.
 ## Changelog
 ### **WORK IN PROGRESS**
 * (@GermanBluefox) Version 10.6.0 was not published on npm, this release contains its changes
+* (@GermanBluefox) Editor: recipes, ready-made automations from the catalog ioBroker.recipes: apply one with your own devices, update it to a new version with a comparison and a warning about local changes, detach it, or export a Blockly script as a recipe ([docs](docs/en/recipes.md))
 
 ### 10.6.0 (2026-11-19)
 * (@GermanBluefox) Added the message "help": a description of all messages for AI agents (e.g. pi-agent), and common.supportedMessages.help

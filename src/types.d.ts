@@ -47,6 +47,8 @@ export interface JavaScriptAdapterConfig {
     maxSetStatePerMinute: number;
     maxTriggersPerScript: number;
     sortGlobalScriptsAlphabetically: boolean;
+    /** Where the catalog of the recipes is; empty: the official one */
+    recipesUrl: string;
     gptKey: string;
     gptBaseUrl: string;
     gptBaseUrlKey: string;

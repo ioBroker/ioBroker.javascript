@@ -140,5 +140,7 @@
     "Low": "Niski",
     "Medium": "Średni",
     "High": "Wysoki",
-    "optional": "opcjonalnie"
+    "optional": "opcjonalnie",
+    "Catalog of the recipes": "Katalog przepisów",
+    "recipesUrl help": "URL pliku recipes.json z gotowymi automatyzacjami edytora skryptów. Puste: oficjalny katalog"
 }

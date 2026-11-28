@@ -21,6 +21,7 @@ export const COMMANDS: { command: string; write: boolean }[] = [
     { command: 'prettier', write: false },
     { command: 'getSecrets', write: false },
     { command: 'getIoBrokerDataDir', write: false },
+    { command: 'getRecipes', write: false },
     // the editor and the settings
     { command: 'editorPing', write: false },
     { command: 'loadTypings', write: false },
@@ -84,6 +85,9 @@ Commands (sendTo javascript.0):
 - prettier {code, type?}: formats code (type "typescript" for TypeScript): {code} or {error}.
 - getSecrets: {enabled, secrets: [{name, fields}]}: the credentials scripts read as SECRETS.<name>.<field> (no
   values). getIoBrokerDataDir: {dataDir, sep}.
+- getRecipes {force?}: the catalog of automation recipes (Blockly templates, setting recipesUrl), without
+  internet the stored copy: {recipes, buildTime, loaded, fromCache?, hidden, version, url, error?}. A script made
+  from a recipe carries common.recipe = {id, version, params, hash}.
 - editorPing, loadTypings, debug, debugStop, rulesOn, rulesOff, fbdWatch, fbdDebug, ai:providers, ai:models,
   ai:chat, getAvailableAiProviders, testApiConnection, chatCompletion: for the editor and the settings, not for
   agents.

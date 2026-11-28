@@ -604,5 +604,8 @@
     "lines": "linhas",
     "Delete this version": "Excluir esta versão",
     "Delete the whole history": "Excluir todo o histórico",
-    "These scripts are not saved:": "Estes scripts não estão salvos:"
+    "These scripts are not saved:": "Estes scripts não estão salvos:",
+    "recipe_from_recipe": "Explorar receitas",
+    "recipe_bar_text": "Ou comece com uma automação pronta e escolha seus dispositivos",
+    "recipe_export_button": "Exportar como receita"
 }
