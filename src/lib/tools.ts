@@ -147,6 +147,19 @@ export function escapeRegExp(text: string): string {
     return text.replace(/[.*+?^${}()|[\]\\-]/g, '\\$&');
 }
 
+/**
+ * Whether the code of a Blockly script waits `NaN` ms: in a "pause", "execute in" or "interval" block.
+ *
+ * The editor since 10.1.0 generated that for the name of a variable typed into the time field (#2471). The
+ * stored code is only generated anew when the script is saved in the editor again, so such a script has to be
+ * found - the block itself is fine.
+ *
+ * @param source the generated code of a Blockly script
+ */
+export function hasNaNDelay(source: string): boolean {
+    return /\bawait wait\(NaN\);|\}, NaN\);/.test(source);
+}
+
 export function getHttpRequestConfig(
     url: string,
     options?: {

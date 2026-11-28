@@ -34,17 +34,29 @@ type TimerKind = {
 const TIMEOUT: TimerKind = { id: 'timeout', marker: 'isTimeout_', variableType: 'timeout' };
 const INTERVAL: TimerKind = { id: 'interval', marker: 'isInterval_', variableType: 'interval' };
 
-/** Milliseconds for a delay given in the selected unit */
-function toMilliseconds(delay: string, unit: string): number {
-    const value = parseFloat(delay);
+/**
+ * The code for a delay typed into a text field, in milliseconds.
+ *
+ * The blocks before the TypeScript conversion put a text that is no number into the code as it is, for
+ * milliseconds. So users typed the name of a variable there, and the forum recommended it. Since 10.1.0
+ * `parseFloat()` made `wait(NaN)` of it (#2471). Such a text is an expression again, and for seconds and
+ * minutes it is now multiplied, where the old code made `NaN` of it, too.
+ *
+ * @param delay the text of the field
+ * @param unit ms, sec or min
+ */
+function delayCode(delay: string | null | undefined, unit: string): string {
+    const text = String(delay ?? '').trim();
+    const factor = unit === 'min' ? 60000 : unit === 'sec' ? 1000 : 1;
 
-    if (unit === 'min') {
-        return value * 60000;
+    if (!text) {
+        return '0';
     }
-    if (unit === 'sec') {
-        return value * 1000;
+    // a number - also one with something typed after it, like "500ms": a variable name cannot start with a digit
+    if (/^[+-]?\.?\d/.test(text)) {
+        return String(parseFloat(text) * factor);
     }
-    return value;
+    return factor === 1 ? text : `(${text}) * ${factor}`;
 }
 
 function safeName(block: Block): string {
@@ -180,9 +192,7 @@ export function install(): void {
     };
 
     javascriptGenerator.forBlock['timeouts_wait'] = function (block: Block): string {
-        const delay = toMilliseconds(block.getFieldValue('DELAY'), block.getFieldValue('UNIT'));
-
-        return `await wait(${delay});\n`;
+        return `await wait(${delayCode(block.getFieldValue('DELAY'), block.getFieldValue('UNIT'))});\n`;
     };
 
     /**
@@ -245,7 +255,7 @@ export function install(): void {
             const statement = javascriptGenerator.statementToCode(block, 'STATEMENT');
             const delay = variable
                 ? `parseInt(${javascriptGenerator.valueToCode(block, delayInput, Order.ATOMIC)})`
-                : String(toMilliseconds(block.getFieldValue(delayField), block.getFieldValue('UNIT')));
+                : delayCode(block.getFieldValue(delayField), block.getFieldValue('UNIT'));
             const reset = isTimeout
                 ? `${javascriptGenerator.prefixLines(`${fName} = null;`, javascriptGenerator.INDENT)}\n`
                 : '';
@@ -272,7 +282,9 @@ export function install(): void {
 
         Blocks[clearType] = {
             init: function (this: Block): void {
-                this.appendDummyInput('NAME').appendField(translate(clearType)).appendField(timerDropdown(kind), 'NAME');
+                this.appendDummyInput('NAME')
+                    .appendField(translate(clearType))
+                    .appendField(timerDropdown(kind), 'NAME');
 
                 this.setInputsInline(true);
                 this.setPreviousStatement(true, null);

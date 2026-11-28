@@ -1,0 +1,55 @@
+<!-- The name of a variable typed into the delay field of "pause", "execute in" and "interval" (#2471).
+     Before the TypeScript conversion such a text went into the code as it was, for milliseconds - the
+     forum recommended it. 10.1.0 made `NaN` of it. Seconds and minutes multiply the expression, the
+     empty field and a number with a unit typed after it are covered too. -->
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <variables>
+    <variable id="dauer-id">dauer</variable>
+  </variables>
+  <block type="variables_set">
+    <field name="VAR" id="dauer-id">dauer</field>
+    <value name="VALUE">
+      <block type="math_number">
+        <field name="NUM">500</field>
+      </block>
+    </value>
+    <next>
+      <block type="timeouts_wait">
+        <field name="DELAY">dauer</field>
+        <field name="UNIT">ms</field>
+        <next>
+          <block type="timeouts_wait">
+            <field name="DELAY">dauer</field>
+            <field name="UNIT">sec</field>
+            <next>
+              <block type="timeouts_wait">
+                <field name="DELAY">500ms</field>
+                <field name="UNIT">ms</field>
+                <next>
+                  <block type="timeouts_wait">
+                    <field name="DELAY"></field>
+                    <field name="UNIT">ms</field>
+                    <next>
+                      <block type="timeouts_settimeout">
+                        <field name="NAME">delayedTimer</field>
+                        <field name="DELAY">dauer</field>
+                        <field name="UNIT">ms</field>
+                        <next>
+                          <block type="timeouts_setinterval">
+                            <field name="NAME">repeatInterval</field>
+                            <field name="INTERVAL">dauer</field>
+                            <field name="UNIT">min</field>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+</xml>

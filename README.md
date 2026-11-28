@@ -40,6 +40,7 @@ Executes JavaScript, TypeScript Scripts.
 * (@GermanBluefox) Fixed `setStateChanged()` writing a real change with `lc` from the time of the call and `ts` from the time of the write, which differed by up to seconds under load, so e.g. influxdb with `changesOnly` did not store the value. Now `lc` = `ts` on a real change, as with `setState()` (#2503)
 * (@GermanBluefox) Version 10.6.0 was not published on npm, this release contains its changes
 * (@GermanBluefox) Editor: recipes, ready-made automations from the catalog ioBroker.recipes: apply one with your own devices, update it to a new version with a comparison and a warning about local changes, detach it, or export a Blockly script as a recipe ([docs](docs/en/recipes.md))
+* (@GermanBluefox) Fixed: a variable in the time field of the Blockly blocks "pause", "timeout" and "interval" became `NaN` since 10.1.0. The adapter warns about scripts saved that way (#2471)
 
 ### 10.6.0 (2026-11-19)
 * (@GermanBluefox) Added the message "help": a description of all messages for AI agents (e.g. pi-agent), and common.supportedMessages.help

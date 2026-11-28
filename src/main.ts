@@ -78,7 +78,7 @@ import {
     tsCompilerOptions,
     jsDeclarationCompilerOptions,
 } from './lib/typescriptSettings';
-import { getHttpRequestConfig, hashSource } from './lib/tools';
+import { getHttpRequestConfig, hashSource, hasNaNDelay } from './lib/tools';
 import { RecipeCatalog, RECIPES_CACHE_FILE } from './lib/recipes';
 import {
     resolveTypescriptLibs,
@@ -3780,6 +3780,11 @@ class JavaScript extends Adapter {
             ) {
                 // Javascript
                 this.log.info(`${name}: start JavaScript (${obj.common.engineType})`);
+                if (obj.common.engineType === 'Blockly' && hasNaNDelay(obj.common.source)) {
+                    this.log.warn(
+                        `${name}: a pause or a delay of this script is "NaN" ms, so it does not wait. The editor made "NaN" of a variable in the time field since version 10.1.0 - open the script in the editor and save it again (#2471)`,
+                    );
+                }
 
                 let sourceFn = name;
                 if (webstormDebug) {
