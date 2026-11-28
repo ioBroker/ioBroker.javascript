@@ -1,0 +1,1 @@
+import{a as e}from"./rolldown-runtime--VnrjFmI.js";import{n as t}from"./_virtual_mf___mfe_internal__ConfigCustomJavascriptSet__mf_owner__261177434399111__loadShare__leaflet__loadShare__.js-BBV-2haQ.js";var n=e(t());t();var r=Reflect.get(n,`default`)??n;export{r as default};
